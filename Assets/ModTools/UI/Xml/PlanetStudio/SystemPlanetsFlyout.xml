@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XmlLayout xmlns="http://www.w3schools.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\XmlLayout.xsd">
+  <Include path="Ui/Xml/Design/DesignStyles.xml" />
+  <Defaults>
+    <Panel class="list-item" hoverClass="list-item-hover" pressClass="list-item-press" onClick="OnListItemClicked(this);" />
+    <Panel class="list-item-hover" color="Button" />
+    <Panel class="list-item-press" color="ButtonHover" />
+    <Panel class="selected" color="Primary" />
+    <Panel class="object-button" navigation="None" tooltipPosition="Above" />
+    <Image class="list-item:uploaded-status-icon" tooltip="Trying to figure out if uploaded..." color="LabelText" sprite="Ui/Sprites/PlanetStudio/IconUploadedPending" />
+    <Image class="uploaded-yes:uploaded-status-icon" tooltip="Uploaded" sprite="Ui/Sprites/PlanetStudio/IconUploadedYes" color="Primary" />
+    <Image class="uploaded-no:uploaded-status-icon" tooltip="Not Uploaded" sprite="Ui/Sprites/PlanetStudio/IconUploadedNo" />
+    <Image class="selected:uploaded-status-icon" color="White" />
+  </Defaults>
+  <Panel class="no-image">
+    <Panel class="no-image" height="32" padding="0 2 0 0" rectAlignment="UpperCenter">
+      <TextMeshProInputField id="search-input" text="" class="search-input" onValueChanged="ApplySearchFilter(value);">
+        <TMP_Placeholder text="Search..." />
+        <TMP_Text text="" />
+      </TextMeshProInputField>
+    </Panel>
+    <VerticalScrollView class="no-image" offsetMax="0 -35">
+      <VerticalLayout class="no-image" childForceExpandHeight="false" padding="0" spacing="0" contentSizeFitter="vertical" pivot="0 1" childAlignment="UpperCenter" rectAlignment="UpperLeft">
+        <Panel id="row-template" class="list-item audio-btn-click" preferredHeight="40" raycastTarget="true" active="false">
+          <TextMeshPro offsetMin="10 0" text="Name" internalId="name" alignment="Left" color="ValueText" />
+          <TextMeshPro offsetMax="-36 0" text="Label" internalId="type" class="label text-sm" alignment="Right" />
+          <Image class="uploaded-status-icon" rectAlignment="MiddleRight" width="16" height="16" offsetXY="-10 0" />
+          <Image class="border" height="2" rectAlignment="LowerCenter" />
+        </Panel>
+      </VerticalLayout>
+    </VerticalScrollView>
+  </Panel>
+</XmlLayout>

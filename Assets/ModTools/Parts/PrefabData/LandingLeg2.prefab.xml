@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<GameObject name="LandingLeg2" path="Craft/Parts/Prefabs/LandingLeg2.prefab">
+  <GameObject name="LandingLeg">
+    <GameObject name="LandingLegBase">
+      <Component type="UnityEngine.MeshFilter" />
+      <Component type="UnityEngine.MeshRenderer" />
+      <GameObject name="Pivot">
+        <Component type="UnityEngine.MeshFilter" />
+        <Component type="UnityEngine.MeshRenderer" />
+        <Component type="UnityEngine.MeshCollider" />
+        <Component type="ModApi.Craft.Parts.PartColliderScript" />
+        <Component type="ModApi.Craft.Parts.PartMeshScript" />
+        <GameObject name="CenterOfMass" />
+        <GameObject name="SuspensionOffset">
+          <GameObject name="SuspensionRoot">
+            <Component type="UnityEngine.MeshFilter" />
+            <Component type="UnityEngine.MeshRenderer" />
+            <Component type="ModApi.Craft.Parts.PartMeshScript" />
+            <GameObject name="RigidCollider">
+              <Component type="ModApi.Craft.Parts.PartColliderScript" />
+              <Component type="UnityEngine.BoxCollider" />
+              <Component type="UnityEngine.SphereCollider" />
+            </GameObject>
+          </GameObject>
+          <GameObject name="RayOrigin" />
+        </GameObject>
+      </GameObject>
+    </GameObject>
+  </GameObject>
+  <GameObject name="Audio">
+    <Component type="Assets.Scripts.Craft.Parts.Modifiers.LoopingAudioScript" />
+  </GameObject>
+</GameObject>

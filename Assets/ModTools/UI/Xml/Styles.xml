@@ -1,0 +1,183 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XmlLayout xmlns="http://www.w3schools.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\XmlLayout.xsd">
+  <Defaults>
+    <Color name="Primary" color="#00b7ed" />
+    <Color name="PrimaryHover" color="#00a1f2" />
+    <Color name="PrimaryPressed" color="#006ea6" />
+    <Color name="LabelText" color="#808697ff" />
+    <Color name="ValueText" color="#ffffff" />
+    <Color name="HeaderText" color="#ffffff" />
+    <Color name="Transparent" color="#ffffff00" />
+    <Color name="TranslucentPanel" color="#161718ff" />
+    <Color name="Button" color="#2e353e" />
+    <Color name="ButtonHover" color="#3e4854" />
+    <Color name="ButtonPressed" color="#46515e" />
+    <Color name="ButtonDisabled" color="#2B2C2D" />
+    <Color name="ButtonText" color="#abb4be" />
+    <Color name="ButtonDisabledText" color="#939393" />
+    <Color name="ButtonIcon" color="#abb4be" />
+    <Color name="ButtonIconSelected" color="#ffffff" />
+    <Color name="ProgressBarBackground" color="#43668a" />
+    <Color name="Panel" color="#1d2127ff" />
+    <Color name="PanelHover" color="#22292eff" />
+    <Color name="DarkPanel" color="#161718" />
+    <Color name="FlightPanel" color="#111111F0" />
+    <Color name="TransparentPanel" color="#111111F0" />
+    <Color name="Border" color="#2f3139ff" />
+    <Color name="Warning" color="#ff9a30" />
+    <Color name="WarningHover" color="#f2932e" />
+    <Color name="WarningPressed" color="#e58c2c" />
+    <Color name="Danger" color="#e7515a" />
+    <Color name="DangerHover" color="#cc4750" />
+    <Color name="DangerPressed" color="#b33e46" />
+    <Color name="Success" color="#47a447" />
+    <Color name="SuccessHover" color="#4bad4b" />
+    <Color name="SuccessPressed" color="#4fb84f" />
+    <Color name="Alert" color="#ff3c00" />
+    <Canvas class="no-image" prefabPath="Ui/Prefabs/XmlLayout/BasicCanvas" />
+    <HorizontalLayout class="no-image" prefabPath="Ui/Prefabs/XmlLayout/BasicHorizontalLayout" />
+    <HorizontalScrollView class="no-image" prefabPath="Ui/Prefabs/XmlLayout/BasicHorizontalScrollView" />
+    <Panel class="no-image" prefabPath="Ui/Prefabs/XmlLayout/BasicPanel" />
+    <VerticalLayout class="no-image" prefabPath="Ui/Prefabs/XmlLayout/BasicVerticalLayout" />
+    <VerticalScrollView class="no-image" prefabPath="Ui/Prefabs/XmlLayout/BasicVerticalScrollView" />
+    <GridLayout class="no-image" prefabPath="Ui/Prefabs/XmlLayout/BasicGridLayout" />
+    <Panel class="image" prefabPath="Ui/Prefabs/XmlLayout/ImagePanel" />
+    <Panel class="translucent-panel" color="TranslucentPanel" translucency="0.15" />
+    <Image class="translucent-panel" color="TranslucentPanel" translucency="0.15" />
+    <VerticalLayout class="translucent-panel" color="TranslucentPanel" translucency="0.15" />
+    <VerticalScrollView class="translucent-panel" color="TranslucentPanel" translucency="0.15" />
+    <Panel class="translucent-panel-dark" color="Black" translucency="0.025" />
+    <Image class="translucent-panel-dark" color="Black" translucency="0.025" />
+    <VerticalLayout class="translucent-panel-dark" color="Black" translucency="0.025" />
+    <VerticalScrollView class="translucent-panel-dark" color="Black" translucency="0.025" />
+    <Panel class="spinner" preferredHeight="25" prefabPath="Ui/Prefabs/XmlLayout/BasicPanel" />
+    <Panel class="row" preferredHeight="30" prefabPath="Ui/Prefabs/XmlLayout/BasicPanel" />
+    <HorizontalLayout class="row" preferredHeight="30" padding="0" prefabPath="Ui/Prefabs/XmlLayout/BasicHorizontalLayout" />
+    <TextMeshPro font="Ui/Fonts/Roboto/Roboto-Regular SDF" fontSize="16" raycastTarget="false" />
+    <TextMeshPro class="modern" font="Ui/Fonts/Pirulen/pirulen rg SDF" fontSize="24" />
+    <TextMeshPro class="label" color="LabelText" />
+    <TextMeshPro class="value" color="ValueText" />
+    <TextMeshPro class="link" color="Primary" raycastTarget="true" />
+    <TextMeshPro class="text-sm" fontSize="14" />
+    <TextMeshPro class="text-lg" fontSize="20" />
+    <TextMeshPro class="text-header" font="Ui/Fonts/Pirulen/pirulen rg SDF" color="LabelText" fontSize="24" preferredHeight="32" enableAutoSizing="true" fontSizeMax="24" fontSizeMin="16" />
+    <TextMeshPro class="text-subheader" font="Ui/Fonts/Pirulen/pirulen rg SDF" color="LabelText" fontSize="18" preferredHeight="32" enableAutoSizing="true" fontSizeMax="18" fontSizeMin="12" />
+    <TextMeshProDropdown prefabPath="Ui/Prefabs/XmlLayout/Dropdown" image="" color="Button" dropdownBackgroundImage="" arrowImage="Ui/Sprites/Common/DropdownArrow" checkColor="White" scrollbarBackgroundColor="#222" itemBackgroundColors="Transparent|ButtonHover|Button|Button" />
+    <TMP_OptionTextTemplate font="Ui/Fonts/Roboto/Roboto-Regular SDF" color="LabelText" image="" fontSize="16" />
+    <TMP_DropdownLabel font="Ui/Fonts/Roboto/Roboto-Regular SDF" color="ValueText" fontSize="16" enableAutoSizing="true" fontSizeMin="6" fontSizeMax="16" />
+    <Button class="icon-button" onClickSound="Ui/Audio/ButtonClicked" audioMode="OneShot" width="40" height="40" preferredWidth="40" preferredHeight="40" sprite="" colors="Button|ButtonHover|Button|ButtonDisabled" iconColor="ButtonIcon" iconHoverColor="ButtonIconSelected" navigation="None" tooltipPosition="Right" />
+    <Button class="btn" onClickSound="Ui/Audio/ButtonClicked" audioMode="OneShot" prefabPath="Ui/Prefabs/XmlLayout/TextButton" sprite="" preferredHeight="30" height="30" raycastTarget="true" colors="Button|ButtonHover|ButtonPressed|ButtonDisabled" navigation="None" />
+    <Button class="transparent" colors="TransparentPanel|ButtonHover|Button|Button" />
+    <Button class="btn-primary" colors="Primary|PrimaryHover|PrimaryPressed|Button" iconColor="White" />
+    <Button class="btn-danger" colors="Danger|DangerHover|DangerPressed|Button" iconColor="White" />
+    <Button class="btn-warning" colors="Warning|WarningHover|WarningPressed|Button" iconColor="White" />
+    <Button class="btn-success" colors="Success|SuccessHover|SuccessPressed|Button" />
+    <Button class="audio-btn-big" onClickSound="Ui/Audio/ButtonClickedBig" audioMode="OneShot" />
+    <Button class="audio-btn-back" onClickSound="Ui/Audio/ButtonBack" audioMode="OneShot" />
+    <Panel class="audio-btn-click" onClickSound="Ui/Audio/ButtonClicked" audioMode="OneShot" />
+    <Panel class="audio-btn-big" onClickSound="Ui/Audio/ButtonClickedBig" audioMode="OneShot" />
+    <Panel class="audio-btn-back" onClickSound="Ui/Audio/ButtonBack" audioMode="OneShot" />
+    <Image class="audio-btn-click" onClickSound="Ui/Audio/ButtonClicked" audioMode="OneShot" />
+    <Image class="audio-btn-back" onClickSound="Ui/Audio/ButtonBack" audioMode="OneShot" />
+    <TextMeshPro class="audio-btn-click" onClickSound="Ui/Audio/ButtonClicked" audioMode="OneShot" />
+    <Toggle class="audio-btn-click" onClickSound="Ui/Audio/ButtonClicked" audioMode="OneShot" />
+    <ContentButton class="btn" onClickSound="Ui/Audio/ButtonClicked" audioMode="OneShot" raycastTarget="true" buttonColors="Button|ButtonHover|ButtonPressed|ButtonDisabled" preferredHeight="30" height="30" navigation="None" />
+    <ContentButton class="btn-primary" buttonColors="Primary|PrimaryHover|PrimaryPressed|Button" />
+    <ContentButton class="btn-danger" buttonColors="Danger|DangerHover|DangerPressed|Button" />
+    <ContentButton class="btn-warning" buttonColors="Warning|WarningHover|WarningPressed|Button" />
+    <ContentButton class="btn-success" buttonColors="Success|SuccessHover|SuccessPressed|Button" />
+    <ContentButton class="audio-btn-click" onClickSound="Ui/Audio/ButtonClicked" audioMode="OneShot" />
+    <ContentButton class="audio-btn-big" onClickSound="Ui/Audio/ButtonClickedBig" audioMode="OneShot" />
+    <ContentButton class="audio-btn-back" onClickSound="Ui/Audio/ButtonBack" audioMode="OneShot" />
+    <Button class="btn-sm" preferredHeight="20" height="20" />
+    <TextMeshPro class="btn-sm:@TextMeshPro" fontSize="14" />
+    <Button class="btn-lg" preferredHeight="40" height="40" />
+    <TextMeshPro class="btn-lg:@TextMeshPro" fontSize="20" />
+    <Button class="btn-tall" preferredHeight="40" height="40" />
+    <TextMeshProInputField lineType="SingleLine" color="Button" sprite="" raycastTarget="true" selectClass="input-select" hoverClass="input-hover" />
+    <TextMeshProInputField class="input-hover" border="ButtonHover" />
+    <TextMeshProInputField class="input-select" border="Primary" />
+    <TMP_Placeholder text="Placeholder..." color="#ffffff15" font="Ui/Fonts/Roboto/Roboto-Regular SDF" fontSize="16" fontStyle="Normal" raycastTarget="false" />
+    <TMP_Text font="Ui/Fonts/Roboto/Roboto-Regular SDF" fontSize="16" raycastTarget="false" color="White" />
+    <Panel class="toggle-buttons" preferredHeight="50" />
+    <TextMeshPro class="toggle-buttons&gt;@TextMeshPro" height="20" pivot="0.5 1" rectAlignment="UpperCenter" />
+    <ToggleGroup class="toggle-buttons" height="25" pivot="0.5 0" rectAlignment="LowerCenter" />
+    <ToggleButton class="toggle-buttons:@ToggleButton" prefabPath="Ui/Prefabs/XmlLayout/ToggleButton" image="" colors="Button|ButtonHover|Button|Button" textColors="White|White|White|White" rectAlignment="MiddleLeft" width="50%" deselectedBackgroundColor="Button" selectedBackgroundColor="Primary" />
+    <Toggle prefabPath="Ui/Prefabs/XmlLayout/Toggle" width="50" height="25" toggleBackgroundImage="" colors="Button|ButtonHover|ButtonPressed|ButtonDisabled" checkColor="Primary" navigation="None" dontModifyBackground="true" />
+    <Button class="delete-button" onClickSound="Ui/Audio/ButtonClicked" audioMode="OneShot" icon="Ui/Sprites/Design/IconButtonDeleteItem" iconColor="Primary" navigation="None" image="" colors="Button|ButtonHover|Button|Button" width="20" height="20" />
+    <TextMeshPro class="btn&gt;@TextMeshPro" color="ButtonText" />
+    <TextMeshPro class="btn-primary&gt;@TextMeshPro" color="White" />
+    <TextMeshPro class="btn-danger&gt;@TextMeshPro" color="White" />
+    <TextMeshPro class="btn-warning&gt;@TextMeshPro" color="White" />
+    <TextMeshPro class="btn-success&gt;@TextMeshPro" color="White" />
+    <Button class="disabled" interactable="false" />
+    <Image class="btn:@Image" color="ButtonIcon" />
+    <Image class="btn-primary&gt;@Image" color="White" />
+    <Image class="btn-danger&gt;@Image" color="White" />
+    <Image class="btn-warning&gt;@Image" color="White" />
+    <Image class="btn-success&gt;@Image" color="White" />
+    <Tooltip device="mobile" tooltipFontSize="16" tooltipWidth="300" tooltipDelayTime="1.25" tooltipBorderColor="Border" tooltipBackgroundColor="DarkPanel" tooltipTextColor="ValueText" tooltipBorderImage="Ui/Sprites/Border/TooltipBorder-1px" tooltipBackgroundImage="Ui/Sprites/Panel" tooltipUseTextMeshPro="true" tooltipFont="Ui/Fonts/Roboto/Roboto-Regular SDF" tooltipOffset="25" />
+    <Tooltip device="desktop" tooltipFontSize="16" tooltipWidth="400" tooltipDelayTime="0.65" tooltipBorderColor="Border" tooltipBackgroundColor="DarkPanel" tooltipTextColor="ValueText" tooltipBorderImage="Ui/Sprites/Border/TooltipBorder-1px" tooltipBackgroundImage="Ui/Sprites/Panel" tooltipUseTextMeshPro="true" tooltipFont="Ui/Fonts/Roboto/Roboto-Regular SDF" />
+    <TableLayout class="panel" color="Panel" />
+    <Panel class="panel" color="Panel" />
+    <VerticalLayout class="panel" color="Panel" />
+    <HorizontalLayout class="panel" color="Panel" />
+    <Image class="panel" color="Panel" />
+    <TableLayout class="flight-panel" color="Black" translucency="0.15" />
+    <Panel class="flight-panel" color="Black" translucency="0.15" />
+    <VerticalLayout class="flight-panel" color="Black" translucency="0.15" />
+    <HorizontalLayout class="flight-panel" color="Black" translucency="0.15" />
+    <Image class="flight-panel" color="Black" translucency="0.15" />
+    <RectTransform class="safe-area" safeArea="true" />
+    <Panel class="safe-area" safeArea="true" />
+    <Panel class="border" border="Border" />
+    <Panel class="border-left" borderSprite="Ui/Sprites/Border/Edge-Left-1px" />
+    <VerticalLayout class="border" border="Border" />
+    <VerticalLayout class="border-angled" borderSprite="Ui/Sprites/Border/Angled-1px" border="Border" />
+    <Panel class="border-angled" borderSprite="Ui/Sprites/Border/Angled-1px" border="Border" />
+    <Panel class="dialog-background" color="#000000DF" raycastTarget="true" />
+    <Panel class="non-modal-dialog" color="#00000000" raycastTarget="false" />
+    <Panel class="panel-angled" sprite="Ui/Sprites/Panel-Angled" />
+    <Image class="panel-angled" sprite="Ui/Sprites/Panel-Angled" type="Sliced" />
+    <VerticalLayout class="draggable" allowDragging="true" restrictDraggingToParentBounds="true" returnToOriginalPositionWhenReleased="false" />
+    <Panel class="draggable" allowDragging="true" restrictDraggingToParentBounds="true" returnToOriginalPositionWhenReleased="false" />
+    <TableLayout class="draggable" allowDragging="true" restrictDraggingToParentBounds="true" returnToOriginalPositionWhenReleased="false" />
+    <Image class="border" sprite="Ui/Sprites/Border/Square-1px" color="Border" type="Sliced" raycastTarget="false" fillCenter="false" />
+    <Image class="border-angled" sprite="Ui/Sprites/Border/Angled-1px" fillCenter="false" />
+    <Panel class="slider" preferredHeight="40" height="40" prefabPath="Ui/Prefabs/XmlLayout/BasicPanel" />
+    <TextMeshPro class="slider&gt;label" alignment="Left" rectAlignment="MiddleLeft" offsetXY="0 12" height="20" />
+    <TextMeshPro class="slider&gt;value" alignment="Right" rectAlignment="MiddleRight" offsetXY="0 12" height="20" />
+    <Slider prefabPath="Ui/Prefabs/XmlLayout/Slider" fillColor="Primary" backgroundColor="ButtonHover" handleColor="Primary" />
+    <Slider class="slider:@Slider" rectAlignment="LowerCenter" width="100%" offsetXY="0 -10" />
+    <Slider class="bipolar:@Slider" fillColor="Transparent" />
+    <Panel class="header" preferredHeight="30" />
+    <TextMeshPro class="header:@TextMeshPro" color="LabelText" fontStyle="Bold" />
+    <Image class="separator" rectAlignment="LowerCenter" preferredHeight="1" height="1" width="100%" color="Border" offsetMin="-10 0" offsetMax="10 1" />
+    <Spinner onClickSound="Ui/Audio/ButtonClicked" audioMode="OneShot" buttonColors="ButtonHover|Primary|Button|Button" />
+    <TextMeshPro class="spinner:label" rectAlignment="MiddleLeft" width="35%" />
+    <Spinner class="spinner:@Spinner" width="65%" rectAlignment="MiddleRight" />
+    <Spinner class="label" onClickSound="Ui/Audio/ButtonClicked" audioMode="OneShot" />
+    <TextMeshPro class="@Spinner:@TextMeshPro" offsetMin="30 0" offsetMax="-30 0" />
+    <TextMeshProInputField class="@Spinner&gt;@TextMeshProInputField" width="60%" height="100%" />
+    <TMP_Text class="@Spinner:@TMP_Text" alignment="Center" />
+    <VerticalScrollView movementType="Elastic" image="" maskImage="" color="#00000000" scrollSensitivity="50" scrollbarBackgroundColor="#222" verticalScrollbarWidth="5" height="100%" width="100%" verticalScrollbarVisibility="AutoHide" scrollbarColors="Button|ButtonHover|Button|Button" scrollbarImage="" />
+    <Panel class="flyout" raycastTarget="true" />
+    <Panel class="flyout" rectAlignment="MiddleLeft" height="100%" offsetXY="50 0" border="Border" />
+    <Panel class="flyout-header" rectAlignment="UpperCenter" width="100%" height="30" color="#171717" />
+    <TextMeshPro class="flyout-header:@TextMeshPro" internalId="flyout-title" font="Ui/Fonts/Pirulen/pirulen rg SDF" alignment="Left" color="LabelText" fontSize="14" preferredHeight="32" enableAutoSizing="true" fontSizeMax="14" fontSizeMin="10" margin="10 0 40 0" />
+    <Panel class="flyout-content" offsetMax="0 -31" offsetMin="2 0" />
+    <Image class="flyout-close-button" color="Button" image="Ui/Sprites/Common/IconCloseFlyout" width="40" height="35" offsetXY="0 0" raycastTarget="true" hoverClass="flyout-close-button-hover" onClick="OnFlyoutCloseButtonClicked(this);" rectAlignment="MiddleRight" />
+    <Image class="flyout-close-button-hover" color="ButtonHover" />
+    <Image class="center-panel-back" color="Primary" image="Ui/Sprites/Common/CenterButtonBackground" width="932" height="100" />
+    <Image class="center-panel-front" color="#181818" image="Ui/Sprites/Common/CenterButtonFront" width="932" height="100" />
+    <Image class="glass-button-simple" image="Ui/Sprites/Common/GlassButtonSimple" width="483" height="100" raycastTarget="false" />
+    <Image class="glass-button" image="Ui/Sprites/Common/GlassButtonShort" width="620" height="163" raycastTarget="false" />
+    <Image class="glass-button-edge" image="Ui/Sprites/Common/GlassButtonShortEdge" width="620" height="163" raycastTarget="false" />
+    <Panel class="flipped-y" scale="1 -1" />
+    <Image class="flipped-y" scale="1 -1" />
+    <Panel class="flipped-x" scale="-1 1" />
+    <Image class="flipped-x" scale="-1 1" />
+    <Panel class="flipped-x-y" scale="-1 -1" />
+    <Image class="flipped-x-y" scale="-1 -1" />
+  </Defaults>
+</XmlLayout>

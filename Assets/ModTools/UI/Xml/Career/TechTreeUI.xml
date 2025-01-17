@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XmlLayout xmlns="http://www.w3schools.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\XmlLayout.xsd">
+  <Include path="Ui/Xml/Styles.xml" />
+  <Defaults></Defaults>
+  <RectTransform id="main-panel" class="safe-area">
+    <Panel width="250" height="50" rectAlignment="UpperLeft" pivot="0 1">
+      <Panel class="panel-angled flipped-y translucent-panel-dark" width="375" height="50"></Panel>
+      <Button name="ExitTechTreeButton" class="icon-button audio-btn-back" color="White" width="40" height="40" icon="Ui/Sprites/Menu/IconButtonBack" rectAlignment="UpperLeft" offsetXY="10 -5" onClick="OnCloseButtonClicked();" />
+      <TextMeshPro class="text-lg" color="White" text="TECH POINTS" alignment="Left" offsetMin="60 0" />
+      <TextMeshPro id="research-points" class="text-lg" color="Warning" alignment="Center" fontSizeMin="10" fontSizeMax="20" enableAutoSizing="true" offsetMin="200 0" fontStyle="Bold" />
+    </Panel>
+  </RectTransform>
+</XmlLayout>

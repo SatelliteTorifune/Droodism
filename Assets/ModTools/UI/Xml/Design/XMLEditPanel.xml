@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XmlLayout xmlns="http://www.w3schools.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\XmlLayout.xsd">
+  <Include path="Ui/Xml/Design/DesignStyles.xml" />
+  <Defaults></Defaults>
+  <VerticalLayout class="no-image" childForceExpandHeight="false" contentSizeFitter="vertical" pivot="0 1" rectAlignment="UpperCenter" childAlignment="UpperCenter" padding="10" spacing="5">
+    <Panel class="row" rectAlignment="UpperCenter" preferredHeight="40">
+      <ContentButton class="btn" onClick="OnDiscardClicked();" rectAlignment="MiddleLeft" width="45%" tooltip="Discard the unsaved changes" tooltipPosition="Above">
+        <TextMeshPro text="Reset" rectAlignment="MiddleLeft" alignment="Center" />
+      </ContentButton>
+      <ContentButton class="btn btn-primary" onClick="OnApplyClicked();" rectAlignment="MiddleRight" width="45%" tooltip="Apply the recent changes to the part" tooltipPosition="Above">
+        <TextMeshPro text="Apply" rectAlignment="MiddleLeft" alignment="Center" />
+      </ContentButton>
+    </Panel>
+    <Panel class="row" rectAlignment="UpperCenter" preferredHeight="40">
+      <ContentButton class="btn" onClick="OnRemoveModifierClicked();" width="10%" rectAlignment="MiddleLeft">
+        <Image class="delete-button-icon" color="Warning" />
+      </ContentButton>
+      <Spinner id="spinner-modifier" values="Part;Drag;Config" value="Part" width="75%" rectAlignment="MiddleCenter" onValueChanged="OnModifierChanged(selectedValue);">
+        <TextMeshPro />
+      </Spinner>
+      <ContentButton class="btn" onClick="OnNewModifierClicked();" width="10%" rectAlignment="MiddleRight">
+        <Image sprite="Ui/Sprites/Design/IconAddStage" color="Primary" height="70%" aspectMode="HeightControlsWidth" />
+      </ContentButton>
+    </Panel>
+  </VerticalLayout>
+  <VerticalScrollView class="no-image" offsetMax="0 -100">
+    <VerticalLayout id="content" childForceExpandHeight="false" contentSizeFitter="vertical" pivot="0 1" rectAlignment="UpperCenter" childAlignment="UpperCenter" padding="10" spacing="5" color="DarkPanel">
+      <Panel id="template" class="ag-item no-image" preferredHeight="30" active="false">
+        <TextMeshPro internalId="param-name" text="1" alignment="Left" anchorMin="0 0" anchorMax="0.5 1" overflowMode="Ellipsis" />
+        <Panel class="no-image" anchorMin="0.5 0" anchorMax="1 1">
+          <TextMeshProInputField internalId="value-input" text="" class="" width="100%" height="100%">
+            <TMP_Placeholder internalId="param-value" text="" />
+            <TMP_Text text="" />
+          </TextMeshProInputField>
+        </Panel>
+      </Panel>
+    </VerticalLayout>
+  </VerticalScrollView>
+  <Panel class="no-image" active="true"></Panel>
+</XmlLayout>

@@ -1,0 +1,208 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XmlLayout xmlns="http://www.w3schools.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\XmlLayout.xsd">
+  <Include path="Ui/Xml/Styles.xml" />
+  <Defaults>
+    <Button class="lower-right" rectAlignment="LowerRight" />
+    <Button class="lower-center" rectAlignment="LowerCenter" />
+    <Button class="dialog-button" width="150" />
+    <Panel class="dialog-panel" width="750" height="500" />
+    <Button class="toc" onClick="OnSectionLinkClicked(this);" />
+    <Button class="indent" offsetMin="20 0" />
+    <VerticalLayout class="section" contentSizeFitter="vertical" childAlignment="UpperCenter" childForceExpandWidth="false" padding="0 0 0 30" childForceExpandHeight="false" pivot="0 1" spacing="20" active="false" />
+    <TextMeshPro class="toc:@TextMeshPro" preferredHeight="25" alignment="Left" offsetMin="5 0" />
+    <TextMeshPro class="section:@TextMeshPro" color="ValueText" alignment="TopLeft" />
+  </Defaults>
+  <Panel id="panel" showAnimation="FadeIn" animationDuration="0.1" class="no-image">
+    <Panel internalId="dialog-panel" class="panel border dialog-panel draggable">
+      <Panel id="header" height="40" rectAlignment="UpperCenter" color="DarkPanel" pivot="0 1">
+        <TextMeshPro class="label">Planet Studio Help</TextMeshPro>
+        <Button class="btn audio-btn-big" onClick="OnCloseClicked();" rectAlignment="MiddleLeft" width="25" offsetXY="10 0">
+          <TextMeshPro text="X" />
+        </Button>
+      </Panel>
+      <Panel offsetMax="0 -50">
+        <VerticalLayout anchorMin="0 0" anchorMax="0.3 1" childAlignment="UpperLeft" pivot="0 1" childForceExpandHeight="false" spacing="5" padding="5">
+          <Button class="btn toc" internalId="intro">
+            <TextMeshPro>Intro</TextMeshPro>
+          </Button>
+          <Button class="btn toc" internalId="planetary-system-designer">
+            <TextMeshPro>Planetary System Designer</TextMeshPro>
+          </Button>
+          <Button class="btn toc" internalId="celestial-body-designer">
+            <TextMeshPro>Celestial Body Designer</TextMeshPro>
+          </Button>
+          <Button class="btn toc indent" internalId="biomes">
+            <TextMeshPro>Biomes</TextMeshPro>
+          </Button>
+          <Button class="btn toc indent" internalId="terrain-generation">
+            <TextMeshPro>Terrain Generation</TextMeshPro>
+          </Button>
+          <Button class="btn toc indent" internalId="passes">
+            <TextMeshPro>Passes</TextMeshPro>
+          </Button>
+          <Button class="btn toc indent" internalId="noise">
+            <TextMeshPro>Noise</TextMeshPro>
+          </Button>
+          <Button class="btn toc indent" internalId="data-flow">
+            <TextMeshPro>Data Flow</TextMeshPro>
+          </Button>
+          <Button class="btn toc indent" internalId="debugging">
+            <TextMeshPro>Debugging</TextMeshPro>
+          </Button>
+          <Button class="btn toc indent" internalId="planet-brush-maps">
+            <TextMeshPro>Planet Brush Maps</TextMeshPro>
+          </Button>
+        </VerticalLayout>
+        <Panel id="content" anchorMin="0.3 0" anchorMax="1 1" padding="10 0">
+          <Panel id="inactive-sections" active="false">
+            <VerticalLayout id="intro" class="no-image section" active="true">
+              <TextMeshPro>
+                        Welcome to Planet Studio! Here you can build custom planets and planetary systems and then upload them and share them with the community.
+
+                        Planet Studio is broken into two separate parts. The Celestial Body Designer and the Planetary System Designer. The Celestial Body Designer is where you can build any type of celestial body including planets, suns, moons, dwarf planets, etc. You can enter the Celestial Body Designer by clicking the Create Planet or the Load Planet buttons from the menu. 
+
+                        The Planetary System Designer is where you can build a solar system using celestial bodies that are saved on your device. You can define their orbits and parent / child relationships. Once your planetary system is complete, you can upload it to the website and share it with the community. You can enter the Planetary System Designer by clicking the Load System button from the menu.
+                        
+                        Both Designers have configurable inputs for camera movement (among other things) and these inputs can be viewed and configured under Settings -&gt; Control Settings -&gt; Planet Studio.
+
+                        Note: We often use the word planet instead of the more correct term “celestial body” because it’s easier and our fingers are tired from all of the typing.
+                     </TextMeshPro>
+            </VerticalLayout>
+            <VerticalLayout id="celestial-body-designer" class="no-image section">
+              <TextMeshPro>
+                        The Celestial Body Designer is where you can build custom celestial bodies (aka planets). There are several flyout panels available to customize different parts of your planet. 
+
+                        The Properties flyout contains general information about your planet such as radius, gravity, atmosphere settings, and more. Settings are extensively tool-tipped, so be sure to make read those for more information about a particular setting.
+
+                        Some settings can be applied immediately, but some will require “rebuilding the planet” which you can do by clicking the Rebuild button in the Celestial Body inspector panel which is at the top right of the screen. When your planet needs to be rebuilt, the button will be blue as it is shown below.
+                     </TextMeshPro>
+              <Image sprite="Ui/Sprites/PlanetStudio/Help/celestial-body-designer-1" />
+            </VerticalLayout>
+            <VerticalLayout id="biomes" class="no-image section">
+              <TextMeshPro>
+                        The Biomes flyout panel provides a way to customize the look of specific regions of your planet. Each biome is broken into one or more sub-biomes and these sub-biomes define the visual style for different altitudes within the same biome. 
+
+                        As a simple example, imagine a biome for a grassland region. The biome could be broken into three sub-biomes, which define how the biome visually changes as altitude increases. The first sub-biome could start at an altitude of -500 meters, well below sea level, and extend to 10 meters above sea level. It would have a sandy color and texture as its purpose is to represent beaches around sea level. The next sub-biome would extend to 500 meters in altitude and would have a grassy color and texture to represent grass. The last sub-biome could extend from 500 meters to 10,000 meters and it would have a gray color and a rocky texture to represent mountains.
+                     </TextMeshPro>
+              <Image sprite="Ui/Sprites/PlanetStudio/Help/sub-biomes-1" />
+              <TextMeshPro>
+                        If you look closely in the diagram above you will notice that each sub-biome overlaps by some amount. This overlap allows sub-biomes to be smoothly blended as they transition from one to another. The larger the overlap, the more gradual the transition.
+
+                        Each sub-biome can also define a different visual style based on the slope. This is particularly useful for something like a mountain where steep mountains are gray, but flat spots are white. You can view settings for each sub-biome by clicking the Flat Style and Slope Style buttons. The Flat End Angle and Slope Start Angle define the range in which those visual styles are blended together.
+                     </TextMeshPro>
+              <Image sprite="Ui/Sprites/PlanetStudio/Help/sub-biomes-slopes-1" />
+              <TextMeshPro>
+                        Some planets define their sub-biomes using a value instead of a height. This requires using the Sub-Biomes (Value Based) planet modifier for each biome. This can be more flexible in some situations and makes it easier to scale terrain features of your planet without needing to change your sub-biome ranges, but it is more difficult to set up and it is not as intuitive to work with.
+                     </TextMeshPro>
+            </VerticalLayout>
+            <VerticalLayout id="terrain-generation" class="no-image section">
+              <TextMeshPro>
+                        To make truly unique planets, you will likely need to explore the Terrain Generation flyout panel. It is the most complicated part of Planet Studio, but also the most powerful. 
+
+                        Terrain generation for planets is accomplished by executing a list of planet modifiers for each vertex of the terrain. These planet modifiers calculate the height, color, texture data, etc for each vertex. 
+
+                        There are two views for working in Terrain Generation: Basic and Advanced. The Basic View only shows a subset of the planet modifiers and they show a simplified inspector panel when selected. The Advanced View shows all planet modifiers and shows all available properties for a modifier in the inspector panel. You can also view the Data Flow which shows how data is passed between modifiers. That is discussed in more detail in the Data Flow section.
+
+                        Basic is selected by default, but you can easily switch between the two modes by tapping the button at the top left of the Terrain Generation flyout panel.
+                     </TextMeshPro>
+            </VerticalLayout>
+            <VerticalLayout id="passes" class="no-image section">
+              <TextMeshPro>
+                        Planet modifiers are grouped into passes. Each pass executes its list of planet modifiers, one at a time, before moving on to the next pass. Passes have different purposes and different data available to use for inputs. 
+
+                        Biome Pass
+                        The first pass to run is the Biome Pass and it should set up the biome strength values. In other words, this pass is responsible for laying out where each biome is located on your planet. For example, an earth-like planet would generate high biome strength values for arctic biomes at the north and south poles and higher biome strength values for deserts and grasslands closer to the equator. 
+
+                        Height Pass
+                        The Height Pass runs next and it is primarily responsible for setting the height value of the vertex.
+
+                        Height Biomes Pass
+                        The Height Biomes Pass runs next for each biome that was identified during the earlier Biome Pass. If multiple biomes have strength values, then their values are automatically blended together based on their individual strengths. Since this is a biome specific pass, it is intended for biome-specific modifiers.
+
+                        Height Final Pass
+                        The Height Final Pass is run next and is useful if you have common modifiers that need to run after the biome-specific modifiers. This is a great place to put the RadialFlatten modifier to smooth out terrain for structures and launch locations. This pass is not run for individual biomes.
+
+                        Final Pass
+                        The Final Pass is the last pass that runs for the terrain. This pass runs after all other terrain passes and is responsible for setting any remaining vertex data that has not been set, such as color. This is the only pass where the normal vector is available. This pass should not modify the height.
+
+                        Final Biomes Pass
+                        The Final Biomes Pass is the Final Pass for biome-specific modifiers. The values are blended based on the biome strengths calculated in the Biome Pass.
+
+                        Water Pass
+                        The Water Pass runs last. This pass is responsible for setting water related data such as color, wave intensity, etc. 
+
+                        Water Biomes Pass
+                        The Water Biomes Pass is the Water Pass for biome-specific modifiers and their water properties are blended based on the biome strength calculated from the Biome Pass. This is the last pass to run.
+                     </TextMeshPro>
+            </VerticalLayout>
+            <VerticalLayout id="noise" class="no-image section">
+              <TextMeshPro>
+                        The Noise modifier generates a value using one of several available gradient noise functions. This noise value can then be used to set the height of a vertex, or set the strength of a biome, or used as a mask input to another Noise modifier. The possibilities are endless.
+
+                        Noise functions are a very complex topic and they are outside the scope of this help text. The basics will be covered below, but one of the best ways to learn is to experiment with the different types of noise functions.
+
+                        Most noise functions can be configured using five basic properties: Strength, Frequency, Octaves, Lacunarity, and Gain.
+
+                        Strength
+                        Strength is the amplitude of the noise. It’s probably the most intuitive of all of the settings. Increasing strength makes the noise more bold (ie - it outputs larger values).
+
+                        Frequency
+                        Frequency determines the number of cycles per unit length. In other words, small terrain details would need a higher frequency and large terrain details would need a lower frequency.
+
+                        Octaves
+                        Octaves are available for fractal noise and define how many times the noise function will run. With each successive run the Strength is multiplied by Gain and Frequency is multiplied by Lacunarity. A common configuration is to have Gain at 0.5 and Lacunarity at 2. This means each successive run the strength is cut in half and the frequency is doubled. This allows more refined details at less strength with each run. Increasing octaves can make terrain look great, especially when viewed up close, but they can also negatively impact performance so use them with a hint of caution.
+
+                        Gain
+                        As explained above, the gain is multiplied by the strength for each successive octave. Typically gain is less than one as you want strength to reduce with each octave, but working with noise is an art form and sometimes you have to break the rules to create truly unique terrain. Experiment and see what looks best!
+
+                        Lacunarity
+                        Lack-You-Nare-Itty. At least that’s how I say it. This is multiplied by frequency with each octave. Typically you want this to be above one as you want frequency to increase with each successive octave so details become more tiny and refined.
+                     </TextMeshPro>
+            </VerticalLayout>
+            <VerticalLayout id="data-flow" class="no-image section">
+              <TextMeshPro>
+                        A planet modifier can pass data to another planet modifier by writing data to a data slot. There are only 10 data slots available and when a planet modifier writes to a data slot it will overwrite any data that was previously there. 
+
+                        When in the Advanced View you can toggle the Data Flow panel to see how data flows between planet modifiers. In this example below, the Noise modifier writes to data slot 3 and the next planet modifier, BasicArithmetic, reads from data slot 3 and then writes its output to data slot 4. The data in slot 3 also continues since BasicArithmetic did not overwrite it. The blue blocks indicate an output and the U-shaped blocks indicate an input.
+                     </TextMeshPro>
+              <Image sprite="Ui/Sprites/PlanetStudio/Help/data-flow-1" />
+              <TextMeshPro>
+                        You can change which data slot a modifier uses for inputs and outputs by clicking and dragging its icons in the Data Flow panel.  You can also change inputs and outputs of a planet modifier by selecting it and looking in the Data Slots section at the bottom of the inspector window. 
+                     </TextMeshPro>
+              <Image sprite="Ui/Sprites/PlanetStudio/Help/data-flow-2" />
+              <TextMeshPro>
+                        There are two types of data slots. Common data slots and biome data slots. During the common passes, all planet modifiers write to and read from common data slots. In a biome pass, data is written to and read from a temporary set of data slots that are reset after each biome pass. A biome pass cannot write to common data slots, but it can read from common data slots with a GetCommonData modifier. This modifier reads from a common data slot and outputs into a biome data slot.
+                     </TextMeshPro>
+            </VerticalLayout>
+            <VerticalLayout id="debugging" class="no-image section">
+              <TextMeshPro>
+                        There are a few planet modifiers available that can help with troubleshooting terrain generation. The Debug Visualization (Biomes) modifier overrides the color of the terrain to display a distinct color for each biome. Simply place this modifier at the end of the Final Pass and rebuild the planet.
+
+                        The Debug Visualize (Data) modifier outputs color based on its input. The input is used to look up a value in the customizable color gradient found in the inspector panel for the modifier. This input can come from any modifier, but often it is used to display the output of a Noise modifier. To use the Debug Visualize (Data) modifier, just place it directly after a Noise modifier and ensure its input data slot is the same as the output data slot of the Noise modifier above it. Here’s an example showing output from a Noise modifier with a Perlin Fractal noise type.
+                     </TextMeshPro>
+              <Image sprite="Ui/Sprites/PlanetStudio/Help/debug-visualize-1" />
+              <TextMeshPro>
+                        It is also a good idea to keep an eye on the performance of your planet by opening the Performance section of the Celestial Body inspector panel and take note of the Quad Build Times, especially the average build time. Faster average build times will improve the experience for players that download your planet. It’s a good idea to load up the stock planets and take note of their average quad build times on your device. Compare your planet to that and if you find that your planet is considerably slower then it might be worthwhile to cut back on the complexity of your planet modifiers. You can also try tweaking the Properties -&gt; Terrain Quality Modes to reduce the number of subdivisions and Terrain Vertices for each quad.
+                     </TextMeshPro>
+            </VerticalLayout>
+            <VerticalLayout id="planet-brush-maps" class="no-image section">
+              <TextMeshPro>
+                        The Brush flyout lets you add custom maps to your planet. These maps can be used in conjunction with Noise modifiers or they can override the Noise output completely. As an example, this can be useful if you want to paint the locations of continents by hand. Note that the planet must be configured to make use of a Planet Brush Map.
+                     </TextMeshPro>
+            </VerticalLayout>
+            <VerticalLayout id="planetary-system-designer" class="no-image section">
+              <TextMeshPro>
+                        This is where you can build a system using planets saved on your device.  When a planet is selected you can tweak its orbital parameters to adjust the shape and size of its orbit. You can also add a child planet that will orbit the selected planet as a satellite.
+
+                        The time panel is in the top right corner of the screen so you can advance time and even reverse time to view how your planets are moving through their orbits.
+
+                        The Locations flyout panel shows all of the locations found on planets as they are added to the system. However, if you edit a planet’s launch locations after you have added it to the system, it will not be present in the System’s list of launch locations. You can click the RESET button at the bottom of that panel to search all planets in the system and rebuild the list of launch locations.
+                     </TextMeshPro>
+            </VerticalLayout>
+          </Panel>
+          <VerticalScrollView id="scroll-rect" class="no-image"></VerticalScrollView>
+        </Panel>
+      </Panel>
+    </Panel>
+  </Panel>
+</XmlLayout>

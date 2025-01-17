@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XmlLayout xmlns="http://www.w3schools.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\XmlLayout.xsd">
+  <Include path="Ui/Xml/Styles.xml" />
+  <Defaults>
+    <Color name="AngleButton" color="#1b1c1d" />
+    <TextMeshPro class="card-name" offsetXY="0 15" fontSize="24" color="#999999" />
+    <TextMeshPro class="selected:card-name" offsetXY="0 5" fontSize="36" color="White" />
+    <Image class="angle-button" image="Ui/Sprites/Purchase/AngleButton" type="Sliced" color="AngleButton" width="160" height="60" pivot="0.5 0.5" rectAlignment="LowerCenter" />
+    <Image class="no-details" active="true" />
+    <Image class="details-view:no-details" active="false" />
+    <Image class="more-info-button" active="false" />
+    <Image class="selected:more-info-button" active="true" />
+    <Image class="details-view:more-info-button" active="false" />
+    <Image class="details-button" active="false" />
+    <Image class="details-view:details-button" active="true" />
+    <Image class="card-glow" active="false" />
+    <Image class="card-background" border="Primary" />
+    <Image class="card-primary-color" active="false" color="Primary" />
+    <TextMeshPro class="card-primary-color" color="Primary" />
+    <TextMeshPro class="more-info-text" text="MORE\nINFO" />
+    <Image class="selected:card-primary-color" active="true" />
+    <Image class="selected:card-glow" active="true" />
+    <RectTransform class="details-content" active="false" />
+    <RectTransform class="details-view:details-content" active="true" />
+    <Image class="purchased:card-background" border="Green" />
+    <Image class="purchased:card-primary-color" color="Green" />
+    <TextMeshPro class="purchased:card-primary-color" color="Green" />
+    <TextMeshPro class="purchased:more-info-text" text="OWNED" />
+  </Defaults>
+  <Image id="panel" showAnimation="FadeIn" hideAnimation="FadeOut" animationDuration="0.1" color="Black" raycastTarget="true">
+    <Image sprite="Ui/Sprites/Common/SkyboxBackground" aspectMode="EnvelopeParent" aspectRatio="1.777778" />
+    <RectTransform internalId="button-panel" class="safe-area">
+      <RectTransform width="240" height="60" rectAlignment="LowerRight" device="ios">
+        <Image class="audio-btn-click" image="Ui/Sprites/Purchase/AngleButton" color="AngleButton" type="Sliced" rotation="0 0 180" raycastTarget="true" onClick="OnRestorePurchasesClicked();">
+          <Image image="Ui/Sprites/Purchase/AngleButtonBorder" color="Border" type="Sliced" />
+        </Image>
+        <TextMeshPro class="modern" color="LabelText" text="RESTORE PURCHASES" fontSize="18" offsetMax="-20 0" offsetMin="20 0" />
+      </RectTransform>
+      <RectTransform width="240" height="60" rectAlignment="LowerLeft">
+        <Image class="audio-btn-click" image="Ui/Sprites/Purchase/AngleButton" color="AngleButton" type="Sliced" rotation="0 0 180" raycastTarget="true" onClick="OnExitClicked();">
+          <Image image="Ui/Sprites/Purchase/AngleButtonBorder" color="Border" type="Sliced" />
+        </Image>
+        <TextMeshPro class="modern" color="LabelText" text="EXIT" fontSize="18" offsetMax="-20 0" offsetMin="20 0" />
+      </RectTransform>
+    </RectTransform>
+    <RectTransform class="safe-area">
+      <RectTransform id="scale-root" name="ScaleRoot" rectAlignment="MiddleCenter">
+        <HorizontalLayout id="card-parent" class="no-image" childAlignment="MiddleLeft" childForceExpandHeight="false" childForceExpandWidth="false" spacing="0" pivot="0 0.5" rectAlignment="MiddleCenter">
+          <RectTransform id="video-template" active="false">
+            <RectTransform offsetMin="5 0" offsetMax="-4 -10">
+              <TextMeshPro internalId="title" class="modern" rectAlignment="UpperCenter" height="30" fontSize="14" />
+              <RectTransform offsetMax="0 -30">
+                <RawImage class="play-mode" internalId="video-image" border="Primary" raycastTarget="true" />
+                <Image class="thumbnail-mode audio-btn-click" internalId="thumbnail" raycastTarget="true" border="Border">
+                  <Image sprite="Ui/Sprites/Purchase/PlayVideo" />
+                </Image>
+              </RectTransform>
+            </RectTransform>
+          </RectTransform>
+          <RectTransform id="screenshot-template" active="false">
+            <RectTransform offsetMin="7 0" offsetMax="-7 -10">
+              <Image internalId="screenshot" raycastTarget="true" border="Primary"></Image>
+            </RectTransform>
+          </RectTransform>
+          <VerticalLayout id="complete-edition-template" active="false" spacing="25" padding="25" contentSizeFitter="vertical">
+            <TextMeshPro fontSize="22" class="" text="&quot;Juno: New Origins Complete Edition&quot; is for players who prefer a one-time purchase." />
+            <TextMeshPro fontSize="18" class="" text="It is a separate app on the store and is equivalent to purchasing all in-app purchases in this free-to-play version." />
+            <TextMeshPro fontSize="18" color="LabelText" text="Please note, progress from this free-to-play version will not be transferred." />
+            <Panel preferredHeight="256">
+              <Image image="Ui/Icons/CompleteEdition-AppIcon-256" aspectMode="FitInParent" />
+            </Panel>
+          </VerticalLayout>
+          <Image id="card-template" class="card" rectAlignment="MiddleCenter" minWidth="320" minHeight="480" active="false" color="Transparent">
+            <RectTransform internalId="card-root">
+              <Image internalId="card-background" class="card-background" image="Ui/Sprites/Purchase/CardBackground" raycastTarget="true" onClick="OnCardClicked(this);">
+                <Image class="card-primary-color card-glow" sprite="Ui/Sprites/Purchase/BorderGlow" type="Sliced" offsetMax="21 21" offsetMin="-21 -21" />
+                <Image class="no-details" internalId="cover-image" width="320" height="480" />
+                <RectTransform class="details-content">
+                  <GridLayout internalId="video-parent" cellSize="310 220" spacing="0" padding="15 15 5 15"></GridLayout>
+                  <HorizontalLayout internalId="screenshot-parent" padding="10 10 0 30"></HorizontalLayout>
+                </RectTransform>
+                <RectTransform internalId="fullscreen-video" active="false" showAnimation="FadeIn" animationDuration="0.25">
+                  <RectTransform>
+                    <Image internalId="fullscreen-video-close-button" color="#19191a" raycastTarget="true" />
+                    <RawImage internalId="fullscreen-video-image" aspectRatio="1.777" aspectMode="FitInParent" />
+                    <Image color="AngleButton" width="40" height="40" rectAlignment="UpperRight">
+                      <Image sprite="Ui/Sprites/Common/IconCloseButton" width="32" height="32" color="ButtonText" />
+                    </Image>
+                  </RectTransform>
+                  <TextMeshPro internalId="fullscreen-video-title" class="modern" rectAlignment="UpperCenter" height="45" alignment="Bottom" fontSize="24" active="false" />
+                </RectTransform>
+              </Image>
+              <Image class="angle-button more-info-button" onClick="OnMoreInfoClicked();">
+                <Image class="card-primary-color" image="Ui/Sprites/Purchase/AngleButtonBorder" type="Sliced" />
+                <TextMeshPro class="modern card-primary-color more-info-text" fontSize="18" />
+              </Image>
+              <Image internalId="button-close" class="angle-button details-button audio-btn-click" onClick="OnCloseClicked();">
+                <Image color="Border" image="Ui/Sprites/Purchase/AngleButtonBorder" type="Sliced" />
+                <TextMeshPro class="modern card-primary-color" text="CLOSE" fontSize="18" color="ButtonText" />
+              </Image>
+              <Image internalId="button-buy" class="angle-button details-button audio-btn-click" onClick="OnBuyClicked();">
+                <Image class="card-primary-color" image="Ui/Sprites/Purchase/AngleButtonBorder" type="Sliced" />
+                <TextMeshPro internalId="buy-text" class="modern card-primary-color" fontSize="18" />
+              </Image>
+              <TextMeshPro internalId="card-name" class="modern card-name" pivot="0.5 0" height="100" width="640" overflowMode="Overflow" alignment="Bottom" rectAlignment="UpperCenter" />
+            </RectTransform>
+          </Image>
+        </HorizontalLayout>
+      </RectTransform>
+    </RectTransform>
+    <RectTransform id="loading-panel" active="false">
+      <Image color="Black" opacity="0.75" raycastTarget="true" />
+      <VerticalLayout contentSizeFitter="both" padding="50" border="Primary">
+        <Image ignoreLayout="true" color="Panel" />
+        <TextMeshPro class="modern" text="Processing..." />
+      </VerticalLayout>
+    </RectTransform>
+  </Image>
+</XmlLayout>

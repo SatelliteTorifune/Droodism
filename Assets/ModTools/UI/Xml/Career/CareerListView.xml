@@ -1,0 +1,250 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XmlLayout xmlns="http://www.w3schools.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\XmlLayout.xsd">
+  <Include path="Ui/Xml/Styles.xml" />
+  <Defaults>
+    <Button class="toggled" iconColor="Primary" />
+    <ContentButton class="list-item" preferredHeight="70" buttonColors="#1d2127ba|Button|ButtonHover|Button" rectAlignment="UpperCenter" onClick="OnListItemClicked(this);" />
+    <Button class="selected" colors="Primary|PrimaryHover|PrimaryPressed|Button" />
+    <ContentButton class="selected" buttonColors="Primary|PrimaryHover|PrimaryPressed|Button" />
+    <TextMeshPro class="selected:@TextMeshPro" color="ValueText" />
+    <Panel class="detail-property" preferredHeight="22" />
+    <TextMeshPro class="detail-property:label" alignment="Left" />
+    <TextMeshPro class="detail-property:value" alignment="Right" />
+    <Panel class="column-left" anchorMin="0 0" anchorMax="0.55 1" />
+    <Panel class="column-middle" anchorMin="0.30 0" anchorMax="0.70 1" />
+    <Panel class="column-right" anchorMin="0.7 0" anchorMax="1 1" />
+    <RectTransform class="main-panel" />
+    <Panel class="no-preview:items" anchorMin="0 0" anchorMax="0.55 1" />
+    <Panel class="no-preview:footer" anchorMin="0.58 0" anchorMax="0.98 1" />
+    <Panel class="no-preview:header" minWidth="320" />
+    <Panel class="no-preview:details" anchorMin="0.55 0" offsetMin="10 10" offsetMax="-10 0" />
+    <Image class="status-icon" opacity="0.0" sprite="" width="24" height="24" rectAlignment="MiddleRight" offsetXY="-10 0" tooltipPosition="Above" tooltip="Not Yet Completed" />
+    <Image class="status-checkmark" opacity="1.0" sprite="Ui/Sprites/Menu/IconComplete" />
+    <Image class="status-exclamation" opacity="1.0" sprite="Ui/Sprites/Menu/IconExclamation" />
+    <Image class="status-lock" opacity="1.0" sprite="Ui/Sprites/Menu/IconLock" />
+    <Image class="flair" rectAlignment="LowerRight" pivot="1 0" offsetXY="-5 5" width="120" height="20" border="Border" />
+    <Image class="primary" color="Primary" />
+    <Image class="danger" color="Danger" />
+    <Image class="warning" color="Warning" />
+    <Image class="success" color="Success" />
+    <Image class="star" sprite="Ui/Sprites/Menu/Star" color="#ffffff33" preferredWidth="20" preferredHeight="20" width="20" height="20" />
+    <Image class="checkmark" sprite="Ui/Sprites/Common/Checkmark" color="#ffffff33" preferredWidth="20" preferredHeight="20" width="20" height="20" />
+    <Image class="exploration-star" preferredWidth="32" preferredHeight="32" tooltipPosition="Above" />
+    <Panel class="exploration-star" preferredWidth="32" preferredHeight="32" />
+    <Image class="star-complete" color="Primary" />
+    <Image class="milestone-progress-fill" color="Primary" />
+    <Image class="selected:star-complete" color="White" />
+    <Image class="milestone-complete" color="#89d254" />
+    <Image class="planet-icon" offsetXY="10 0" />
+    <TextMeshPro class="indent-1:indentable" offsetXY="20 0" />
+    <TextMeshPro class="indent-2:indentable" offsetXY="40 0" />
+    <Image class="indent-1:indentable" offsetXY="40 0" />
+    <Image class="indent-2:indentable" offsetXY="80 0" />
+    <TextMeshPro class="details-star" hoverClass="details-star-hover" raycastTarget="true" color="White" />
+    <TextMeshPro class="details-star-hover" color="Primary" />
+    <Image class="VerticalLine" color="DarkPanel" width="1" height="100%" rectAlignment="MiddleLeft" />
+    <VerticalLayout class="indented" padding="15 15 0 0" />
+    <Panel class="milestone-tier" border="Border" />
+    <Image class="milestone-fill" color="Primary" fillAmount="0" fillMethod="Horizontal" fillOrigin="0" type="Filled" sprite="Ui/Sprites/Common/White" />
+    <TextMeshPro class="milestone-tier:@TextMeshPro" color="White" />
+    <TextMeshPro class="milestone-locked:@TextMeshPro" color="LabelText" />
+    <TextMeshPro class="tier-left" margin="8 0 8 0" alignment="Left" />
+    <TextMeshPro class="tier-right" margin="8 0 8 0" alignment="Right" />
+    <TextMeshPro class="details-header" alignment="Left" offsetMin="15 10" offsetMax="-60 -10" />
+    <TextMeshPro class="avoid-context-menu" offsetMax="-110 -10" />
+  </Defaults>
+  <RectTransform id="panel" class="main-panel">
+    <Panel id="preview-drag-handler" anchorMin="0.325 0.20" anchorMax="0.675 0.80" raycastTarget="true"></Panel>
+    <Panel class="column-left no-image">
+      <TextMeshPro id="title-text" class="text-header" alignment="Left" rectAlignment="UpperLeft" height="40" offsetXY="20 -20" />
+      <Panel class="no-image" height="40" padding="70 10 0 0" offsetXY="0 -20" rectAlignment="UpperCenter" active="false">
+        <TextMeshProInputField id="search-input" text="" onValueChanged="OnSearchChanged(value);">
+          <TMP_Placeholder text="Search..." alignment="Left" />
+          <TMP_Text text="" alignment="Left" />
+        </TextMeshProInputField>
+      </Panel>
+      <HorizontalLayout id="exploration-stars-header" active="false" rectAlignment="UpperRight" width="200" height="30" offsetXY="-10 -30" childAlignment="MiddleRight" spacing="10" childForceExpandHeight="false" childForceExpandWidth="false">
+        <Image class="exploration-star" internalId="fly-by" sprite="Ui/Sprites/Career/IconExplorationFlyBy" tooltip="Fly By (hyperbolic orbit)" />
+        <Image class="exploration-star" internalId="orbit" sprite="Ui/Sprites/Career/IconExplorationOrbit" tooltip="Elliptical orbit" />
+        <Image class="exploration-star" internalId="contact" sprite="Ui/Sprites/Career/IconExplorationContact" tooltip="Contact with the surface" />
+        <Image class="exploration-star" internalId="landmarks" sprite="Ui/Sprites/Career/IconExplorationLandmarks" tooltip="Visited all landmarks" />
+        <Image class="exploration-star" internalId="milestones" sprite="Ui/Sprites/Career/IconExplorationMilestones" tooltip="Completed all milestones" />
+      </HorizontalLayout>
+    </Panel>
+    <Panel class="column-right no-image">
+      <Button class="icon-button audio-btn-back" width="40" height="40" icon="Ui/Sprites/Common/IconCloseButton" rectAlignment="UpperRight" offsetXY="-20 -20" onClick="OnCloseButtonClicked();" />
+    </Panel>
+    <Panel id="context-menu-toggle" class="column-right no-image" active="false">
+      <Button class="icon-button audio-btn-back" width="40" height="40" icon="Ui/Sprites/Common/IconButtonMenu" rectAlignment="UpperRight" offsetXY="-70 -20" onClick="OnContextMenuButtonClicked();" />
+    </Panel>
+    <Panel class="column-left items no-image">
+      <Panel class="no-image" offsetMin="20 10" offsetMax="0 -80">
+        <VerticalScrollView class="no-image">
+          <VerticalLayout active="false" id="items-parent" class="no-image" contentSizeFitter="vertical" spacing="5" childAlignment="UpperCenter" childForceExpandHeight="false" pivot="0 1" rectAlignment="UpperLeft" padding="0 0 0 70">
+            <ContentButton id="list-icon-item-template" class="btn list-item" active="false" navigation="None" preferredHeight="75">
+              <Image internalId="icon" width="64" height="64" active="true" rectAlignment="MiddleLeft" offsetXY="4 0" color="White" />
+              <TextMeshPro internalId="title" class="text-lg" enableWordWrapping="false" color="ValueText" offsetMin="90 0" offsetXY="0 20" alignment="Left" text="Falcon A" />
+              <TextMeshPro internalId="subtitle" offsetMin="90 0" offsetXY="0 -25" alignment="Left" text="Subtitle" overflowMode="Ellipsis" enableWordWrapping="false" />
+              <Image internalId="status-icon" class="status-icon" />
+              <Image internalId="flair" class="flair primary" active="false">
+                <TextMeshPro internalId="flair-text" color="ValueText" enableAutoSizing="true" fontSizeMax="16" fontSizeMin="12" overflowMode="Ellipsis" />
+              </Image>
+            </ContentButton>
+            <ContentButton id="list-item-template" class="btn list-item" active="false" navigation="None">
+              <TextMeshPro internalId="title" class="text-lg" enableWordWrapping="false" color="ValueText" offsetMin="20 0" offsetXY="0 20" alignment="Left" text="Falcon A" />
+              <TextMeshPro internalId="subtitle" offsetMin="20 0" offsetXY="0 -25" alignment="Left" text="Subtitle" overflowMode="Ellipsis" enableWordWrapping="false" />
+              <Image internalId="status-icon" class="status-icon" />
+            </ContentButton>
+            <ContentButton id="list-item-exploration" class="btn list-item" active="false" navigation="None" preferredHeight="55">
+              <Image internalId="planet-icon" class="planet-icon indentable" color="White" sprite="Ui/Sprites/Career/Planets/None" width="40" height="40" rectAlignment="MiddleLeft" />
+              <TextMeshPro class="indentable" fontSize="20" internalId="title" enableWordWrapping="false" color="ValueText" offsetMin="80 0" alignment="Left" text="Falcon A" />
+              <HorizontalLayout rectAlignment="MiddleRight" offsetXY="-5 0" childAlignment="MiddleRight" spacing="10" childForceExpandHeight="false" childForceExpandWidth="false">
+                <Panel class="exploration-star no-image">
+                  <Image class="checkmark" internalId="fly-by" />
+                </Panel>
+                <Panel class="exploration-star no-image">
+                  <Image class="checkmark" internalId="orbit" />
+                </Panel>
+                <Panel class="exploration-star no-image">
+                  <Image class="checkmark" internalId="contact" />
+                </Panel>
+                <Panel class="exploration-star no-image">
+                  <Image class="checkmark" internalId="landmarks" />
+                </Panel>
+                <Panel class="exploration-star no-image">
+                  <Image class="checkmark" internalId="milestones" />
+                </Panel>
+              </HorizontalLayout>
+            </ContentButton>
+            <ContentButton id="list-item-milestone" class="btn list-item" active="false" navigation="None" preferredHeight="40">
+              <TextMeshPro internalId="title" enableWordWrapping="false" color="ValueText" offsetMin="20 0" offsetXY="0 0" alignment="Left" text="Falcon A" />
+              <Image color="DarkPanel" offsetMin="200 7" offsetMax="-150 -7">
+                <Image internalId="milestone-progress-fill" class="milestone-progress-fill" border="Border" fillAmount="0.75" fillMethod="Horizontal" fillOrigin="0" type="Filled" sprite="Ui/Sprites/Common/White">
+                  <TextMeshPro internalId="subtitle" alignment="Center" text="Subtitle" overflowMode="Ellipsis" enableWordWrapping="false" />
+                </Image>
+              </Image>
+              <HorizontalLayout rectAlignment="MiddleRight" offsetXY="-5 0" childAlignment="MiddleRight" spacing="5" childForceExpandHeight="false" childForceExpandWidth="false">
+                <Image class="star" />
+                <Image class="star" />
+                <Image class="star" />
+                <Image class="star" />
+                <Image class="star" />
+              </HorizontalLayout>
+            </ContentButton>
+          </VerticalLayout>
+        </VerticalScrollView>
+      </Panel>
+    </Panel>
+    <Panel class="column-right details no-image" offsetMin="10 0">
+      <Image class="VerticalLine" width="1" height="100%" rectAlignment="MiddleLeft" />
+    </Panel>
+    <TextMeshPro id="loading-text" class="text-header" text="LOADING" />
+    <Panel class="column-right details no-image">
+      <Panel class="no-image" rectAlignment="UpperCenter" height="80" width="100%">
+        <TextMeshPro id="details-title-text" class="text-header details-header" />
+      </Panel>
+      <Panel class="no-image" offsetMin="10 10" offsetMax="10 -80">
+        <TextMeshPro id="no-selection-message" text="Select something on the left for more details." alignment="Top" />
+        <VerticalScrollView id="scrollview" pivot="0 1" class="no-image">
+          <VerticalLayout id="details" class="no-image" contentSizeFitter="vertical" childAlignment="UpperCenter" childForceExpandWidth="true" childForceExpandHeight="false" pivot="0 1" spacing="10" padding="5 10 0 70">
+            <RectTransform active="false">
+              <VerticalLayout id="details-milestone" name="tiers" preferredHeight="160" spacing="5" childForceExpandWidth="true">
+                <Panel internalId="tier-0" class="milestone-tier">
+                  <Image internalId="milestone-fill" class="milestone-fill" />
+                  <TextMeshPro internalId="tier-left" class="tier-left" text="COMPLETE" />
+                  <TextMeshPro internalId="tier-center" text="" />
+                  <TextMeshPro internalId="tier-right" class="tier-right" text="TIER 1" />
+                </Panel>
+                <Panel internalId="tier-1" class="milestone-tier">
+                  <Image internalId="milestone-fill" class="milestone-fill" />
+                  <TextMeshPro internalId="tier-left" class="tier-left" text="20m/s" />
+                  <TextMeshPro internalId="tier-center" text="$2,500 | 4TP" />
+                  <TextMeshPro internalId="tier-right" class="tier-right" text="12m/s" />
+                </Panel>
+                <Panel internalId="tier-2" class="milestone-tier">
+                  <Image internalId="milestone-fill" class="milestone-fill" />
+                  <TextMeshPro internalId="tier-left" class="tier-left" text="LOCKED" />
+                  <TextMeshPro internalId="tier-center" text="" />
+                  <TextMeshPro internalId="tier-right" class="tier-right" text="TIER 3" />
+                </Panel>
+                <Panel internalId="tier-3" class="milestone-tier">
+                  <Image internalId="milestone-fill" class="milestone-fill" />
+                  <TextMeshPro internalId="tier-left" class="tier-left" text="LOCKED" />
+                  <TextMeshPro internalId="tier-center" text="" />
+                  <TextMeshPro internalId="tier-right" class="tier-right" text="TIER 4" />
+                </Panel>
+                <Panel internalId="tier-4" class="milestone-tier">
+                  <Image internalId="milestone-fill" class="milestone-fill" />
+                  <TextMeshPro internalId="tier-left" class="tier-left" text="LOCKED" />
+                  <TextMeshPro internalId="tier-center" text="" />
+                  <TextMeshPro internalId="tier-right" class="tier-right" text="TIER 5" />
+                </Panel>
+              </VerticalLayout>
+              <Panel id="details-image" class="no-image" preferredHeight="200">
+                <Image />
+              </Panel>
+              <TextMeshPro id="details-header" class="text-lg" fontStyle="UpperCase" alignment="Left" />
+              <TextMeshPro id="details-text" color="LabelText" alignment="Left" />
+              <Panel id="details-button" class="no-image" preferredHeight="45">
+                <Button internalId="button" class="btn btn-primary" width="50%">
+                  <TextMeshPro internalId="button-text" />
+                </Button>
+              </Panel>
+              <TextMeshPro id="details-star" class="details-star" alignment="Left">
+                <Image internalId="progress-bar" color="DarkPanel" offsetMin="225 -2" offsetMax="-50 2">
+                  <Image internalId="milestone-progress-fill" class="milestone-progress-fill" border="Border" fillAmount="0.75" fillMethod="Horizontal" fillOrigin="0" type="Filled" sprite="Ui/Sprites/Common/White">
+                    <TextMeshPro internalId="subtitle" offsetMax="-5 0" alignment="Center" text="Subtitle" overflowMode="Ellipsis" enableWordWrapping="false" />
+                  </Image>
+                </Image>
+                <TextMeshPro internalId="research-text" color="LabelText" alignment="Center" offsetMin="225 -2" offsetMax="-50 2" />
+                <TextMeshPro internalId="star-count" alignment="Right" margin="0 0 25 0" />
+                <Image internalId="star" class="star" offsetXY="0 1" rectAlignment="MiddleRight" />
+              </TextMeshPro>
+              <Panel id="details-property" class="detail-property no-image">
+                <TextMeshPro internalId="label" class="label" text="Altitude" alignment="Center" anchorMax="0.5 1" />
+                <TextMeshPro internalId="value" class="value" text="312km" alignment="Center" anchorMin="0.5 0" />
+              </Panel>
+              <Panel id="details-spacer" class="no-image" preferredHeight="10" />
+              <Panel id="details-input" class="no-image" preferredHeight="30" height="30">
+                <TextMeshProInputField internalId="input" text="" width="80%" height="100%" rectAlignment="MiddleCenter" characterLimit="32">
+                  <TMP_Placeholder internalId="input-placeholder" text="Text..." alignment="Center" />
+                  <TMP_Text text="" alignment="Center" />
+                </TextMeshProInputField>
+              </Panel>
+            </RectTransform>
+          </VerticalLayout>
+        </VerticalScrollView>
+      </Panel>
+    </Panel>
+    <Panel class="column-middle footer no-image">
+      <Panel id="footer" class="no-image" height="70" rectAlignment="LowerCenter" offsetXY="0 0" active="false">
+        <Panel class="panel panel-angled border-angled" />
+        <HorizontalLayout class="no-image" padding="60 60 0 0" childForceExpandHeight="false" childForceExpandWidth="false" spacing="10" rectAlignment="MiddleCenter" childAlignment="MiddleCenter">
+          <Button id="delete-button" class="icon-button" minWidth="40" width="40" preferredHeight="40" icon="Ui/Sprites/Common/IconSubtract" onClick="OnDeleteButtonClicked(this);" tooltipPosition="Above" tooltip="Remove the selected item." />
+          <Button id="primary-button" class="btn btn-primary audio-btn-big" preferredWidth="150" preferredHeight="40" onClick="OnPrimaryButtonClicked(this);">
+            <TextMeshPro id="primary-button-text" color="White" />
+          </Button>
+          <Button id="add-button" class="icon-button" preferredWidth="40" preferredHeight="40" icon="Ui/Sprites/Common/IconAdd" onClick="OnAddButtonClicked(this);" />
+        </HorizontalLayout>
+      </Panel>
+    </Panel>
+    <Panel id="notification-panel" rectAlignment="LowerCenter" height="90" padding="20" active="false">
+      <Panel color="#28a745" border="White">
+        <TextMeshPro internalId="notification-text" margin="10 0 200 0" rectAlignment="MiddleLeft" />
+        <Button class="btn btn-dark" width="125" rectAlignment="MiddleRight" offsetXY="-10 0" onClick="CloseNotification();">
+          <TextMeshPro text="OKAY" />
+        </Button>
+      </Panel>
+    </Panel>
+    <RectTransform>
+      <!-- The RectTransform parent here is required. Otherwise Xml Layout was unable to find item-context-menu by ID. I could not figure out why. -->
+      <VerticalLayout id="item-context-menu" active="false" showAnimation="Grow_Vertical" hideAnimation="Shrink_Vertical" contentSizeFitter="vertical" animationDuration="0.1" width="220" childForceExpandHeight="false" spacing="10" pivot="1 1" color="Panel" border="Border" rectAlignment="UpperRight" padding="10" offsetXY="-20 -70">
+        <Button id="context-menu-item-template" class="btn context-menu-button" onClick="OnContextMenuItemClicked(this);" active="false">
+          <TextMeshPro internalId="text" />
+        </Button>
+        <Image id="context-menu-separator-template" class="separator" active="false" />
+      </VerticalLayout>
+    </RectTransform>
+    <Image class="VerticalLine" />
+  </RectTransform>
+</XmlLayout>

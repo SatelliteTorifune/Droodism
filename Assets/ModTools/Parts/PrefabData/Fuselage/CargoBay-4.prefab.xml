@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<GameObject name="CargoBay-4" path="Craft/Parts/Prefabs/Fuselage/CargoBay-4.prefab">
+  <Component type="Assets.Scripts.Craft.Parts.Modifiers.Fuselage.MeshDefinitionScript" />
+  <GameObject name="Base">
+    <GameObject name="Bottom">
+      <Component type="UnityEngine.MeshFilter" />
+      <Component type="UnityEngine.MeshRenderer" />
+    </GameObject>
+    <GameObject name="Bottom Inside">
+      <Component type="UnityEngine.MeshFilter" />
+      <Component type="UnityEngine.MeshRenderer" />
+    </GameObject>
+  </GameObject>
+</GameObject>

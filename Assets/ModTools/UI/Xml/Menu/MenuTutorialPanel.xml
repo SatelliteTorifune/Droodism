@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XmlLayout xmlns="http://www.w3schools.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\XmlLayout.xsd">
+  <Include path="Ui/Xml/Styles.xml" />
+  <Defaults>
+    <Color name="TutorialPanel" color="#000000FE" />
+    <ContentButton class="tutorial-button" buttonColors="Button|ButtonHover|ButtonPressed|ButtonDisabled" width="32" height="32" tooltipPosition="Above" />
+    <Panel class="scene-tech-tree" offsetXY="0 74" />
+    <Panel class="scene-menu" offsetXY="0 164" />
+    <Panel class="scene-menu-career" offsetXY="0 64" />
+  </Defaults>
+  <Panel id="tutorial" class="no-image">
+    <Panel class="safe-area no-image">
+      <Panel pivot="0.5 0.5" id="tutorial-panel" active="false" showAnimation="Grow_Horizontal" animationDuration="0.25" showAnimationDelay="1" class="tutorial-offset translucent-panel-dark" color="TutorialPanel" border="Button" width="700" height="128" rectAlignment="LowerCenter" raycastTarget="true">
+        <Image sprite="Ui/Sprites/Menu/TutorialProfile" ignoreLayout="true" width="128" height="128" rectAlignment="MiddleLeft" />
+        <Button id="close-button" class="icon-button audio-btn-back" ignoreLayout="true" width="24" height="24" icon="Ui/Sprites/Common/IconCloseButton" rectAlignment="UpperRight" onClick="OnCloseButtonClicked();" tooltip="Close tutorial" tooltipPosition="Above" />
+        <VerticalLayout offsetMin="140 0" offsetMax="-30 0">
+          <TextMeshPro id="tutorial-step-text" color="White" margin="0 0 0 0" />
+          <TextMeshPro color="Primary" id="tutorial-instruction-text" margin="0 0 0 0" active="false" />
+          <Panel id="tutorial-button-panel" preferredHeight="40">
+            <Button class="btn btn-primary" width="150" rectAlignment="MiddleCenter" onClick="OnButtonClicked();">
+              <TextMeshPro name="Tutorial.OkayButton" text="OKAY" />
+            </Button>
+          </Panel>
+        </VerticalLayout>
+      </Panel>
+    </Panel>
+    <Image id="tutorial-highlight" name="TutorialHighlight" width="64" height="64" sprite="Ui/Sprites/Border/Square-2px" type="Sliced" fillCenter="false" active="false" />
+  </Panel>
+</XmlLayout>

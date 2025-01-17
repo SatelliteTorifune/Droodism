@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<GameObject name="Block1" path="Craft/Parts/Prefabs/Block1.prefab">
+  <GameObject name="Scalar">
+    <GameObject name="AttachPointPositions">
+      <GameObject name="AttachPoint1" />
+      <GameObject name="AttachPoint2" />
+      <GameObject name="AttachPoint3" />
+      <GameObject name="AttachPoint4" />
+      <GameObject name="AttachPoint5" />
+      <GameObject name="AttachPoint6" />
+    </GameObject>
+    <GameObject name="Cube">
+      <Component type="UnityEngine.MeshFilter" />
+      <Component type="UnityEngine.BoxCollider" />
+      <Component type="UnityEngine.MeshRenderer" />
+      <Component type="ModApi.Craft.Parts.PartColliderScript" />
+    </GameObject>
+  </GameObject>
+</GameObject>

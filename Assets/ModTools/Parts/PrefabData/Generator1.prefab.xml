@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<GameObject name="Generator1" path="Craft/Parts/Prefabs/Generator1.prefab">
+  <GameObject name="LoopingAudio">
+    <Component type="Assets.Scripts.Craft.Parts.Modifiers.LoopingAudioScript" />
+  </GameObject>
+  <GameObject name="Scalar">
+    <GameObject name="Mesh">
+      <Component type="UnityEngine.MeshFilter" />
+      <Component type="UnityEngine.MeshRenderer" />
+    </GameObject>
+    <GameObject name="Collider">
+      <Component type="UnityEngine.BoxCollider" />
+      <Component type="ModApi.Craft.Parts.PartColliderScript" />
+    </GameObject>
+  </GameObject>
+</GameObject>

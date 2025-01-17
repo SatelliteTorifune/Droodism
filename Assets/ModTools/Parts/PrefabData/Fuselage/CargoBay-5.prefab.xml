@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<GameObject name="CargoBay-5" path="Craft/Parts/Prefabs/Fuselage/CargoBay-5.prefab">
+  <Component type="Assets.Scripts.Craft.Parts.Modifiers.Fuselage.MeshDefinitionScript" />
+  <GameObject name="Base">
+    <GameObject name="Bottom">
+      <Component type="UnityEngine.MeshFilter" />
+      <Component type="UnityEngine.MeshRenderer" />
+    </GameObject>
+    <GameObject name="Bottom Inside">
+      <Component type="UnityEngine.MeshFilter" />
+      <Component type="UnityEngine.MeshRenderer" />
+    </GameObject>
+  </GameObject>
+  <GameObject name="HingeLeft">
+    <Component type="Assets.Scripts.Craft.Parts.Modifiers.Fuselage.FuselageEnabledScript" />
+    <GameObject name="RotationRoot">
+      <GameObject name="Door-1">
+        <Component type="Assets.Scripts.Craft.Parts.Modifiers.CargoBayDoorScript" />
+        <GameObject name="SingleDoorInside">
+          <Component type="UnityEngine.MeshFilter" />
+          <Component type="UnityEngine.MeshRenderer" />
+          <Component type="ModApi.Craft.Parts.PartMeshScript" />
+        </GameObject>
+        <GameObject name="SingleDoorOutside">
+          <Component type="UnityEngine.MeshFilter" />
+          <Component type="UnityEngine.MeshRenderer" />
+          <Component type="ModApi.Craft.Parts.PartMeshScript" />
+        </GameObject>
+        <GameObject name="Collider-End">
+          <Component type="UnityEngine.MeshFilter" />
+          <Component type="UnityEngine.MeshCollider" />
+        </GameObject>
+        <GameObject name="Collider-Root">
+          <Component type="UnityEngine.MeshFilter" />
+          <Component type="UnityEngine.MeshCollider" />
+        </GameObject>
+        <GameObject name="Collider-End">
+          <Component type="UnityEngine.MeshFilter" />
+          <Component type="UnityEngine.MeshCollider" />
+        </GameObject>
+        <GameObject name="Collider-Root">
+          <Component type="UnityEngine.MeshFilter" />
+          <Component type="UnityEngine.MeshCollider" />
+        </GameObject>
+      </GameObject>
+    </GameObject>
+  </GameObject>
+  <GameObject name="HingeRight">
+    <Component type="Assets.Scripts.Craft.Parts.Modifiers.Fuselage.FuselageEnabledScript" />
+    <GameObject name="RotationRoot">
+      <GameObject name="Door-Mirrored">
+        <Component type="Assets.Scripts.Craft.Parts.Modifiers.CargoBayDoorScript" />
+        <GameObject name="SingleDoorInside">
+          <Component type="UnityEngine.MeshFilter" />
+          <Component type="UnityEngine.MeshRenderer" />
+          <Component type="ModApi.Craft.Parts.PartMeshScript" />
+        </GameObject>
+        <GameObject name="SingleDoorOutside">
+          <Component type="UnityEngine.MeshFilter" />
+          <Component type="UnityEngine.MeshRenderer" />
+          <Component type="ModApi.Craft.Parts.PartMeshScript" />
+        </GameObject>
+        <GameObject name="Collider-End">
+          <Component type="UnityEngine.MeshFilter" />
+          <Component type="UnityEngine.MeshCollider" />
+        </GameObject>
+        <GameObject name="Collider-Root">
+          <Component type="UnityEngine.MeshFilter" />
+          <Component type="UnityEngine.MeshCollider" />
+        </GameObject>
+        <GameObject name="Collider-End">
+          <Component type="UnityEngine.MeshFilter" />
+          <Component type="UnityEngine.MeshCollider" />
+        </GameObject>
+        <GameObject name="Collider-Root">
+          <Component type="UnityEngine.MeshFilter" />
+          <Component type="UnityEngine.MeshCollider" />
+        </GameObject>
+      </GameObject>
+    </GameObject>
+  </GameObject>
+</GameObject>

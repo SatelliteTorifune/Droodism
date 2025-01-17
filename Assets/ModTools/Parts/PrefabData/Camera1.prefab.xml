@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<GameObject name="Camera1" path="Craft/Parts/Prefabs/Camera1.prefab">
+  <GameObject name="Scalar">
+    <GameObject name="Collider Frame">
+      <Component type="UnityEngine.BoxCollider" />
+      <Component type="ModApi.Craft.Parts.PartColliderScript" />
+    </GameObject>
+    <GameObject name="Collider Lens">
+      <Component type="UnityEngine.BoxCollider" />
+      <Component type="ModApi.Craft.Parts.PartColliderScript" />
+    </GameObject>
+    <GameObject name="Frame">
+      <Component type="UnityEngine.MeshFilter" />
+      <Component type="UnityEngine.MeshRenderer" />
+      <Component type="ModApi.Craft.Parts.PartMeshScript" />
+    </GameObject>
+    <GameObject name="Base">
+      <Component type="UnityEngine.MeshFilter" />
+      <Component type="UnityEngine.MeshRenderer" />
+      <Component type="ModApi.Craft.Parts.PartMeshScript" />
+    </GameObject>
+  </GameObject>
+</GameObject>
