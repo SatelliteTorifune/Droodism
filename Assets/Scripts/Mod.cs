@@ -8,6 +8,8 @@ namespace Assets.Scripts
     using ModApi.Common;
     using ModApi.Mods;
     using UnityEngine;
+    using UnityEngine.PlayerLoop;
+    using HarmonyLib;
 
     /// <summary>
     /// A singleton object representing this mod that is instantiated and initialize when the mod is loaded.
@@ -19,12 +21,15 @@ namespace Assets.Scripts
         /// </summary>
         private Mod() : base()
         {
+            
         }
-
-        /// <summary>
-        /// Gets the singleton instance of the mod object.
-        /// </summary>
-        /// <value>The singleton instance of the mod object.</value>
-        public static Mod Instance { get; } = GetModInstance<Mod>();
+        public static Mod Inctance { get; } = GetModInstance<Mod>();
+        
+        protected override void OnModInitialized()
+        {
+            Harmony harmony = new Harmony("com.SatelliteTorifune.Droodism");
+            harmony.PatchAll();
+            Debug.LogFormat("this mod is loaded");
+        } 
     }
 }

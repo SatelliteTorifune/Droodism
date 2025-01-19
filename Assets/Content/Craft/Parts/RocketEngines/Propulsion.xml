@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Propulsion xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\..\..\ModTools\Parts\Propulsion.xsd">
   <Fuels>
-    <Fuel id="oxygen" name="Oxygen" gamma="0" density="0.001404" molecularWeight="32" combustionTemperature="0" price="200" explosivePower="0" description="Drood breathe this.">
+    <Fuel id="Oxygen" name="Oxygen" gamma="0" density="0.001404" molecularWeight="32" combustionTemperature="0" price="200" explosivePower="0" description="Drood breathe this.">
       <Visual exhaustColor="#00000000" exhaustColorTip="#00000000" exhaustColorShock="#00000000" exhaustColorFlame="#00000000" exhaustColorSoot="#00000000" exhaustColorSmoke="#ffffff00" globalIntensity ="0" shockIntensity="-20" rimShade="0" />
     </Fuel>
-    <Fuel id="food" name="Food" gamma="0" density="0.02" molecularWeight="128" combustionTemperature="0" price="300" explosivePower="0" description="Drood eat this.">
+    <Fuel id="Food" name="Food" gamma="0" density="0.02" molecularWeight="128" combustionTemperature="0" price="300" explosivePower="0" description="Drood eat this.">
       <Visual exhaustColor="#00000000" exhaustColorTip="#00000000" exhaustColorShock="#00000000" exhaustColorFlame="#00000000" exhaustColorSoot="#00000000" exhaustColorSmoke="#ffffff00" globalIntensity ="0" shockIntensity="-20" rimShade="0" />
     </Fuel>
-    <Fuel id="water" name="Drinking Water" gamma="0" density="1.0" molecularWeight="11.8" combustionTemperature="0" price="10" explosivePower="0" description="This is the drinking water,not the rocket fuel.">
+    <Fuel id="Drinking Water" name="Drinking Water" gamma="0" density="1.0" molecularWeight="11.8" combustionTemperature="0" price="10" explosivePower="0" description="This is the drinking water,not the rocket fuel.">
       <Visual exhaustColor="#00000000" exhaustColorTip="#00000000" exhaustColorShock="#00000000" exhaustColorFlame="#00000000" exhaustColorSoot="#00000000" exhaustColorSmoke="#00000000" globalIntensity ="0" shockIntensity="-20" rimShade="0" />
       </Fuel>
   </Fuels>
