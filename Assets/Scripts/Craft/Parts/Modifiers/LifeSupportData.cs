@@ -15,9 +15,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using UnityEngine;  
 
     [Serializable]
-    [DesignerPartModifier("lifesupport")]
-    [PartModifierTypeId("Droodlism.lifesupport")]
-    public class lifesupportData : PartModifierData<LifeSupportScript>
+    [DesignerPartModifier("LifeSupport")]
+    [PartModifierTypeId("LifeSupport")]
+    public class LifeSupportData : PartModifierData<LifeSupportScript>
     {      
     [SerializeField]
     [PartModifierProperty(true, false)]
