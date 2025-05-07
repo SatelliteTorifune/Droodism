@@ -1,3 +1,7 @@
+using UnityEngine.SceneManagement;
+using ModApi.Design.Events;
+using ModApi.Scenes.Events;
+
 namespace Assets.Scripts
 {
     using System;
@@ -30,6 +34,28 @@ namespace Assets.Scripts
             Harmony harmony = new Harmony("com.SatelliteTorifune.Droodism");
             harmony.PatchAll();
             Debug.LogFormat("this mod is loaded");
+            Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
+        } 
+        public void OnSceneLoaded(object sender, SceneEventArgs e)
+        {
+            if (Game.Instance.SceneManager.InDesignerScene)
+            {
+                Game.Instance.Designer.PartAdded += OnPartAdded;
+             
+                Debug.LogErrorFormat("You R entering a scene");
+            }
+                
+        }
+        
+        public void OnPartAdded (object sender, DesignerPartAddedEventArgs e)
+        {
+            
+            Debug.LogFormat($"the part is added :{e.DesignerPart.Name}:{e.DesignerPart.GenerateXml()}");
+            if (e.DesignerPart.Name=="Drood"||e.DesignerPart.Name=="Tourist")
+            {
+                Debug.Log("THis is human");
+            }
+            
         } 
     }
 }

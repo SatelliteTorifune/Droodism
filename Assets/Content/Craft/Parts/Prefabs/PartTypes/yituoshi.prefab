@@ -16,7 +16,6 @@ GameObject:
   - component: {fileID: 5725319549231003348}
   - component: {fileID: 7053041233198903268}
   - component: {fileID: 7477936344202545286}
-  - component: {fileID: 3916223051075002679}
   m_Layer: 0
   m_Name: yituoshi
   m_TagString: Untagged
@@ -304,24 +303,3 @@ MonoBehaviour:
     _priority: 0
     _subPriority: 0
     _utilization: -1
---- !u!114 &3916223051075002679
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8328446782775865953}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 78e55ab479bcdb548bf4d841a952d34a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Data:
-    _id: 
-    _inputId: 
-    _inspectorEnabled: 1
-    _partPropertiesEnabled: 1
-    _staticPriceAndMass: 0
-    _version: 1
-    _versionLast: 1
-    _versionsAllowed: 

@@ -1,23 +1,23 @@
 ManifestFileVersion: 0
-CRC: 3257953844
+CRC: 1791072479
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: b95074b102cb33b08d24f95b1289d1fd
+    Hash: 949504d94c40dac17f1779ae519fc3c5
   TypeTreeHash:
     serializedVersion: 2
     Hash: 5ad585dd02dfb5016c0dad519eab8f49
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: b95074b102cb33b08d24f95b1289d1fd
+    Hash: 949504d94c40dac17f1779ae519fc3c5
 HashAppended: 0
 ClassTypes:
 - Class: 49
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers: []
 Assets:
+- Assets/_ModAssets_/Droodism.dll.bytes
 - Assets/Resources/Craft/Parts/Definitions/yituoshi.xml
 - Assets/Content/Craft/Parts/RocketEngines/Propulsion.xml
-- Assets/_ModAssets_/Droodism.dll.bytes
 - Assets/_ModAssets_/ModManifest.xml.bytes
 Dependencies: []
