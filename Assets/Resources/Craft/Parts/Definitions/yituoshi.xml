@@ -7,6 +7,7 @@
       <Eva crewId="0" crewName="Crew member" grapplingHookEnabled="true" gDamageScale="1" gTolerance="7" jetpackAvailable="true" jetpackEnabled="true" jetpackPowerScalar="1" jumpPowerScalar="1" requiresCrewMember="true" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="true" version="1" versionLast="1" versionsAllowed="" />
       <CameraVantage autoCenterCamera="true" cameraOffset="0,0.75,0.08" cameraRotationOffset="0,0,0" dirtIntensity="0" enabledByDefault="false" hideBase="false" scale="1" fieldOfView="60" fieldOfViewMax="100" fieldOfViewMin="40" isHidden="true" isNight="false" nightVisionColor="#80FF8080" lookAtCommandPod="false" manualRegister="true" padPosition="false" variableZoom="false" inspectorEnabled="false" partPropertiesEnabled="false" staticPriceAndMass="true" version="1" versionLast="1" versionsAllowed="" />
       <FuelTank autoFuelType="false" capacity="600" fuel="600" fuelType="Battery" priority="0" subPriority="0" utilization="-1" inspectorEnabled="false" partPropertiesEnabled="false" staticPriceAndMass="true" version="1" versionLast="1" versionsAllowed="" />
+      <SupportLife oxygenComsumeRate="0" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
     </Modifiers>
     <AttachPoints>
       <AttachPoint name="AttachPoint1" position="0,0,0" rotation="0,180,0" positionOffset="0,0,0" rotationOffset="0,0,0" allowRotation="true" allowInvertedConnection="false" canReceive="false" canSeek="true" ignoreSurfaces="false" jointType="Rigid" connectionType="Eva" requiresPhysicsJoint="true" />
@@ -25,6 +26,7 @@
             <Eva />
             <CameraVantage />
             <FuelTank />
+            <SupportLife />
           </Part>
         </Parts>
       </Assembly>

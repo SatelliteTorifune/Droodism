@@ -22,11 +22,18 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         private FuelTankScript _fuelTank;
         private FuelType _fuelType;
-        public float OxygenComsumeRate=> this._oxygenComsumeRate;
+        
         public FuelType FuelType
         {
             get => this._fuelType;
             private set => this._fuelType = value;
+        }
+        
+        public float OxygenComsumeRate
+        {
+            get
+            =>this._oxygenComsumeRate;
+            set=>this._oxygenComsumeRate = value;
         }
 
         protected override void OnDesignerInitialization(IDesignerPartPropertiesModifierInterface d)

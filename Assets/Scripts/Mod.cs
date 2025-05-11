@@ -1,6 +1,8 @@
+using Assets.Scripts.Craft;
 using UnityEngine.SceneManagement;
 using ModApi.Design.Events;
 using ModApi.Scenes.Events;
+using static Assets.Scripts.SearchDrood;
 
 namespace Assets.Scripts
 {
@@ -27,6 +29,7 @@ namespace Assets.Scripts
         {
             
         }
+        private CraftScript Craft => ModApi.Common.Game.Instance.Designer.CraftScript as CraftScript;
         public static Mod Inctance { get; } = GetModInstance<Mod>();
         
         protected override void OnModInitialized()
@@ -35,27 +38,30 @@ namespace Assets.Scripts
             harmony.PatchAll();
             Debug.LogFormat("this mod is loaded");
             Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
+            
         } 
         public void OnSceneLoaded(object sender, SceneEventArgs e)
         {
             if (Game.Instance.SceneManager.InDesignerScene)
             {
+                Game.Instance.Designer.CraftLoaded += OnCraftLoaded;
+                
+
                 Game.Instance.Designer.PartAdded += OnPartAdded;
-             
                 Debug.LogErrorFormat("You R entering a scene");
             }
                 
         }
+
         
-        public void OnPartAdded (object sender, DesignerPartAddedEventArgs e)
+        public void OnCraftLoaded()
         {
-            
-            Debug.LogFormat($"the part is added :{e.DesignerPart.Name}:{e.DesignerPart.GenerateXml()}");
-            if (e.DesignerPart.Name=="Drood"||e.DesignerPart.Name=="Tourist")
-            {
-                Debug.Log("THis is human");
-            }
-            
-        } 
+            CheckDrood(Craft);
+        }
+        
+        
+
+
+
     }
 }

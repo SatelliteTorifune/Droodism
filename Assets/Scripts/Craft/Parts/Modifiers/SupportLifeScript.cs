@@ -13,10 +13,6 @@ using UnityEngine;
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
-    
-    
-    
-
     public class SupportLifeScript : PartModifierScript<SupportLifeData>,IFlightUpdate
     {
         private IFuelSource _fuelSource;
