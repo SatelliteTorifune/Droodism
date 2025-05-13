@@ -7,7 +7,6 @@ using System.Xml;
 using UnityEngine;
 using System.Xml.Linq;
 using Assets.Scripts.Craft;
-using Assets.Scripts.Design;
 using ModApi.Craft.Parts;
 
 namespace Assets.Scripts
@@ -22,15 +21,24 @@ namespace Assets.Scripts
             if (e.DesignerPart.Name=="Drood"||e.DesignerPart.Name=="Tourist")
             {
                 Debug.Log("执行添加modifier的操作!");
+                AddLSModifier();
                 
                 
             }
             
         } 
-        public static void AddLSModifier(PartData partData)
+        public static void AddLSModifier()
         {
-            XElement element = new XElement("SupportLife");
-            element.SetAttributeValue("",10f);
+            Debug.LogFormat("执行添加modifier的操作 函数");
+            XElement LSelement = new XElement("SupportLife");
+            LSelement.SetAttributeValue("",10f);
+            //下面加油箱
+            XElement FuelTankOxygen = new XElement("FuelTank");
+            FuelTankOxygen.SetAttributeValue("capacity","10");
+            FuelTankOxygen.SetAttributeValue("fuel", "10");
+            FuelTankOxygen.SetAttributeValue("fuelType","Oxygen");
+            FuelTankOxygen.SetAttributeValue("autoFuelType","False");
+            FuelTankOxygen.SetAttributeValue("partPropertiesEnabled", false);
             
         }
         /// <summary>
@@ -49,12 +57,13 @@ namespace Assets.Scripts
                 bool isDrood = false;
                 bool hasLifeSupport = false;
                 var modifiers = part.PartScript.Modifiers;
+                
                 if (modifiers != null)
                 {
-                     
                     foreach (PartModifierScript _pms in modifiers)
                     {
                         PartModifierData _modifierData = _pms.GetData();
+                        
                         if (_modifierData.Name=="EvaData")
                         {
                             
@@ -65,22 +74,18 @@ namespace Assets.Scripts
                         {
                             hasLifeSupport = true;
                         }
-                        
                     }
-                    
                 }
-
                 if (isDrood&&!hasLifeSupport)
                 {
                     DroodIds.Add(part.Id);
                     DroodParts.Add(part);
                 }
-                
             }
 
             for (int i = 0; i < DroodIds.Count; i++)
             {
-                Debug.LogFormat($"LIST is here {DroodIds[i]}");
+                Debug.LogFormat($"LIST is here {DroodParts[i].Name}");
             }
         }
     }

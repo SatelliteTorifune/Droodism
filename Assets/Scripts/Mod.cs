@@ -20,7 +20,7 @@ namespace Assets.Scripts
     /// <summary>
     /// A singleton object representing this mod that is instantiated and initialize when the mod is loaded.
     /// </summary>
-    public class Mod : ModApi.Mods.GameMod
+    public partial class Mod : ModApi.Mods.GameMod
     {
         /// <summary>
         /// Prevents a default instance of the <see cref="Mod"/> class from being created.
@@ -34,11 +34,12 @@ namespace Assets.Scripts
         
         protected override void OnModInitialized()
         {
+            base.OnModInitialized();
             Harmony harmony = new Harmony("com.SatelliteTorifune.Droodism");
             harmony.PatchAll();
-            Debug.LogFormat("this mod is loaded");
             Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
             
+
         } 
         public void OnSceneLoaded(object sender, SceneEventArgs e)
         {

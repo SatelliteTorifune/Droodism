@@ -18,7 +18,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     public class SupportLifeData : PartModifierData<SupportLifeScript>
     {
         [SerializeField] [PartModifierProperty(true, false)]
-        private float _oxygenComsumeRate;
+        private float _oxygenComsumeRate=0.3f;
+        [SerializeField][PartModifierProperty(true, false)]
+        private float _foodComsumeRate=0.1f;
         
         private FuelTankScript _fuelTank;
         private FuelType _fuelType;
@@ -33,8 +35,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             get
             =>this._oxygenComsumeRate;
-            set=>this._oxygenComsumeRate = value;
+            private set=>this._oxygenComsumeRate = value;
         }
+        public float FoodComsumeRate
+        {
+            get
+                =>this._foodComsumeRate;
+            private set=>this._foodComsumeRate = value;
+        }
+        
 
         protected override void OnDesignerInitialization(IDesignerPartPropertiesModifierInterface d)
         {
