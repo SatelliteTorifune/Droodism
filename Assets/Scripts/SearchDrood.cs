@@ -19,48 +19,68 @@ namespace Assets.Scripts
         
         public static void OnPartAdded (object sender, DesignerPartAddedEventArgs e)
         {
-            
-            Debug.LogFormat($"the part is added :{e.DesignerPart.Name}:{e.DesignerPart.GenerateXml()}");
             if (e.DesignerPart.Name=="Drood"||e.DesignerPart.Name=="Tourist")
             {
                 Debug.Log("执行添加modifier的操作!");
-                //理论上来说我这里应该加自己的一个Modifier,然后还有一堆其他的FuelTank
+                
+                
             }
             
         } 
-        public static void AddLSModifier()
+        public static void AddLSModifier(PartData partData)
         {
             XElement element = new XElement("SupportLife");
             element.SetAttributeValue("",10f);
-            //Tanks[fuelType] = PartModifierData.CreateFromStateXml(element, StarsSpaceGeneratorEditor.Data.Part, 15) as FuelTankData;
-            //Tanks[fuelType].CreateScript();
+            
         }
-
+        /// <summary>
+        /// CheckDrood方法接受CraftScript参数,遍历所有modifier,得到含有Eva Modifier的Part的Id的列表
+        /// 目前没返回值
+        /// </summary>
         public static void CheckDrood(CraftScript craft)
         {
             List<int> DroodIds = new List<int>();
+            List<PartData> DroodParts = new List<PartData>();
+            
+                
             var parts = craft.Data.Assembly.Parts;
             foreach (PartData part in parts)
             {
-                var modifiers = part.PartScript.Modifiers; // 假设
+                bool isDrood = false;
+                bool hasLifeSupport = false;
+                var modifiers = part.PartScript.Modifiers;
                 if (modifiers != null)
                 {
+                     
                     foreach (PartModifierScript _pms in modifiers)
                     {
                         PartModifierData _modifierData = _pms.GetData();
                         if (_modifierData.Name=="EvaData")
                         {
-                            DroodIds.Add(part.Id);
+                            
+                            isDrood = true;
                         }
+
+                        if (_modifierData.Name == "SupportLifeData")
+                        {
+                            hasLifeSupport = true;
+                        }
+                        
                     }
                     
                 }
+
+                if (isDrood&&!hasLifeSupport)
+                {
+                    DroodIds.Add(part.Id);
+                    DroodParts.Add(part);
+                }
+                
             }
-            
-            
+
             for (int i = 0; i < DroodIds.Count; i++)
             {
-                Debug.LogFormat("{0}",DroodIds[i]);
+                Debug.LogFormat($"LIST is here {DroodIds[i]}");
             }
         }
     }
