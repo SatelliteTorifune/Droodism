@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 7053041233198903268}
   - component: {fileID: 7477936344202545286}
   - component: {fileID: 4706706769161031070}
+  - component: {fileID: 3661515348851316338}
   m_Layer: 0
   m_Name: yituoshi
   m_TagString: Untagged
@@ -325,4 +326,35 @@ MonoBehaviour:
     _version: 1
     _versionLast: 1
     _versionsAllowed: 
-    _oxygenComsumeRate: 0
+    _oxygenComsumeRate: 0.3
+    _foodComsumeRate: 0.3
+--- !u!114 &3661515348851316338
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8328446782775865953}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 59408311, guid: 55a7c5278766598448d9083b0de0861d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Data:
+    _id: 
+    _inputId: 
+    _inspectorEnabled: 1
+    _partPropertiesEnabled: 1
+    _staticPriceAndMass: 0
+    _version: 1
+    _versionLast: 1
+    _versionsAllowed: 
+    _autoFuelType: 0
+    _capacity: 19
+    _fuel: 18
+    _fuelType: Oxygen
+    _fuelTypeDescription: 
+    _fuelTypeReadOnly: 
+    _priority: 0
+    _subPriority: 0
+    _utilization: -1
