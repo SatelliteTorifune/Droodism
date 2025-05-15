@@ -30,9 +30,9 @@ namespace Assets.Scripts
         {
             
         }
-        private CraftScript Craft => ModApi.Common.Game.Instance.Designer.CraftScript as CraftScript;
-        public static Mod Inctance { get; } = GetModInstance<Mod>();
         
+        public static Mod Inctance { get; } = GetModInstance<Mod>();
+        private CraftScript Craft => ModApi.Common.Game.Instance.Designer.CraftScript as CraftScript;
         protected override void OnModInitialized()
         {
             base.OnModInitialized();
@@ -57,13 +57,7 @@ namespace Assets.Scripts
         {
             if (e.DesignerPart.Name=="Drood"||e.DesignerPart.Name=="Tourist")
             {
-                
-                List<PartData> droodParts = CheckDrood(Craft);
-                foreach (PartData part in droodParts)
-                {
-                    AddLSModifier(part); 
-                }
-
+                OnCraftLoaded();
             }
             
         }
@@ -75,7 +69,6 @@ namespace Assets.Scripts
             {
                 AddLSModifier(part); 
             }
-            
             
         }
         /// <summary>
@@ -91,13 +84,14 @@ namespace Assets.Scripts
             {
                 bool isDrood = false;
                 bool hasLifeSupport = false;
-                var modifiers = part.PartScript.Modifiers;
+                List<PartModifierScript> modifiers = part.PartScript.Modifiers;
                 if (modifiers != null)
                 {
                     foreach (PartModifierScript _pms in modifiers)
                     {
-                        PartModifierData _modifierData = _pms.GetData();
                         
+                        PartModifierData _modifierData = _pms.GetData();
+                        Debug.LogFormat($"{_modifierData.Name}");
                         if (_modifierData.Name=="EvaData")
                         {
                             isDrood = true;
@@ -115,12 +109,13 @@ namespace Assets.Scripts
                 }
             }
 
+            for (int i = 0; i < DroodParts.Count; i++)
+            {
+              Debug.LogFormat("{0}",DroodParts[i].Id);  
+            }
             return DroodParts;
+            
         }
-        
-        
-
-
 
     }
 }

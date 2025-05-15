@@ -38,7 +38,7 @@ namespace Assets.Scripts
             _fuelTankOxygen.Capacity = 20f;
             _fuelTankOxygen.Fuel = 20f;
             _fuelTankOxygen.InspectorEnabled = false;
-            ;
+            
             SupportLifeData _supportLifeData = part.GetModifier<SupportLifeData>();
             if (_supportLifeData==null)
             {
