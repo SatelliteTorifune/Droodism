@@ -13,7 +13,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using UnityEngine;
 
     [Serializable]
-    [DesignerPartModifier("SupportLife")]
+    [DesignerPartModifier("SupportLife",PanelOrder = 2000)]
     [PartModifierTypeId("SupportLife")]
     public class SupportLifeData : PartModifierData<SupportLifeScript>
     {
@@ -34,8 +34,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public float OxygenComsumeRate
         {
             get
-            =>this._oxygenComsumeRate;
-            private set=>this._oxygenComsumeRate = value;
+            =>this._oxygenComsumeRate; 
+            set=>this._oxygenComsumeRate = value;
         }
         public float FoodComsumeRate
         {

@@ -25,6 +25,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     private IInputController _inputThrottle;
     private double _fuelRemoved;
     private float _powerScale = 1f;
+    
 
     public bool UsesMachNumber => false;
 
@@ -132,5 +133,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
       }
       
     }
+    
   }
+  
+  
 }
