@@ -5,7 +5,7 @@ using ModApi.Design.Events;
 using ModApi.Scenes.Events;
 using System.Xml;
 using UnityEngine;
-using System.Xml.Linq;
+using HarmonyLib;
 using Assets.Scripts.Craft;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Design;
@@ -31,13 +31,18 @@ namespace Assets.Scripts
         /// <param name="part"></param>
         public static void AddLSModifier(PartData part)
         {
+
             if (!(part != null))
                 return;
 
-            FuelTankData _fuelTankOxygen = RenkosCreateModifierData<FuelTankData>(part);
-            _fuelTankOxygen.Capacity = 20f;
-            _fuelTankOxygen.Fuel = 20f;
-            _fuelTankOxygen.InspectorEnabled = false;
+            //if (part.PartScript.Modifiers.Count>6)
+            //{
+            //    return;
+            //}
+            //FuelTankData _fuelTankOxygen = RenkosCreateModifierData<FuelTankData>(part);
+            //_fuelTankOxygen.Capacity = 20f;
+            //_fuelTankOxygen.Fuel = 20f;
+            //_fuelTankOxygen.InspectorEnabled = false;
             
             SupportLifeData _supportLifeData = part.GetModifier<SupportLifeData>();
             if (_supportLifeData==null)
@@ -52,7 +57,6 @@ namespace Assets.Scripts
             T fromDefaultXml = PartModifierData.CreateFromDefaultXml<T>(part);
             return fromDefaultXml;
         }
-        
         
     }
 }
