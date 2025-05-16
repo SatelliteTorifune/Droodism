@@ -1,7 +1,9 @@
+using System.Diagnostics;
 using System.Reflection;
 using System.Xml.Linq;
 using Assets.Scripts.Craft;
 using Assets.Scripts.Craft.Parts;
+using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using ModApi.Craft.Parts;
 using UnityEngine.SceneManagement;
@@ -91,7 +93,6 @@ namespace Assets.Scripts
                 bool isDrood = false;
                 bool hasLifeSupport = false;
                 List<PartModifierScript> modifiers = part.PartScript.Modifiers;
-                Debug.LogFormat($"{modifiers.Count}:number of {part.Id}");
                 if (modifiers != null)
                 {
                     foreach (PartModifierScript _pms in modifiers)
@@ -138,22 +139,31 @@ namespace Assets.Scripts
     public class EvaModifierCreatePatch
     {
         [HarmonyPrefix]
-        public static void Prefix(EvaScript __instance)
+        public static bool Prefix(EvaScript __instance)
         {
+            Debug.LogFormat("OnModifiersCreated被调用");
             try
             {
                 // 获取 EvaScript 所在的 Part的Data
                 PartData partData = __instance.PartScript.Data;
                 if (partData != null)
                 {
+                    //2025 5 17 今天写到这里,主要问题就在这个里面,可能是harmony导致的EVa脚本初始化异常
+                    //下一步:先解决避免重复添加的问题,检测modifier数量
+                    Debug.LogFormat($"{partData.Modifiers.Count}");
+                    if (partData.Modifiers.Count<5)
+                    {
+                        //AddLSModifier(partData);
+                        Debug.LogFormat("成功添加了modifier");
+                        return true;
+                    }
                     
-                    Debug.Log($"PartData found: {partData}");
-                    AddLSModifier(partData);
-                    Debug.LogFormat("成功添加了modifier");
+                    return true;
                 }
                 else
                 {
                     Debug.LogWarning("PartData not found on GameObject!");
+                    return true;
                     
                 }
             }
@@ -161,6 +171,7 @@ namespace Assets.Scripts
             {
                 Debug.LogErrorFormat($"Error:{e.Message}");
             }
+            return true;
 
         }
 

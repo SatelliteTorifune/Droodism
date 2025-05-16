@@ -34,16 +34,6 @@ namespace Assets.Scripts
 
             if (!(part != null))
                 return;
-
-            //if (part.PartScript.Modifiers.Count>6)
-            //{
-            //    return;
-            //}
-            //FuelTankData _fuelTankOxygen = RenkosCreateModifierData<FuelTankData>(part);
-            //_fuelTankOxygen.Capacity = 20f;
-            //_fuelTankOxygen.Fuel = 20f;
-            //_fuelTankOxygen.InspectorEnabled = false;
-            
             SupportLifeData _supportLifeData = part.GetModifier<SupportLifeData>();
             if (_supportLifeData==null)
             {
@@ -51,7 +41,6 @@ namespace Assets.Scripts
                 _supportLifeData.OxygenComsumeRate = 10f;
             }
         }
-        
         public static T RenkosCreateModifierData<T>(PartData part) where T : PartModifierData
         {
             T fromDefaultXml = PartModifierData.CreateFromDefaultXml<T>(part);
