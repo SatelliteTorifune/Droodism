@@ -1,16 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using ModApi.Design.Events;
-using ModApi.Scenes.Events;
-using System.Xml;
-using UnityEngine;
-using HarmonyLib;
-using Assets.Scripts.Craft;
+
 using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Design;
 using Assets.Scripts.Vizzy.UI;
 using ModApi.Craft.Parts;
+using ModApi.Craft.Parts.Events;
 using ModApi.Craft.Propulsion;
 using ModApi.Ui;
 
@@ -21,9 +14,10 @@ namespace Assets.Scripts
     
     public class SearchDrood
     {
+        
         private DesignerScript _designer;
         public DesignerScript Designer => this._designer;
-        public Dictionary<FuelType, FuelTankData> Tanks = new Dictionary<FuelType, FuelTankData>();
+        
         /// <summary>
         /// AddLSModifier方法接受PartData参数,为此part添加SupportLife和FuelTank的modifier
         /// AddLSModifier Method receive ParaData as a parameter,adding this part with SupportLife and FuelTank Modifier
@@ -48,4 +42,5 @@ namespace Assets.Scripts
         }
         
     }
+    
 }

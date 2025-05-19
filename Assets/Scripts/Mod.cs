@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Reflection;
+using System.Threading;
 using System.Xml.Linq;
 using Assets.Scripts.Craft;
 using Assets.Scripts.Craft.Parts;
@@ -9,9 +10,13 @@ using ModApi.Craft.Parts;
 using UnityEngine.SceneManagement;
 using ModApi.Design.Events;
 using ModApi.Scenes.Events;
+using ModApi.Craft.Parts.Events;
 using HarmonyLib;
+using ModApi.Craft.Propulsion;
+using Panteleymonov;
 using static Assets.Scripts.SearchDrood;
 using static ModApi.Common.Game;
+using static ModApi.Craft.Parts.PartData;
 
 namespace Assets.Scripts
 {
@@ -29,8 +34,10 @@ namespace Assets.Scripts
     /// <summary>
     /// A singleton object representing this mod that is instantiated and initialize when the mod is loaded.
     /// </summary>
+    
     public partial class Mod : ModApi.Mods.GameMod
     {
+        
         /// <summary>
         /// Prevents a default instance of the <see cref="Mod"/> class from being created.
         /// </summary>
@@ -38,10 +45,9 @@ namespace Assets.Scripts
         {
 
         }
-
-        List<PartData> droodPartsAdded = new();
         public static Mod Inctance { get; } = GetModInstance<Mod>();
         private CraftScript Craft => Instance.Designer.CraftScript as CraftScript;
+        
 
         protected override void OnModInitialized()
         {
@@ -51,17 +57,12 @@ namespace Assets.Scripts
             Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
 
         }
-
-        public override void OnModLoaded()
-        {
-            
-        }
-        
         public void OnSceneLoaded(object sender, SceneEventArgs e)
         {
             if (Instance.SceneManager.InDesignerScene)
             {
                 Instance.Designer.CraftLoaded += OnCraftLoaded;
+                Created += OnPartAdded;
             }
 
         }
@@ -79,6 +80,21 @@ namespace Assets.Scripts
 
         }
 
+        public void OnPartAdded(object sender,CreatedPartEventArgs e)
+        {
+            if (e.Part.Name=="Eva")
+            {
+                Debug.LogFormat($"这是Drood");
+                AddLSModifier(e.Part);
+            }
+
+            if (e.Part.Name == "Eva-Tourist")
+            {
+                Debug.LogFormat($"这是游客"); 
+                AddLSModifier(e.Part);
+            }
+            
+        }
         /// <summary>
         /// CheckDrood方法接受CraftScript参数,遍历所有modifier,得到含有Eva Modifier的Part的类型为PartData的列表
         /// CheckDrood Method receives CraftScript as a parameter,checks all modifier inside the craft,returns with a list (which type is PartData) of Parts with Eva Modifier
@@ -128,52 +144,8 @@ namespace Assets.Scripts
             return DroodParts;
 
         }
-
+        
+    }
+  
     
-    }
-    /// <summary>
-    /// 在EvaScript的OnModifiersCreated时获取PartData并且添加Modifier
-    /// gets the PartData and adding a modifier to Part when "OnModifiersCreated" invoke in EvaScript(using harmony)
-    /// </summary>
-    [HarmonyPatch(typeof(EvaScript),"OnModifiersCreated")]
-    public class EvaModifierCreatePatch
-    {
-        [HarmonyPrefix]
-        public static bool Prefix(EvaScript __instance)
-        {
-            Debug.LogFormat("OnModifiersCreated被调用");
-            try
-            {
-                // 获取 EvaScript 所在的 Part的Data
-                PartData partData = __instance.PartScript.Data;
-                if (partData != null)
-                {
-                    //2025 5 17 今天写到这里,主要问题就在这个里面,可能是harmony导致的EVa脚本初始化异常
-                    //下一步:先解决避免重复添加的问题,检测modifier数量
-                    Debug.LogFormat($"{partData.Modifiers.Count}");
-                    if (partData.Modifiers.Count<5)
-                    {
-                        //AddLSModifier(partData);
-                        Debug.LogFormat("成功添加了modifier");
-                        return true;
-                    }
-                    
-                    return true;
-                }
-                else
-                {
-                    Debug.LogWarning("PartData not found on GameObject!");
-                    return true;
-                    
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.LogErrorFormat($"Error:{e.Message}");
-            }
-            return true;
-
-        }
-
-    }
 }
