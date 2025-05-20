@@ -75,23 +75,28 @@ namespace Assets.Scripts
             List<PartData> droodParts = CheckDrood(Craft);
             foreach (PartData part in droodParts)
             {
-                AddLSModifier(part);
+                AddLsModifier(part);
             }
 
         }
-
+        /// <summary>
+        /// 在part添加时检测如果是Drood则添加SupportLife modifier和其他属性
+        /// Adding SupportLife modifier when the added part is Drood
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void OnPartAdded(object sender,CreatedPartEventArgs e)
         {
             if (e.Part.Name=="Eva")
             {
                 Debug.LogFormat($"这是Drood");
-                AddLSModifier(e.Part);
+                AddLsModifier(e.Part);
             }
 
             if (e.Part.Name == "Eva-Tourist")
             {
                 Debug.LogFormat($"这是游客"); 
-                AddLSModifier(e.Part);
+                AddLsModifier(e.Part);
             }
             
         }

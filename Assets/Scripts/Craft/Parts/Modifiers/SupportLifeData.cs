@@ -54,13 +54,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         protected override void OnInitialized()
         {
             base.OnInitialized();
-            this.UpdateFuelType();
         }
         
-        private void UpdateFuelType()
-        {
-            this.FuelType = Assets.Scripts.Game.Instance.PropulsionData.GetFuelType("Oxygen");
-        }
+        
     }
     
     

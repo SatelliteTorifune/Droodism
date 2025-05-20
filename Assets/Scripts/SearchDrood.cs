@@ -6,6 +6,8 @@ using ModApi.Craft.Parts;
 using ModApi.Craft.Parts.Events;
 using ModApi.Craft.Propulsion;
 using ModApi.Ui;
+using HarmonyLib;
+using UnityEngine;
 
 //using Assets.Scripts.Craft.Parts.Modifiers.SupportLifeScript
 
@@ -23,7 +25,7 @@ namespace Assets.Scripts
         /// AddLSModifier Method receive ParaData as a parameter,adding this part with SupportLife and FuelTank Modifier
         /// </summary>
         /// <param name="part"></param>
-        public static void AddLSModifier(PartData part)
+        public static void AddLsModifier(PartData part)
         {
 
             if (!(part != null))
@@ -33,7 +35,24 @@ namespace Assets.Scripts
             {
                 _supportLifeData = RenkosCreateModifierData<SupportLifeData>(part);
                 _supportLifeData.OxygenComsumeRate = 10f;
+                _supportLifeData.PartPropertiesEnabled = false;
+                _supportLifeData.InspectorEnabled = false;
             }
+            
+            if (part.Modifiers.Count<=6)
+            {
+                FuelTankData _fuelTankData = RenkosCreateModifierData<FuelTankData>(part);
+                _fuelTankData.Capacity = 10;
+                _fuelTankData.Fuel = 10;
+                _fuelTankData.Utilization = -1;
+                _fuelTankData.InspectorEnabled = false;
+                _fuelTankData.PartPropertiesEnabled = false;
+                AccessTools.Field(typeof(FuelTankData), "_autoFuelType").SetValue(_fuelTankData, false);
+                AccessTools.Field(typeof(FuelTankData), "_fuelType").SetValue(_fuelTankData, "Oxygen");
+                Debug.LogFormat($"设置后的 _fuelType: {_fuelTankData.FuelType}");
+                
+            }
+            
         }
         public static T RenkosCreateModifierData<T>(PartData part) where T : PartModifierData
         {
