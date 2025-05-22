@@ -39,19 +39,20 @@ namespace Assets.Scripts
                 _supportLifeData.InspectorEnabled = false;
             }
             
-            if (part.Modifiers.Count<=6)
-            {
-                FuelTankData _fuelTankData = RenkosCreateModifierData<FuelTankData>(part);
-                _fuelTankData.Capacity = 10;
-                _fuelTankData.Fuel = 10;
-                _fuelTankData.Utilization = -1;
-                _fuelTankData.InspectorEnabled = false;
-                _fuelTankData.PartPropertiesEnabled = false;
-                AccessTools.Field(typeof(FuelTankData), "_autoFuelType").SetValue(_fuelTankData, false);
-                AccessTools.Field(typeof(FuelTankData), "_fuelType").SetValue(_fuelTankData, "Oxygen");
-                Debug.LogFormat($"设置后的 _fuelType: {_fuelTankData.FuelType}");
-                
-            }
+            //if (part.Modifiers.Count<=6)
+            //{
+            //    FuelTankData _fuelTankData = RenkosCreateModifierData<FuelTankData>(part);
+            //    _fuelTankData.Capacity = 10;
+            //    _fuelTankData.Fuel = 10;
+            //    _fuelTankData.Utilization = -1;
+            //    _fuelTankData.InspectorEnabled = false;
+            //    _fuelTankData.PartPropertiesEnabled = false;
+            //    _fuelTankData.SubPriority = -7;
+            //    AccessTools.Field(typeof(FuelTankData), "_autoFuelType").SetValue(_fuelTankData, false);
+            //    AccessTools.Field(typeof(FuelTankData), "_fuelType").SetValue(_fuelTankData, "Oxygen");
+            //    Debug.LogFormat($"设置后的 _fuelType: {_fuelTankData.FuelType.Name}");
+            //    
+            //}
             
         }
         public static T RenkosCreateModifierData<T>(PartData part) where T : PartModifierData

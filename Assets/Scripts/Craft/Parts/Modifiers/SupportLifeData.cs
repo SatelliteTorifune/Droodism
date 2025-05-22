@@ -21,7 +21,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private float _oxygenComsumeRate=0.3f;
         [SerializeField][PartModifierProperty(true, false)]
         private float _foodComsumeRate=0.1f;
-        
+
+        [SerializeField] [PartModifierProperty(true, false)]
+        private int _fuelSourceAttachPoint = 0;
+        public int FuelSourceAttachPoint
+        {
+            get => this._fuelSourceAttachPoint;
+            
+        }
         private FuelTankScript _fuelTank;
         private FuelType _fuelType;
         

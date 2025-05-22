@@ -4,18 +4,16 @@ using ModApi.Craft.Parts.Input;
 using ModApi.Design;
 using ModApi.GameLoop;
 using ModApi.GameLoop.Interfaces;
-using ModApi.Ui.Inspector;
 using System;
+using System.Collections.Generic;
+using System.Xml.Linq;
 using Assets.Scripts.Craft.Fuel;
+using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
 using Assets.Scripts.Flight;
 using ModApi.Craft.Propulsion;
-using ModApi.Math;
 using ModApi.Planet;
 using UnityEngine;
-using Assets.Scripts.Flight.Sim;
-using ModApi.Craft.Parts.Modifiers.Propulsion;
 using ModApi.Flight.Sim;
-using static Assets.Scripts.Flight.Sim.PlanetNode;
 
 #nullable disable
 namespace Assets.Scripts.Craft.Parts.Modifiers
@@ -23,8 +21,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
   public class SupportLifeScript : 
     PartModifierScript<SupportLifeData>,
     IDesignerStart,
-    IGameLoopItem,
-    IReactionEngine,
     IFlightStart,
     IFlightUpdate
   {
@@ -36,21 +32,42 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     private string currentPlanetName;
     private IPlanetData planetData;
     private float _oxygenConsumeRate;
-
-
-    public bool IsActive => true;
-    public float CurrentMassFlowRate { get=>_oxygenConsumeRate; }
-    public float CurrentThrust { get=>0; }
-    public IFuelSource FuelSource { get=>(IFuelSource)this._fuelTank; }
-    public float MaximumMassFlowRate { get=>0; }
-    public float MaximumThrust { get=>0; }
-    public float ThrottleResponse { get=>0; }
-    PartData IReactionEngine.Part => this.PartScript.Data;
-    public float RemainingFuel { get => (float) this._fuelTank.TotalFuel * this._fuelTank.FuelType.Density; }
-    public bool SupportsWarpBurn { get; }
-
+    
+    
     private CraftFuelSource craftFuelSource;
-
+    
+    
+    public override void OnModifiersCreated()
+    {
+      base.OnModifiersCreated();
+      if(Game.InFlightScene)
+      {
+        this._fuelTank = ((Component) this).GetComponent<FuelTankScript>();
+      }
+        
+    }
+    
+    private void AddTank(FuelType fuelType)
+    {
+      XElement element = new XElement("FuelTank");
+      element.SetAttributeValue("capacity", 10);
+      element.SetAttributeValue("fuel", 10);
+      element.SetAttributeValue("fuelType", fuelType.Id);
+      element.SetAttributeValue("utilization", 1);
+      element.SetAttributeValue("autoFuelType", false);
+      element.SetAttributeValue("partPropertiesEnabled", false);
+      var tankData= PartModifierData.CreateFromStateXml(element, Data.Part, 15) as FuelTankData;
+      try
+      {
+        tankData.CreateScript();
+      }
+      catch (Exception e)
+      {
+        Debug.LogErrorFormat("{0}",e);
+      }
+      
+      
+    }
     private FuelTankScript FuelTank
     {
       get => this._fuelTank;
@@ -69,8 +86,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
     void IDesignerStart.DesignerStart(in DesignerFrameData frame)
     {
-      // 移除缩放、拉伸等逻辑，仅保留必要初始化
       
+      base.OnInitialized();
+      PartData partData = this.Data.Part;
+      if (partData.Modifiers.Count<=6)
+      {
+        AddTank(FuelType.Battery);
+      }
+
     }
 
     void IFlightStart.FlightStart(in FlightFrameData frame)
@@ -84,29 +107,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
     }
 
-    private void OnSoiChanged(IOrbitNode source)
-    {
-      UpdateCurrentPlanet();
-      
-    }
+    
     void IFlightUpdate.FlightUpdate(in FlightFrameData frame)
     {
       if (frame.DeltaTimeWorld == 0.0)
         return;
-      
+      Debug.LogFormat("{0}",UsingInternalOxygen());
       if (UsingInternalOxygen())
       {
         double num1 = 1.0 / frame.DeltaTimeWorld;
         double num2 =_powerScale * (double)Data.OxygenComsumeRate * frame.DeltaTimeWorld;
-        // 访问同一 part 的 FuelTankScript modifier 来消耗燃料
-        try
-        {
-          Debug.LogFormat($"{craftFuelSource.FuelType.Name},{craftFuelSource.FuelType.Density}");
-        }
-        catch (Exception e)
-        {
-          Debug.LogFormat($"出事儿拉{e}");
-        }
+        
         
       }
       
@@ -120,31 +131,32 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
     public override void OnCraftStructureChanged(ICraftScript craftScript)
     {
-      //this.FuelTank = EngineUtilities.GetFuelTank(this.PartScript, this.Data.FuelSourceAttachPoint, "Oxygen")?.Script;
-      
+      this.FuelTank = EngineUtilities.GetFuelTank(this.PartScript, this.Data.FuelSourceAttachPoint, this.Data.FuelType)?.Script;
+      this.RefreshFuelSource();
     }
-
-    public override void OnGenerateInspectorModel(PartInspectorModel model)
-    {
-      GroupModel groupModel = new GroupModel("Performance");
-      model.AddGroup(groupModel);
-      this.CreateInspectorModel(groupModel, false);
-    }
+    
 
     public override void OnSymmetry(SymmetryMode mode, IPartScript originalPart, bool created)
     {
       // 移除缩放、拉伸等逻辑
     }
     
-    private void CreateInspectorModel(GroupModel model, bool flight)
-    {
-    }
-
     private void OnCraftFuelSourceChanged(object sender, EventArgs e)
     {
       
+      this.RefreshFuelSource();
     }
-
+    private void RefreshFuelSource()
+    {
+      if (this.Data.FuelType == this.FuelTank?.CraftFuelSource?.FuelType)
+      {
+        this._fuelSource = this.FuelTank?.CraftFuelSource;
+      }
+      else if (this.Data.FuelType != null)
+      {
+        this._fuelSource = EmptyFuelSource.GetOrCreate(this.Data.FuelType);
+      }
+    } 
     
     /// <summary>
     /// 检测当前环境是否可呼吸,可呼吸则返回false不消耗氧气;不可呼吸则返回true消耗内部氧气
@@ -153,13 +165,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     /// <returns></returns>
     private bool UsingInternalOxygen()
     {
-      float airDensity = this.PartScript.CraftScript.AtmosphereSample.AirDensity;
+      //当前空气密度
+      float airDensity = PartScript.CraftScript.AtmosphereSample.AirDensity;
+      //若空气密度不为零(即当前环境存在大气),则检测当前星球是否存在可呼吸气体
       if (airDensity!=0)
       {
         if (currentPlanetName.Contains("Droo")||currentPlanetName.Contains("Kerbin")||currentPlanetName.Contains("Earth")||currentPlanetName.Contains("Nebra")||currentPlanetName.Contains("Laythe")||currentPlanetName.Contains("Oord"))
         {
           return false;
         }
+
+        return true;
       }
       return true;
       
@@ -173,9 +189,16 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
       IPlanetData planetData = inFlightScene ? FlightSceneScript.Instance?.CraftNode?.Parent.PlanetData : (IPlanetData) null;//从IPlanetData接口实例化当前场景              
       currentPlanetName=planetData.Name;
     }
-
+    /// <summary>
+    /// SOi改变时调用UpdateCurrentPlanet方法更新当前星球的planetData
+    /// </summary>
+    private void OnSoiChanged(IOrbitNode source)
+    {
+      UpdateCurrentPlanet();
+    }
     
   }
+  
   
   
 }

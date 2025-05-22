@@ -89,13 +89,13 @@ namespace Assets.Scripts
         {
             if (e.Part.Name=="Eva")
             {
-                Debug.LogFormat($"这是Drood");
+                Debug.LogFormat($"这是Drood,有{e.Part.Modifiers.Count}个modifier");
                 AddLsModifier(e.Part);
             }
 
             if (e.Part.Name == "Eva-Tourist")
             {
-                Debug.LogFormat($"这是游客"); 
+                Debug.LogFormat($"这是游客,有{e.Part.Modifiers.Count}个modifier"); 
                 AddLsModifier(e.Part);
             }
             
