@@ -1,1 +1,1 @@
-Well i suppose there is no need for this readme file,right? if so why you are still reading this sentense?
+was insight or madness or maybe a lie, will ever be  day when i am not asking why?
