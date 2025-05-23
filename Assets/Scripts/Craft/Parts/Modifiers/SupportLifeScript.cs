@@ -14,6 +14,7 @@ using ModApi.Craft.Propulsion;
 using ModApi.Planet;
 using UnityEngine;
 using ModApi.Flight.Sim;
+using static Assets.Scripts.SearchDrood;
 
 #nullable disable
 namespace Assets.Scripts.Craft.Parts.Modifiers
@@ -50,10 +51,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     private void AddTank(FuelType fuelType)
     {
       XElement element = new XElement("FuelTank");
-      element.SetAttributeValue("capacity", 10);
-      element.SetAttributeValue("fuel", 10);
+      element.SetAttributeValue("capacity", 100f);
+      element.SetAttributeValue("fuel", 100f);
       element.SetAttributeValue("fuelType", fuelType.Id);
-      element.SetAttributeValue("utilization", 1);
+      element.SetAttributeValue("utilization", -1);
       element.SetAttributeValue("autoFuelType", false);
       element.SetAttributeValue("partPropertiesEnabled", false);
       var tankData= PartModifierData.CreateFromStateXml(element, Data.Part, 15) as FuelTankData;
@@ -91,7 +92,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
       PartData partData = this.Data.Part;
       if (partData.Modifiers.Count<=6)
       {
-        AddTank(FuelType.Battery);
+        AddTank(CreateOxygenFuelType());
       }
 
     }

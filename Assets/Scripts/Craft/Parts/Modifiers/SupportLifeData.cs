@@ -26,8 +26,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private int _fuelSourceAttachPoint = 0;
         public int FuelSourceAttachPoint
         {
-            get => this._fuelSourceAttachPoint;
-            
+            get=>_fuelSourceAttachPoint;
+            set=>_fuelSourceAttachPoint=value;
+
         }
         private FuelTankScript _fuelTank;
         private FuelType _fuelType;
@@ -55,6 +56,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         protected override void OnDesignerInitialization(IDesignerPartPropertiesModifierInterface d)
         {
             base.OnDesignerInitialization(d);
+            
             
         }
         

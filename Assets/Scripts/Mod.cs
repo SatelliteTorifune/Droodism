@@ -151,6 +151,30 @@ namespace Assets.Scripts
         }
         
     }
+
+    /*[HarmonyPatch]
+    public class HarmonyPatches
+    {
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(FuelType), "Initialize")]
+        private static void AddingStaticFuelType(ref List<FuelType> fuels)
+        {
+            try
+            {
+                IniOxygen();
+                if (!fuels.Any(f => f.Id == Oxygen.Id))
+                {
+                    fuels.Add(Oxygen);
+                    Debug.Log($"已将自定义 FuelType ({Oxygen.Name}) 添加到 fuels 列表！");
+                }
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"添加自定义 FuelType 失败: {e}");
+            }
+        }
+    }*/
+    
   
     
 }
