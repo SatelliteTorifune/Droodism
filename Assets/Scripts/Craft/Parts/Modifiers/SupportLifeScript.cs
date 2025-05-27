@@ -7,8 +7,10 @@ using ModApi.GameLoop.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Text;
 using System.Xml.Linq;
 using Assets.Scripts.Craft.Fuel;
+using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
 using Assets.Scripts.Flight;
 using Assets.Scripts.Tools.ObjectTransform;
@@ -28,6 +30,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     IFlightStart,
     IFlightUpdate
   {
+    private EvaScript _evaScript;
     private IFuelSource _fuelSource;
     private FuelTankScript _fuelTank;
     
@@ -39,7 +42,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     private string currentPlanetName;
     private IPlanetData planetData;
     private float _oxygenConsumeRate;
-    
+    private float oxygenDamageScale;
     
     private CraftFuelSource craftFuelSource;
     
@@ -117,6 +120,16 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     
     void IFlightStart.FlightStart(in FlightFrameData frame)
     {
+      try
+      {
+        _evaScript = GetComponent<EvaScript>();
+        Debug.LogFormat("Eva初始化成功");
+      }
+      catch(Exception e)
+      {
+        Debug.LogErrorFormat("Eva初始化失败!{0}",e);
+      } 
+      
       bool inFlightScene = Game.InFlightScene;
       UpdateCurrentPlanet();
       //当SOI变更时进行更新当前Planet的planetData
@@ -124,12 +137,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
       PartData partData = this.Data.Part;
       if (partData.Modifiers.Count<=6)
       {
-        AddTank("Oxygen",100);
+        AddTank("Oxygen",300);
         Debug.LogFormat("创建Oxygen");
         //AddTank("Food",100);
-        Debug.LogFormat("创建Food");
+        //Debug.LogFormat("创建Food");
       }
       this.RefreshFuelSource();
+      OnCraftStructureChanged(this.PartScript.CraftScript);
+      
     }
 
     
@@ -137,15 +152,16 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     {
       if (frame.DeltaTimeWorld == 0.0)
         return;
-      //DamageDrood(_fuelSource,frame,0.1f);
+      DamageDrood(_fuelSource,frame,Data.OxygenDamageScale);
       //DamageDrood(_fuelSourceFood,frame,0.1f);
       //_fuelSourceFood.RemoveFuel(frame.DeltaTimeWorld * Data.FoodComsumeRate);
-      if (UsingInternalOxygen())
+      if (UsingInternalOxygen()&&!_fuelSource.IsEmpty)
       {
-        double num1 = frame.DeltaTimeWorld;
-        double num2 =(double)Data.OxygenComsumeRate * frame.DeltaTimeWorld;
+        double num1 = 1/frame.DeltaTimeWorld;
+        double num2 =(double)Data.OxygenComsumeRate * frame.DeltaTimeWorld*(_evaScript.IsWalking?1:1.5);
         _fuelSource.RemoveFuel(num2);
-        Debug.LogFormat($"Removed{num2}");
+        
+        Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"剩余呼吸时间:{this._fuelSource.TotalFuel/(Data.OxygenComsumeRate*(_evaScript.IsWalking?1:1.5))}",false,2f);
         
       }
       
@@ -159,9 +175,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
     public override void OnCraftStructureChanged(ICraftScript craftScript)
     {
-      this.FuelTank = EngineUtilities.GetFuelTank(this.PartScript, this.Data.FuelSourceAttachPoint, this.Data.FuelType)?.Script;
-      
-      this.RefreshFuelSource();
+      base.OnCraftStructureChanged(craftScript);
+      RefreshFuelSource();
     }
     
     
@@ -200,7 +215,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     
     /// <summary>
     /// 检测当前环境是否可呼吸,可呼吸则返回false不消耗氧气;不可呼吸则返回true消耗内部氧气
-    /// check if current environment is OK to breath,if so return false,drood does not consume oxygen brought;if not,then return trun,consuming oxygen brought
+    /// check if current environment is OK to breath,if so return false,drood does not consume oxygen brought;if not,then return true,consuming oxygen brought
     /// </summary>
     /// <returns></returns>
     private bool UsingInternalOxygen()
@@ -239,10 +254,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
     private void DamageDrood(IFuelSource _fuelSource,FlightFrameData frame,float DamageScale)
     {
-      if (_fuelSource.IsEmpty&&(double) (float) (Setting<float>)Game.Instance.Settings.Game.Flight.ImpactDamageScale > 0.0)
+      float num1 = (float)frame.DeltaTimeWorld;
+      float num2 =(_evaScript.IsWalking?1f:1.5f)*DamageScale * (float)frame.DeltaTimeWorld;
+      if (_fuelSource.IsEmpty&&(float) (Setting<float>)Game.Instance.Settings.Game.Flight.ImpactDamageScale > 0.0)
       {
-        this.PartScript.TakeDamage(DamageScale * Game.Instance.Settings.Game.Flight.ImpactDamageScale * frame.DeltaTime,PartDamageType.Basic);
-        Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"{this.PartScript.Data.Name}(id:{this.PartScript.Data.Id}) is taking damage because running out of {_fuelSource.FuelType.Name}",false,2f);
+        this.PartScript.TakeDamage(num2*Game.Instance.Settings.Game.Flight.ImpactDamageScale,PartDamageType.Basic);
+        Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"{_evaScript.CrewCompartment.Data.Name}(id:{this.PartScript.Data.Id}) is taking damage because running out of {_fuelSource.FuelType.Name},he/she has {((100-this.PartScript.Data.Damage)/DamageScale*10).ToString()} seconds left",false,2f);
       }
     }
   }
