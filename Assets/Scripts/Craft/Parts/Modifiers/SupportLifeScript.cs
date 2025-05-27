@@ -6,15 +6,18 @@ using ModApi.GameLoop;
 using ModApi.GameLoop.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Windows.Forms;
 using System.Xml.Linq;
 using Assets.Scripts.Craft.Fuel;
 using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
 using Assets.Scripts.Flight;
+using Assets.Scripts.Tools.ObjectTransform;
 using ModApi.Craft.Propulsion;
 using ModApi.Planet;
 using UnityEngine;
 using ModApi.Flight.Sim;
-using static Assets.Scripts.SearchDrood;
+using ModApi.Settings.Core;
+
 
 #nullable disable
 namespace Assets.Scripts.Craft.Parts.Modifiers
@@ -27,9 +30,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
   {
     private IFuelSource _fuelSource;
     private FuelTankScript _fuelTank;
+    
+    //private IFuelSource _fuelSourceFood;
+    //private FuelTankScript _fuelTankFood;
+    
     private IInputController _inputThrottle;
     private float _fuelRemoved;
-    private float _powerScale = 1f;
     private string currentPlanetName;
     private IPlanetData planetData;
     private float _oxygenConsumeRate;
@@ -43,38 +49,18 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
       base.OnModifiersCreated();
       if(Game.InFlightScene)
       {
-        this._fuelTank = ((Component) this).GetComponent<FuelTankScript>();
+        RefreshFuelSource();
       }
         
     }
     
-    private void AddTank(FuelType fuelType)
-    {
-      XElement element = new XElement("FuelTank");
-      element.SetAttributeValue("capacity", 100f);
-      element.SetAttributeValue("fuel", 100f);
-      element.SetAttributeValue("fuelType", fuelType.Id);
-      element.SetAttributeValue("utilization", -1);
-      element.SetAttributeValue("autoFuelType", false);
-      element.SetAttributeValue("partPropertiesEnabled", false);
-      var tankData= PartModifierData.CreateFromStateXml(element, Data.Part, 15) as FuelTankData;
-      try
-      {
-        tankData.CreateScript();
-      }
-      catch (Exception e)
-      {
-        Debug.LogErrorFormat("{0}",e);
-      }
-      
-      
-    }
+    
     private FuelTankScript FuelTank
     {
       get => this._fuelTank;
       set
       {
-        if (this._fuelTank == value) // 替换为 == 比较
+        if (this._fuelTank == value) 
           return;
         if (Game.InFlightScene && this._fuelTank != null)
           this._fuelTank.CraftFuelSourceChanged -= new EventHandler<EventArgs>(this.OnCraftFuelSourceChanged);
@@ -84,28 +70,66 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         this._fuelTank.CraftFuelSourceChanged += new EventHandler<EventArgs>(this.OnCraftFuelSourceChanged);
       }
     }
-
+    /*private FuelTankScript FuelTankFood
+    {
+      get => this._fuelTankFood;
+      set
+      {
+        if (this._fuelTankFood == value) 
+          return;
+        if (Game.InFlightScene && this._fuelTankFood != null)
+          this._fuelTankFood.CraftFuelSourceChanged -= new EventHandler<EventArgs>(this.OnCraftFuelSourceChanged);
+        this._fuelTankFood = value;
+        if (!Game.InFlightScene || this._fuelTankFood == null)
+          return;
+        this._fuelTankFood.CraftFuelSourceChanged += new EventHandler<EventArgs>(this.OnCraftFuelSourceChanged);
+      }
+    }*/
     void IDesignerStart.DesignerStart(in DesignerFrameData frame)
     {
-      
       base.OnInitialized();
-      PartData partData = this.Data.Part;
-      if (partData.Modifiers.Count<=6)
-      {
-        AddTank(CreateOxygenFuelType());
-      }
-
     }
+    
+    private void AddTank(String fuelType,float FuelCapacity)
+    {
+      XElement element = new XElement("FuelTank");
+      element.SetAttributeValue("capacity", FuelCapacity);
+      element.SetAttributeValue("fuel", FuelCapacity);
+      element.SetAttributeValue("fuelType", fuelType);
+      element.SetAttributeValue("utilization", -1);
+      element.SetAttributeValue("autoFuelType", false);
+      element.SetAttributeValue("subPriority",-1);
+      element.SetAttributeValue("partPropertiesEnabled", false);
+      element.SetAttributeValue("staticPriceAndMass", false);
+      var tankData= PartModifierData.CreateFromStateXml(element, Data.Part, 15) as FuelTankData;
+      try
+      {
+        tankData.InspectorEnabled = true;
+        tankData.SubPriority = -1;
+        tankData.CreateScript();
 
+      }
+      catch (Exception e)
+      {
+        Debug.LogErrorFormat("{0}",e);
+      }
+    }
+    
     void IFlightStart.FlightStart(in FlightFrameData frame)
     {
-      this._powerScale = this.Data.OxygenComsumeRate;
       bool inFlightScene = Game.InFlightScene;
       UpdateCurrentPlanet();
       //当SOI变更时进行更新当前Planet的planetData
       Game.Instance.FlightScene.CraftNode.ChangedSoI += OnSoiChanged;
-      
-
+      PartData partData = this.Data.Part;
+      if (partData.Modifiers.Count<=6)
+      {
+        AddTank("Oxygen",100);
+        Debug.LogFormat("创建Oxygen");
+        //AddTank("Food",100);
+        Debug.LogFormat("创建Food");
+      }
+      this.RefreshFuelSource();
     }
 
     
@@ -113,12 +137,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     {
       if (frame.DeltaTimeWorld == 0.0)
         return;
-      Debug.LogFormat("{0}",UsingInternalOxygen());
+      //DamageDrood(_fuelSource,frame,0.1f);
+      //DamageDrood(_fuelSourceFood,frame,0.1f);
+      //_fuelSourceFood.RemoveFuel(frame.DeltaTimeWorld * Data.FoodComsumeRate);
       if (UsingInternalOxygen())
       {
-        double num1 = 1.0 / frame.DeltaTimeWorld;
-        double num2 =_powerScale * (double)Data.OxygenComsumeRate * frame.DeltaTimeWorld;
-        
+        double num1 = frame.DeltaTimeWorld;
+        double num2 =(double)Data.OxygenComsumeRate * frame.DeltaTimeWorld;
+        _fuelSource.RemoveFuel(num2*num1);
+        Debug.LogFormat($"Removed{num2*num1}");
         
       }
       
@@ -133,30 +160,42 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     public override void OnCraftStructureChanged(ICraftScript craftScript)
     {
       this.FuelTank = EngineUtilities.GetFuelTank(this.PartScript, this.Data.FuelSourceAttachPoint, this.Data.FuelType)?.Script;
+      
       this.RefreshFuelSource();
     }
     
-
-    public override void OnSymmetry(SymmetryMode mode, IPartScript originalPart, bool created)
-    {
-      // 移除缩放、拉伸等逻辑
-    }
     
     private void OnCraftFuelSourceChanged(object sender, EventArgs e)
     {
-      
       this.RefreshFuelSource();
     }
     private void RefreshFuelSource()
     {
-      if (this.Data.FuelType == this.FuelTank?.CraftFuelSource?.FuelType)
+      Debug.LogFormat("调用RefreshFuelSource");
+      foreach (var _modifier in this.PartScript.Modifiers)
       {
-        this._fuelSource = this.FuelTank?.CraftFuelSource;
+       
+        if (_modifier.GetData().Name.Contains("FuelTank"))
+        {
+          
+          this._fuelTank = _modifier as FuelTankScript;
+          //this._fuelTankFood=_modifier as FuelTankScript;
+          Debug.LogFormat("1");
+          if (_fuelTank?.FuelType.Name=="Oxygen")
+          {
+            this._fuelSource = this.FuelTank?.CraftFuelSource;
+            Debug.LogFormat("Oxygen");
+          }
+          
+          //if (_fuelTankFood.FuelType.Name=="Food")
+          //{
+          //  this._fuelSourceFood = this.FuelTankFood?.CraftFuelSource;
+          //}
+        }
       }
-      else if (this.Data.FuelType != null)
-      {
-        this._fuelSource = EmptyFuelSource.GetOrCreate(this.Data.FuelType);
-      }
+      //this._fuelTank = GetComponent<FuelTankScript>();
+      
+      
     } 
     
     /// <summary>
@@ -197,7 +236,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     {
       UpdateCurrentPlanet();
     }
-    
+
+    private void DamageDrood(IFuelSource _fuelSource,FlightFrameData frame,float DamageScale)
+    {
+      if (_fuelSource.IsEmpty&&(double) (float) (Setting<float>)Game.Instance.Settings.Game.Flight.ImpactDamageScale > 0.0)
+      {
+        this.PartScript.TakeDamage(DamageScale * Game.Instance.Settings.Game.Flight.ImpactDamageScale * frame.DeltaTime,PartDamageType.Basic);
+        Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Drood(id:{this.PartScript.Data.Id}) is taking damage because running out of {_fuelSource.FuelType.Name}",false,2f);
+      }
+    }
   }
   
   

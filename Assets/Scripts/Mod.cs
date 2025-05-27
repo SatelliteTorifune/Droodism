@@ -143,7 +143,7 @@ namespace Assets.Scripts
 
             for (int i = 0; i < DroodParts.Count; i++)
             {
-                Debug.LogFormat("{0}", DroodParts[i].Id);
+                Debug.LogFormat("DroodParts的 ID 是{0}", DroodParts[i].Id);
             }
 
             return DroodParts;
@@ -152,6 +152,7 @@ namespace Assets.Scripts
         
     }
 
+    //何意味?
     /*[HarmonyPatch]
     public class HarmonyPatches
     {

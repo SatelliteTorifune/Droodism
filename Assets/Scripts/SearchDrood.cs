@@ -1,4 +1,5 @@
 
+using System.Xml;
 using System.Xml.Linq;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Design;
@@ -35,7 +36,8 @@ namespace Assets.Scripts
             if (_supportLifeData==null)
             {
                 _supportLifeData = RenkosCreateModifierData<SupportLifeData>(part);
-                _supportLifeData.OxygenComsumeRate = 10f;
+                _supportLifeData.OxygenComsumeRate = 0.01f;
+                _supportLifeData.FoodComsumeRate = 0.01f;
                 _supportLifeData.FuelSourceAttachPoint = 0;
                 _supportLifeData.PartPropertiesEnabled = false;
                 _supportLifeData.InspectorEnabled = false;
@@ -48,40 +50,8 @@ namespace Assets.Scripts
             T fromDefaultXml = PartModifierData.CreateFromDefaultXml<T>(part);
             return fromDefaultXml;
         }
-
         
-        public static FuelType CreateOxygenFuelType()
-        {
-            XElement fuelTypeXml = new XElement("Fuel");
-            fuelTypeXml.SetAttributeValue("id", "Oxygen");
-            fuelTypeXml.SetAttributeValue("name", "Oxygen");
-            fuelTypeXml.SetAttributeValue("gamma", 0f);
-            fuelTypeXml.SetAttributeValue("density", 0.001404f);
-            fuelTypeXml.SetAttributeValue("molecularWeight", 32f);
-            fuelTypeXml.SetAttributeValue("combustionTemperature", 0);
-            fuelTypeXml.SetAttributeValue("price", 200);
-            fuelTypeXml.SetAttributeValue("enginePriceScale", 1f);
-            fuelTypeXml.SetAttributeValue("explosivePower", 0.5f);
-            fuelTypeXml.SetAttributeValue("description", "A custom fuel type for testing");
-            fuelTypeXml.SetAttributeValue("fuelTransferRate", 200f);
-            fuelTypeXml.SetAttributeValue("displayInDesigner", false);
-            fuelTypeXml.SetAttributeValue("storageOverhead", 0.3f);
-            XElement visualElement = new XElement("Visual");
-            visualElement.SetAttributeValue("exhaustColor", "FFFFFFFF"); 
-            visualElement.SetAttributeValue("exhaustColorExpanded", "FFFFFFFF");
-            visualElement.SetAttributeValue("exhaustColorTip", "FFFFFFFF");
-            visualElement.SetAttributeValue("exhaustColorShock", "FFFFFFFF");
-            visualElement.SetAttributeValue("exhaustColorFlame", "FFFFFFFF");
-            visualElement.SetAttributeValue("exhaustColorSoot", "FFFFFFFF"); 
-            visualElement.SetAttributeValue("exhaustColorSmoke", "FFFFFFFF"); 
-            visualElement.SetAttributeValue("shockIntensity", 2f);
-            visualElement.SetAttributeValue("globalIntensity", 2f);
-            visualElement.SetAttributeValue("rimShade", 0.5f);
-            visualElement.SetAttributeValue("smokeOffset", 1f);
-            fuelTypeXml.Add(visualElement);
-            FuelType customFuelType = new FuelType(fuelTypeXml, Mod.Inctance.Mod);
-            return customFuelType;
-        }
+        
     }
     
 }
