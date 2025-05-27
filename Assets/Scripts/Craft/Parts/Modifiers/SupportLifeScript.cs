@@ -144,8 +144,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
       {
         double num1 = frame.DeltaTimeWorld;
         double num2 =(double)Data.OxygenComsumeRate * frame.DeltaTimeWorld;
-        _fuelSource.RemoveFuel(num2*num1);
-        Debug.LogFormat($"Removed{num2*num1}");
+        _fuelSource.RemoveFuel(num2);
+        Debug.LogFormat($"Removed{num2}");
         
       }
       
@@ -242,7 +242,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
       if (_fuelSource.IsEmpty&&(double) (float) (Setting<float>)Game.Instance.Settings.Game.Flight.ImpactDamageScale > 0.0)
       {
         this.PartScript.TakeDamage(DamageScale * Game.Instance.Settings.Game.Flight.ImpactDamageScale * frame.DeltaTime,PartDamageType.Basic);
-        Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Drood(id:{this.PartScript.Data.Id}) is taking damage because running out of {_fuelSource.FuelType.Name}",false,2f);
+        Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"{this.PartScript.Data.Name}(id:{this.PartScript.Data.Id}) is taking damage because running out of {_fuelSource.FuelType.Name}",false,2f);
       }
     }
   }
