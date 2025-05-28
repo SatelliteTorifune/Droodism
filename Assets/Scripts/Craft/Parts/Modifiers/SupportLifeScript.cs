@@ -6,6 +6,7 @@ using ModApi.GameLoop;
 using ModApi.GameLoop.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Net.Mime;
 using System.Windows.Forms;
 using System.Text;
 using System.Xml.Linq;
@@ -18,7 +19,9 @@ using ModApi.Craft.Propulsion;
 using ModApi.Planet;
 using UnityEngine;
 using ModApi.Flight.Sim;
+using ModApi.Math;
 using ModApi.Settings.Core;
+using ModApi.Ui.Inspector;
 
 
 #nullable disable
@@ -91,6 +94,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     void IDesignerStart.DesignerStart(in DesignerFrameData frame)
     {
       base.OnInitialized();
+      
     }
     
     private void AddTank(String fuelType,float FuelCapacity)
@@ -123,7 +127,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
       try
       {
         _evaScript = GetComponent<EvaScript>();
-        Debug.LogFormat("Eva初始化成功");
+        //OnGenerateInspectorModel(new PartInspectorModel("Life Support Info",new IconButtonRowModel()));
+        
       }
       catch(Exception e)
       {
@@ -150,7 +155,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     
     void IFlightUpdate.FlightUpdate(in FlightFrameData frame)
     {
-      if (frame.DeltaTimeWorld == 0.0)
+      if (frame.DeltaTimeWorld == 0.0 || !_evaScript.EvaActive) 
         return;
       DamageDrood(_fuelSource,frame,Data.OxygenDamageScale);
       //DamageDrood(_fuelSourceFood,frame,0.1f);
@@ -161,7 +166,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         double num2 =(double)Data.OxygenComsumeRate * frame.DeltaTimeWorld*(_evaScript.IsWalking?1:1.5);
         _fuelSource.RemoveFuel(num2);
         
-        Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"剩余呼吸时间:{this._fuelSource.TotalFuel/(Data.OxygenComsumeRate*(_evaScript.IsWalking?1:1.5))}",false,2f);
+        Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"剩余呼吸时间:{Units.GetStopwatchTimeString(this._fuelSource.TotalFuel/(Data.OxygenComsumeRate*(_evaScript.IsWalking?1:1.5)))}",false,2f);
         
       }
       
@@ -187,6 +192,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     private void RefreshFuelSource()
     {
       Debug.LogFormat("调用RefreshFuelSource");
+      
       foreach (var _modifier in this.PartScript.Modifiers)
       {
        
@@ -195,11 +201,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
           
           this._fuelTank = _modifier as FuelTankScript;
           //this._fuelTankFood=_modifier as FuelTankScript;
-          Debug.LogFormat("1");
           if (_fuelTank?.FuelType.Name=="Oxygen")
           {
             this._fuelSource = this.FuelTank?.CraftFuelSource;
-            Debug.LogFormat("Oxygen");
+            Debug.LogFormat("已更新Oxygen的fuelSOurce");
           }
           
           //if (_fuelTankFood.FuelType.Name=="Food")
@@ -254,13 +259,26 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
     private void DamageDrood(IFuelSource _fuelSource,FlightFrameData frame,float DamageScale)
     {
-      float num1 = (float)frame.DeltaTimeWorld;
+      float num1 = 1/(float)frame.DeltaTimeWorld;
       float num2 =(_evaScript.IsWalking?1f:1.5f)*DamageScale * (float)frame.DeltaTimeWorld;
       if (_fuelSource.IsEmpty&&(float) (Setting<float>)Game.Instance.Settings.Game.Flight.ImpactDamageScale > 0.0)
       {
         this.PartScript.TakeDamage(num2*Game.Instance.Settings.Game.Flight.ImpactDamageScale,PartDamageType.Basic);
-        Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"{_evaScript.CrewCompartment.Data.Name}(id:{this.PartScript.Data.Id}) is taking damage because running out of {_fuelSource.FuelType.Name},he/she has {((100-this.PartScript.Data.Damage)/DamageScale*10).ToString()} seconds left",false,2f);
+        Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"<color=red>Crew Memeber {_evaScript.Data.CrewName}(id:{this.PartScript.Data.Id}) is taking damage because running out of {_fuelSource.FuelType.Name},he/she has {Units.GetStopwatchTimeString((100-this.PartScript.Data.Damage)/DamageScale)} seconds left",false,2f);
       }
+    }
+
+    public override void OnGenerateInspectorModel(PartInspectorModel model)
+    {
+      
+      base.OnGenerateInspectorModel(model);
+      Game.Instance.FlightScene.FlightSceneUI.ShowMessage("回答我!调用了吗???",true,99999999f);
+      GroupModel groupModel = new GroupModel("Life Support Info");
+      model.AddGroup(groupModel);
+      //.groupModel.Add<TextModel>(new TextModel("Power Consumption", (Func<string>) (() => Units.GetStopwatchTimeString((100-this.PartScript.Data.Damage)/oxygenDamageScale))));
+      groupModel.Add<TextModel>(new TextModel("test", (Func<string>) (() => "10")));
+
+
     }
   }
   
