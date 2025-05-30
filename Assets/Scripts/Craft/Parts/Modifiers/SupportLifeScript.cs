@@ -22,270 +22,365 @@ using ModApi.Math;
 using ModApi.Settings.Core;
 using ModApi.Ui.Inspector;
 
-
-#nullable disable
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
-  public class SupportLifeScript : 
-    PartModifierScript<SupportLifeData>,
-    IDesignerStart,
-    IFlightStart,
-    IFlightUpdate
-  {
-    private EvaScript _evaScript;
-    
-    private IFuelSource _oxygenSource;
-    private FuelTankScript _oxygenfuelTank;
-    
-    private IFuelSource _fuelSourceFood;
-    private FuelTankScript _fuelTankFood;
-    
-    private IInputController _inputThrottle;
-    private float _fuelRemoved;
-    private string currentPlanetName;
-    private IPlanetData planetData;
-    private float _oxygenConsumeRate;
-    private float oxygenDamageScale;
-    
-    private CraftFuelSource craftOxygenFuelSource;
-    
-    private GrapplingHookScript _grapplingHook;
-    
-    public override void OnModifiersCreated()
+    public class SupportLifeScript : 
+        PartModifierScript<SupportLifeData>,
+        IDesignerStart,
+        IFlightStart,
+        IFlightUpdate
     {
-      base.OnModifiersCreated();
-      if(Game.InFlightScene)
-      {
-        RefreshFuelSource();
-      }
+        private EvaScript _evaScript;
         
-    }
-    
-    
-    private FuelTankScript OxygenFuelTank
-    {
-      get => this._oxygenfuelTank;
-      set
-      {
-        if (this._oxygenfuelTank == value) 
-          return;
-        if (Game.InFlightScene && this._oxygenfuelTank != null)
-          this._oxygenfuelTank.CraftFuelSourceChanged -= new EventHandler<EventArgs>(this.OnCraftFuelSourceChanged);
-        this._oxygenfuelTank = value;
-        if (!Game.InFlightScene || this._oxygenfuelTank == null)
-          return;
-        this._oxygenfuelTank.CraftFuelSourceChanged += new EventHandler<EventArgs>(this.OnCraftFuelSourceChanged);
-      }
-    }
-    private FuelTankScript FuelTankFood
-    {
-      get => this._fuelTankFood;
-      set
-      {
-        if (this._fuelTankFood == value) 
-          return;
-        if (Game.InFlightScene && this._fuelTankFood != null)
-          this._fuelTankFood.CraftFuelSourceChanged -= new EventHandler<EventArgs>(this.OnCraftFuelSourceChanged);
-        this._fuelTankFood = value;
-        if (!Game.InFlightScene || this._fuelTankFood == null)
-          return;
-        this._fuelTankFood.CraftFuelSourceChanged += new EventHandler<EventArgs>(this.OnCraftFuelSourceChanged);
-      }
-    }
-    void IDesignerStart.DesignerStart(in DesignerFrameData frame)
-    {
-      base.OnInitialized();
-      
-    }
-    
-    private void AddTank(String fuelType,float FuelCapacity)
-    {
-      XElement element = new XElement("FuelTank");
-      element.SetAttributeValue("capacity", FuelCapacity);
-      element.SetAttributeValue("fuel", FuelCapacity);
-      element.SetAttributeValue("fuelType", fuelType);
-      element.SetAttributeValue("utilization", -1);
-      element.SetAttributeValue("autoFuelType", false);
-      element.SetAttributeValue("subPriority",-1);
-      element.SetAttributeValue("partPropertiesEnabled", false);
-      element.SetAttributeValue("staticPriceAndMass", false);
-      var tankData= PartModifierData.CreateFromStateXml(element, Data.Part, 15) as FuelTankData;
-      try
-      {
-        tankData.InspectorEnabled = true;
-        tankData.SubPriority = -1;
-        tankData.CreateScript();
-
-      }
-      catch (Exception e)
-      {
-        Debug.LogErrorFormat("{0}",e);
-      }
-    }
-    
-    void IFlightStart.FlightStart(in FlightFrameData frame)
-    {
-      try
-      {
-        _evaScript = GetComponent<EvaScript>();
-
-      }
-      catch(Exception e)
-      {
-        Debug.LogErrorFormat("Eva初始化失败!{0}",e);
-      } 
-      
-      bool inFlightScene = Game.InFlightScene;
-      UpdateCurrentPlanet();
-      //当SOI变更时进行更新当前Planet的planetData
-      Game.Instance.FlightScene.CraftNode.ChangedSoI += OnSoiChanged;
-      PartData partData = this.Data.Part;
-      if (partData.Modifiers.Count<=6)
-      {
-        AddTank("Oxygen",300);
-        Debug.LogFormat("创建Oxygen");
-        AddTank("Food",100);
-        Debug.LogFormat("创建Food");
-      }
-      this.RefreshFuelSource();
-      OnCraftStructureChanged(this.PartScript.CraftScript);
-      
-    }
-
-    
-    void IFlightUpdate.FlightUpdate(in FlightFrameData frame)
-    {
-      if (frame.DeltaTimeWorld == 0.0 || !_evaScript.EvaActive) 
-        return;
-      DamageDrood(_oxygenSource,frame,Data.OxygenDamageScale);
-      //DamageDrood(_fuelSourceFood,frame,0.1f);
-      //_fuelSourceFood.RemoveFuel(frame.DeltaTimeWorld * Data.FoodComsumeRate);
-      
-      
-      
-
-      if (UsingInternalOxygen()&&!_oxygenSource.IsEmpty)
-      {
-        double num1 = 1/frame.DeltaTimeWorld;
-        double num2 =(double)Data.OxygenComsumeRate * frame.DeltaTimeWorld*(_evaScript.IsWalking?1:1.5);
-        _oxygenSource.RemoveFuel(num2);
+        private IFuelSource _oxygenSource;
+        private FuelTankScript _oxygenFuelTank;
         
-        Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"剩余呼吸时间:{Units.GetStopwatchTimeString(this._oxygenSource.TotalFuel/(Data.OxygenComsumeRate*(_evaScript.IsWalking?1:1.8)))}",false,2f);
+        private IFuelSource _foodSource;
+        private FuelTankScript _foodFuelTank;
         
-      }
-      
-    }
-
-    public override void OnCraftLoaded(ICraftScript craftScript, bool movedToNewCraft)
-    {
-      this.OnCraftStructureChanged(craftScript);
-      
-    }
-
-    public override void OnCraftStructureChanged(ICraftScript craftScript)
-    {
-      base.OnCraftStructureChanged(craftScript);
-      RefreshFuelSource();
-      if (Game.InFlightScene)
-      {
+        private IInputController _inputThrottle;
+        private float _fuelRemoved;
+        private string currentPlanetName;
+        private IPlanetData planetData;
+        private float _oxygenConsumeRate;
+        private float oxygenDamageScale;
         
-      }
-    }
-    
-    
-    private void OnCraftFuelSourceChanged(object sender, EventArgs e)
-    {
-      this.RefreshFuelSource();
-    }
-    private void RefreshFuelSource()
-    {
-      Debug.LogFormat("调用RefreshFuelSource");
-      
-      foreach (var _modifier in this.PartScript.Modifiers)
-      {
-        if (_modifier.GetData().Name.Contains("FuelTank"))
+        private CraftFuelSource craftOxygenFuelSource;
+        
+        private GrapplingHookScript _grapplingHook;
+        
+        public override void OnModifiersCreated()
         {
-          this._oxygenfuelTank = _modifier as FuelTankScript;
-          if (_oxygenfuelTank?.FuelType.Name=="Oxygen")
-          {
-            this._oxygenSource = this.OxygenFuelTank?.CraftFuelSource;
-            Debug.LogFormat("已更新Oxygen的fuelSOurce");
-          }
-          
-          //if (_fuelTankFood.FuelType.Name=="Food")
-          //{
-          //  this._fuelSourceFood = this.FuelTankFood?.CraftFuelSource;
-          //}
+            base.OnModifiersCreated();
+            if (Game.InFlightScene)
+            {
+                RefreshFuelSource();
+            }
         }
-      }
-      
-      
-    } 
-    
-    /// <summary>
-    /// 检测当前环境是否可呼吸,可呼吸则返回false不消耗氧气;不可呼吸则返回true消耗内部氧气
-    /// check if current environment is OK to breath,if so return false,drood does not consume oxygen brought;if not,then return true,consuming oxygen brought
-    /// </summary>
-    /// <returns></returns>
-    private bool UsingInternalOxygen()
-    {
-      //当前空气密度
-      float airDensity = PartScript.CraftScript.AtmosphereSample.AirDensity;
-      //若空气密度不为零(即当前环境存在大气),则检测当前星球是否存在可呼吸气体
-      if (airDensity!=0)
-      {
-        if (currentPlanetName.Contains("Droo")||currentPlanetName.Contains("Kerbin")||currentPlanetName.Contains("Earth")||currentPlanetName.Contains("Nebra")||currentPlanetName.Contains("Laythe")||currentPlanetName.Contains("Oord"))
+        
+        private FuelTankScript OxygenFuelTank
         {
-          return false;
+            get => this._oxygenFuelTank;
+            set
+            {
+                if (this._oxygenFuelTank == value) 
+                    return;
+                if (Game.InFlightScene && this._oxygenFuelTank != null)
+                    this._oxygenFuelTank.CraftFuelSourceChanged -= new EventHandler<EventArgs>(this.OnCraftFuelSourceChanged);
+                this._oxygenFuelTank = value;
+                if (!Game.InFlightScene || this._oxygenFuelTank == null)
+                    return;
+                this._oxygenFuelTank.CraftFuelSourceChanged += new EventHandler<EventArgs>(this.OnCraftFuelSourceChanged);
+            }
         }
 
-        return true;
-      }
-      return true;
-      
-    }
-    /// <summary>
-    /// 更新当前星球的planetData
-    /// </summary>
-    private void UpdateCurrentPlanet()
-    {
-      bool inFlightScene = Game.InFlightScene;
-      IPlanetData planetData = inFlightScene ? FlightSceneScript.Instance?.CraftNode?.Parent.PlanetData : (IPlanetData) null;//从IPlanetData接口实例化当前场景              
-      currentPlanetName=planetData.Name;
-    }
-    /// <summary>
-    /// SOi改变时调用UpdateCurrentPlanet方法更新当前星球的planetData
-    /// </summary>
-    private void OnSoiChanged(IOrbitNode source)
-    {
-      UpdateCurrentPlanet();
-    }
+        private FuelTankScript FuelTankFood
+        {
+            get => this._foodFuelTank;
+            set
+            {
+                if (this._foodFuelTank == value) 
+                    return;
+                if (Game.InFlightScene && this._foodFuelTank != null)
+                    this._foodFuelTank.CraftFuelSourceChanged -= new EventHandler<EventArgs>(this.OnCraftFuelSourceChanged);
+                this._foodFuelTank = value;
+                if (!Game.InFlightScene || this._foodFuelTank == null)
+                    return;
+                this._foodFuelTank.CraftFuelSourceChanged += new EventHandler<EventArgs>(this.OnCraftFuelSourceChanged);
+            }
+        }
 
-    private void DamageDrood(IFuelSource _fuelSource,FlightFrameData frame,float DamageScale)
-    {
-      float num1 = 1/(float)frame.DeltaTimeWorld;
-      float num2 =(_evaScript.IsWalking?1f:1.8f)*DamageScale * (float)frame.DeltaTimeWorld;
-      if (_fuelSource.IsEmpty&&(float) (Setting<float>)Game.Instance.Settings.Game.Flight.ImpactDamageScale > 0.0)
-      {
-        this.PartScript.TakeDamage(num2*Game.Instance.Settings.Game.Flight.ImpactDamageScale,PartDamageType.Basic);
-        Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"<color=red>Crew Memeber {_evaScript.Data.CrewName}(id:{this.PartScript.Data.Id}) is taking damage because running out of {_fuelSource.FuelType.Name},he/she has {Units.GetStopwatchTimeString((100-this.PartScript.Data.Damage)/DamageScale)} seconds left",false,2f);
-      }
+        void IDesignerStart.DesignerStart(in DesignerFrameData frame)
+        {
+            base.OnInitialized();
+        }
+        
+        private void AddTank(String fuelType, float FuelCapacity)
+        {
+            XElement element = new XElement("FuelTank");
+            element.SetAttributeValue("capacity", FuelCapacity);
+            element.SetAttributeValue("fuel", FuelCapacity);
+            element.SetAttributeValue("fuelType", fuelType);
+            element.SetAttributeValue("utilization", -1);
+            element.SetAttributeValue("autoFuelType", false);
+            element.SetAttributeValue("subPriority", -1);
+            element.SetAttributeValue("partPropertiesEnabled", false);
+            element.SetAttributeValue("staticPriceAndMass", false);
+            var tankData = PartModifierData.CreateFromStateXml(element, Data.Part, 15) as FuelTankData;
+            try
+            {
+                tankData.InspectorEnabled = true;
+                tankData.SubPriority = -1;
+                var fuelTankScript = tankData.CreateScript() as FuelTankScript;
+                if (fuelTankScript != null)
+                {
+                    PartScript.Modifiers.Add(fuelTankScript);
+                    Debug.LogFormat("成功添加 {0} 类型的 FuelTank 到 PartScript.Modifiers", fuelType);
+
+                    // 设置 FuelTransferMode 以触发 CraftFuelSource 的分配
+                    fuelTankScript.FuelTransferMode = FuelTransferMode.Fill;
+                    Debug.LogFormat("设置 {0} 类型的 FuelTank 的 FuelTransferMode 为 Fill", fuelType);
+
+                    // 如果 CraftFuelSource 仍然为 null，手动设置
+                    if (fuelTankScript.CraftFuelSource == null)
+                    {
+                        CraftScript craftScript = this.PartScript.CraftScript as CraftScript;
+                        fuelTankScript.CraftFuelSource = new CraftFuelSource(new FuelTransferManager(craftScript),1,FuelType.Battery);
+                        Debug.LogFormat("手动为 {0} 类型的 FuelTank 设置 CraftFuelSource", fuelType);
+                    }
+                }
+                else
+                {
+                    Debug.LogErrorFormat("创建 {0} 类型的 FuelTankScript 失败", fuelType);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogErrorFormat("添加 {0} 类型的 FuelTank 失败: {1}", fuelType, e);
+            }
+        }
+        
+        void IFlightStart.FlightStart(in FlightFrameData frame)
+        {
+            try
+            {
+                _evaScript = GetComponent<EvaScript>();
+            }
+            catch(Exception e)
+            {
+                Debug.LogErrorFormat("Eva初始化失败!{0}", e);
+            } 
+            
+            bool inFlightScene = Game.InFlightScene;
+            UpdateCurrentPlanet();
+            Game.Instance.FlightScene.CraftNode.ChangedSoI += OnSoiChanged;
+            PartData partData = this.Data.Part;
+            Debug.LogFormat("FlightStart: PartScript.Modifiers 数量: {0}", PartScript.Modifiers.Count);
+            if (partData.Modifiers.Count <= 6)
+            {
+                AddTank("Oxygen", 300);
+                Debug.LogFormat("创建Oxygen");
+                AddTank("Food", 100);
+                Debug.LogFormat("创建Food");
+            }
+            else
+            {
+                Debug.LogFormat("Modifiers 数量为 {0}，跳过添加 FuelTank", partData.Modifiers.Count);
+            }
+            OnCraftStructureChanged(this.PartScript.CraftScript);
+        }
+
+        void IFlightUpdate.FlightUpdate(in FlightFrameData frame)
+        {
+            if (frame.DeltaTimeWorld == 0.0 || !_evaScript.EvaActive) 
+                return;
+
+            if (_oxygenSource != null)
+            {
+                DamageDrood(_oxygenSource, frame, Data.OxygenDamageScale);
+                if (UsingInternalOxygen() && _oxygenSource != null && !_oxygenSource.IsEmpty)
+                {
+                    double num1 = 1 / frame.DeltaTimeWorld;
+                    double num2 = (double)Data.OxygenComsumeRate * frame.DeltaTimeWorld * (_evaScript.IsWalking ? 1 : 1.5);
+                    _oxygenSource.RemoveFuel(num2);
+                
+                    Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
+                        $"剩余呼吸时间:{Units.GetStopwatchTimeString(this._oxygenSource.TotalFuel / (Data.OxygenComsumeRate * (_evaScript.IsWalking ? 1 : 1.8)))}",
+                        false, 2f);
+                }
+                else
+                {
+                    if (_oxygenSource == null)
+                        Debug.LogWarning("跳过氧气消耗逻辑：_oxygenSource 为 null");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("跳过 DamageDrood 调用：_oxygenSource 为 null");
+            }
+
+            if (_foodSource != null)
+            {
+                DamageDrood(_foodSource,frame, Data.OxygenDamageScale);
+                Debug.LogFormat("DamageDrood _foodSource被调用");
+                _foodSource.RemoveFuel(frame.DeltaTimeWorld * Data.FoodComsumeRate);
+                Debug.LogFormat("_foodSource.RemoveFuel被调用");
+            }
+            else
+            {
+                Debug.LogWarning("跳过 _foodSource.RemoveFuel：_foodSource 为 null");
+            }
+
+            
+        }
+
+        private void RefreshFuelSource()
+        {
+            Debug.LogFormat("调用RefreshFuelSource");
+
+            if (PartScript == null || PartScript.Modifiers == null)
+            {
+                Debug.LogError("PartScript 或 PartScript.Modifiers 为 null，无法更新 FuelSource");
+                return;
+            }
+
+            Debug.LogFormat("PartScript.Modifiers 数量: {0}", PartScript.Modifiers.Count);
+
+            foreach (var modifier in this.PartScript.Modifiers)
+            {
+                if (modifier == null)
+                {
+                    //Debug.LogWarning("找到一个 null 的 Modifier，跳过");
+                    continue;
+                }
+
+                var modifierData = modifier.GetData();
+                if (modifierData == null || string.IsNullOrEmpty(modifierData.Name))
+                {
+                    //Debug.LogWarning("Modifier 的 GetData() 返回 null 或 Name 为空，跳过");
+                    continue;
+                }
+
+                if (modifierData.Name.Contains("FuelTank"))
+                {
+                    var fuelTank = modifier as FuelTankScript;
+                    if (fuelTank != null && fuelTank.FuelType != null)
+                    {
+                        Debug.LogFormat("找到 FuelTank，FuelType: {0}, CraftFuelSource: {1}", 
+                            fuelTank.FuelType.Name, fuelTank.CraftFuelSource != null ? "存在" : "null");
+
+                        switch (fuelTank.FuelType.Name)
+                        {
+                            case "Oxygen":
+                                this._oxygenFuelTank = fuelTank;
+                                this._oxygenSource = fuelTank.CraftFuelSource;
+                                Debug.LogFormat("已更新 Oxygen 的 FuelSource: {0}", this._oxygenSource != null ? "成功" : "失败 (CraftFuelSource 为 null)");
+                                break;
+                            case "Food":
+                                this._foodFuelTank = fuelTank;
+                                this._foodSource = fuelTank.CraftFuelSource;
+                                Debug.LogFormat("已更新 Food 的 FuelSource: {0}", this._foodSource != null ? "成功" : "失败 (CraftFuelSource 为 null)");
+                                break;
+                            case "Jetpack":
+                                Debug.LogFormat("跳过 Jetpack 的 FuelSource 更新");
+                                break;
+                            default:
+                                Debug.LogWarningFormat("未知的 FuelType: {0}", fuelTank.FuelType.Name);
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogWarningFormat("无效的 FuelTank 或 FuelType: {0}，FuelType={1}, CraftFuelSource={2}", 
+                            modifierData.Name, fuelTank?.FuelType != null, fuelTank?.CraftFuelSource != null);
+                    }
+                }
+                else
+                {
+                    //Debug.LogFormat("Modifier {0} 不包含 'FuelTank'，跳过", modifierData.Name);
+                }
+            }
+
+            if (this._oxygenSource == null)
+            {
+                Debug.LogWarning("未找到 Oxygen 类型的 FuelSource，可能影响 DamageDrood 逻辑");
+            }
+            if (this._foodSource == null)
+            {
+                Debug.LogWarning("未找到 Food 类型的 FuelSource，可能影响 DamageDrood 逻辑");
+            }
+        }
+
+        public override void OnCraftLoaded(ICraftScript craftScript, bool movedToNewCraft)
+        {
+            this.OnCraftStructureChanged(craftScript);
+        }
+
+        public override void OnCraftStructureChanged(ICraftScript craftScript)
+        {
+            base.OnCraftStructureChanged(craftScript);
+            RefreshFuelSource();
+            if (Game.InFlightScene)
+            {
+            }
+        }
+        
+        private void OnCraftFuelSourceChanged(object sender, EventArgs e)
+        {
+            this.RefreshFuelSource();
+        }
+        
+        private bool UsingInternalOxygen()
+        {
+            float airDensity = PartScript.CraftScript.AtmosphereSample.AirDensity;
+            if (airDensity != 0)
+            {
+                if (currentPlanetName.Contains("Droo") || currentPlanetName.Contains("Kerbin") || 
+                    currentPlanetName.Contains("Earth") || currentPlanetName.Contains("Nebra") || 
+                    currentPlanetName.Contains("Laythe") || currentPlanetName.Contains("Oord"))
+                {
+                    return false;
+                }
+                return true;
+            }
+            return true;
+        }
+
+        private void UpdateCurrentPlanet()
+        {
+            bool inFlightScene = Game.InFlightScene;
+            IPlanetData planetData = inFlightScene ? FlightSceneScript.Instance?.CraftNode?.Parent.PlanetData : null;
+            currentPlanetName = planetData?.Name;
+        }
+
+        private void OnSoiChanged(IOrbitNode source)
+        {
+            UpdateCurrentPlanet();
+        }
+
+        private void DamageDrood(IFuelSource _fuelSource, FlightFrameData frame, float DamageScale)
+        {
+            if (_fuelSource == null || _evaScript == null || PartScript == null || 
+                Game.Instance == null || Game.Instance.Settings?.Game?.Flight == null)
+            {
+                Debug.LogError("DamageDrood: 检测到 null 对象 - " +
+                               $"_fuelSource={_fuelSource != null}, _evaScript={_evaScript != null}, " +
+                               $"PartScript={PartScript != null}, Game.Instance={Game.Instance != null}, Settings={Game.Instance?.Settings != null}");
+                return;
+            }
+
+            if (frame.DeltaTimeWorld <= 0)
+            {
+                Debug.LogWarning("DamageDrood: DeltaTimeWorld 无效");
+                return;
+            }
+
+            float num1 = 1 / (float)frame.DeltaTimeWorld;
+            float num2 = (_evaScript.IsWalking ? 1f : 1.8f) * DamageScale * (float)frame.DeltaTimeWorld;
+
+            if (_fuelSource.IsEmpty && _fuelSource.FuelType != null && 
+                (float)(Setting<float>)Game.Instance.Settings.Game.Flight.ImpactDamageScale > 0.0)
+            {
+                this.PartScript.TakeDamage(num2 * Game.Instance.Settings.Game.Flight.ImpactDamageScale, PartDamageType.Basic);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
+                    $"<color=red>Crew Member {_evaScript.Data.CrewName}(id:{this.PartScript.Data.Id}) is taking damage because running out of {_fuelSource.FuelType.Name}, " +
+                    $"he/she has {Units.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / DamageScale)} seconds left",
+                    false, 2f);
+            }
+            else
+            {
+                if (_fuelSource.FuelType == null)
+                    Debug.LogWarning("DamageDrood: _fuelSource.FuelType 为 null");
+            }
+        }
+
+        public override void OnGenerateInspectorModel(PartInspectorModel model)
+        {
+            base.OnGenerateInspectorModel(model);
+            Game.Instance.FlightScene.FlightSceneUI.ShowMessage("回答我!调用了吗???", true, 99999999f);
+            GroupModel groupModel = new GroupModel("Life Support Info");
+            model.AddGroup(groupModel);
+            groupModel.Add<TextModel>(new TextModel("test", (Func<string>) (() => "10")));
+        }
     }
-
-    public override void OnGenerateInspectorModel(PartInspectorModel model)
-    {
-      
-      base.OnGenerateInspectorModel(model);
-      Game.Instance.FlightScene.FlightSceneUI.ShowMessage("回答我!调用了吗???",true,99999999f);
-      GroupModel groupModel = new GroupModel("Life Support Info");
-      model.AddGroup(groupModel);
-      //.groupModel.Add<TextModel>(new TextModel("Power Consumption", (Func<string>) (() => Units.GetStopwatchTimeString((100-this.PartScript.Data.Damage)/oxygenDamageScale))));
-      groupModel.Add<TextModel>(new TextModel("test", (Func<string>) (() => "10")));
-
-
-    }
-  }
-  
-  
-  
 }

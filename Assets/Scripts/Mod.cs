@@ -116,21 +116,18 @@ namespace Assets.Scripts
                 {
                     foreach (PartModifierScript _pms in modifiers)
                     {
-
                         PartModifierData _modifierData = _pms.GetData();
 
                         if (_modifierData.Name == "EvaData")
                         {
                             isDrood = true;
                         }
-
                         if (_modifierData.Name == "SupportLifeData")
                         {
                             hasLifeSupport = true;
                         }
                     }
                 }
-
                 if (isDrood && !hasLifeSupport)
                 {
 
