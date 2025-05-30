@@ -30,7 +30,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         [SerializeField] [PartModifierProperty]
         private float desireOxygenCapacity = 300;
         [SerializeField] [PartModifierProperty]
-        private float desireFoodCapacity = 300;
+        private float desireFoodCapacity = 250;
         [SerializeField] [PartModifierProperty(true, false)]
         private int _fuelSourceAttachPoint = 0;
         public int FuelSourceAttachPoint

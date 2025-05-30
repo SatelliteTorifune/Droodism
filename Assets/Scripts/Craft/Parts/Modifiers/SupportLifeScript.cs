@@ -181,16 +181,19 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
             if (_oxygenSource != null)
             {
-               
-                if (UsingInternalOxygen() && _oxygenSource != null )
+                if (UsingInternalOxygen())
                 {
-                    double num1 = (double)Data.OxygenComsumeRate * frame.DeltaTimeWorld * (_evaScript.IsWalking ? 1 : 1.5);
                     if (_oxygenSource.IsEmpty)
                     {
                         DamageDrood(_oxygenSource, frame, Data.OxygenDamageScale);
-                        return;
+                        
                     }
-                    _oxygenSource.RemoveFuel(num1);
+                    else
+                    {
+                        double num1 = (double)Data.OxygenComsumeRate * frame.DeltaTimeWorld * (_evaScript.IsWalking ? 1 : 1.8);
+                        _oxygenSource.RemoveFuel(num1);
+                    }
+                    
                 }
                 
                 else
@@ -211,7 +214,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     DamageDrood(_foodSource,frame,Data.FoodDamageScale);
                     return;
                 }
-                _foodSource.RemoveFuel(frame.DeltaTimeWorld * Data.FoodComsumeRate);
+                else
+                {
+                    double num1 = (double)Data.FoodComsumeRate * frame.DeltaTimeWorld * (_evaScript.IsWalking ? 1 : 1.8);
+                    _foodSource.RemoveFuel(num1);
+                }
+                
+                
                 
             }
             else
@@ -272,7 +281,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                                 Debug.LogFormat("已更新 Food 的 FuelSource: {0}", this._foodSource != null ? "成功" : "失败");
                                 break;
                             case "Jetpack":
-                                Debug.LogFormat("跳过 Jetpack 的 FuelSource 更新");
                                 break;
                             default:
                                 Debug.LogWarningFormat("未知的 FuelType: {0}", fuelTank.FuelType.Name);
@@ -298,6 +306,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
         }
 
+        #region 无所弔谓
+
+        
+
+        
         public override void OnCraftLoaded(ICraftScript craftScript, bool movedToNewCraft)
         {
             this.OnCraftStructureChanged(craftScript);
@@ -342,6 +355,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             UpdateCurrentPlanet();
         }
 
+        #endregion
         private void DamageDrood(IFuelSource _fuelSource, FlightFrameData frame, float DamageScale)
         {
             if (_fuelSource == null || _evaScript == null || PartScript == null || 
@@ -367,7 +381,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 this.PartScript.TakeDamage(num2 * Game.Instance.Settings.Game.Flight.ImpactDamageScale, PartDamageType.Basic);
                 Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
                     $"<color=red>Crew Member {_evaScript.Data.CrewName}(id:{this.PartScript.Data.Id}) is taking damage because running out of {_fuelSource.FuelType.Name}, " +
-                    $"he/she has {Units.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / DamageScale)} seconds left",
+                    $"he/she has {Units.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) /(_evaScript.IsWalking ? 1f : 1.8f) * DamageScale)} seconds left",
                     false, 2f);
             }
             else
@@ -421,9 +435,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 if (_foodSource != null && _foodSource.TotalCapacity > 0)
                 {
-                    float percentage = (float)(_foodSource.TotalFuel / _foodSource.TotalCapacity);
-                    string foodTextColor = percentage > 0.5 ? "green" : percentage >= 0.25 ? "yellow" : "red";
-                    return $"<color={foodTextColor}>{Units.GetPercentageString(percentage)}</color>";
+                    float foodPercentage = (float)(_foodSource.TotalFuel / _foodSource.TotalCapacity);
+                    string foodTextColor = foodPercentage > 0.5 ? "green" : foodPercentage >= 0.25 ? "yellow" : "red";
+                    return $"<color={foodTextColor}>{Units.GetPercentageString(foodPercentage)}</color>";
                 }
                 return "<color=purple>N/A</color>";
             })));
@@ -432,8 +446,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 if (_foodSource != null && _evaScript != null)
                 {
-                    float percentage = (float)(_foodSource.TotalFuel / _foodSource.TotalCapacity);
-                    string foodTextColor = percentage > 0.5 ? "green" : percentage >= 0.25 ? "yellow" : "red";
+                    float foodPercentage = (float)(_foodSource.TotalFuel / _foodSource.TotalCapacity);
+                    string foodTextColor = foodPercentage > 0.5 ? "green" : foodPercentage >= 0.25 ? "yellow" : "red";
                     return $"<color={foodTextColor}>"+Units.GetStopwatchTimeString(_foodSource.TotalFuel / (Data.FoodComsumeRate * (_evaScript.IsWalking ? 1 : 1.8)));
                 }
                 return "N/A";
