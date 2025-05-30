@@ -114,19 +114,29 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 var fuelTankScript = tankData.CreateScript() as FuelTankScript;
                 if (fuelTankScript != null)
                 {
+                    Debug.LogFormat("创建 FuelTank，FuelType: {0}", fuelTankScript.FuelType?.Name ?? "null");
+                    if (fuelTankScript.FuelType == null || fuelTankScript.FuelType.Name != fuelType)
+                    {
+                        Debug.LogErrorFormat("FuelType {0} 未正确设置！", fuelType);
+                        return;
+                    }
+
                     PartScript.Modifiers.Add(fuelTankScript);
                     Debug.LogFormat("成功添加 {0} 类型的 FuelTank 到 PartScript.Modifiers", fuelType);
 
-                    // 设置 FuelTransferMode 以触发 CraftFuelSource 的分配
+                    if (!fuelTankScript.SupportsFuelTransfer)
+                    {
+                        Debug.LogErrorFormat("{0} 类型的 FuelTank 不支持燃料传输（PartScript.Disconnected = {1}）", 
+                            fuelType, fuelTankScript.PartScript.Disconnected);
+                        return;
+                    }
+
                     fuelTankScript.FuelTransferMode = FuelTransferMode.Fill;
                     Debug.LogFormat("设置 {0} 类型的 FuelTank 的 FuelTransferMode 为 Fill", fuelType);
 
-                    // 如果 CraftFuelSource 仍然为 null，手动设置
                     if (fuelTankScript.CraftFuelSource == null)
                     {
-                        CraftScript craftScript = this.PartScript.CraftScript as CraftScript;
-                        fuelTankScript.CraftFuelSource = new CraftFuelSource(new FuelTransferManager(craftScript),1,FuelType.Battery);
-                        Debug.LogFormat("手动为 {0} 类型的 FuelTank 设置 CraftFuelSource", fuelType);
+                        Debug.LogWarningFormat("{0} 类型的 FuelTank 的 CraftFuelSource 仍然为 null，将直接使用 FuelTankScript 作为 FuelSource", fuelType);
                     }
                 }
                 else
@@ -178,21 +188,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (_oxygenSource != null)
             {
                 DamageDrood(_oxygenSource, frame, Data.OxygenDamageScale);
-                if (UsingInternalOxygen() && _oxygenSource != null && !_oxygenSource.IsEmpty)
-                {
-                    double num1 = 1 / frame.DeltaTimeWorld;
-                    double num2 = (double)Data.OxygenComsumeRate * frame.DeltaTimeWorld * (_evaScript.IsWalking ? 1 : 1.5);
-                    _oxygenSource.RemoveFuel(num2);
-                
-                    Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
-                        $"剩余呼吸时间:{Units.GetStopwatchTimeString(this._oxygenSource.TotalFuel / (Data.OxygenComsumeRate * (_evaScript.IsWalking ? 1 : 1.8)))}",
-                        false, 2f);
-                }
-                else
-                {
-                    if (_oxygenSource == null)
-                        Debug.LogWarning("跳过氧气消耗逻辑：_oxygenSource 为 null");
-                }
             }
             else
             {
@@ -201,95 +196,106 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
             if (_foodSource != null)
             {
-                DamageDrood(_foodSource,frame, Data.OxygenDamageScale);
-                Debug.LogFormat("DamageDrood _foodSource被调用");
                 _foodSource.RemoveFuel(frame.DeltaTimeWorld * Data.FoodComsumeRate);
-                Debug.LogFormat("_foodSource.RemoveFuel被调用");
             }
             else
             {
                 Debug.LogWarning("跳过 _foodSource.RemoveFuel：_foodSource 为 null");
             }
 
-            
+            if (UsingInternalOxygen() && _oxygenSource != null && !_oxygenSource.IsEmpty)
+            {
+                double num1 = 1 / frame.DeltaTimeWorld;
+                double num2 = (double)Data.OxygenComsumeRate * frame.DeltaTimeWorld * (_evaScript.IsWalking ? 1 : 1.5);
+                _oxygenSource.RemoveFuel(num2);
+                
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
+                    $"剩余呼吸时间:{Units.GetStopwatchTimeString(this._oxygenSource.TotalFuel / (Data.OxygenComsumeRate * (_evaScript.IsWalking ? 1 : 1.8)))}",
+                    false, 2f);
+            }
+            else
+            {
+                if (_oxygenSource == null)
+                    Debug.LogWarning("跳过氧气消耗逻辑：_oxygenSource 为 null");
+            }
         }
 
-        private void RefreshFuelSource()
+       private void RefreshFuelSource()
+{
+    Debug.LogFormat("调用RefreshFuelSource");
+
+    if (PartScript == null || PartScript.Modifiers == null)
+    {
+        Debug.LogError("PartScript 或 PartScript.Modifiers 为 null，无法更新 FuelSource");
+        return;
+    }
+
+    Debug.LogFormat("PartScript.Modifiers 数量: {0}", PartScript.Modifiers.Count);
+
+    foreach (var modifier in this.PartScript.Modifiers)
+    {
+        if (modifier == null)
         {
-            Debug.LogFormat("调用RefreshFuelSource");
+            Debug.LogWarning("找到一个 null 的 Modifier，跳过");
+            continue;
+        }
 
-            if (PartScript == null || PartScript.Modifiers == null)
+        var modifierData = modifier.GetData();
+        if (modifierData == null || string.IsNullOrEmpty(modifierData.Name))
+        {
+            Debug.LogWarning("Modifier 的 GetData() 返回 null 或 Name 为空，跳过");
+            continue;
+        }
+
+        if (modifierData.Name.Contains("FuelTank"))
+        {
+            var fuelTank = modifier as FuelTankScript;
+            if (fuelTank != null && fuelTank.FuelType != null)
             {
-                Debug.LogError("PartScript 或 PartScript.Modifiers 为 null，无法更新 FuelSource");
-                return;
-            }
+                Debug.LogFormat("找到 FuelTank，FuelType: {0}, CraftFuelSource: {1}", 
+                    fuelTank.FuelType.Name, fuelTank.CraftFuelSource != null ? "存在" : "null");
 
-            Debug.LogFormat("PartScript.Modifiers 数量: {0}", PartScript.Modifiers.Count);
-
-            foreach (var modifier in this.PartScript.Modifiers)
-            {
-                if (modifier == null)
+                switch (fuelTank.FuelType.Name)
                 {
-                    //Debug.LogWarning("找到一个 null 的 Modifier，跳过");
-                    continue;
-                }
-
-                var modifierData = modifier.GetData();
-                if (modifierData == null || string.IsNullOrEmpty(modifierData.Name))
-                {
-                    //Debug.LogWarning("Modifier 的 GetData() 返回 null 或 Name 为空，跳过");
-                    continue;
-                }
-
-                if (modifierData.Name.Contains("FuelTank"))
-                {
-                    var fuelTank = modifier as FuelTankScript;
-                    if (fuelTank != null && fuelTank.FuelType != null)
-                    {
-                        Debug.LogFormat("找到 FuelTank，FuelType: {0}, CraftFuelSource: {1}", 
-                            fuelTank.FuelType.Name, fuelTank.CraftFuelSource != null ? "存在" : "null");
-
-                        switch (fuelTank.FuelType.Name)
-                        {
-                            case "Oxygen":
-                                this._oxygenFuelTank = fuelTank;
-                                this._oxygenSource = fuelTank.CraftFuelSource;
-                                Debug.LogFormat("已更新 Oxygen 的 FuelSource: {0}", this._oxygenSource != null ? "成功" : "失败 (CraftFuelSource 为 null)");
-                                break;
-                            case "Food":
-                                this._foodFuelTank = fuelTank;
-                                this._foodSource = fuelTank.CraftFuelSource;
-                                Debug.LogFormat("已更新 Food 的 FuelSource: {0}", this._foodSource != null ? "成功" : "失败 (CraftFuelSource 为 null)");
-                                break;
-                            case "Jetpack":
-                                Debug.LogFormat("跳过 Jetpack 的 FuelSource 更新");
-                                break;
-                            default:
-                                Debug.LogWarningFormat("未知的 FuelType: {0}", fuelTank.FuelType.Name);
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        Debug.LogWarningFormat("无效的 FuelTank 或 FuelType: {0}，FuelType={1}, CraftFuelSource={2}", 
-                            modifierData.Name, fuelTank?.FuelType != null, fuelTank?.CraftFuelSource != null);
-                    }
-                }
-                else
-                {
-                    //Debug.LogFormat("Modifier {0} 不包含 'FuelTank'，跳过", modifierData.Name);
+                    case "Oxygen":
+                        this._oxygenFuelTank = fuelTank;
+                        this._oxygenSource = fuelTank.CraftFuelSource != null ? (IFuelSource)fuelTank.CraftFuelSource : (IFuelSource)fuelTank;
+                        Debug.LogFormat("已更新 Oxygen 的 FuelSource: {0}", this._oxygenSource != null ? "成功" : "失败");
+                        break;
+                    case "Food":
+                        this._foodFuelTank = fuelTank;
+                        this._foodSource = fuelTank.CraftFuelSource != null ? (IFuelSource)fuelTank.CraftFuelSource : (IFuelSource)fuelTank;
+                        Debug.LogFormat("已更新 Food 的 FuelSource: {0}", this._foodSource != null ? "成功" : "失败");
+                        break;
+                    case "Jetpack":
+                        Debug.LogFormat("跳过 Jetpack 的 FuelSource 更新");
+                        break;
+                    default:
+                        Debug.LogWarningFormat("未知的 FuelType: {0}", fuelTank.FuelType.Name);
+                        break;
                 }
             }
-
-            if (this._oxygenSource == null)
+            else
             {
-                Debug.LogWarning("未找到 Oxygen 类型的 FuelSource，可能影响 DamageDrood 逻辑");
-            }
-            if (this._foodSource == null)
-            {
-                Debug.LogWarning("未找到 Food 类型的 FuelSource，可能影响 DamageDrood 逻辑");
+                Debug.LogWarningFormat("无效的 FuelTank 或 FuelType: {0}，FuelType={1}, CraftFuelSource={2}", 
+                    modifierData.Name, fuelTank?.FuelType != null, fuelTank?.CraftFuelSource != null);
             }
         }
+        else
+        {
+            Debug.LogFormat("Modifier {0} 不包含 'FuelTank'，跳过", modifierData.Name);
+        }
+    }
+
+    if (this._oxygenSource == null)
+    {
+        Debug.LogWarning("未找到 Oxygen 类型的 FuelSource，可能影响 DamageDrood 逻辑");
+    }
+    if (this._foodSource == null)
+    {
+        Debug.LogWarning("未找到 Food 类型的 FuelSource，可能影响 DamageDrood 逻辑");
+    }
+}
 
         public override void OnCraftLoaded(ICraftScript craftScript, bool movedToNewCraft)
         {
@@ -307,6 +313,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         private void OnCraftFuelSourceChanged(object sender, EventArgs e)
         {
+            Debug.LogFormat("CraftFuelSourceChanged 事件触发，重新调用 RefreshFuelSource");
             this.RefreshFuelSource();
         }
         
