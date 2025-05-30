@@ -104,6 +104,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             element.SetAttributeValue("utilization", -1);
             element.SetAttributeValue("autoFuelType", false);
             element.SetAttributeValue("subPriority", -1);
+            element.SetAttributeValue("inspectorEnabled",false);
             element.SetAttributeValue("partPropertiesEnabled", false);
             element.SetAttributeValue("staticPriceAndMass", false);
             var tankData = PartModifierData.CreateFromStateXml(element, Data.Part, 15) as FuelTankData;
@@ -168,9 +169,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             Debug.LogFormat("FlightStart: PartScript.Modifiers 数量: {0}", PartScript.Modifiers.Count);
             if (partData.Modifiers.Count <= 6)
             {
-                AddTank("Oxygen", 300);
+                AddTank("Oxygen", this.Data.DesireOxygenCapacity);
                 Debug.LogFormat("创建Oxygen");
-                AddTank("Food", 100);
+                AddTank("Food", this.Data.DesireFoodCapacity);
                 Debug.LogFormat("创建Food");
             }
             else
@@ -197,6 +198,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (_foodSource != null)
             {
                 _foodSource.RemoveFuel(frame.DeltaTimeWorld * Data.FoodComsumeRate);
+                DamageDrood(_foodSource,frame,Data.FoodDamageScale);
             }
             else
             {
@@ -210,7 +212,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 _oxygenSource.RemoveFuel(num2);
                 
                 Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
-                    $"剩余呼吸时间:{Units.GetStopwatchTimeString(this._oxygenSource.TotalFuel / (Data.OxygenComsumeRate * (_evaScript.IsWalking ? 1 : 1.8)))}",
+                    $"剩余呼吸时间:{Units.GetStopwatchTimeString(this._oxygenSource.TotalFuel / (Data.OxygenComsumeRate * (_evaScript.IsWalking ? 1 : 1.8)))}\"<br>\"剩余食物{Units.GetStopwatchTimeString(this._foodSource.TotalFuel/(Data.FoodComsumeRate * (_evaScript.IsWalking ? 1 : 2)))}",
                     false, 2f);
             }
             else

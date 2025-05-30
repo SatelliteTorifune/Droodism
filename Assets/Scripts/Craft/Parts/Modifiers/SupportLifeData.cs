@@ -23,8 +23,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private float _foodComsumeRate=0.01f;
 
         [SerializeField] [PartModifierProperty(true, false)]
-        private float oxygenDamageScale=0.5f;
-        
+        private float _oxygenDamageScale=0.5f;
+        [SerializeField][PartModifierProperty(true, false)]
+        private float foodDamageScale=0.01f;
+
+        [SerializeField] [PartModifierProperty]
+        private float desireOxygenCapacity = 300;
+        [SerializeField] [PartModifierProperty]
+        private float desireFoodCapacity = 300;
         [SerializeField] [PartModifierProperty(true, false)]
         private int _fuelSourceAttachPoint = 0;
         public int FuelSourceAttachPoint
@@ -56,10 +62,26 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         public float OxygenDamageScale
         {
-            get=>this.oxygenDamageScale;
-            set=>this.oxygenDamageScale = value;
+            get=>this._oxygenDamageScale;
+            set=>this._oxygenDamageScale = value;
+        }
+        public float FoodDamageScale
+        {
+            get=>this.foodDamageScale;
+            set=>this.foodDamageScale = value;
         }
         
+        public float DesireOxygenCapacity
+        {
+            get=>this.desireOxygenCapacity;
+            set=>this.desireOxygenCapacity = value;
+        }
+        
+        public float DesireFoodCapacity
+        {
+            get=>this.desireFoodCapacity;
+            set=>this.desireFoodCapacity = value;
+        }
         protected override void OnDesignerInitialization(IDesignerPartPropertiesModifierInterface d)
         {
             base.OnDesignerInitialization(d);
