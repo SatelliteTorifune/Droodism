@@ -162,8 +162,9 @@ namespace Assets.Scripts
                 _supportLifeData.FoodComsumeRate = 0.01f;
                 _supportLifeData.OxygenDamageScale = 0.5f;
                 _supportLifeData.FuelSourceAttachPoint = 0;
+                _supportLifeData.InspectorEnabled = true;
                 _supportLifeData.PartPropertiesEnabled = false;
-                _supportLifeData.InspectorEnabled = false;
+                
             }
             
         }

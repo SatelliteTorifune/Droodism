@@ -43,7 +43,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private string currentPlanetName;
         private IPlanetData planetData;
         private float _oxygenConsumeRate;
-        private float oxygenDamageScale;
         
         private CraftFuelSource craftOxygenFuelSource;
         
@@ -153,6 +152,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         void IFlightStart.FlightStart(in FlightFrameData frame)
         {
+            this.Data.InspectorEnabled = true;
             try
             {
                 _evaScript = GetComponent<EvaScript>();
@@ -166,17 +166,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             UpdateCurrentPlanet();
             Game.Instance.FlightScene.CraftNode.ChangedSoI += OnSoiChanged;
             PartData partData = this.Data.Part;
-            Debug.LogFormat("FlightStart: PartScript.Modifiers 数量: {0}", PartScript.Modifiers.Count);
             if (partData.Modifiers.Count <= 6)
             {
                 AddTank("Oxygen", this.Data.DesireOxygenCapacity);
-                Debug.LogFormat("创建Oxygen");
                 AddTank("Food", this.Data.DesireFoodCapacity);
-                Debug.LogFormat("创建Food");
-            }
-            else
-            {
-                Debug.LogFormat("Modifiers 数量为 {0}，跳过添加 FuelTank", partData.Modifiers.Count);
             }
             OnCraftStructureChanged(this.PartScript.CraftScript);
         }
@@ -188,7 +181,23 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
             if (_oxygenSource != null)
             {
-                DamageDrood(_oxygenSource, frame, Data.OxygenDamageScale);
+               
+                if (UsingInternalOxygen() && _oxygenSource != null )
+                {
+                    double num1 = (double)Data.OxygenComsumeRate * frame.DeltaTimeWorld * (_evaScript.IsWalking ? 1 : 1.5);
+                    if (_oxygenSource.IsEmpty)
+                    {
+                        DamageDrood(_oxygenSource, frame, Data.OxygenDamageScale);
+                        return;
+                    }
+                    _oxygenSource.RemoveFuel(num1);
+                }
+                
+                else
+                {
+                    if (_oxygenSource == null)
+                        Debug.LogWarning("_oxygenSource is Null");
+                }
             }
             else
             {
@@ -197,29 +206,21 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
             if (_foodSource != null)
             {
+                if (_foodSource.IsEmpty)
+                {
+                    DamageDrood(_foodSource,frame,Data.FoodDamageScale);
+                    return;
+                }
                 _foodSource.RemoveFuel(frame.DeltaTimeWorld * Data.FoodComsumeRate);
-                DamageDrood(_foodSource,frame,Data.FoodDamageScale);
+                
             }
             else
             {
-                Debug.LogWarning("跳过 _foodSource.RemoveFuel：_foodSource 为 null");
+                Debug.LogWarning("_foodSource is Null");
             }
 
-            if (UsingInternalOxygen() && _oxygenSource != null && !_oxygenSource.IsEmpty)
-            {
-                double num1 = 1 / frame.DeltaTimeWorld;
-                double num2 = (double)Data.OxygenComsumeRate * frame.DeltaTimeWorld * (_evaScript.IsWalking ? 1 : 1.5);
-                _oxygenSource.RemoveFuel(num2);
-                
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
-                    $"剩余呼吸时间:{Units.GetStopwatchTimeString(this._oxygenSource.TotalFuel / (Data.OxygenComsumeRate * (_evaScript.IsWalking ? 1 : 1.8)))}\"<br>\"剩余食物{Units.GetStopwatchTimeString(this._foodSource.TotalFuel/(Data.FoodComsumeRate * (_evaScript.IsWalking ? 1 : 2)))}",
-                    false, 2f);
-            }
-            else
-            {
-                if (_oxygenSource == null)
-                    Debug.LogWarning("跳过氧气消耗逻辑：_oxygenSource 为 null");
-            }
+            
+            
         }
 
        private void RefreshFuelSource()
@@ -228,24 +229,21 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
     if (PartScript == null || PartScript.Modifiers == null)
     {
-        Debug.LogError("PartScript 或 PartScript.Modifiers 为 null，无法更新 FuelSource");
+        Debug.LogError("PartScript or PartScript.Modifiers is null，Unable to get FuelSource");
         return;
     }
-
-    Debug.LogFormat("PartScript.Modifiers 数量: {0}", PartScript.Modifiers.Count);
+    
 
     foreach (var modifier in this.PartScript.Modifiers)
     {
         if (modifier == null)
         {
-            Debug.LogWarning("找到一个 null 的 Modifier，跳过");
             continue;
         }
 
         var modifierData = modifier.GetData();
         if (modifierData == null || string.IsNullOrEmpty(modifierData.Name))
         {
-            Debug.LogWarning("Modifier 的 GetData() 返回 null 或 Name 为空，跳过");
             continue;
         }
 
@@ -283,10 +281,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     modifierData.Name, fuelTank?.FuelType != null, fuelTank?.CraftFuelSource != null);
             }
         }
-        else
-        {
-            Debug.LogFormat("Modifier {0} 不包含 'FuelTank'，跳过", modifierData.Name);
-        }
+        
     }
 
     if (this._oxygenSource == null)
@@ -315,7 +310,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         private void OnCraftFuelSourceChanged(object sender, EventArgs e)
         {
-            Debug.LogFormat("CraftFuelSourceChanged 事件触发，重新调用 RefreshFuelSource");
             this.RefreshFuelSource();
         }
         
@@ -360,7 +354,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
             if (frame.DeltaTimeWorld <= 0)
             {
-                Debug.LogWarning("DamageDrood: DeltaTimeWorld 无效");
                 return;
             }
 
@@ -383,13 +376,67 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
         }
 
-        public override void OnGenerateInspectorModel(PartInspectorModel model)
+        public override void OnGenerateInspectorModel(PartInspectorModel model) 
         {
-            base.OnGenerateInspectorModel(model);
-            Game.Instance.FlightScene.FlightSceneUI.ShowMessage("回答我!调用了吗???", true, 99999999f);
-            GroupModel groupModel = new GroupModel("Life Support Info");
-            model.AddGroup(groupModel);
-            groupModel.Add<TextModel>(new TextModel("test", (Func<string>) (() => "10")));
-        }
+        
+        base.OnGenerateInspectorModel(model);
+    
+        
+        GroupModel groupModel = new GroupModel("<color=green><size=115%>Life Support Info");
+        model.AddGroup(groupModel);
+        
+        groupModel.Add<TextModel>(new TextModel("Remain Oxygen", (Func<string>) (() =>
+        {
+            if (UsingInternalOxygen() &&_oxygenSource != null && _oxygenSource.TotalCapacity > 0)
+            {
+                float percentage = (float)(_oxygenSource.TotalFuel / _oxygenSource.TotalCapacity);
+                string oxygenTextColor = percentage > 0.5 ? "green" : percentage >= 0.25 ? "yellow" : "red";
+                return $"<color={oxygenTextColor}>{Units.GetPercentageString(percentage)}</color>";
+            }
+            else if(!UsingInternalOxygen())
+            {
+                return "<color=green>Using External Oxygen</color>";
+            }
+            return "<color=purple>N/A</color>";
+        })));
+    
+        groupModel.Add<TextModel>(new TextModel("Oxygen Supply Time", (Func<string>) (() =>
+        {
+            if (UsingInternalOxygen()&&_oxygenSource != null && _evaScript != null)
+            {
+                float percentage = (float)(_oxygenSource.TotalFuel / _oxygenSource.TotalCapacity);
+                string oxygenTextColor = percentage > 0.5 ? "green" : percentage >= 0.25 ? "yellow" : "red";
+                return $"<color={oxygenTextColor}>"+Units.GetStopwatchTimeString(_oxygenSource.TotalFuel / (Data.OxygenComsumeRate * (_evaScript.IsWalking ? 1 : 1.8)));
+            }
+            else if(!UsingInternalOxygen())
+            {
+                return "<color=green>Infinity</color>";
+            }
+            return "N/A";
+        })));
+    
+    
+        groupModel.Add<TextModel>(new TextModel("Remain Food", (Func<string>) (() =>
+        {
+            if (_foodSource != null && _foodSource.TotalCapacity > 0)
+            {
+                float percentage = (float)(_foodSource.TotalFuel / _foodSource.TotalCapacity);
+                string foodTextColor = percentage > 0.5 ? "green" : percentage >= 0.25 ? "yellow" : "red";
+                return $"<color={foodTextColor}>{Units.GetPercentageString(percentage)}</color>";
+            }
+            return "<color=purple>N/A</color>";
+        })));
+    
+        groupModel.Add<TextModel>(new TextModel("Food Supply Time", (Func<string>) (() =>
+        {
+            if (_foodSource != null && _evaScript != null)
+            {
+                float percentage = (float)(_foodSource.TotalFuel / _foodSource.TotalCapacity);
+                string foodTextColor = percentage > 0.5 ? "green" : percentage >= 0.25 ? "yellow" : "red";
+                return $"<color={foodTextColor}>"+Units.GetStopwatchTimeString(_foodSource.TotalFuel / (Data.FoodComsumeRate * (_evaScript.IsWalking ? 1 : 1.8)));
+            }
+            return "N/A";
+        })));
+        }   
     }
 }

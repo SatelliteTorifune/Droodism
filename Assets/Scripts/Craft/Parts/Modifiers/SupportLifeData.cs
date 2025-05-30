@@ -82,6 +82,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             get=>this.desireFoodCapacity;
             set=>this.desireFoodCapacity = value;
         }
+        
+        
         protected override void OnDesignerInitialization(IDesignerPartPropertiesModifierInterface d)
         {
             base.OnDesignerInitialization(d);
