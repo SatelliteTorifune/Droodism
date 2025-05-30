@@ -223,76 +223,80 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
         }
 
-       private void RefreshFuelSource()
-{
-    Debug.LogFormat("调用RefreshFuelSource");
-
-    if (PartScript == null || PartScript.Modifiers == null)
-    {
-        Debug.LogError("PartScript or PartScript.Modifiers is null，Unable to get FuelSource");
-        return;
-    }
-    
-
-    foreach (var modifier in this.PartScript.Modifiers)
-    {
-        if (modifier == null)
+        private void RefreshFuelSource()
         {
-            continue;
-        }
-
-        var modifierData = modifier.GetData();
-        if (modifierData == null || string.IsNullOrEmpty(modifierData.Name))
-        {
-            continue;
-        }
-
-        if (modifierData.Name.Contains("FuelTank"))
-        {
-            var fuelTank = modifier as FuelTankScript;
-            if (fuelTank != null && fuelTank.FuelType != null)
+            if (!Game.InFlightScene) 
             {
-                Debug.LogFormat("找到 FuelTank，FuelType: {0}, CraftFuelSource: {1}", 
-                    fuelTank.FuelType.Name, fuelTank.CraftFuelSource != null ? "存在" : "null");
-
-                switch (fuelTank.FuelType.Name)
-                {
-                    case "Oxygen":
-                        this._oxygenFuelTank = fuelTank;
-                        this._oxygenSource = fuelTank.CraftFuelSource != null ? (IFuelSource)fuelTank.CraftFuelSource : (IFuelSource)fuelTank;
-                        Debug.LogFormat("已更新 Oxygen 的 FuelSource: {0}", this._oxygenSource != null ? "成功" : "失败");
-                        break;
-                    case "Food":
-                        this._foodFuelTank = fuelTank;
-                        this._foodSource = fuelTank.CraftFuelSource != null ? (IFuelSource)fuelTank.CraftFuelSource : (IFuelSource)fuelTank;
-                        Debug.LogFormat("已更新 Food 的 FuelSource: {0}", this._foodSource != null ? "成功" : "失败");
-                        break;
-                    case "Jetpack":
-                        Debug.LogFormat("跳过 Jetpack 的 FuelSource 更新");
-                        break;
-                    default:
-                        Debug.LogWarningFormat("未知的 FuelType: {0}", fuelTank.FuelType.Name);
-                        break;
-                }
+                return;
             }
-            else
-            {
-                Debug.LogWarningFormat("无效的 FuelTank 或 FuelType: {0}，FuelType={1}, CraftFuelSource={2}", 
-                    modifierData.Name, fuelTank?.FuelType != null, fuelTank?.CraftFuelSource != null);
-            }
-        }
+            Debug.LogFormat("调用RefreshFuelSource");
         
-    }
-
-    if (this._oxygenSource == null)
-    {
-        Debug.LogWarning("未找到 Oxygen 类型的 FuelSource，可能影响 DamageDrood 逻辑");
-    }
-    if (this._foodSource == null)
-    {
-        Debug.LogWarning("未找到 Food 类型的 FuelSource，可能影响 DamageDrood 逻辑");
-    }
-}
+            if (PartScript == null || PartScript.Modifiers == null)
+            {
+                Debug.LogError("PartScript or PartScript.Modifiers is null，Unable to get FuelSource");
+                return;
+            }
+            
+        
+            foreach (var modifier in this.PartScript.Modifiers)
+            {
+                if (modifier == null)
+                {
+                    continue;
+                }
+        
+                var modifierData = modifier.GetData();
+                if (modifierData == null || string.IsNullOrEmpty(modifierData.Name))
+                {
+                    continue;
+                }
+        
+                if (modifierData.Name.Contains("FuelTank"))
+                {
+                    var fuelTank = modifier as FuelTankScript;
+                    if (fuelTank != null && fuelTank.FuelType != null)
+                    {
+                        Debug.LogFormat("找到 FuelTank，FuelType: {0}, CraftFuelSource: {1}", 
+                            fuelTank.FuelType.Name, fuelTank.CraftFuelSource != null ? "存在" : "null");
+        
+                        switch (fuelTank.FuelType.Name)
+                        {
+                            case "Oxygen":
+                                this._oxygenFuelTank = fuelTank;
+                                this._oxygenSource = fuelTank.CraftFuelSource != null ? (IFuelSource)fuelTank.CraftFuelSource : (IFuelSource)fuelTank;
+                                Debug.LogFormat("已更新 Oxygen 的 FuelSource: {0}", this._oxygenSource != null ? "成功" : "失败");
+                                break;
+                            case "Food":
+                                this._foodFuelTank = fuelTank;
+                                this._foodSource = fuelTank.CraftFuelSource != null ? (IFuelSource)fuelTank.CraftFuelSource : (IFuelSource)fuelTank;
+                                Debug.LogFormat("已更新 Food 的 FuelSource: {0}", this._foodSource != null ? "成功" : "失败");
+                                break;
+                            case "Jetpack":
+                                Debug.LogFormat("跳过 Jetpack 的 FuelSource 更新");
+                                break;
+                            default:
+                                Debug.LogWarningFormat("未知的 FuelType: {0}", fuelTank.FuelType.Name);
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogWarningFormat("无效的 FuelTank 或 FuelType: {0}，FuelType={1}, CraftFuelSource={2}", 
+                            modifierData.Name, fuelTank?.FuelType != null, fuelTank?.CraftFuelSource != null);
+                    }
+                }
+                
+            }
+        
+            if (this._oxygenSource == null)
+            {
+                Debug.LogWarning("未找到 Oxygen 类型的 FuelSource，可能影响 DamageDrood 逻辑");
+            }
+            if (this._foodSource == null)
+            {
+                Debug.LogWarning("未找到 Food 类型的 FuelSource，可能影响 DamageDrood 逻辑");
+            }
+        }
 
         public override void OnCraftLoaded(ICraftScript craftScript, bool movedToNewCraft)
         {
@@ -303,9 +307,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             base.OnCraftStructureChanged(craftScript);
             RefreshFuelSource();
-            if (Game.InFlightScene)
-            {
-            }
         }
         
         private void OnCraftFuelSourceChanged(object sender, EventArgs e)
@@ -379,64 +380,64 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public override void OnGenerateInspectorModel(PartInspectorModel model) 
         {
         
-        base.OnGenerateInspectorModel(model);
-    
+            base.OnGenerateInspectorModel(model);
         
-        GroupModel groupModel = new GroupModel("<color=green><size=115%>Life Support Info");
-        model.AddGroup(groupModel);
+            
+            GroupModel groupModel = new GroupModel("<color=green><size=115%>Life Support Info");
+            model.AddGroup(groupModel);
+            
+            groupModel.Add<TextModel>(new TextModel("Remain Oxygen", (Func<string>) (() =>
+            {
+                if (UsingInternalOxygen() &&_oxygenSource != null && _oxygenSource.TotalCapacity > 0)
+                {
+                    float percentage = (float)(_oxygenSource.TotalFuel / _oxygenSource.TotalCapacity);
+                    string oxygenTextColor = percentage > 0.5 ? "green" : percentage >= 0.25 ? "yellow" : "red";
+                    return $"<color={oxygenTextColor}>{Units.GetPercentageString(percentage)}</color>";
+                }
+                else if(!UsingInternalOxygen())
+                {
+                    return "<color=green>Using External Oxygen</color>";
+                }
+                return "<color=purple>N/A</color>";
+            })));
         
-        groupModel.Add<TextModel>(new TextModel("Remain Oxygen", (Func<string>) (() =>
-        {
-            if (UsingInternalOxygen() &&_oxygenSource != null && _oxygenSource.TotalCapacity > 0)
+            groupModel.Add<TextModel>(new TextModel("Oxygen Supply Time", (Func<string>) (() =>
             {
-                float percentage = (float)(_oxygenSource.TotalFuel / _oxygenSource.TotalCapacity);
-                string oxygenTextColor = percentage > 0.5 ? "green" : percentage >= 0.25 ? "yellow" : "red";
-                return $"<color={oxygenTextColor}>{Units.GetPercentageString(percentage)}</color>";
-            }
-            else if(!UsingInternalOxygen())
+                if (UsingInternalOxygen()&&_oxygenSource != null && _evaScript != null)
+                {
+                    float percentage = (float)(_oxygenSource.TotalFuel / _oxygenSource.TotalCapacity);
+                    string oxygenTextColor = percentage > 0.5 ? "green" : percentage >= 0.25 ? "yellow" : "red";
+                    return $"<color={oxygenTextColor}>"+Units.GetStopwatchTimeString(_oxygenSource.TotalFuel / (Data.OxygenComsumeRate * (_evaScript.IsWalking ? 1 : 1.8)));
+                }
+                else if(!UsingInternalOxygen())
+                {
+                    return "<color=green>Infinity</color>";
+                }
+                return "N/A";
+            })));
+        
+        
+            groupModel.Add<TextModel>(new TextModel("Remain Food", (Func<string>) (() =>
             {
-                return "<color=green>Using External Oxygen</color>";
-            }
-            return "<color=purple>N/A</color>";
-        })));
-    
-        groupModel.Add<TextModel>(new TextModel("Oxygen Supply Time", (Func<string>) (() =>
-        {
-            if (UsingInternalOxygen()&&_oxygenSource != null && _evaScript != null)
+                if (_foodSource != null && _foodSource.TotalCapacity > 0)
+                {
+                    float percentage = (float)(_foodSource.TotalFuel / _foodSource.TotalCapacity);
+                    string foodTextColor = percentage > 0.5 ? "green" : percentage >= 0.25 ? "yellow" : "red";
+                    return $"<color={foodTextColor}>{Units.GetPercentageString(percentage)}</color>";
+                }
+                return "<color=purple>N/A</color>";
+            })));
+        
+            groupModel.Add<TextModel>(new TextModel("Food Supply Time", (Func<string>) (() =>
             {
-                float percentage = (float)(_oxygenSource.TotalFuel / _oxygenSource.TotalCapacity);
-                string oxygenTextColor = percentage > 0.5 ? "green" : percentage >= 0.25 ? "yellow" : "red";
-                return $"<color={oxygenTextColor}>"+Units.GetStopwatchTimeString(_oxygenSource.TotalFuel / (Data.OxygenComsumeRate * (_evaScript.IsWalking ? 1 : 1.8)));
-            }
-            else if(!UsingInternalOxygen())
-            {
-                return "<color=green>Infinity</color>";
-            }
-            return "N/A";
-        })));
-    
-    
-        groupModel.Add<TextModel>(new TextModel("Remain Food", (Func<string>) (() =>
-        {
-            if (_foodSource != null && _foodSource.TotalCapacity > 0)
-            {
-                float percentage = (float)(_foodSource.TotalFuel / _foodSource.TotalCapacity);
-                string foodTextColor = percentage > 0.5 ? "green" : percentage >= 0.25 ? "yellow" : "red";
-                return $"<color={foodTextColor}>{Units.GetPercentageString(percentage)}</color>";
-            }
-            return "<color=purple>N/A</color>";
-        })));
-    
-        groupModel.Add<TextModel>(new TextModel("Food Supply Time", (Func<string>) (() =>
-        {
-            if (_foodSource != null && _evaScript != null)
-            {
-                float percentage = (float)(_foodSource.TotalFuel / _foodSource.TotalCapacity);
-                string foodTextColor = percentage > 0.5 ? "green" : percentage >= 0.25 ? "yellow" : "red";
-                return $"<color={foodTextColor}>"+Units.GetStopwatchTimeString(_foodSource.TotalFuel / (Data.FoodComsumeRate * (_evaScript.IsWalking ? 1 : 1.8)));
-            }
-            return "N/A";
-        })));
+                if (_foodSource != null && _evaScript != null)
+                {
+                    float percentage = (float)(_foodSource.TotalFuel / _foodSource.TotalCapacity);
+                    string foodTextColor = percentage > 0.5 ? "green" : percentage >= 0.25 ? "yellow" : "red";
+                    return $"<color={foodTextColor}>"+Units.GetStopwatchTimeString(_foodSource.TotalFuel / (Data.FoodComsumeRate * (_evaScript.IsWalking ? 1 : 1.8)));
+                }
+                return "N/A";
+            })));
         }   
     }
 }
