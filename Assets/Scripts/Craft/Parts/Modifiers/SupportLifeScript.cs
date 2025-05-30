@@ -14,7 +14,6 @@ using Assets.Scripts.Craft.Fuel;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
 using Assets.Scripts.Flight;
-using Assets.Scripts.Tools.ObjectTransform;
 using ModApi.Craft.Propulsion;
 using ModApi.Planet;
 using UnityEngine;
@@ -34,11 +33,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     IFlightUpdate
   {
     private EvaScript _evaScript;
-    private IFuelSource _fuelSource;
-    private FuelTankScript _fuelTank;
     
-    //private IFuelSource _fuelSourceFood;
-    //private FuelTankScript _fuelTankFood;
+    private IFuelSource _oxygenSource;
+    private FuelTankScript _oxygenfuelTank;
+    
+    private IFuelSource _fuelSourceFood;
+    private FuelTankScript _fuelTankFood;
     
     private IInputController _inputThrottle;
     private float _fuelRemoved;
@@ -47,8 +47,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     private float _oxygenConsumeRate;
     private float oxygenDamageScale;
     
-    private CraftFuelSource craftFuelSource;
+    private CraftFuelSource craftOxygenFuelSource;
     
+    private GrapplingHookScript _grapplingHook;
     
     public override void OnModifiersCreated()
     {
@@ -61,22 +62,22 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     }
     
     
-    private FuelTankScript FuelTank
+    private FuelTankScript OxygenFuelTank
     {
-      get => this._fuelTank;
+      get => this._oxygenfuelTank;
       set
       {
-        if (this._fuelTank == value) 
+        if (this._oxygenfuelTank == value) 
           return;
-        if (Game.InFlightScene && this._fuelTank != null)
-          this._fuelTank.CraftFuelSourceChanged -= new EventHandler<EventArgs>(this.OnCraftFuelSourceChanged);
-        this._fuelTank = value;
-        if (!Game.InFlightScene || this._fuelTank == null)
+        if (Game.InFlightScene && this._oxygenfuelTank != null)
+          this._oxygenfuelTank.CraftFuelSourceChanged -= new EventHandler<EventArgs>(this.OnCraftFuelSourceChanged);
+        this._oxygenfuelTank = value;
+        if (!Game.InFlightScene || this._oxygenfuelTank == null)
           return;
-        this._fuelTank.CraftFuelSourceChanged += new EventHandler<EventArgs>(this.OnCraftFuelSourceChanged);
+        this._oxygenfuelTank.CraftFuelSourceChanged += new EventHandler<EventArgs>(this.OnCraftFuelSourceChanged);
       }
     }
-    /*private FuelTankScript FuelTankFood
+    private FuelTankScript FuelTankFood
     {
       get => this._fuelTankFood;
       set
@@ -90,7 +91,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
           return;
         this._fuelTankFood.CraftFuelSourceChanged += new EventHandler<EventArgs>(this.OnCraftFuelSourceChanged);
       }
-    }*/
+    }
     void IDesignerStart.DesignerStart(in DesignerFrameData frame)
     {
       base.OnInitialized();
@@ -127,8 +128,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
       try
       {
         _evaScript = GetComponent<EvaScript>();
-        //OnGenerateInspectorModel(new PartInspectorModel("Life Support Info",new IconButtonRowModel()));
-        
+
       }
       catch(Exception e)
       {
@@ -144,8 +144,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
       {
         AddTank("Oxygen",300);
         Debug.LogFormat("创建Oxygen");
-        //AddTank("Food",100);
-        //Debug.LogFormat("创建Food");
+        AddTank("Food",100);
+        Debug.LogFormat("创建Food");
       }
       this.RefreshFuelSource();
       OnCraftStructureChanged(this.PartScript.CraftScript);
@@ -157,16 +157,20 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     {
       if (frame.DeltaTimeWorld == 0.0 || !_evaScript.EvaActive) 
         return;
-      DamageDrood(_fuelSource,frame,Data.OxygenDamageScale);
+      DamageDrood(_oxygenSource,frame,Data.OxygenDamageScale);
       //DamageDrood(_fuelSourceFood,frame,0.1f);
       //_fuelSourceFood.RemoveFuel(frame.DeltaTimeWorld * Data.FoodComsumeRate);
-      if (UsingInternalOxygen()&&!_fuelSource.IsEmpty)
+      
+      
+      
+
+      if (UsingInternalOxygen()&&!_oxygenSource.IsEmpty)
       {
         double num1 = 1/frame.DeltaTimeWorld;
         double num2 =(double)Data.OxygenComsumeRate * frame.DeltaTimeWorld*(_evaScript.IsWalking?1:1.5);
-        _fuelSource.RemoveFuel(num2);
+        _oxygenSource.RemoveFuel(num2);
         
-        Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"剩余呼吸时间:{Units.GetStopwatchTimeString(this._fuelSource.TotalFuel/(Data.OxygenComsumeRate*(_evaScript.IsWalking?1:1.5)))}",false,2f);
+        Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"剩余呼吸时间:{Units.GetStopwatchTimeString(this._oxygenSource.TotalFuel/(Data.OxygenComsumeRate*(_evaScript.IsWalking?1:1.8)))}",false,2f);
         
       }
       
@@ -182,6 +186,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     {
       base.OnCraftStructureChanged(craftScript);
       RefreshFuelSource();
+      if (Game.InFlightScene)
+      {
+        
+      }
     }
     
     
@@ -195,15 +203,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
       
       foreach (var _modifier in this.PartScript.Modifiers)
       {
-       
         if (_modifier.GetData().Name.Contains("FuelTank"))
         {
-          
-          this._fuelTank = _modifier as FuelTankScript;
-          //this._fuelTankFood=_modifier as FuelTankScript;
-          if (_fuelTank?.FuelType.Name=="Oxygen")
+          this._oxygenfuelTank = _modifier as FuelTankScript;
+          if (_oxygenfuelTank?.FuelType.Name=="Oxygen")
           {
-            this._fuelSource = this.FuelTank?.CraftFuelSource;
+            this._oxygenSource = this.OxygenFuelTank?.CraftFuelSource;
             Debug.LogFormat("已更新Oxygen的fuelSOurce");
           }
           
@@ -213,7 +218,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
           //}
         }
       }
-      //this._fuelTank = GetComponent<FuelTankScript>();
       
       
     } 
@@ -260,7 +264,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     private void DamageDrood(IFuelSource _fuelSource,FlightFrameData frame,float DamageScale)
     {
       float num1 = 1/(float)frame.DeltaTimeWorld;
-      float num2 =(_evaScript.IsWalking?1f:1.5f)*DamageScale * (float)frame.DeltaTimeWorld;
+      float num2 =(_evaScript.IsWalking?1f:1.8f)*DamageScale * (float)frame.DeltaTimeWorld;
       if (_fuelSource.IsEmpty&&(float) (Setting<float>)Game.Instance.Settings.Game.Flight.ImpactDamageScale > 0.0)
       {
         this.PartScript.TakeDamage(num2*Game.Instance.Settings.Game.Flight.ImpactDamageScale,PartDamageType.Basic);

@@ -12,9 +12,6 @@ using ModApi.Design.Events;
 using ModApi.Scenes.Events;
 using ModApi.Craft.Parts.Events;
 using HarmonyLib;
-using ModApi.Craft.Propulsion;
-using Panteleymonov;
-using static Assets.Scripts.SearchDrood;
 using static ModApi.Common.Game;
 using static ModApi.Craft.Parts.PartData;
 
@@ -100,6 +97,7 @@ namespace Assets.Scripts
             }
             
         }
+        
         /// <summary>
         /// CheckDrood方法接受CraftScript参数,遍历所有modifier,得到含有Eva Modifier的Part的类型为PartData的列表
         /// CheckDrood Method receives CraftScript as a parameter,checks all modifier inside the craft,returns with a list (which type is PartData) of Parts with Eva Modifier
@@ -148,6 +146,29 @@ namespace Assets.Scripts
 
             return DroodParts;
 
+        }
+        
+        /// <summary>
+        /// AddLSModifier方法接受PartData参数,为此part添加SupportLife和FuelTank的modifier
+        /// AddLSModifier Method receive ParaData as a parameter,adding this part with SupportLife and FuelTank Modifier
+        /// </summary>
+        /// <param name="part"></param>
+        public static void AddLsModifier(PartData part)
+        {
+            if (!(part != null))
+                return;
+            SupportLifeData _supportLifeData = part.GetModifier<SupportLifeData>();
+            if (_supportLifeData==null)
+            {
+                _supportLifeData = PartModifierData.CreateFromDefaultXml<SupportLifeData>(part);
+                _supportLifeData.OxygenComsumeRate = 0.01f;
+                _supportLifeData.FoodComsumeRate = 0.01f;
+                _supportLifeData.OxygenDamageScale = 0.5f;
+                _supportLifeData.FuelSourceAttachPoint = 0;
+                _supportLifeData.PartPropertiesEnabled = false;
+                _supportLifeData.InspectorEnabled = false;
+            }
+            
         }
         
     }
