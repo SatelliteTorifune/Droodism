@@ -161,12 +161,8 @@ namespace Assets.Scripts
             if (_supportLifeData==null)
             {
                 _supportLifeData = PartModifierData.CreateFromDefaultXml<SupportLifeData>(part);
-                _supportLifeData.OxygenComsumeRate = 0.01f;
-                _supportLifeData.FoodComsumeRate = 0.01f;
-                _supportLifeData.OxygenDamageScale = 0.5f;
-                _supportLifeData.FuelSourceAttachPoint = 0;
                 _supportLifeData.PartPropertiesEnabled = false;
-                _supportLifeData.InspectorEnabled = false;
+                _supportLifeData.InspectorEnabled = true;
             }
             
         }

@@ -50,6 +50,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private CraftFuelSource craftOxygenFuelSource;
         
         private GrapplingHookScript _grapplingHook;
+
+        private bool isRunning;
+        private bool isTourist;
+            
+            
         
         public override void OnModifiersCreated()
         {
@@ -112,7 +117,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             var tankData = PartModifierData.CreateFromStateXml(element, Data.Part, 15) as FuelTankData;
             try
             {
-                tankData.InspectorEnabled = true;
+               tankData.InspectorEnabled = true;
                 tankData.SubPriority = -1;
                 var fuelTankScript = tankData.CreateScript() as FuelTankScript;
                 if (fuelTankScript != null)
@@ -156,6 +161,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         void IFlightStart.FlightStart(in FlightFrameData frame)
         {
             this.Data.InspectorEnabled = true;
+            if (this.PartScript.Data.PartType.Name == "Eva-Tourist")
+            {
+                isTourist = true;
+            }
             
             try
             {
@@ -171,9 +180,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             PartData partData = this.Data.Part;
             if (partData.Modifiers.Count <= 6)
             {
-                AddTank("Oxygen", this.Data.DesireOxygenCapacity);
-                AddTank("Food", this.Data.DesireFoodCapacity);
-                AddTank("Drinking Water", this.Data.DesireWaterCapacity);
+                AddTank("Oxygen", this.Data.DesireOxygenCapacity*(isTourist?0.9f:1f));
+                AddTank("Food", this.Data.DesireFoodCapacity*(isTourist?0.9f:1f));
+                AddTank("Drinking Water", this.Data.DesireWaterCapacity*(isTourist?0.9f:1f));
             }
             OnCraftStructureChanged(this.PartScript.CraftScript);
         }
@@ -182,6 +191,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             if (frame.DeltaTimeWorld == 0.0 || !_evaScript.EvaActive) 
                 return;
+            if (_evaScript.EvaActive&& !_evaScript.IsWalking&&_evaScript.IsGrounded&&(this.PartScript.CraftScript.SurfaceVelocity.magnitude>=0.8))
+            {
+                isRunning = true;
+            }
+            else
+            {
+                isRunning = false;
+            }
             ConsumptionLogic(frame);
         }
 
@@ -198,7 +215,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     }
                     else
                     {
-                        double num1 = (double)Data.OxygenComsumeRate * frame.DeltaTimeWorld * (_evaScript.IsWalking ? 1 : 1.8);
+                        double num1 = (double)Data.OxygenComsumeRate * frame.DeltaTimeWorld * (isRunning ? 1.75 :1)*(isTourist?1.05:1);
                         _oxygenSource.RemoveFuel(num1);
                     }
                     
@@ -223,7 +240,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
                 else
                 {
-                    double num1 = (double)Data.FoodComsumeRate * frame.DeltaTimeWorld * (_evaScript.IsWalking ? 1 : 1.8);
+                    double num1 = (double)Data.FoodComsumeRate * frame.DeltaTimeWorld * (isRunning ? 1.75 :1)*(isTourist?1.05:1);
                     _foodSource.RemoveFuel(num1);
                 }
                 
@@ -241,7 +258,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
                 else
                 {
-                    double num1 = (double)Data.WaterComsumeRate * frame.DeltaTimeWorld * (_evaScript.IsWalking ? 1 : 1.8);
+                    double num1 = (double)Data.WaterComsumeRate * frame.DeltaTimeWorld * (isRunning ? 1.75 :1)*(isTourist?1.05:1);
                     _waterSource.RemoveFuel(num1);
                 }
                 
@@ -385,10 +402,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (frame.DeltaTimeWorld <= 0)
             {
                 return;
-            }
+            }   
+            
 
             float num1 = 1 / (float)frame.DeltaTimeWorld;
-            float num2 = (_evaScript.IsWalking ? 1f : 1.8f) * DamageScale * (float)frame.DeltaTimeWorld;
+            float num2 = (isRunning?1.75f:1f)*(isTourist?1.05f:1f) * DamageScale * (float)frame.DeltaTimeWorld;
 
             if (_fuelSource.IsEmpty && _fuelSource.FuelType != null && 
                 (float)(Setting<float>)Game.Instance.Settings.Game.Flight.ImpactDamageScale > 0.0)
@@ -396,7 +414,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 this.PartScript.TakeDamage(num2 * Game.Instance.Settings.Game.Flight.ImpactDamageScale, PartDamageType.Basic);
                 Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
                     $"<color=red>Crew Member {_evaScript.Data.CrewName}(id:{this.PartScript.Data.Id}) is taking damage because running out of {_fuelSource.FuelType.Name}, " +
-                    $"he/she has {Units.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) /(_evaScript.IsWalking ? 1f : 1.8f) * DamageScale)} seconds left",
+                    $"he/she has {Units.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) /((isRunning?1.75:1)*(isTourist?1.05:1)*DamageScale))} left",
                     false, 2f);
             }
             else
@@ -432,7 +450,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 {
                     float percentage = (float)(_oxygenSource.TotalFuel / _oxygenSource.TotalCapacity);
                     string oxygenTextColor = percentage > 0.5 ? "green" : percentage >= 0.25 ? "yellow" : "red";
-                    return $"<color={oxygenTextColor}>"+Units.GetStopwatchTimeString(_oxygenSource.TotalFuel / (Data.OxygenComsumeRate * (_evaScript.IsWalking ? 1 : 1.8)));
+                    return $"<color={oxygenTextColor}>"+Units.GetStopwatchTimeString(_oxygenSource.TotalFuel / (Data.OxygenComsumeRate * (isRunning ? 1.75 :1)*(isTourist?1.05:1)));
                 }
                 else if(!UsingInternalOxygen())
                 {
@@ -459,7 +477,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 {
                     float foodPercentage = (float)(_foodSource.TotalFuel / _foodSource.TotalCapacity);
                     string foodTextColor = foodPercentage > 0.5 ? "green" : foodPercentage >= 0.25 ? "yellow" : "red";
-                    return $"<color={foodTextColor}>"+Units.GetStopwatchTimeString(_foodSource.TotalFuel / (Data.FoodComsumeRate * (_evaScript.IsWalking ? 1 : 1.8)));
+                    return $"<color={foodTextColor}>"+Units.GetStopwatchTimeString(_foodSource.TotalFuel / (Data.FoodComsumeRate * (isRunning ? 1.75 :1)*(isTourist?1.05:1)));
                 }
                 return "N/A";
             })));
@@ -480,7 +498,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 {
                     float waterPercentage = (float)(_waterSource.TotalFuel / _waterSource.TotalCapacity);
                     string waterTextColor = waterPercentage > 0.5 ? "green" : waterPercentage >= 0.25 ? "yellow" : "red";
-                    return $"<color={waterTextColor}>"+Units.GetStopwatchTimeString(_waterSource.TotalFuel / (Data.WaterComsumeRate * (_evaScript.IsWalking ? 1 : 1.8)));
+                    return $"<color={waterTextColor}>"+Units.GetStopwatchTimeString(_waterSource.TotalFuel / (Data.WaterComsumeRate * (isRunning ? 1.75 :1)*(isTourist?1.05:1)));
                 }
                 return "N/A";
             })));
