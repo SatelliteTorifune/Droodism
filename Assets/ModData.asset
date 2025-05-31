@@ -14,8 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _assemblies:
   - Droodism.dll
-  _author: S.T
-  _description: 
+  _author: SatelliteTorifune
+  _description: '<color=blue>Added Life Support To Droods
+
+
+    <color=red><size=250%>REQUIRE
+    JNO HARMONY'
   _loadPriority: 10000
   _name: Droodism
   _otherAssets: []
@@ -27,10 +31,9 @@ MonoBehaviour:
   _steamTitle: 
   _steamVisibility: 0
   _versionMajor: 0
-  _versionMinor: 0
+  _versionMinor: 1
   _partCategories: []
-  _parts:
-  - {fileID: 4900000, guid: 30ead35b5c638544382e7f497d9836bb, type: 3}
+  _parts: []
   _partStyleExtensions: []
   _partTextureStyles: []
   _persistentObjects: []
