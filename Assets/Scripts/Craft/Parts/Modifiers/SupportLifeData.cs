@@ -25,11 +25,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private float _waterComsumeRate=0.01f;
         
         [SerializeField] [PartModifierProperty(true, false)]
-<<<<<<< Updated upstream
-        private float oxygenDamageScale=0.5f;
-        
-        [SerializeField] [PartModifierProperty(true, false)]
-=======
         private float _oxygenDamageScale=0.5f;
         [SerializeField][PartModifierProperty(true, false)]
         private float foodDamageScale=0.01f;
@@ -43,7 +38,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         [SerializeField] [PartModifierProperty]
         private float desireWaterCapacity = 250;
         //[SerializeField] [PartModifierProperty(true, false)]
->>>>>>> Stashed changes
         private int _fuelSourceAttachPoint = 0;
         public int FuelSourceAttachPoint
         {
@@ -80,11 +74,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         public float OxygenDamageScale
         {
-            get=>this.oxygenDamageScale;
-            set=>this.oxygenDamageScale = value;
+            get=>this._oxygenDamageScale;
+            set=>this._oxygenDamageScale = value;
         }
-<<<<<<< Updated upstream
-=======
         public float FoodDamageScale
         {
             get=>this.foodDamageScale;
@@ -115,7 +107,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             set=>this.desireWaterCapacity = value;
         }
         
->>>>>>> Stashed changes
         
         protected override void OnDesignerInitialization(IDesignerPartPropertiesModifierInterface d)
         {
