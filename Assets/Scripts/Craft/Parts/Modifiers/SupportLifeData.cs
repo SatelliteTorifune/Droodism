@@ -21,17 +21,23 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private float _oxygenComsumeRate=0.01f;
         [SerializeField][PartModifierProperty(true, false)]
         private float _foodComsumeRate=0.01f;
-
+        [SerializeField][PartModifierProperty(true, false)]
+        private float _waterComsumeRate=0.01f;
+        
         [SerializeField] [PartModifierProperty(true, false)]
         private float _oxygenDamageScale=0.5f;
         [SerializeField][PartModifierProperty(true, false)]
         private float foodDamageScale=0.01f;
-
+        [SerializeField][PartModifierProperty(true, false)]
+        private float waterDamageScale=0.01f;
+        
         [SerializeField] [PartModifierProperty]
         private float desireOxygenCapacity = 300;
         [SerializeField] [PartModifierProperty]
         private float desireFoodCapacity = 250;
-        [SerializeField] [PartModifierProperty(true, false)]
+        [SerializeField] [PartModifierProperty]
+        private float desireWaterCapacity = 250;
+        //[SerializeField] [PartModifierProperty(true, false)]
         private int _fuelSourceAttachPoint = 0;
         public int FuelSourceAttachPoint
         {
@@ -60,6 +66,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 =>this._foodComsumeRate;
             set=>this._foodComsumeRate = value;
         }
+
+        public float WaterComsumeRate
+        {
+            get => _waterComsumeRate;
+            set => this._waterComsumeRate = value;
+        }
         public float OxygenDamageScale
         {
             get=>this._oxygenDamageScale;
@@ -69,6 +81,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             get=>this.foodDamageScale;
             set=>this.foodDamageScale = value;
+        }
+        
+        public float WaterDamageScale
+        {
+            get=>this.waterDamageScale;
+            set=>this.waterDamageScale = value;
         }
         
         public float DesireOxygenCapacity
@@ -81,6 +99,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             get=>this.desireFoodCapacity;
             set=>this.desireFoodCapacity = value;
+        }
+        
+        public float DesireWaterCapacity
+        {
+            get=>this.desireWaterCapacity;
+            set=>this.desireWaterCapacity = value;
         }
         
         
