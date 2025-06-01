@@ -12,6 +12,7 @@ using ModApi.Design.Events;
 using ModApi.Scenes.Events;
 using ModApi.Craft.Parts.Events;
 using HarmonyLib;
+using ModApi.Ui.Inspector;
 using static ModApi.Common.Game;
 using static ModApi.Craft.Parts.PartData;
 
@@ -52,16 +53,50 @@ namespace Assets.Scripts
             var harmony = new Harmony("com.SatelliteTorifune.Droodism");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
             Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
+            Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.FlightView,OnBuildFlightViewInspectorPanel);
+            Debug.Log("OnBuildFlightViewInspectorPanel called when OnModInitialized");
+           
 
         }
         public void OnSceneLoaded(object sender, SceneEventArgs e)
         {
+            
             if (Instance.SceneManager.InDesignerScene)
             {
                 Instance.Designer.CraftLoaded += OnCraftLoaded;
                 Created += OnPartAdded;
+                subMinus();
             }
 
+            if (Instance.SceneManager.InFlightScene)
+            {
+                subPlus();
+                
+            }
+            else
+            {
+                subMinus();
+            }
+            
+
+        }
+
+        private void subPlus()
+        {
+            Instance.FlightScene.Initialized += OnInitialized;
+            Instance.FlightScene.CraftChanged += OnCraftChanged;
+            Instance.FlightScene.CraftStructureChanged += OnCraftStructureChanged;
+            Instance.FlightScene.ActiveCommandPodChanged += OnCraftChanged;
+            Instance.FlightScene.ActiveCommandPodStateChanged += OnCraftChanged;
+        }
+        
+        private void subMinus()
+        {
+            Instance.FlightScene.Initialized -= OnInitialized;
+            Instance.FlightScene.CraftChanged -= OnCraftChanged;
+            Instance.FlightScene.CraftStructureChanged -= OnCraftStructureChanged;
+            Instance.FlightScene.ActiveCommandPodChanged -= OnCraftChanged;
+            Instance.FlightScene.ActiveCommandPodStateChanged -= OnCraftChanged;
         }
         /// <summary>
         /// 在加载Craft时使用"CheckDrood"方法遍历所有modifier得到零件并添加SupportLife的modifier
@@ -167,8 +202,8 @@ namespace Assets.Scripts
             
         }
         
+        
     }
-
     //何意味?
     /*[HarmonyPatch]
     public class HarmonyPatches

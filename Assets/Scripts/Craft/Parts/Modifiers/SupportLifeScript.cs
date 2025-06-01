@@ -14,7 +14,8 @@ using Assets.Scripts.Craft.Fuel;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
 using Assets.Scripts.Flight;
-using ModApi.Craft.Propulsion;
+using ModApi;
+using Assets.Scripts.Mods;
 using ModApi.Planet;
 using UnityEngine;
 using ModApi.Flight.Sim;
@@ -160,6 +161,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         void IFlightStart.FlightStart(in FlightFrameData frame)
         {
+            
             this.Data.InspectorEnabled = true;
             if (this.PartScript.Data.PartType.Name == "Eva-Tourist")
             {
@@ -191,7 +193,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             if (frame.DeltaTimeWorld == 0.0 || !_evaScript.EvaActive) 
                 return;
-            if (_evaScript.EvaActive&& !_evaScript.IsWalking&&_evaScript.IsGrounded&&(this.PartScript.CraftScript.SurfaceVelocity.magnitude>=0.8))
+            if (_evaScript.EvaActive&&_evaScript.IsPlayerCraft&& !_evaScript.IsWalking&&_evaScript.IsGrounded&&(this.PartScript.CraftScript.SurfaceVelocity.magnitude>=0.8))
             {
                 isRunning = true;
             }
@@ -200,6 +202,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 isRunning = false;
             }
             ConsumptionLogic(frame);
+            AutoRefillLogic(frame);
         }
 
         private void ConsumptionLogic(in FlightFrameData frame)
@@ -266,6 +269,21 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             else
             {
                 Debug.LogWarning("_waterSource is Null");
+            }
+        }
+
+        private void AutoRefillLogic(in FlightFrameData frame)
+        {
+            //Auto Fill Oxygen When inside Ato
+            if (_oxygenSource!=null)
+            {
+                if (!UsingInternalOxygen())
+                {
+                    if (_oxygenSource.TotalCapacity-_oxygenSource.TotalFuel>=0.001)
+                    {
+                        _oxygenSource.AddFuel(_oxygenSource.TotalCapacity * frame.DeltaTimeWorld*0.10000000149011612);
+                    }
+                }
             }
         }
         private void RefreshFuelSource()
@@ -443,7 +461,35 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
                 return "<color=purple>N/A</color>";
             })));
-        
+            
+            /*groupModel.Add<ProgressBarModel>(new ProgressBarModel((Func<string>) (() => FuelTankScript.GetAmountLabel(this._oxygenSource)), (Func<float>) (() =>
+            {
+              IFuelSource inspectorFuelSource = this._oxygenSource;
+              return inspectorFuelSource == null ? 0.0f : inspectorFuelSource.GetRemainingPercentage();
+            })));
+            if (this._oxygenSource.FuelType.AllowFuelTransfer & Game.InFlightScene)
+            {
+              IconButtonRowModel iconButtonRowModel = new IconButtonRowModel();
+              IconButtonModel fuelTransferButtonNone = new IconButtonModel("Ui/Sprites/Flight/IconFuelTransferNone", (Action<IconButtonModel>) (x => this._oxygenSource.FuelTransferMode = FuelTransferMode.None), "Disable fuel transfer.");
+              IconButtonModel fuelTransferButtonFill = new IconButtonModel("Ui/Sprites/Flight/IconFuelTransferFill", (Action<IconButtonModel>) (x => this._oxygenSource.FuelTransferMode = FuelTransferMode.Fill), "Fills the tank during fuel transfer. Requires at least one other tank to be set to Drain.");
+              IconButtonModel fuelTransferButtonDrain = new IconButtonModel("Ui/Sprites/Flight/IconFuelTransferDrain", (Action<IconButtonModel>) (x => this._oxygenSource.FuelTransferMode = FuelTransferMode.Drain), "Drains this tank during fuel transfer. Requires at least one other tank to be set to Fill.");
+              iconButtonRowModel.Add(fuelTransferButtonFill);
+              iconButtonRowModel.Add(fuelTransferButtonNone);
+              iconButtonRowModel.Add(fuelTransferButtonDrain);
+              iconButtonRowModel.UpdateAction = (Action<ItemModel>) (m =>
+              {
+                FuelTransferMode fuelTransferMode = this._oxygenSource.FuelTransferMode;
+                fuelTransferButtonNone.Style = fuelTransferMode == FuelTransferMode.None ? ButtonModel.ButtonStyle.Primary : ButtonModel.ButtonStyle.Default;
+                fuelTransferButtonFill.Style = fuelTransferMode == FuelTransferMode.Fill ? ButtonModel.ButtonStyle.Primary : ButtonModel.ButtonStyle.Default;
+                fuelTransferButtonDrain.Style = fuelTransferMode == FuelTransferMode.Drain ? ButtonModel.ButtonStyle.Warning : ButtonModel.ButtonStyle.Default;
+              });
+              iconButtonRowModel.DetermineVisibility = (Func<bool>) (() =>
+              {
+                IFuelSource inspectorFuelSource = this._oxygenSource;
+                return inspectorFuelSource != null && inspectorFuelSource.SupportsFuelTransfer;
+              });
+              groupModel.Add<IconButtonRowModel>(iconButtonRowModel);
+            }*/
             groupModel.Add<TextModel>(new TextModel("Oxygen Supply Time", (Func<string>) (() =>
             {
                 if (UsingInternalOxygen()&&_oxygenSource != null && _evaScript != null)
@@ -458,8 +504,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
                 return "N/A";
             })));
-        
-        
+            
             groupModel.Add<TextModel>(new TextModel("Remain Food", (Func<string>) (() =>
             {
                 if (_foodSource != null && _foodSource.TotalCapacity > 0)
@@ -481,6 +526,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
                 return "N/A";
             })));
+            
             groupModel.Add<TextModel>(new TextModel("Remain Water", (Func<string>) (() =>
             {
                 if (_waterSource != null && _waterSource.TotalCapacity > 0)
@@ -491,7 +537,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
                 return "<color=purple>N/A</color>";
             })));
-        
+            
             groupModel.Add<TextModel>(new TextModel("Water Supply Time", (Func<string>) (() =>
             {
                 if (_waterSource != null && _evaScript != null)
