@@ -1,25 +1,7 @@
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Reflection;
-using System.Threading;
-using System.Xml.Linq;
-using Assets.Scripts.Craft;
-using Assets.Scripts.Craft.Parts;
-using Assets.Scripts.Craft.Parts.Modifiers;
-using Assets.Scripts.Craft.Parts.Modifiers.Eva;
-using ModApi.Craft.Parts;
-using UnityEngine.SceneManagement;
-using ModApi.Design.Events;
-using ModApi.Scenes.Events;
-using ModApi.Craft.Parts.Events;
-using HarmonyLib;
 using ModApi.Craft;
 using ModApi.Flight;
 using ModApi.Mods;
 using ModApi.Ui.Inspector;
-using UnityEngine;
-using static ModApi.Common.Game;
-using static ModApi.Craft.Parts.PartData;
 using Debug = UnityEngine.Debug;
 
 namespace Assets.Scripts
@@ -78,33 +60,19 @@ namespace Assets.Scripts
             var ui = Game.Instance.FlightScene.FlightSceneUI;
             request.Model.AddGroup(LS);
             
-            var DroodCountTextModel = new TextModel("Drood Count (Total) ",()=>(DroodCount==0?"Current Craft Has No Crew":this.DroodCount.ToString()));
+            var DroodCountTextModel = new TextModel("Drood Count",()=>(DroodCount==0?"Current Craft Has No Crew":this.DroodCount.ToString()));
             LS.Add(DroodCountTextModel);
             
-            var AstronautCountTextModel = new TextModel("Astronaut Count",()=>(AstronautCount==0?"Current Craft Has No Astronaut":this.AstronautCount.ToString()));
+            var AstronautCountTextModel = new TextModel("Astronaut Count",()=>(AstronautCount==0?"N/A":this.AstronautCount.ToString()));
             LS.Add(AstronautCountTextModel);
             
-            var TouristCountTextModel = new TextModel("Tourist Count",()=>(TouristCount==0?"Current Craft Has No Tourist":this.TouristCount.ToString()));
+            var TouristCountTextModel = new TextModel("Tourist Count",()=>(TouristCount==0?"N/A":this.TouristCount.ToString()));
             LS.Add(TouristCountTextModel);
-
-            void jbhs()
-            {
-                if (DroodCount == 1)
-                {
-                    DroodCountTextModel.Visible = false;
-                    if (TouristCount == 0)
-                        TouristCountTextModel.Visible = false;
-                    if (AstronautCount == 0)
-                        AstronautCountTextModel.Visible = false;
-                }
-            }
             
-
             var textButtonModel = new TextButtonModel(
                 "Update Drood Count", b =>
                 {
                     UpdateDroodCount();
-                    jbhs();
                     ui.ShowMessage("Updated",false,5f);
                 });
             LS.Add(textButtonModel);
