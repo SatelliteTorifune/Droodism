@@ -300,7 +300,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return;
             }
             
-        
+            /*
             foreach (var modifier in this.PartScript.Modifiers)
             {
                 var modifierData = modifier.GetData();
@@ -344,7 +344,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
                 
             }
-        
+            */
+            if (this._oxygenSource.FuelType == this.OxygenFuelTank?.CraftFuelSource?.FuelType)
+            {
+                this._oxygenSource = (IFuelSource) this.OxygenFuelTank?.CraftFuelSource;
+            }
+            else
+            {
+                if (this.Data.FuelType == null)
+                    return;
+                this._oxygenSource = (IFuelSource) EmptyFuelSource.GetOrCreate(this.Data.FuelType);
+            }
             if (this._oxygenSource == null)
             {
                 Debug.LogWarning("未找到 Oxygen 类型的 FuelSource，可能影响 DamageDrood 逻辑");
