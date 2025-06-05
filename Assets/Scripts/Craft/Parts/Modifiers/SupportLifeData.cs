@@ -37,8 +37,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private float desireFoodCapacity = 1f;
         [SerializeField] [PartModifierProperty]
         private float desireWaterCapacity = 0.5f;
-        //[SerializeField] [PartModifierProperty(true, false)]
-        private int _fuelSourceAttachPoint = 0;
+        
+        private int _fuelSourceAttachPoint;
         public int FuelSourceAttachPoint
         {
             get=>_fuelSourceAttachPoint;
@@ -46,13 +46,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         }
         private FuelTankScript _fuelTank;
-        private FuelType _fuelType;
         
-        public FuelType FuelType
-        {
-            get => this._fuelType;
-            private set => this._fuelType = value;
-        }
         
         public float OxygenComsumeRate
         {

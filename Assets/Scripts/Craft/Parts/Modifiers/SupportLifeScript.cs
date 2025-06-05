@@ -300,7 +300,32 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return;
             }
             
-            /*
+            EvaRefreshFuelSource();
+            if (_evaScript.EvaActive)
+            {
+                EvaRefreshFuelSource();
+                Debug.LogWarning("第二次调用成功 ");
+            }
+            if (Game.InFlightScene)
+            {
+                if (this._oxygenSource == null)
+                {
+                    Debug.LogWarning("未找到 Oxygen 类型的 FuelSource，可能影响 DamageDrood 逻辑");
+                }
+                if (this._foodSource == null)
+                {
+                    Debug.LogWarning("未找到 Food 类型的 FuelSource，可能影响 DamageDrood 逻辑");
+                }
+                if (this._waterSource == null)
+                {
+                    Debug.LogWarning("未找到 Water 类型的 FuelSource，可能影响 DamageDrood 逻辑");
+                }
+            }
+            
+        }
+
+        private void EvaRefreshFuelSource()
+        {
             foreach (var modifier in this.PartScript.Modifiers)
             {
                 var modifierData = modifier.GetData();
@@ -344,31 +369,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
                 
             }
-            */
-            if (this._oxygenSource.FuelType == this.OxygenFuelTank?.CraftFuelSource?.FuelType)
-            {
-                this._oxygenSource = (IFuelSource) this.OxygenFuelTank?.CraftFuelSource;
-            }
-            else
-            {
-                if (this.Data.FuelType == null)
-                    return;
-                this._oxygenSource = (IFuelSource) EmptyFuelSource.GetOrCreate(this.Data.FuelType);
-            }
-            if (this._oxygenSource == null)
-            {
-                Debug.LogWarning("未找到 Oxygen 类型的 FuelSource，可能影响 DamageDrood 逻辑");
-            }
-            if (this._foodSource == null)
-            {
-                Debug.LogWarning("未找到 Food 类型的 FuelSource，可能影响 DamageDrood 逻辑");
-            }
-            if (this._waterSource == null)
-            {
-                Debug.LogWarning("未找到 Water 类型的 FuelSource，可能影响 DamageDrood 逻辑");
-            }
         }
-
         #region 无所弔谓
         
         public override void OnCraftLoaded(ICraftScript craftScript, bool movedToNewCraft)
@@ -405,8 +406,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private void UpdateCurrentPlanet()
         {
-            bool inFlightScene = Game.InFlightScene;
-            IPlanetData planetData = inFlightScene ? FlightSceneScript.Instance?.CraftNode?.Parent.PlanetData : null;
+            IPlanetData planetData = Game.InFlightScene ? FlightSceneScript.Instance?.CraftNode?.Parent.PlanetData : null;
             currentPlanetName = planetData?.Name;
         }
 
@@ -472,34 +472,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return "<color=purple>N/A</color>";
             })));
             
-            /*groupModel.Add<ProgressBarModel>(new ProgressBarModel((Func<string>) (() => FuelTankScript.GetAmountLabel(this._oxygenSource)), (Func<float>) (() =>
-            {
-              IFuelSource inspectorFuelSource = this._oxygenSource;
-              return inspectorFuelSource == null ? 0.0f : inspectorFuelSource.GetRemainingPercentage();
-            })));
-            if (this._oxygenSource.FuelType.AllowFuelTransfer & Game.InFlightScene)
-            {
-              IconButtonRowModel iconButtonRowModel = new IconButtonRowModel();
-              IconButtonModel fuelTransferButtonNone = new IconButtonModel("Ui/Sprites/Flight/IconFuelTransferNone", (Action<IconButtonModel>) (x => this._oxygenSource.FuelTransferMode = FuelTransferMode.None), "Disable fuel transfer.");
-              IconButtonModel fuelTransferButtonFill = new IconButtonModel("Ui/Sprites/Flight/IconFuelTransferFill", (Action<IconButtonModel>) (x => this._oxygenSource.FuelTransferMode = FuelTransferMode.Fill), "Fills the tank during fuel transfer. Requires at least one other tank to be set to Drain.");
-              IconButtonModel fuelTransferButtonDrain = new IconButtonModel("Ui/Sprites/Flight/IconFuelTransferDrain", (Action<IconButtonModel>) (x => this._oxygenSource.FuelTransferMode = FuelTransferMode.Drain), "Drains this tank during fuel transfer. Requires at least one other tank to be set to Fill.");
-              iconButtonRowModel.Add(fuelTransferButtonFill);
-              iconButtonRowModel.Add(fuelTransferButtonNone);
-              iconButtonRowModel.Add(fuelTransferButtonDrain);
-              iconButtonRowModel.UpdateAction = (Action<ItemModel>) (m =>
-              {
-                FuelTransferMode fuelTransferMode = this._oxygenSource.FuelTransferMode;
-                fuelTransferButtonNone.Style = fuelTransferMode == FuelTransferMode.None ? ButtonModel.ButtonStyle.Primary : ButtonModel.ButtonStyle.Default;
-                fuelTransferButtonFill.Style = fuelTransferMode == FuelTransferMode.Fill ? ButtonModel.ButtonStyle.Primary : ButtonModel.ButtonStyle.Default;
-                fuelTransferButtonDrain.Style = fuelTransferMode == FuelTransferMode.Drain ? ButtonModel.ButtonStyle.Warning : ButtonModel.ButtonStyle.Default;
-              });
-              iconButtonRowModel.DetermineVisibility = (Func<bool>) (() =>
-              {
-                IFuelSource inspectorFuelSource = this._oxygenSource;
-                return inspectorFuelSource != null && inspectorFuelSource.SupportsFuelTransfer;
-              });
-              groupModel.Add<IconButtonRowModel>(iconButtonRowModel);
-            }*/
+            
             groupModel.Add<TextModel>(new TextModel("Oxygen Supply Time", (Func<string>) (() =>
             {
                 if (UsingInternalOxygen()&&_oxygenSource != null && _evaScript != null)

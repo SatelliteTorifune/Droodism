@@ -1,4 +1,5 @@
 using ModApi.Craft;
+using ModApi.Craft.Parts;
 using ModApi.Flight;
 using ModApi.Mods;
 using ModApi.Ui.Inspector;
@@ -12,6 +13,9 @@ namespace Assets.Scripts
         public int DroodCount = 0;
         public int AstronautCount = 0;
         public int TouristCount = 0;
+        
+        public IFuelSource CraftTotalOxygenFuelSource;
+        
         private void OnInitialized(IFlightScene flightScene)
         {
             UpdateDroodCount();
@@ -60,7 +64,7 @@ namespace Assets.Scripts
             var ui = Game.Instance.FlightScene.FlightSceneUI;
             request.Model.AddGroup(LS);
             
-            var DroodCountTextModel = new TextModel("Drood Count",()=>(DroodCount==0?"Current Craft Has No Crew":this.DroodCount.ToString()));
+            var DroodCountTextModel = new TextModel("Drood Count",()=>(DroodCount==0?"raft Has No Crew":this.DroodCount.ToString()));
             LS.Add(DroodCountTextModel);
             
             var AstronautCountTextModel = new TextModel("Astronaut Count",()=>(AstronautCount==0?"N/A":this.AstronautCount.ToString()));
@@ -78,11 +82,10 @@ namespace Assets.Scripts
             LS.Add(textButtonModel);
             Debug.Log("4");
 
-            var currentOxygen = new ProgressBarModel("Current Oxygen", () => 1f / 10f);
-            LS.Add(currentOxygen);
             
         }
 
+        
 
     }
 
