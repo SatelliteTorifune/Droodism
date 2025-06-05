@@ -71,12 +71,10 @@ namespace Assets.Scripts
             if (Instance.SceneManager.InFlightScene)
             {
                 subPlus();
-                
+
+
             }
-            else
-            {
-                subMinus();
-            }
+            
             
 
         }

@@ -93,7 +93,7 @@ namespace Assets.Scripts
         {
             var craftNode = Game.Instance.FlightScene.CraftNode;
             SupportLifeScript sls;
-            if (true)//craftNode.CraftScript.Data.Assembly.Parts.Count==1)
+            if (true)
             {
                 foreach (var pd in craftNode.CraftScript.Data.Assembly.Parts)
                 {
