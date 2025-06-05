@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 4230181954
+CRC: 2317670845
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 8ddd3a5bc880deb77d8ccd6337feff7f
+    Hash: 60492dab1ac7ad61bf6f9a6eb8d64775
   TypeTreeHash:
     serializedVersion: 2
     Hash: 5ad585dd02dfb5016c0dad519eab8f49
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 8ddd3a5bc880deb77d8ccd6337feff7f
+    Hash: 60492dab1ac7ad61bf6f9a6eb8d64775
 HashAppended: 0
 ClassTypes:
 - Class: 49
@@ -17,6 +17,6 @@ ClassTypes:
 SerializeReferenceClassIdentifiers: []
 Assets:
 - Assets/Content/Craft/Parts/RocketEngines/Propulsion.xml
-- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/_ModAssets_/Droodism.dll.bytes
+- Assets/_ModAssets_/ModManifest.xml.bytes
 Dependencies: []

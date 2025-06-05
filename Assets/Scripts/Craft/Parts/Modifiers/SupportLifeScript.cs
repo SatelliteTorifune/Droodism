@@ -286,12 +286,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
             }
         }
-        private void RefreshFuelSource()
+        public void RefreshFuelSource()
         {
             if (!Game.InFlightScene) 
-            {
                 return;
-            }
             Debug.LogFormat("调用RefreshFuelSource");
         
             if (PartScript == null || PartScript.Modifiers == null)
@@ -301,11 +299,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             
             EvaRefreshFuelSource();
-            if (_evaScript.EvaActive)
-            {
-                EvaRefreshFuelSource();
-                Debug.LogWarning("第二次调用成功 ");
-            }
+            
             if (Game.InFlightScene)
             {
                 if (this._oxygenSource == null)
@@ -368,6 +362,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     }
                 }
                 
+            }
+            if (this.PartScript.CraftScript.Data.Assembly.Parts.Count==1)
+            {
+                Debug.LogFormat("操你妈");
             }
         }
         #region 无所弔谓
@@ -471,7 +469,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
                 return "<color=purple>N/A</color>";
             })));
-            
             
             groupModel.Add<TextModel>(new TextModel("Oxygen Supply Time", (Func<string>) (() =>
             {

@@ -1,3 +1,7 @@
+using Assets.Scripts.Craft;
+using Assets.Scripts.Craft.Parts.Modifiers;
+using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
+using Microsoft.CSharp.RuntimeBinder;
 using ModApi.Craft;
 using ModApi.Craft.Parts;
 using ModApi.Flight;
@@ -74,15 +78,38 @@ namespace Assets.Scripts
             LS.Add(TouristCountTextModel);
             
             var textButtonModel = new TextButtonModel(
-                "Update Drood Count", b =>
+                "手动更新", b =>
                 {
                     UpdateDroodCount();
-                    ui.ShowMessage("Updated",false,5f);
+                    smjb();
                 });
             LS.Add(textButtonModel);
             Debug.Log("4");
 
             
+        }
+
+        private void smjb()
+        {
+            var craftNode = Game.Instance.FlightScene.CraftNode;
+            SupportLifeScript sls;
+            if (true)//craftNode.CraftScript.Data.Assembly.Parts.Count==1)
+            {
+                foreach (var pd in craftNode.CraftScript.Data.Assembly.Parts)
+                {
+                    foreach (var pmd in pd.Modifiers)
+                    {
+                        if (pmd.Name.Contains("Support"))
+                        {
+                            sls = (SupportLifeScript)pmd.GetScript();
+                            sls.RefreshFuelSource();
+                            Debug.LogFormat("燃料已更新");
+                            Game.Instance.FlightScene.FlightSceneUI.ShowMessage("燃料已更新",false,5f);
+                        }
+                    }
+                    
+                }
+            }
         }
 
         
