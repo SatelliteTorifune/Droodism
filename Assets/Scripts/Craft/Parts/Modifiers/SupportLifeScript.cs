@@ -58,6 +58,19 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (Game.InFlightScene)
             {
                 RefreshFuelSource();
+                Debug.LogFormat("从OnModifiersCreated调用RefreshFuelSource");
+                try
+                {
+                    this._evaScript.CrewCompartment.CrewEnter += OnCrewEnter;
+                    Debug.LogFormat("成功订阅CrewEnter");
+                    this._evaScript.CrewCompartment.CrewExit += OnCrewExit;
+                    Debug.LogFormat("成功订阅CrewExit");
+                }
+                catch (Exception e)
+                {
+                
+                }
+                
             }
         }
         
@@ -181,30 +194,33 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 AddTank("Food", this.Data.DesireFoodCapacity*(isTourist?0.9f:1f));
                 AddTank("Drinking Water", this.Data.DesireWaterCapacity*(isTourist?0.9f:1f));
             }
+
+           
             OnCraftStructureChanged(this.PartScript.CraftScript);
-            this._evaScript.CrewCompartment.CrewEnter += OnCrewEnter;
-            this._evaScript.CrewCompartment.CrewExit += OnCrewExit;
             this.PartScript.CraftScript.CraftStructureChanged += OnCraftStructureChanged1;
+            
             //this._evaPitch = this.GetInputController("EvaPitch");
             //this._evaRoll = this.GetInputController("EvaRoll");
         }
 
         private void OnCraftStructureChanged1()
         {
-            Debug.LogFormat("你要鸡巴干啥3");
-           RefreshFuelSource();
+            
+            //RefreshFuelSource();
+            //Debug.LogFormat("从OnCraftStructureChanged1 调用RefreshFuelSource");
         }
         private void OnCrewEnter(EvaScript s)
         {
-            Debug.LogFormat("你要鸡巴干啥");
             RefreshFuelSource();
+            Debug.LogFormat("OnCrewEnter 调用RefreshFuelSource");
         }
         
         private void OnCrewExit(EvaScript s)
         {
-            Debug.LogFormat("你要鸡巴干啥2");
             RefreshFuelSource();
+            Debug.LogFormat("OnCrewExit 调用RefreshFuelSource");
         }
+        
 
         void IFlightUpdate.FlightUpdate(in FlightFrameData frame)
         {
@@ -307,7 +323,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             if (!Game.InFlightScene) 
                 return;
-            Debug.LogFormat("调用RefreshFuelSource");
         
             if (PartScript == null || PartScript.Modifiers == null)
             {
@@ -336,11 +351,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         private void EvaRefreshFuelSource()
         {
+            Debug.LogFormat("调用EvaRefreshFuelSource");
             
             try
             {
                 if (_evaScript.EvaActive)
                 {
+                    Debug.LogFormat("执行真的EvaRefreshFuelSource的逻辑");
                     //如果drood在Eva状态,那就只在本地搜索Modifier
                     foreach (var modifier in this.PartScript.Modifiers)
                     {
@@ -389,7 +406,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 if (!_evaScript.EvaActive)
                 {
                     CraftRefeshFuelSource();
-                    Debug.LogFormat("从EvaRefreshFuelSource调用CraftRefeshFuelSource");
+                    Debug.LogWarningFormat("从EvaRefreshFuelSource调用CraftRefeshFuelSource");
                 }
             }
             catch (Exception e)
@@ -417,12 +434,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public override void OnCraftStructureChanged(ICraftScript craftScript)
         {
             base.OnCraftStructureChanged(craftScript);
-            Debug.LogFormat("OnCraftStructureChanged调用");
+            Debug.LogFormat("从OnCraftStructureChanged调用RefreshFuelSource");
             RefreshFuelSource();
         }
         
         private void OnCraftFuelSourceChanged(object sender, EventArgs e)
         {
+            Debug.LogFormat("从OnCraftFuelSourceChanged调用RefreshFuelSource");
             this.RefreshFuelSource();
         }
         

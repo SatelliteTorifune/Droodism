@@ -67,16 +67,19 @@ namespace Assets.Scripts
             var fs = Game.Instance.Settings.Game.Flight;
             var ui = Game.Instance.FlightScene.FlightSceneUI;
             request.Model.AddGroup(LS);
-            
-            var DroodCountTextModel = new TextModel("Drood Count",()=>(DroodCount==0?"raft Has No Crew":this.DroodCount.ToString()));
+
+            var DroodCountTextModel = new TextModel("Drood Count",
+                () => (DroodCount == 0 ? "Craft Has No Crew" : this.DroodCount.ToString()));
             LS.Add(DroodCountTextModel);
-            
-            var AstronautCountTextModel = new TextModel("Astronaut Count",()=>(AstronautCount==0?"N/A":this.AstronautCount.ToString()));
+
+            var AstronautCountTextModel = new TextModel("Astronaut Count",
+                () => (AstronautCount == 0 ? "N/A" : this.AstronautCount.ToString()));
             LS.Add(AstronautCountTextModel);
-            
-            var TouristCountTextModel = new TextModel("Tourist Count",()=>(TouristCount==0?"N/A":this.TouristCount.ToString()));
+
+            var TouristCountTextModel = new TextModel("Tourist Count",
+                () => (TouristCount == 0 ? "N/A" : this.TouristCount.ToString()));
             LS.Add(TouristCountTextModel);
-            
+
             var textButtonModel = new TextButtonModel(
                 "手动更新", b =>
                 {
@@ -84,9 +87,17 @@ namespace Assets.Scripts
                     smjb();
                 });
             LS.Add(textButtonModel);
-            Debug.Log("4");
 
-            
+            var clearLogBottom = new TextButtonModel(
+                "clear", b =>
+                {
+                     Debug.ClearDeveloperConsole();
+                     
+                });
+            LS.Add(clearLogBottom);
+        
+
+
         }
 
         private void smjb()

@@ -65,14 +65,13 @@ namespace Assets.Scripts
             {
                 Instance.Designer.CraftLoaded += OnCraftLoaded;
                 Created += OnPartAdded;
-                subMinus();
+                
             }
 
             if (Instance.SceneManager.InFlightScene)
             {
                 subPlus();
-
-
+                
             }
             
             
