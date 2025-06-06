@@ -55,25 +55,38 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public override void OnModifiersCreated()
         {
             base.OnModifiersCreated();
+            try
+            {
+                this._evaScript.CrewCompartment.CrewEnter += OnCrewEnter;
+                Debug.LogFormat("成功订阅CrewEnter");
+                this._evaScript.CrewCompartment.CrewExit += OnCrewExit;
+                Debug.LogFormat("成功订阅CrewExit");
+                    
+            }
+            catch (Exception e)
+            {
+                
+            }
             if (Game.InFlightScene)
             {
                 RefreshFuelSource();
+                this.PartScript.ConnectedToPart+= OnConnectedToPart1;
                 Debug.LogFormat("从OnModifiersCreated调用RefreshFuelSource");
-                try
-                {
-                    this._evaScript.CrewCompartment.CrewEnter += OnCrewEnter;
-                    Debug.LogFormat("成功订阅CrewEnter");
-                    this._evaScript.CrewCompartment.CrewExit += OnCrewExit;
-                    Debug.LogFormat("成功订阅CrewExit");
-                }
-                catch (Exception e)
-                {
                 
-                }
                 
             }
         }
-        
+
+        public void OnConnectedToPart1(PartConnectedEventData e)
+        {
+            
+            if (!Game.InFlightScene)
+            {
+                return;
+            }
+            RefreshFuelSource();
+            Debug.LogFormat("从OnConnectedToPart1调用RefreshFuelSource");
+        }
         private FuelTankScript OxygenFuelTank
         {
             get => this._oxygenFuelTank;
