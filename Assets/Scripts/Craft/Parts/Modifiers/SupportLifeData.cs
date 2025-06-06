@@ -31,11 +31,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         [SerializeField][PartModifierProperty(true, false)]
         private float waterDamageScale=1f;
         
-        [SerializeField] [PartModifierProperty]
+        [SerializeField] 
+        [DesignerPropertySlider(0.3f, 3f, 76, Label = "Oxygen Carry Amount(days)", Tooltip = "Define How much <color=green>Oxygen</color> Drood himself/herself will carry when Eva.")]
         private float desireOxygenCapacity = 0.3f;
-        [SerializeField] [PartModifierProperty]
+        [SerializeField] [DesignerPropertySlider(0.1f, 3f, 76, Label = "Food Carry Amount(days)", Tooltip = "Define How much <color=yellow>Food</color> Drood himself/herself will carry when Eva.")]
         private float desireFoodCapacity = 1f;
-        [SerializeField] [PartModifierProperty]
+        [SerializeField] [DesignerPropertySlider(0.3f, 3f, 76, Label = "Water Carry Amount(days)", Tooltip = "Define How much<color=red> Drink Water</color> Drood himself/herself will carry when Eva.")]
         private float desireWaterCapacity = 0.5f;
         
         private int _fuelSourceAttachPoint;

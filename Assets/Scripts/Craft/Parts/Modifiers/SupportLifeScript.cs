@@ -14,7 +14,9 @@ using ModApi.Flight.Sim;
 using ModApi.Math;
 using ModApi.Settings.Core;
 using ModApi.Ui.Inspector;
-
+///孩子们我所做的就只是拉屎而已,然后往屎上叠他妈的屎山
+//鸡巴的我自己都看不懂我写的是什么鸡巴玩意了你还指望我给你写注释吗?
+//顺便一提如果真有除了我以外的人在github上或者逆向出来了看到了这行字,那么我只能说一句牛逼,你简直是找屎大王,能闻着味道找到我编程以来拉的最大的一坨
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
     public class SupportLifeScript : 
@@ -23,6 +25,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         IFlightStart,
         IFlightUpdate
     {
+        
         private EvaScript _evaScript;
         
         private IFuelSource _oxygenSource;
@@ -55,7 +58,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public override void OnModifiersCreated()
         {
             base.OnModifiersCreated();
-            
+            this.Data.PartPropertiesEnabled = true;
             if (Game.InFlightScene)
             {
                 RefreshFuelSource();

@@ -184,7 +184,7 @@ namespace Assets.Scripts
             if (_supportLifeData==null)
             {
                 _supportLifeData = PartModifierData.CreateFromDefaultXml<SupportLifeData>(part);
-                _supportLifeData.PartPropertiesEnabled = false;
+                _supportLifeData.PartPropertiesEnabled = true;
                 _supportLifeData.InspectorEnabled = true;
             }
             
