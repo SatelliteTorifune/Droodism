@@ -65,36 +65,27 @@ namespace Assets.Scripts
             {
                 Instance.Designer.CraftLoaded += OnCraftLoaded;
                 Created += OnPartAdded;
-                
-            }
-
-            if (Instance.SceneManager.InFlightScene)
-            {
-                subPlus();
-                
             }
             
-            
-
         }
 
-        private void subPlus()
-        {
-            Instance.FlightScene.Initialized += OnInitialized;
-            Instance.FlightScene.CraftChanged += OnCraftChanged;
-            Instance.FlightScene.CraftStructureChanged += OnCraftStructureChanged;
-            Instance.FlightScene.ActiveCommandPodChanged += OnCraftChanged;
-            Instance.FlightScene.ActiveCommandPodStateChanged += OnCraftChanged;
-        }
-        
-        private void subMinus()
-        {
-            Instance.FlightScene.Initialized -= OnInitialized;
-            Instance.FlightScene.CraftChanged -= OnCraftChanged;
-            Instance.FlightScene.CraftStructureChanged -= OnCraftStructureChanged;
-            Instance.FlightScene.ActiveCommandPodChanged -= OnCraftChanged;
-            Instance.FlightScene.ActiveCommandPodStateChanged -= OnCraftChanged;
-        }
+        //private void subPlus()
+        //{
+        //    Instance.FlightScene.Initialized += OnInitialized;
+        //    Instance.FlightScene.CraftChanged += OnCraftChanged;
+        //    Instance.FlightScene.CraftStructureChanged += OnCraftStructureChanged;
+        //    Instance.FlightScene.ActiveCommandPodChanged += OnCraftChanged;
+        //    Instance.FlightScene.ActiveCommandPodStateChanged += OnCraftChanged;
+        //}
+        //
+        //private void subMinus()
+        //{
+        //    Instance.FlightScene.Initialized -= OnInitialized;
+        //    Instance.FlightScene.CraftChanged -= OnCraftChanged;
+        //    Instance.FlightScene.CraftStructureChanged -= OnCraftStructureChanged;
+        //    Instance.FlightScene.ActiveCommandPodChanged -= OnCraftChanged;
+        //    Instance.FlightScene.ActiveCommandPodStateChanged -= OnCraftChanged;
+        //}
         /// <summary>
         /// 在加载Craft时使用"CheckDrood"方法遍历所有modifier得到零件并添加SupportLife的modifier
         /// When load a craft get all Craft's modifier using "CheckDrood" method and adding a "SupportLife"modifie to the part

@@ -55,18 +55,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public override void OnModifiersCreated()
         {
             base.OnModifiersCreated();
-            try
-            {
-                this._evaScript.CrewCompartment.CrewEnter += OnCrewEnter;
-                Debug.LogFormat("成功订阅CrewEnter");
-                this._evaScript.CrewCompartment.CrewExit += OnCrewExit;
-                Debug.LogFormat("成功订阅CrewExit");
-                    
-            }
-            catch (Exception e)
-            {
-                
-            }
+            
             if (Game.InFlightScene)
             {
                 RefreshFuelSource();
@@ -77,16 +66,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
         }
 
-        public void OnConnectedToPart1(PartConnectedEventData e)
-        {
-            
-            if (!Game.InFlightScene)
-            {
-                return;
-            }
-            RefreshFuelSource();
-            Debug.LogFormat("从OnConnectedToPart1调用RefreshFuelSource");
-        }
+        
         private FuelTankScript OxygenFuelTank
         {
             get => this._oxygenFuelTank;
@@ -178,12 +158,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 Debug.LogErrorFormat("添加 {0} 类型的 FuelTank 失败: {1}", fuelType, e);
             }
+            
         }
         
         void IFlightStart.FlightStart(in FlightFrameData frame)
         {
             
             this.Data.InspectorEnabled = true;
+            
             if (this.PartScript.Data.PartType.Name == "Eva-Tourist")
             {
                 isTourist = true;
@@ -209,29 +191,36 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
 
            
-            OnCraftStructureChanged(this.PartScript.CraftScript);
+            RefreshFuelSource();
+            Debug.LogFormat("初始调用RefreshFuelSource");
             this.PartScript.CraftScript.CraftStructureChanged += OnCraftStructureChanged1;
+            Debug.LogFormat("懒得喷");
+            this.PartScript.ConnectedToPart += OnConnectedToPart1;
+            Debug.LogFormat("我也懒得喷");
+            this.PartScript.MovedToNewCraft += OnMovedToNewCraft;
             
+            
+
             //this._evaPitch = this.GetInputController("EvaPitch");
             //this._evaRoll = this.GetInputController("EvaRoll");
         }
 
+        private void OnMovedToNewCraft(ICraftScript a, ICraftScript b)
+        {
+            Debug.LogFormat("OnMovedToNewCraft吱一声");
+            RefreshFuelSource();
+            Debug.LogFormat("从OnMovedToNewCraft调用RefreshFuelSource");
+        }
+        public void OnConnectedToPart1(PartConnectedEventData e)
+        {
+            RefreshFuelSource();
+            Debug.LogFormat("从OnConnectedToPart1调用RefreshFuelSource");
+        }
         private void OnCraftStructureChanged1()
         {
             
             //RefreshFuelSource();
             //Debug.LogFormat("从OnCraftStructureChanged1 调用RefreshFuelSource");
-        }
-        private void OnCrewEnter(EvaScript s)
-        {
-            RefreshFuelSource();
-            Debug.LogFormat("OnCrewEnter 调用RefreshFuelSource");
-        }
-        
-        private void OnCrewExit(EvaScript s)
-        {
-            RefreshFuelSource();
-            Debug.LogFormat("OnCrewExit 调用RefreshFuelSource");
         }
         
 
@@ -249,6 +238,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             ConsumptionLogic(frame);
             AutoRefillLogic(frame);
+            
         }
 
         private void ConsumptionLogic(in FlightFrameData frame)
@@ -359,6 +349,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 {
                     Debug.LogWarning("未找到 Water 类型的 FuelSource，可能影响 DamageDrood 逻辑");
                 }
+                
             }
             
         }
