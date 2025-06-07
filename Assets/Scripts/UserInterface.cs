@@ -114,7 +114,7 @@ namespace Assets.Scripts
                         {
                             sls = (SupportLifeScript)pmd.GetScript();
                             sls.RefreshFuelSource();
-                            Debug.LogFormat("燃料已更新");
+                            Debug.LogFormat("燃料已手动更新");
                             Game.Instance.FlightScene.FlightSceneUI.ShowMessage("燃料已更新",false,5f);
                         }
                     }

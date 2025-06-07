@@ -185,11 +185,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 AddTank("Drinking Water", this.Data.DesireWaterCapacity*(isTourist?0.95f:1f));
             }
             RefreshFuelSource();
-            Debug.LogFormat("初始调用RefreshFuelSource");
             
         }
 
-        
+        private void OnCrewEnter(EvaScript s)
+        {
+            Debug.LogFormat("OnCrewEnter调用");
+        }
         
 
         void IFlightUpdate.FlightUpdate(in FlightFrameData frame)
@@ -402,7 +404,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             this.OnCraftStructureChanged(craftScript);
         }
-        
+
+        public override void OnCraftStructureChanged(ICraftScript craftScript)
+        {
+            RefreshFuelSource();
+            Debug.LogErrorFormat("从OnCraftStructureChanged调用RefreshFuelSource();");
+        }
         
         private void OnCraftFuelSourceChanged(object sender, EventArgs e)
         {
