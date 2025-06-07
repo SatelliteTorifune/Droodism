@@ -52,21 +52,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         private IInputController _evaPitch;
         private IInputController _evaRoll;
-            
-            
+        
         
         public override void OnModifiersCreated()
         {
             base.OnModifiersCreated();
             this.Data.PartPropertiesEnabled = true;
-            if (Game.InFlightScene)
-            {
-                RefreshFuelSource();
-                this.PartScript.ConnectedToPart+= OnConnectedToPart1;
-                Debug.LogFormat("从OnModifiersCreated调用RefreshFuelSource");
-                
-                
-            }
+            
         }
 
         
@@ -188,43 +180,16 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             PartData partData = this.Data.Part;
             if (partData.Modifiers.Count <= 6)
             {
-                AddTank("Oxygen", this.Data.DesireOxygenCapacity*(isTourist?0.9f:1f));
-                AddTank("Food", this.Data.DesireFoodCapacity*(isTourist?0.9f:1f));
-                AddTank("Drinking Water", this.Data.DesireWaterCapacity*(isTourist?0.9f:1f));
+                AddTank("Oxygen", this.Data.DesireOxygenCapacity*(isTourist?0.95f:1f));
+                AddTank("Food", this.Data.DesireFoodCapacity*(isTourist?0.95f:1f));
+                AddTank("Drinking Water", this.Data.DesireWaterCapacity*(isTourist?0.95f:1f));
             }
-
-           
             RefreshFuelSource();
             Debug.LogFormat("初始调用RefreshFuelSource");
-            this.PartScript.CraftScript.CraftStructureChanged += OnCraftStructureChanged1;
-            Debug.LogFormat("懒得喷");
-            this.PartScript.ConnectedToPart += OnConnectedToPart1;
-            Debug.LogFormat("我也懒得喷");
-            this.PartScript.MovedToNewCraft += OnMovedToNewCraft;
             
-            
-
-            //this._evaPitch = this.GetInputController("EvaPitch");
-            //this._evaRoll = this.GetInputController("EvaRoll");
         }
 
-        private void OnMovedToNewCraft(ICraftScript a, ICraftScript b)
-        {
-            Debug.LogFormat("OnMovedToNewCraft吱一声");
-            RefreshFuelSource();
-            Debug.LogFormat("从OnMovedToNewCraft调用RefreshFuelSource");
-        }
-        public void OnConnectedToPart1(PartConnectedEventData e)
-        {
-            RefreshFuelSource();
-            Debug.LogFormat("从OnConnectedToPart1调用RefreshFuelSource");
-        }
-        private void OnCraftStructureChanged1()
-        {
-            
-            //RefreshFuelSource();
-            //Debug.LogFormat("从OnCraftStructureChanged1 调用RefreshFuelSource");
-        }
+        
         
 
         void IFlightUpdate.FlightUpdate(in FlightFrameData frame)
@@ -429,7 +394,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             //是的我知道这很傻逼,你为什么要他妈的遍历craft中每一个part里面的modifier?就因为你他妈的不会用IFuelSource吗?
             //你妈的你是人啊我操
-            Debug.LogWarningFormat("CraftRefeshFuelSource调用");
+            Debug.LogWarningFormat("CraftRefeshFuelSource调用,后面还没写");
         }
         #region 无所弔谓
         
@@ -437,20 +402,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             this.OnCraftStructureChanged(craftScript);
         }
-
-        public override void OnCraftStructureChanged(ICraftScript craftScript)
-        {
-            base.OnCraftStructureChanged(craftScript);
-            Debug.LogFormat("从OnCraftStructureChanged调用RefreshFuelSource");
-            RefreshFuelSource();
-        }
+        
         
         private void OnCraftFuelSourceChanged(object sender, EventArgs e)
         {
-            Debug.LogFormat("从OnCraftFuelSourceChanged调用RefreshFuelSource");
-            this.RefreshFuelSource();
-        }
-        
+            RefreshFuelSource();
+            Debug.LogWarningFormat("从OnCraftFuelSourceChanged调用RefreshFuelSource();");
+            
+        } 
         private bool UsingInternalOxygen()
         {
             float airDensity = PartScript.CraftScript.AtmosphereSample.AirDensity;
