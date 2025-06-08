@@ -107,9 +107,15 @@ namespace Assets.Scripts
         public void OnCraftLoaded()
         {
             List<PartData> droodParts = CheckDrood(Craft);
+            List<PartData> genParts = CheckGenerator(Craft);
             foreach (PartData part in droodParts)
             {
                 AddLsModifier(part);
+            }
+
+            foreach (PartData part in genParts)
+            {
+                AddLSGModifier(part);
             }
 
         }
@@ -123,14 +129,18 @@ namespace Assets.Scripts
         {
             if (e.Part.Name=="Eva")
             {
-                Debug.LogFormat($"这是Drood,有{e.Part.Modifiers.Count}个modifier");
                 AddLsModifier(e.Part);
             }
 
             if (e.Part.Name == "Eva-Tourist")
             {
-                Debug.LogFormat($"这是游客,有{e.Part.Modifiers.Count}个modifier"); 
+               
                 AddLsModifier(e.Part);
+            }
+
+            if (e.Part.Name == "Generator1")
+            {
+                AddLSGModifier(e.Part);
             }
             
         }
@@ -204,7 +214,42 @@ namespace Assets.Scripts
             
         }
         
-        
+        public List<PartData> CheckGenerator(CraftScript craft)
+        {
+            List<PartData> GeneratorParts = new List<PartData>();
+            var parts = craft.Data.Assembly.Parts;
+            foreach (PartData part in craft.Data.Assembly.Parts)
+            {
+
+                if (part.Modifiers != null)
+                {
+                    foreach (var _pmd in part.Modifiers)
+                    {
+                        if (_pmd.Name=="Generator1")
+                        {
+                            GeneratorParts.Add(part);
+                        }
+
+                    }
+                }
+            }
+
+            return GeneratorParts;
+
+        }
+        public static void AddLSGModifier(PartData part)
+        {
+            if (!(part != null))
+                return;
+            LifeSupportGeneratorData _supportLifeData = part.GetModifier<LifeSupportGeneratorData>();
+            if (_supportLifeData==null)
+            {
+                _supportLifeData = PartModifierData.CreateFromDefaultXml<LifeSupportGeneratorData>(part);
+                _supportLifeData.PartPropertiesEnabled = false;
+                _supportLifeData.InspectorEnabled = true;
+            }
+            
+        }
     }
     //何意味?
     /*[HarmonyPatch]

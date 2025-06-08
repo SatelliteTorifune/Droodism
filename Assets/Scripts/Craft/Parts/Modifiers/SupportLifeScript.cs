@@ -5,6 +5,7 @@ using ModApi.GameLoop;
 using ModApi.GameLoop.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Linq;
 using Assets.Scripts.Craft.Fuel;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
@@ -54,9 +55,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private IInputController _evaPitch;
         private IInputController _evaRoll;
 
-        private List<FuelTankScript> CraftOxygenFuelSourceList;
-        private List<FuelTankScript> CraftFoodFuelSourceList;
-        private List<FuelTankScript> CraftWaterFuelSourceList;
+        
         
         public override void OnModifiersCreated()
         {
@@ -194,7 +193,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         void IFlightUpdate.FlightUpdate(in FlightFrameData frame)
         {
-            if (frame.DeltaTimeWorld == 0.0 || !_evaScript.EvaActive) 
+            if (frame.DeltaTimeWorld == 0.0) 
                 return;
             if (_evaScript.EvaActive&&_evaScript.IsPlayerCraft&& !_evaScript.IsWalking&&_evaScript.IsGrounded&&(this.PartScript.CraftScript.SurfaceVelocity.magnitude>=0.8))//&&_evaRoll.Value<=0.1&&_evaPitch.Value<=0.1)
             {
@@ -393,12 +392,48 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             //是的我知道这很傻逼,你为什么要他妈的遍历craft中每一个part里面的modifier?就因为你他妈的不会用IFuelSource吗?
             //你妈的你是人啊我操
-            Debug.LogWarningFormat("CraftRefeshFuelSource调用");
-            FuelTankScript fts= ((Component) this).GetComponent<FuelTankScript>();
             
+            Debug.LogWarningFormat("CraftRefeshFuelSource调用");
+            List<FuelTankScript> CraftOxygenFuelSourceList = new List<FuelTankScript>();
+            List<FuelTankScript> CraftFoodFuelSourceList= new List<FuelTankScript>();
+            List<FuelTankScript> CraftWaterFuelSourceList= new List<FuelTankScript>();
+            Debug.LogFormat("List创建");
+            try
+            {
+                foreach (PartData partData in this.PartScript.CraftScript.Data.Assembly.Parts)
+                {
+                    foreach (var modifierData in partData.Modifiers)
+                    {
+                        if (modifierData.Name.Contains("Tank"))
+                        {
+                            FuelTankScript _fuelTankScript = modifierData.GetScript() as FuelTankScript;
+                            if (_fuelTankScript.FuelType.Name.Contains("Oxygen"))
+                            {
+                                CraftOxygenFuelSourceList.Add(_fuelTankScript);
+                                Debug.LogFormat($"添加{_fuelTankScript.Position}到列表");
+                            }
 
+                            if (_fuelTankScript.FuelType.Name.Contains("Drinking"))
+                            {
+                                CraftWaterFuelSourceList.Add(_fuelTankScript);
+                                Debug.LogFormat($"添加{_fuelTankScript.Position}到列表");
+                            }
 
+                            if (_fuelTankScript.FuelType.Name.Contains("Food"))
+                            {
+                                CraftFoodFuelSourceList.Add(_fuelTankScript);
+                                Debug.LogFormat($"添加{_fuelTankScript.Position}到列表");
+                            }
 
+                        }
+                    }
+                }
+
+            }
+            catch (Exception e)
+            {
+                Debug.LogFormat("下面出问题了{0}", e);
+            }
         }
         #region 无所弔谓
         
