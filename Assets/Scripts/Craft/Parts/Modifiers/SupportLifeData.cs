@@ -17,6 +17,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     [PartModifierTypeId("SupportLife")]
     public class SupportLifeData : PartModifierData<SupportLifeScript>
     {
+        private static bool isTourist;
+        
         [SerializeField] [PartModifierProperty(true, false)]
         private float _oxygenComsumeRate=1f;
         [SerializeField][PartModifierProperty(true, false)]
@@ -31,14 +33,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         [SerializeField][PartModifierProperty(true, false)]
         private float waterDamageScale=1f;
         
-        [SerializeField] [PartModifierProperty]
+        [SerializeField] 
+        [DesignerPropertySlider(0.1f, 3f, 51, Label = "<color=green>Oxygen</color> Carry Amount(days)", Tooltip = "Define How much <color=green>Oxygen</color> Drood himself/herself will carry when Eva.")]
         private float desireOxygenCapacity = 0.3f;
-        [SerializeField] [PartModifierProperty]
+        [SerializeField] [DesignerPropertySlider(0.1f, 3f, 51, Label = "<color=yellow>Food</color> Carry Amount(days)", Tooltip = "Define How much <color=yellow>Food</color> Drood himself/herself will carry when Eva.")]
         private float desireFoodCapacity = 1f;
-        [SerializeField] [PartModifierProperty]
+        [SerializeField] [DesignerPropertySlider(0.1f, 3f, 51, Label = "<color=red>Water</color> Carry Amount(days)", Tooltip = "Define How much<color=red> Drink Water</color> Drood himself/herself will carry when Eva.")]
         private float desireWaterCapacity = 0.5f;
-        //[SerializeField] [PartModifierProperty(true, false)]
-        private int _fuelSourceAttachPoint = 0;
+        
+        private int _fuelSourceAttachPoint;
         public int FuelSourceAttachPoint
         {
             get=>_fuelSourceAttachPoint;
@@ -46,13 +49,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         }
         private FuelTankScript _fuelTank;
-        private FuelType _fuelType;
         
-        public FuelType FuelType
-        {
-            get => this._fuelType;
-            private set => this._fuelType = value;
-        }
         
         public float OxygenComsumeRate
         {

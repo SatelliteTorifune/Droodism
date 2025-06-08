@@ -12,6 +12,7 @@ using ModApi.Design.Events;
 using ModApi.Scenes.Events;
 using ModApi.Craft.Parts.Events;
 using HarmonyLib;
+using ModApi.Ui.Inspector;
 using static ModApi.Common.Game;
 using static ModApi.Craft.Parts.PartData;
 
@@ -52,16 +53,52 @@ namespace Assets.Scripts
             var harmony = new Harmony("com.SatelliteTorifune.Droodism");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
             Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
+            Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.FlightView,OnBuildFlightViewInspectorPanel);
+            Debug.Log("OnBuildFlightViewInspectorPanel called when OnModInitialized");
+            
 
         }
         public void OnSceneLoaded(object sender, SceneEventArgs e)
         {
+            subPlus();
+            
             if (Instance.SceneManager.InDesignerScene)
             {
                 Instance.Designer.CraftLoaded += OnCraftLoaded;
                 Created += OnPartAdded;
             }
+            
+        }
 
+        private void subPlus()
+        {
+            try
+            {
+                Instance.FlightScene.Initialized += OnInitialized;
+                Debug.LogFormat(" Initialized订阅OnInitialized");
+                Instance.FlightScene.CraftChanged += OnCraftChanged;
+                Debug.LogFormat(" CraftChanged订阅OnCraftChanged");
+                Instance.FlightScene.CraftStructureChanged += OnCraftStructureChangedUI;
+                Debug.LogFormat(" CraftStructureChanged订阅OnCraftStructureChangedUI");
+                Instance.FlightScene.ActiveCommandPodChanged += OnCraftChanged;
+                Debug.LogFormat(" ActiveCommandPodChanged订阅OnCraftChanged");
+                Instance.FlightScene.ActiveCommandPodStateChanged += OnCraftChanged;
+                Debug.LogFormat(" ActiveCommandPodStateChanged订阅OnCraftChanged");
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarningFormat($"订阅有问题{e}");
+            }
+            
+        }
+        
+        private void subMinus()
+        {
+            Instance.FlightScene.Initialized -= OnInitialized;
+            Instance.FlightScene.CraftChanged -= OnCraftChanged;
+            Instance.FlightScene.CraftStructureChanged -= OnCraftStructureChangedUI;
+            Instance.FlightScene.ActiveCommandPodChanged -= OnCraftChanged;
+            Instance.FlightScene.ActiveCommandPodStateChanged -= OnCraftChanged;
         }
         /// <summary>
         /// 在加载Craft时使用"CheckDrood"方法遍历所有modifier得到零件并添加SupportLife的modifier
@@ -161,14 +198,14 @@ namespace Assets.Scripts
             if (_supportLifeData==null)
             {
                 _supportLifeData = PartModifierData.CreateFromDefaultXml<SupportLifeData>(part);
-                _supportLifeData.PartPropertiesEnabled = false;
+                _supportLifeData.PartPropertiesEnabled = true;
                 _supportLifeData.InspectorEnabled = true;
             }
             
         }
         
+        
     }
-
     //何意味?
     /*[HarmonyPatch]
     public class HarmonyPatches
