@@ -29,7 +29,7 @@ namespace Assets.Scripts
             UpdateDroodCount();
         }
 
-        private void OnCraftStructureChanged()
+        private void OnCraftStructureChangedUI()
         {
             UpdateDroodCount();
         }

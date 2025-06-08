@@ -55,11 +55,12 @@ namespace Assets.Scripts
             Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
             Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.FlightView,OnBuildFlightViewInspectorPanel);
             Debug.Log("OnBuildFlightViewInspectorPanel called when OnModInitialized");
-           
+            
 
         }
         public void OnSceneLoaded(object sender, SceneEventArgs e)
         {
+            subPlus();
             
             if (Instance.SceneManager.InDesignerScene)
             {
@@ -69,23 +70,36 @@ namespace Assets.Scripts
             
         }
 
-        //private void subPlus()
-        //{
-        //    Instance.FlightScene.Initialized += OnInitialized;
-        //    Instance.FlightScene.CraftChanged += OnCraftChanged;
-        //    Instance.FlightScene.CraftStructureChanged += OnCraftStructureChanged;
-        //    Instance.FlightScene.ActiveCommandPodChanged += OnCraftChanged;
-        //    Instance.FlightScene.ActiveCommandPodStateChanged += OnCraftChanged;
-        //}
-        //
-        //private void subMinus()
-        //{
-        //    Instance.FlightScene.Initialized -= OnInitialized;
-        //    Instance.FlightScene.CraftChanged -= OnCraftChanged;
-        //    Instance.FlightScene.CraftStructureChanged -= OnCraftStructureChanged;
-        //    Instance.FlightScene.ActiveCommandPodChanged -= OnCraftChanged;
-        //    Instance.FlightScene.ActiveCommandPodStateChanged -= OnCraftChanged;
-        //}
+        private void subPlus()
+        {
+            try
+            {
+                Instance.FlightScene.Initialized += OnInitialized;
+                Debug.LogFormat(" Initialized订阅OnInitialized");
+                Instance.FlightScene.CraftChanged += OnCraftChanged;
+                Debug.LogFormat(" CraftChanged订阅OnCraftChanged");
+                Instance.FlightScene.CraftStructureChanged += OnCraftStructureChangedUI;
+                Debug.LogFormat(" CraftStructureChanged订阅OnCraftStructureChangedUI");
+                Instance.FlightScene.ActiveCommandPodChanged += OnCraftChanged;
+                Debug.LogFormat(" ActiveCommandPodChanged订阅OnCraftChanged");
+                Instance.FlightScene.ActiveCommandPodStateChanged += OnCraftChanged;
+                Debug.LogFormat(" ActiveCommandPodStateChanged订阅OnCraftChanged");
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarningFormat($"订阅有问题{e}");
+            }
+            
+        }
+        
+        private void subMinus()
+        {
+            Instance.FlightScene.Initialized -= OnInitialized;
+            Instance.FlightScene.CraftChanged -= OnCraftChanged;
+            Instance.FlightScene.CraftStructureChanged -= OnCraftStructureChangedUI;
+            Instance.FlightScene.ActiveCommandPodChanged -= OnCraftChanged;
+            Instance.FlightScene.ActiveCommandPodStateChanged -= OnCraftChanged;
+        }
         /// <summary>
         /// 在加载Craft时使用"CheckDrood"方法遍历所有modifier得到零件并添加SupportLife的modifier
         /// When load a craft get all Craft's modifier using "CheckDrood" method and adding a "SupportLife"modifie to the part

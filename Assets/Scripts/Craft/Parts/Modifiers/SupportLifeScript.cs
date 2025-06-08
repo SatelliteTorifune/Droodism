@@ -4,6 +4,7 @@ using ModApi.Craft.Parts.Input;
 using ModApi.GameLoop;
 using ModApi.GameLoop.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Xml.Linq;
 using Assets.Scripts.Craft.Fuel;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
@@ -52,7 +53,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         private IInputController _evaPitch;
         private IInputController _evaRoll;
-        
+
+        private List<FuelTankScript> CraftOxygenFuelSourceList;
+        private List<FuelTankScript> CraftFoodFuelSourceList;
+        private List<FuelTankScript> CraftWaterFuelSourceList;
         
         public override void OnModifiersCreated()
         {
@@ -187,13 +191,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             RefreshFuelSource();
             
         }
-
-        private void OnCrewEnter(EvaScript s)
-        {
-            Debug.LogFormat("OnCrewEnter调用");
-        }
         
-
         void IFlightUpdate.FlightUpdate(in FlightFrameData frame)
         {
             if (frame.DeltaTimeWorld == 0.0 || !_evaScript.EvaActive) 
@@ -238,7 +236,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             else
             {
-                Debug.LogWarning("跳过 DamageDrood 调用：_oxygenSource 为 null");
+                Debug.LogWarning("_oxygenSource is  null");
             }
 
             if (_foodSource != null)
@@ -374,8 +372,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                                     modifierData.Name, fuelTank?.FuelType != null, fuelTank?.CraftFuelSource != null);
                             }
                         }
-                        
-                            }       
+                    }       
                 }
                 if (!_evaScript.EvaActive)
                 {
@@ -396,7 +393,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             //是的我知道这很傻逼,你为什么要他妈的遍历craft中每一个part里面的modifier?就因为你他妈的不会用IFuelSource吗?
             //你妈的你是人啊我操
-            Debug.LogWarningFormat("CraftRefeshFuelSource调用,后面还没写");
+            Debug.LogWarningFormat("CraftRefeshFuelSource调用");
+            FuelTankScript fts= ((Component) this).GetComponent<FuelTankScript>();
+            
+
+
+
         }
         #region 无所弔谓
         
@@ -407,8 +409,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public override void OnCraftStructureChanged(ICraftScript craftScript)
         {
-            RefreshFuelSource();
-            Debug.LogErrorFormat("从OnCraftStructureChanged调用RefreshFuelSource();");
+            if (Game.InFlightScene)
+            {
+                RefreshFuelSource();
+                Debug.LogErrorFormat("从OnCraftStructureChanged调用RefreshFuelSource();");
+            }
+            
         }
         
         private void OnCraftFuelSourceChanged(object sender, EventArgs e)
@@ -419,18 +425,24 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         } 
         private bool UsingInternalOxygen()
         {
+            // 如果大气密度为 0，则需要使用内部氧气
             float airDensity = PartScript.CraftScript.AtmosphereSample.AirDensity;
-            if (airDensity != 0)
+            if (airDensity == 0)
             {
-                if (currentPlanetName.Contains("Droo") || currentPlanetName.Contains("Kerbin") || 
-                    currentPlanetName.Contains("Earth") || currentPlanetName.Contains("Nebra") || 
-                    currentPlanetName.Contains("Laythe") || currentPlanetName.Contains("Oord"))
-                {
-                    return false;
-                }
                 return true;
             }
-            return true;
+
+            // 检查当前行星是否含氧
+            if (currentPlanetName.Contains("Droo") || currentPlanetName.Contains("Kerbin") ||
+                currentPlanetName.Contains("Earth") || currentPlanetName.Contains("Nebra") ||
+                currentPlanetName.Contains("Laythe") || currentPlanetName.Contains("Oord"))
+            {
+                return false;
+            }
+            
+            // 如果在水下且接近海平面，需要使用内部氧气
+            bool isSubmerged = _evaScript.IsInWater && PartScript.CraftScript.FlightData.AltitudeAboveSeaLevel < 0.1;
+            return isSubmerged;
         }
 
         private void UpdateCurrentPlanet()
@@ -461,8 +473,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return;
             }   
             
-
-            float num1 = 1 / (float)frame.DeltaTimeWorld;
+            //我他妈这么知道这个num1干啥用的
+            //float num1 = 1 / (float)frame.DeltaTimeWorld;
             float num2 = (isRunning?1.75f:1f)*(isTourist?1.05f:1f) * DamageScale * (float)frame.DeltaTimeWorld;
 
             if (_fuelSource.IsEmpty && _fuelSource.FuelType != null && 
@@ -561,4 +573,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             })));
         }   
     }
+    
 }
+
