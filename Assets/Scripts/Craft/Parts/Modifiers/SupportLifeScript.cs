@@ -9,6 +9,7 @@ using System.Linq;
 using System.Xml.Linq;
 using Assets.Scripts.Craft.Fuel;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
+using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
 using Assets.Scripts.Flight;
 using ModApi.Planet;
 using UnityEngine;
@@ -122,35 +123,22 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 var fuelTankScript = tankData.CreateScript() as FuelTankScript;
                 if (fuelTankScript != null)
                 {
-                    Debug.LogFormat("创建 FuelTank，FuelType: {0}", fuelTankScript.FuelType?.Name ?? "null");
                     if (fuelTankScript.FuelType == null || fuelTankScript.FuelType.Name != fuelType)
                     {
-                        Debug.LogErrorFormat("FuelType {0} 未正确设置！", fuelType);
                         return;
                     }
 
                     PartScript.Modifiers.Add(fuelTankScript);
-                    Debug.LogFormat("成功添加 {0} 类型的 FuelTank 到 PartScript.Modifiers", fuelType);
 
                     if (!fuelTankScript.SupportsFuelTransfer)
-                    {
-                        Debug.LogErrorFormat("{0} 类型的 FuelTank 不支持燃料传输（PartScript.Disconnected = {1}）", 
-                            fuelType, fuelTankScript.PartScript.Disconnected);
+                    { 
                         return;
                     }
 
                     fuelTankScript.FuelTransferMode = FuelTransferMode.Fill;
-                    Debug.LogFormat("设置 {0} 类型的 FuelTank 的 FuelTransferMode 为 Fill", fuelType);
-
-                    if (fuelTankScript.CraftFuelSource == null)
-                    {
-                        Debug.LogWarningFormat("{0} 类型的 FuelTank 的 CraftFuelSource 仍然为 null，将直接使用 FuelTankScript 作为 FuelSource", fuelType);
-                    }
+                    
                 }
-                else
-                {
-                    Debug.LogErrorFormat("创建 {0} 类型的 FuelTankScript 失败", fuelType);
-                }
+                
             }
             catch (Exception e)
             {
@@ -168,15 +156,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 isTourist = true;
             }
+            _evaScript = GetComponent<EvaScript>();
             
-            try
-            {
-                _evaScript = GetComponent<EvaScript>();
-            }
-            catch(Exception e)
-            {
-                Debug.LogErrorFormat("Eva初始化失败!{0}", e);
-            } 
+            
             
             UpdateCurrentPlanet();
             Game.Instance.FlightScene.CraftNode.ChangedSoI += OnSoiChanged;
@@ -205,6 +187,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             ConsumptionLogic(frame);
             AutoRefillLogic(frame);
+            
             
         }
 
@@ -296,7 +279,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
             if (PartScript == null || PartScript.Modifiers == null)
             {
-                Debug.LogError("PartScript or PartScript.Modifiers is null，Unable to get FuelSource");
                 return;
             }
             
@@ -344,31 +326,20 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                                         this._oxygenFuelTank = fuelTank;
                                         this._oxygenSource = fuelTank.CraftFuelSource != null ? (IFuelSource)fuelTank.CraftFuelSource : (IFuelSource)fuelTank;
                                         this._oxygenFuelTank.Data.InspectorEnabled = false;
-                                        Debug.LogFormat("已更新 Oxygen 的 FuelSource: {0}", this._oxygenSource != null ? "成功" : "失败");
                                         break;
                                     case "Food":
                                         this._foodFuelTank = fuelTank;
                                         this._foodSource = fuelTank.CraftFuelSource != null ? (IFuelSource)fuelTank.CraftFuelSource : (IFuelSource)fuelTank;
                                         this._foodFuelTank.Data.InspectorEnabled = false;
-                                        Debug.LogFormat("已更新 Food 的 FuelSource: {0}", this._foodSource != null ? "成功" : "失败");
                                         break;
                                     case "Drinking Water":
                                         this._waterFuelTank = fuelTank;
                                         this._waterSource = fuelTank.CraftFuelSource != null ? (IFuelSource)fuelTank.CraftFuelSource : (IFuelSource)fuelTank;
                                         this._waterFuelTank.Data.InspectorEnabled = false;
-                                        Debug.LogFormat("已更新 Water 的 FuelSource: {0}", this._foodSource != null ? "成功" : "失败");
                                         break;
                                     case "Jetpack":
                                         break;
-                                    default:
-                                        Debug.LogWarningFormat("未知的 FuelType: {0}", fuelTank.FuelType.Name);
-                                        break;
                                 }
-                            }
-                            else
-                            {
-                                Debug.LogWarningFormat("无效的 FuelTank 或 FuelType: {0}，FuelType={1}, CraftFuelSource={2}", 
-                                    modifierData.Name, fuelTank?.FuelType != null, fuelTank?.CraftFuelSource != null);
                             }
                         }
                     }       
@@ -381,7 +352,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             catch (Exception e)
             {
-                Debug.LogWarningFormat("{0}",e);
+                Debug.LogWarningFormat("执行真的EvaRefreshFuelSource的逻辑出问题了{0}",e);
                 //LMAO this try-catch only prevent game kicks your ass back to Designer when trying to load into the game,so yes.this catch simply does NOTHING 
                 //是的我知道这样写简直傻逼的不行,你鸡巴需要先这样然后才能进入到CraftRefeshFuelSource
                 //但是I dont give a fuck
@@ -397,7 +368,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             List<FuelTankScript> CraftOxygenFuelSourceList = new List<FuelTankScript>();
             List<FuelTankScript> CraftFoodFuelSourceList= new List<FuelTankScript>();
             List<FuelTankScript> CraftWaterFuelSourceList= new List<FuelTankScript>();
-            Debug.LogFormat("List创建");
+            //this.OxygenFuelTank=EngineUtilities.GetFuelTank(this.PartScript.CraftScript.RootPart.Data, this.PartScript.Data,
+            //    _oxygenFuelTank.FuelType)?.Script;
+            //Debug.LogFormat("yeah");
+            
             try
             {
                 foreach (PartData partData in this.PartScript.CraftScript.Data.Assembly.Parts)
@@ -410,19 +384,19 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                             if (_fuelTankScript.FuelType.Name.Contains("Oxygen"))
                             {
                                 CraftOxygenFuelSourceList.Add(_fuelTankScript);
-                                Debug.LogFormat($"添加{_fuelTankScript.Position}到列表");
+                                Debug.LogFormat($"添加{_fuelTankScript.FuelType.Name}类型,优先度{_fuelTankScript.Data.Priority}到列表CraftOxygenFuelSourceList");
                             }
 
                             if (_fuelTankScript.FuelType.Name.Contains("Drinking"))
                             {
                                 CraftWaterFuelSourceList.Add(_fuelTankScript);
-                                Debug.LogFormat($"添加{_fuelTankScript.Position}到列表");
+                                Debug.LogFormat($"添加{_fuelTankScript.FuelType.Name}类型,优先度{_fuelTankScript.Data.Priority}到列表CraftWaterFuelSourceList");
                             }
 
                             if (_fuelTankScript.FuelType.Name.Contains("Food"))
                             {
                                 CraftFoodFuelSourceList.Add(_fuelTankScript);
-                                Debug.LogFormat($"添加{_fuelTankScript.Position}到列表");
+                                Debug.LogFormat($"添加{_fuelTankScript.FuelType.Name}类型,优先度{_fuelTankScript.Data.Priority}到列表CraftFoodFuelSourceList");
                             }
 
                         }
@@ -497,7 +471,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (_fuelSource == null || _evaScript == null || PartScript == null || 
                 Game.Instance == null || Game.Instance.Settings?.Game?.Flight == null)
             {
-                Debug.LogError("DamageDrood: 检测到 null 对象 - " +
+                Debug.LogError("DamageDrood: null object found: - " +
                                $"_fuelSource={_fuelSource != null}, _evaScript={_evaScript != null}, " +
                                $"PartScript={PartScript != null}, Game.Instance={Game.Instance != null}, Settings={Game.Instance?.Settings != null}");
                 return;
@@ -521,11 +495,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     $"he/she has {Units.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) /((isRunning?1.75:1)*(isTourist?1.05:1)*DamageScale))} left",
                     false, 2f);
             }
-            else
-            {
-                if (_fuelSource.FuelType == null)
-                    Debug.LogWarning("DamageDrood: _fuelSource.FuelType 为 null");
-            }
+            
         }
 
         public override void OnGenerateInspectorModel(PartInspectorModel model) 
