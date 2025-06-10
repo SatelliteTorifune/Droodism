@@ -28,8 +28,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private bool IsFunctional;
         private IFuelSource waterSource;
         private IFuelSource oxygenSource;
-        private List<FuelTankScript> oxygenTanks = new List<FuelTankScript>();
-        private List<FuelTankScript> waterTanks = new List<FuelTankScript>();
+        
         
         void IDesignerStart.DesignerStart(in DesignerFrameData frame)
         {
@@ -40,7 +39,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             _generatorScript = GetComponent<GeneratorScript>();
             Rechck();
-            
+            IsFunctional = _generatorScript.Data.FuelType.Name.Contains("LOX/LH2");
+
         }
 
         public void FlightUpdate(in FlightFrameData frame)
@@ -53,50 +53,52 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         void FillFuelTankLogic(FlightFrameData frame)
         {
             double fuelToAdd = _generatorScript.Data.FuelFlow * this.Data.HydroloxConvertEfficiency * frame.DeltaTimeWorld;
+            if (waterSource!=null)
+            {
+                if (waterSource.TotalCapacity-waterSource.TotalFuel>=0.001)
+                {
+                    waterSource.AddFuel(10 * this.Data.HydroloxConvertEfficiency *
+                                        frame.DeltaTimeWorld);
+                }
+            }
+            else
+            {
+                Debug.LogWarningFormat("Water Source not found");
+            }
+            if (oxygenSource!=null)
+            {
+                if (oxygenSource.TotalCapacity-oxygenSource.TotalFuel>=0.001)
+                {
+                    oxygenSource.AddFuel(_generatorScript.Data.FuelFlow * this.Data.HydroloxConvertEfficiency *
+                                        frame.DeltaTimeWorld);
+                }
+            }
+            else
+            {
+                Debug.LogWarningFormat("oxygen Source not found");
+            }
             
-            foreach (var tank in oxygenTanks)
-            {
-                if (tank.TotalCapacity - tank.TotalFuel >= 0.001)
-                {
-                    tank.AddFuel(10);
-                    Debug.LogErrorFormat("尝试执行oxygenTanksAddFuel{0}", fuelToAdd);
-                }
-            }
-            foreach (var tank in waterTanks)
-            {
-                if (tank.TotalCapacity - tank.TotalFuel >= 0.001)
-                {
-                    tank.AddFuel(fuelToAdd);
-                    Debug.LogFormat("尝试执行waterTanksAddFuel{0}",fuelToAdd);
-                }
-            }
         }
         
         private void Rechck()
         {
-            IsFunctional = this.PartScript.Data.Activated && _generatorScript.Data.FuelType.Id.Contains("LOX/LH2");
-            if (!IsFunctional)
-                return;
-            oxygenTanks.Clear();
-            waterTanks.Clear();
+            waterSource = GetCraftFuelSource("Drinking Water");
+            oxygenSource = GetCraftFuelSource("Oxygen");
             
-            foreach (var part in this.PartScript.CraftScript.Data.Assembly.Parts)
+        }
+        private IFuelSource GetCraftFuelSource(string fuelType)
+        {
+            var craftSources = PartScript.CraftScript.FuelSources.FuelSources;
+    
+            // 查找匹配的燃料源
+            foreach (var source in craftSources)
             {
-                
-                foreach (var modifier in part.Modifiers)
+                if (source.FuelType.Name.Contains(fuelType))
                 {
-                    if (modifier.GetScript() is FuelTankScript fuelTank && fuelTank.FuelType != null)
-                    {
-                        if (fuelTank.FuelType.Name == "Oxygen")
-                        {
-                            oxygenTanks.Add(fuelTank);
-                        }
-                        if (fuelTank.FuelType.Name.Contains("Drinking"))
-                            waterTanks.Add(fuelTank);
-                    }
+                    return source;
                 }
             }
-            
+            return null;
         }
 
         #region 路边一条,无人在意
@@ -116,11 +118,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public override void OnCraftStructureChanged(ICraftScript craftScript)
         {
             Rechck();
+            Debug.LogFormat("OnCraftStructureChanged调用Rechck");
         }
         
         private void OnCraftFuelSourceChanged(object sender, EventArgs e)
         {
             Rechck();
+            Debug.LogFormat("OnCraftFuelSourceChanged调用Rechck");
         } 
         
         public void OnGeneratePerformanceAnalysisModel(GroupModel groupModel)
