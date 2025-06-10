@@ -167,7 +167,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 AddTank("Oxygen", this.Data.DesireOxygenCapacity*(isTourist?0.95f:1f));
                 AddTank("Food", this.Data.DesireFoodCapacity*(isTourist?0.95f:1f));
-                AddTank("Drinking Water", this.Data.DesireWaterCapacity*(isTourist?0.95f:1f));
+                AddTank("H2O", this.Data.DesireWaterCapacity*(isTourist?0.95f:1f));
             }
             RefreshFuelSource();
             
@@ -291,7 +291,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 double num1 = (double)Data.WaterComsumeRate * frame.DeltaTimeWorld * (isRunning ? 1.75 :1)*(isTourist?1.05:1);
                 if (_waterSource.IsEmpty)
                 {
-                    var localWater = GetLocalFuelSource("Drinking Water");
+                    var localWater = GetLocalFuelSource("Water");
                     if (localWater.IsEmpty)
                     {
                         DamageDrood(_waterSource,frame,Data.WaterDamageScale);
@@ -372,7 +372,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             Debug.LogFormat("调用EvaRefreshFuelSource");
             _oxygenSource=GetLocalFuelSource("Oxygen");
             _foodSource=GetLocalFuelSource("Food");
-            _waterSource = GetLocalFuelSource("Drinking Water");
+            _waterSource = GetLocalFuelSource("Water");
             
         }
 
@@ -381,7 +381,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             Debug.LogFormat("调用CraftRefeshFuelSource");
             _oxygenSource = GetCraftFuelSource("Oxygen");
             _foodSource = GetCraftFuelSource("Food");
-            _waterSource = GetCraftFuelSource("Drinking Water");
+            _waterSource = GetCraftFuelSource("Water");
             if (_oxygenSource==null||_oxygenSource.IsEmpty)
             {
                 _oxygenSource=GetLocalFuelSource("Oxygen");
@@ -400,11 +400,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             if (_waterSource==null||_waterSource.IsEmpty)
             {
-                _waterSource=GetLocalFuelSource("Drinking Water");
+                _waterSource=GetLocalFuelSource("Water");
             }
             else
             {
-                ReFill(_waterSource,GetLocalFuelSource("Drinking Water"));
+                ReFill(_waterSource,GetLocalFuelSource("Water"));
             }
 
         }
@@ -593,4 +593,3 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     }
     
 }
-

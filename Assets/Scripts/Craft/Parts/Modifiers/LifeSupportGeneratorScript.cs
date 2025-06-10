@@ -39,15 +39,23 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             _generatorScript = GetComponent<GeneratorScript>();
             Rechck();
-            IsFunctional = _generatorScript.Data.FuelType.Name.Contains("LOX/LH2");
+            IsFunctional = _generatorScript.Data.FuelType.Id.Contains("LOX/LH2");
+            if (IsFunctional)
+            {
+                Debug.LogFormat("路边一条");
+            }
 
         }
 
         public void FlightUpdate(in FlightFrameData frame)
         {
-            if (!this.PartScript.Data.Activated||frame.DeltaTimeWorld==0||!IsFunctional)
+            if (frame.DeltaTimeWorld==0)
                 return;
-            FillFuelTankLogic(frame);
+            if (IsFunctional&&this.PartScript.Data.Activated)
+            {   
+                FillFuelTankLogic(frame);
+            }
+            
         }
 
         void FillFuelTankLogic(FlightFrameData frame)
@@ -57,8 +65,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 if (waterSource.TotalCapacity-waterSource.TotalFuel>=0.001)
                 {
-                    waterSource.AddFuel(10 * this.Data.HydroloxConvertEfficiency *
-                                        frame.DeltaTimeWorld);
+                    waterSource.AddFuel(fuelToAdd);
                 }
             }
             else
@@ -69,8 +76,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 if (oxygenSource.TotalCapacity-oxygenSource.TotalFuel>=0.001)
                 {
-                    oxygenSource.AddFuel(_generatorScript.Data.FuelFlow * this.Data.HydroloxConvertEfficiency *
-                                        frame.DeltaTimeWorld);
+                    oxygenSource.AddFuel(fuelToAdd);
                 }
             }
             else
@@ -80,12 +86,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
         }
         
-        private void Rechck()
-        {
-            waterSource = GetCraftFuelSource("Drinking Water");
-            oxygenSource = GetCraftFuelSource("Oxygen");
-            
-        }
         private IFuelSource GetCraftFuelSource(string fuelType)
         {
             var craftSources = PartScript.CraftScript.FuelSources.FuelSources;
@@ -101,6 +101,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             return null;
         }
 
+        private void Rechck()
+        {
+            waterSource = GetCraftFuelSource("Water");
+            oxygenSource = GetCraftFuelSource("Oxygen");
+        }
         #region 路边一条,无人在意
         public override void OnModifiersCreated()
         {

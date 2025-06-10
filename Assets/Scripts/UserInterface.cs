@@ -1,12 +1,15 @@
 using Assets.Scripts.Craft;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
+using Assets.Scripts.Flight.Sim;
 using Microsoft.CSharp.RuntimeBinder;
 using ModApi.Craft;
 using ModApi.Craft.Parts;
 using ModApi.Flight;
+using ModApi.Math;
 using ModApi.Mods;
 using ModApi.Ui.Inspector;
+using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
 
 namespace Assets.Scripts
@@ -17,6 +20,17 @@ namespace Assets.Scripts
         public int DroodCount = 0;
         public int AstronautCount = 0;
         public int TouristCount = 0;
+
+        private IFuelSource _oxygenSource;
+        private IFuelSource _waterSource;
+        private IFuelSource _foodSource;
+        
+        private SupportLifeScript _support;
+        private bool isEva;
+
+        private double oxygenConsumeRateTotal;
+        private double foodConsumeRateTotal;
+        private double waterConsumeRateTotal;
         
         public IFuelSource CraftTotalOxygenFuelSource;
         
@@ -33,13 +47,17 @@ namespace Assets.Scripts
         {
             UpdateDroodCount();
         }
+
+       
         private void UpdateDroodCount()
         {
+            
            var craftNode = Game.Instance.FlightScene.CraftNode;
            
             DroodCount = 0;
             AstronautCount = 0;
             TouristCount = 0;
+            
            foreach (var partData in craftNode.CraftScript.Data.Assembly.Parts)
            {
                if (partData.PartType.Name.Contains("Eva"))
@@ -55,11 +73,99 @@ namespace Assets.Scripts
                    }
                }
            }
-           
-          
+           UpdateFuelCalcul();
+           GetComsubtionData();
+
 
         }
-
+        private IFuelSource GetCraftFuelSource(string fuelType)
+        {
+            var craftSources = Game.Instance.FlightScene.CraftNode.CraftScript.FuelSources.FuelSources;
+                foreach (var source in craftSources)
+                {
+                    if (source.FuelType.Name.Contains(fuelType))
+                    {
+                        return source;
+                    }
+                } 
+            return null;
+        }
+        private IFuelSource GetLocalFuelSource(string fuelType)
+        {
+            var craftSources = Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Modifiers;
+            
+            foreach (var source in craftSources)
+            {
+                if ( source.GetData().Name.Contains("Tank"))
+                {
+                    source.GetData().InspectorEnabled = false;
+                    FuelTankScript fts=source as FuelTankScript;
+                    if (fts.FuelType.Name.Contains(fuelType))
+                    {
+                        return fts;
+                    }
+                }
+                
+            }
+            return null;
+        }
+        private void UpdateFuelCalcul()
+        {
+            if (DroodCount == 1&&Game.Instance.FlightScene.CraftNode.CraftScript.Data.Assembly.Parts.Count==1&&Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Data.PartType.Name.Contains("Eva"))
+            {
+                isEva = true;
+                
+            }
+            else
+            {
+                isEva = false;
+                _oxygenSource = GetCraftFuelSource("Oxygen");
+                _foodSource = GetCraftFuelSource("Food");
+                _waterSource = GetCraftFuelSource("Water");
+                if (_oxygenSource==null||_oxygenSource.IsEmpty)
+                {
+                    _oxygenSource=GetLocalFuelSource("Oxygen");
+                }
+                if (_foodSource==null||_foodSource.IsEmpty)
+                {
+                    _foodSource=GetLocalFuelSource("Food");
+                }
+                if (_waterSource==null||_waterSource.IsEmpty)
+                {
+                    _waterSource=GetLocalFuelSource("Water");
+                }
+                
+            }
+        }
+        private void GetComsubtionData()
+        {
+            oxygenConsumeRateTotal = 0;
+            foodConsumeRateTotal= 0;
+            waterConsumeRateTotal= 0;
+            foreach (var pd in Game.Instance.FlightScene.CraftNode.CraftScript.Data.Assembly.Parts)
+            {
+                if (pd.PartType.Name.Contains("Eva"))
+                {
+                    bool flag;
+                    if (pd.PartType.Name.Contains("Tourist"))
+                    {
+                        flag = true;
+                    }
+                    else
+                        flag = false;
+                    foreach (var pmd in pd.Modifiers)
+                    {
+                        if (pmd.Name.Contains("Life"))
+                        {
+                            var lss = pmd.GetScript() as SupportLifeScript;
+                            oxygenConsumeRateTotal += lss.Data.OxygenComsumeRate*(flag ? 1.05 : 1);
+                            foodConsumeRateTotal += lss.Data.FoodComsumeRate*(flag ? 1.05 : 1);
+                            waterConsumeRateTotal += lss.Data.WaterComsumeRate*(flag ? 1.05 : 1);
+                        }
+                    }
+                }
+            }
+        }
         private void OnBuildFlightViewInspectorPanel(BuildInspectorPanelRequest request)
         {
             Debug.Log("OnBuildFlightViewInspectorPanel called");
@@ -79,48 +185,29 @@ namespace Assets.Scripts
             var TouristCountTextModel = new TextModel("Tourist Count",
                 () => (TouristCount == 0 ? "N/A" : this.TouristCount.ToString()));
             LS.Add(TouristCountTextModel);
-
-            var textButtonModel = new TextButtonModel(
-                "手动更新", b =>
-                {
-                    UpdateDroodCount();
-                    smjb();
-                });
-            LS.Add(textButtonModel);
-
-            var clearLogBottom = new TextButtonModel(
-                "clear", b =>
-                {
-                     Debug.ClearDeveloperConsole();
-                     
-                });
-            LS.Add(clearLogBottom);
+            /*
+            var OxygenProgressBarModel = new ProgressBarModel("Oxygen:Percentage",()=>
+            (float)(_oxygenSource.TotalFuel/_oxygenSource.TotalCapacity));
+            LS.Add(OxygenProgressBarModel);
+            
+            var OxygenTime = new TextModel("Oxygen Supply Time",
+                () => ($"{Units.GetStopwatchTimeString(_oxygenSource.TotalFuel/(isEva?_support.Data.OxygenComsumeRate:oxygenConsumeRateTotal))}"));
+            LS.Add(OxygenTime);
+            
+            var WaterProgressBarModel = new ProgressBarModel("Water Percentage",()=>
+                (float)(_waterSource.TotalFuel/_waterSource.TotalCapacity));
+            LS.Add(WaterProgressBarModel);
+            var WaterTime = new TextModel("Water Supply Time",
+                () => ($"{Units.GetStopwatchTimeString(_waterSource.TotalFuel/(isEva?_support.Data.WaterComsumeRate:waterConsumeRateTotal))}"));
+            LS.Add(WaterTime);
+            
+            var FoodProgressBarModel = new ProgressBarModel("Food Percentage",()=>
+                (float)(_foodSource.TotalFuel/_foodSource.TotalCapacity));
+            LS.Add(FoodProgressBarModel);
+            var FoodTime = new TextModel("Food Supply Time",
+                () => ($"{Units.GetStopwatchTimeString(_foodSource.TotalFuel/(isEva?_support.Data.FoodComsumeRate:foodConsumeRateTotal))}"));
+            LS.Add(FoodTime);*/
         
-
-
-        }
-
-        private void smjb()
-        {
-            var craftNode = Game.Instance.FlightScene.CraftNode;
-            SupportLifeScript sls;
-            if (true)
-            {
-                foreach (var pd in craftNode.CraftScript.Data.Assembly.Parts)
-                {
-                    foreach (var pmd in pd.Modifiers)
-                    {
-                        if (pmd.Name.Contains("Support"))
-                        {
-                            sls = (SupportLifeScript)pmd.GetScript();
-                            sls.RefreshFuelSource();
-                            Debug.LogFormat("燃料已手动更新");
-                            Game.Instance.FlightScene.FlightSceneUI.ShowMessage("燃料已更新",false,5f);
-                        }
-                    }
-                    
-                }
-            }
         }
 
         
