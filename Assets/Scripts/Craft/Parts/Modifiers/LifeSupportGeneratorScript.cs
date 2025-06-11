@@ -40,7 +40,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             _generatorScript = GetComponent<GeneratorScript>();
             Rechck();
             IsFunctional = _generatorScript.Data.FuelType.Id.Contains("LOX/LH2");
-            if (IsFunctional)
+            if (!IsFunctional)
             {
                 Debug.LogFormat("路边一条");
             }

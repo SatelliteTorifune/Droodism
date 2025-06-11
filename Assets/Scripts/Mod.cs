@@ -11,7 +11,7 @@ using UnityEngine.SceneManagement;
 using ModApi.Design.Events;
 using ModApi.Scenes.Events;
 using ModApi.Craft.Parts.Events;
-using HarmonyLib;
+//using HarmonyLib;
 using ModApi.Ui.Inspector;
 using static ModApi.Common.Game;
 using static ModApi.Craft.Parts.PartData;
@@ -50,11 +50,10 @@ namespace Assets.Scripts
         protected override void OnModInitialized()
         {
             base.OnModInitialized();
-            var harmony = new Harmony("com.SatelliteTorifune.Droodism");
-            harmony.PatchAll(Assembly.GetExecutingAssembly());
+            //var harmony = new Harmony("com.SatelliteTorifune.Droodism");
+            //harmony.PatchAll(Assembly.GetExecutingAssembly());
             Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
             Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.FlightView,OnBuildFlightViewInspectorPanel);
-            Debug.Log("OnBuildFlightViewInspectorPanel called when OnModInitialized");
             
 
         }
@@ -66,6 +65,18 @@ namespace Assets.Scripts
             {
                 Instance.Designer.CraftLoaded += OnCraftLoaded;
                 Created += OnPartAdded;
+            }
+
+            if (Instance.SceneManager.InFlightScene)
+            {
+                try
+                {
+                    UpdateDroodCount();
+                }
+                catch (Exception e1)
+                {
+                    Debug.LogFormat("你要干啥{0}",e1);
+                }
             }
             
         }
