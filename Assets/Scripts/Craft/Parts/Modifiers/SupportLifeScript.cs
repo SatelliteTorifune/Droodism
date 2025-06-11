@@ -198,8 +198,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 Debug.LogErrorFormat("2lazy{0}", e);
             }
-            _crewCompartmentScript.CrewEnter+=OnCrewEnter;
-            _crewCompartmentScript.CrewExit+=OnCrewExit;
+            //_crewCompartmentScript.CrewEnter+=OnCrewEnter;
+            //_crewCompartmentScript.CrewExit+=OnCrewExit;
         }
 
         private void OnCrewEnter(EvaScript evaScript)
@@ -419,19 +419,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
             }
         }
-
-        /// <summary>
-        /// 在EVA模式下刷新燃料源。
-        /// Refreshes fuel sources when in EVA mode.
-        /// </summary>
-        ///private void EvaRefreshFuelSource()
-        ///{
-        ///    Debug.LogFormat("调用EvaRefreshFuelSource");
-        ///    _oxygenSource = GetLocalFuelSource("Oxygen");
-        ///    _foodSource = GetLocalFuelSource("Food");
-        ///    _waterSource = GetLocalFuelSource("H2O");
-        ///}
-
+        
         /// <summary>
         /// 在非EVA模式下刷新燃料源。
         /// Refreshes fuel sources when not in EVA mode.

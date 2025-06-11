@@ -11,7 +11,7 @@ using UnityEngine.SceneManagement;
 using ModApi.Design.Events;
 using ModApi.Scenes.Events;
 using ModApi.Craft.Parts.Events;
-//using HarmonyLib;
+using HarmonyLib;
 using ModApi.Ui.Inspector;
 using static ModApi.Common.Game;
 using static ModApi.Craft.Parts.PartData;
