@@ -38,6 +38,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// Reference to the EvaScript component, used to manage Extra-Vehicular Activity (EVA) related functionality.
         /// </summary>
         private EvaScript _evaScript;
+        private CrewCompartmentScript _crewCompartmentScript;
         
         /// <summary>
         /// 氧气、食物和水的燃料源接口。
@@ -82,7 +83,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private GrapplingHookScript _grapplingHook;
 
         /// <summary>
-        /// 指示小蓝人是否在奔跑或是否为游客的标志。
+        /// 指示小蓝人是否在奔或是否为游客。
         /// Flags indicating if the crew member is running or if they are a tourist.
         /// </summary>
         public bool isRunning, isTourist;
@@ -170,12 +171,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         void IFlightStart.FlightStart(in FlightFrameData frame)
         {
+            base.OnInitialized();
             this.Data.InspectorEnabled = true;
             if (this.PartScript.Data.PartType.Name == "Eva-Tourist")
             {
                 isTourist = true;
             }
             _evaScript = GetComponent<EvaScript>();
+            _crewCompartmentScript = GetComponent<CrewCompartmentScript>();
             
             UpdateCurrentPlanet();
             Game.Instance.FlightScene.CraftNode.ChangedSoI += OnSoiChanged;
@@ -187,18 +190,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 AddTank("H2O", this.Data.DesireWaterCapacity);
             }
             
-            RefreshFuelSource();
             try
             {
-                if (_evaScript.EvaActive)
-                    EvaRefreshFuelSource();
-                else
-                    CraftRefeshFuelSource();
+                CraftRefeshFuelSource();
             }
             catch (Exception e)
             {
                 Debug.LogErrorFormat("2lazy{0}", e);
             }
+            
         }
         
         /// <summary>
@@ -384,7 +384,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 try
                 {
                     if (_evaScript.EvaActive)
-                        EvaRefreshFuelSource();
+                        CraftRefeshFuelSource();
                     else
                         CraftRefeshFuelSource();
                 }
@@ -412,13 +412,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// 在EVA模式下刷新燃料源。
         /// Refreshes fuel sources when in EVA mode.
         /// </summary>
-        private void EvaRefreshFuelSource()
-        {
-            Debug.LogFormat("调用EvaRefreshFuelSource");
-            _oxygenSource = GetLocalFuelSource("Oxygen");
-            _foodSource = GetLocalFuelSource("Food");
-            _waterSource = GetLocalFuelSource("H2O");
-        }
+        ///private void EvaRefreshFuelSource()
+        ///{
+        ///    Debug.LogFormat("调用EvaRefreshFuelSource");
+        ///    _oxygenSource = GetLocalFuelSource("Oxygen");
+        ///    _foodSource = GetLocalFuelSource("Food");
+        ///    _waterSource = GetLocalFuelSource("H2O");
+        ///}
 
         /// <summary>
         /// 在非EVA模式下刷新燃料源。
@@ -483,6 +483,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         public override void OnCraftLoaded(ICraftScript craftScript, bool movedToNewCraft)
         {
+            base.OnCraftLoaded(craftScript, movedToNewCraft);
             this.OnCraftStructureChanged(craftScript);
         }
 
@@ -492,6 +493,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         public override void OnCraftStructureChanged(ICraftScript craftScript)
         {
+            base.OnCraftStructureChanged(craftScript);
             if (Game.InFlightScene)
             {
                 RefreshFuelSource();
@@ -513,7 +515,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// Determines if internal oxygen is being used based on atmospheric conditions and planet.
         /// </summary>
         /// <returns>如果使用内部氧气则返回true，否则返回false。True if using internal oxygen, false otherwise.</returns>
-        private bool UsingInternalOxygen()
+        public bool UsingInternalOxygen()
         {
             float airDensity = PartScript.CraftScript.AtmosphereSample.AirDensity;
             if (airDensity == 0)

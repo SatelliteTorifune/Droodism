@@ -227,7 +227,6 @@ namespace Assets.Scripts
         public List<PartData> CheckGenerator(CraftScript craft)
         {
             List<PartData> GeneratorParts = new List<PartData>();
-            var parts = craft.Data.Assembly.Parts;
             foreach (PartData part in craft.Data.Assembly.Parts)
             {
 
@@ -258,7 +257,12 @@ namespace Assets.Scripts
                 _supportLifeData.PartPropertiesEnabled = false;
                 _supportLifeData.InspectorEnabled = true;
             }
-            
+        }
+
+        public static void AddFuelTankModifier(PartData part, string fuelTypeId)
+        {
+            if (part==null)
+                return;
         }
     }
     //何意味?

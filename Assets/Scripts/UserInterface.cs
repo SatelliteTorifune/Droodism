@@ -163,31 +163,9 @@ namespace Assets.Scripts
             else
             {
                 return null;
-                var temp=new EmptyFuel();
-                foreach (var pd in Game.Instance.FlightScene.CraftNode.CraftScript.Data.Assembly.Parts)
-                {
-                    if (pd.PartType.Name.Contains("Eva"))
-                    {
-                        foreach (var pms in pd.PartScript.Modifiers)
-                        {
-                            if (pms.GetData().Name.Contains("Tank"))
-                            {
-                                FuelTankScript fts = pms as FuelTankScript;
-                                if (fts.FuelType.Name.Contains(fuelType))
-                                {
-                                    temp.TotalFuel += fts.TotalFuel;
-                                    temp.TotalCapacity += fts.TotalCapacity;
-                                    temp.FuelType=fts.FuelType;
-                                    
-                                }
-                            }
-                        }
-                    }  
-                }
-                return temp;
             }
-            
             return null;
+            
         }
 
         // Method to update the total fuel sources for oxygen, food, and water
@@ -236,7 +214,6 @@ namespace Assets.Scripts
                     if (_waterSource==null)
                     {
                          _waterSource=new EmptyFuel();
-                     
                     }
                 }
                 
@@ -285,7 +262,6 @@ namespace Assets.Scripts
                             waterConsumeRateTotal += _support.Data.WaterComsumeRate * 1.05;
                             foodConsumeRateTotal += _support.Data.FoodComsumeRate * 1.05;
                         }
-                        
                     }
                 }
             }
@@ -336,7 +312,7 @@ namespace Assets.Scripts
             
             // Create a text model for the oxygen supply time and add it to the life support group
             var OxygenTime = new TextModel("Oxygen Supply Time",
-                () => ($"{Units.GetStopwatchTimeString(_oxygenSource.TotalFuel /( oxygenConsumeRateTotal * (isEva ? (Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.GetModifier<SupportLifeScript>().isTourist ? 1.05 : 1) : 1) * (isEva ? (Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.GetModifier<SupportLifeScript>().isRunning ? 1.75 : 1) : 1)))}"));
+                () => ($"{Units.GetStopwatchTimeString(_oxygenSource.TotalFuel / (oxygenConsumeRateTotal * (isEva ? (Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.GetModifier<SupportLifeScript>().isTourist ? 1.05 : 1) : 1) * (isEva ? (Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.GetModifier<SupportLifeScript>().isRunning ? 1.75 : 1) : 1)))}"));
             LS.Add(OxygenTime);
             
             // Create a progress bar model for the water percentage and add it to the life support group
