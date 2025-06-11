@@ -198,9 +198,21 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 Debug.LogErrorFormat("2lazy{0}", e);
             }
-            
+            _crewCompartmentScript.CrewEnter+=OnCrewEnter;
+            _crewCompartmentScript.CrewExit+=OnCrewExit;
+        }
+
+        private void OnCrewEnter(EvaScript evaScript)
+        {
+            RefreshFuelSource();
+            Debug.Log("OnCrewEnter");
         }
         
+        private void OnCrewExit(EvaScript evaScript)
+        {
+            RefreshFuelSource();
+            Debug.Log("OnCrewExit");
+        }
         /// <summary>
         /// 实现IFlightUpdate接口，在飞行期间每帧调用。
         /// Implements the IFlightUpdate interface, called every frame during flight.
