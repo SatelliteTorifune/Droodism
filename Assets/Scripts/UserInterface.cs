@@ -162,7 +162,29 @@ namespace Assets.Scripts
             }
             else
             {
-                
+                return null;
+                var temp=new EmptyFuel();
+                foreach (var pd in Game.Instance.FlightScene.CraftNode.CraftScript.Data.Assembly.Parts)
+                {
+                    if (pd.PartType.Name.Contains("Eva"))
+                    {
+                        foreach (var pms in pd.PartScript.Modifiers)
+                        {
+                            if (pms.GetData().Name.Contains("Tank"))
+                            {
+                                FuelTankScript fts = pms as FuelTankScript;
+                                if (fts.FuelType.Name.Contains(fuelType))
+                                {
+                                    temp.TotalFuel += fts.TotalFuel;
+                                    temp.TotalCapacity += fts.TotalCapacity;
+                                    temp.FuelType=fts.FuelType;
+                                    
+                                }
+                            }
+                        }
+                    }  
+                }
+                return temp;
             }
             
             return null;
@@ -196,6 +218,7 @@ namespace Assets.Scripts
                     if (_oxygenSource==null)
                     {
                         _oxygenSource = new EmptyFuel();
+                        
                     }
                    
                 }
@@ -212,7 +235,7 @@ namespace Assets.Scripts
                     _waterSource = GetLocalFuelSource("Water");
                     if (_waterSource==null)
                     {
-                     _waterSource=new EmptyFuel();
+                         _waterSource=new EmptyFuel();
                      
                     }
                 }
@@ -277,7 +300,7 @@ namespace Assets.Scripts
             {
                 // Update the drood count (number of crew members)
                 UpdateDroodCount();
-                UpdateDroodCount();
+                
             }
             catch (Exception e)
             {
@@ -361,7 +384,7 @@ namespace Assets.Scripts
 
         public double TotalCapacity
         {
-            get { return TotalCapacity; }
+            get { return 0; }
 
             set
             {
@@ -374,7 +397,7 @@ namespace Assets.Scripts
         {
             get
             {
-                return TotalCapacity;
+                return 0;
             }
             set
             {

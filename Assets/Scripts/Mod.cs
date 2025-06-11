@@ -27,7 +27,6 @@ namespace Assets.Scripts
     using ModApi.Mods;
     using UnityEngine;
     using UnityEngine.PlayerLoop;
-    using HarmonyLib;
 
     /// <summary>
     /// A singleton object representing this mod that is instantiated and initialize when the mod is loaded.

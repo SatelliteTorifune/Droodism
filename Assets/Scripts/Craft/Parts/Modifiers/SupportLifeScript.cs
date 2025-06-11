@@ -129,9 +129,20 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 tankData.InspectorEnabled = true;
                 tankData.SubPriority = -1;
+                
+                
                 var fuelTankScript = tankData.CreateScript() as FuelTankScript;
+                
                 if (fuelTankScript != null)
                 {
+                    try
+                    {
+                        fuelTankScript.FuelTransferMode = FuelTransferMode.None;
+                    }
+                    catch (Exception e)
+                    {
+                       Debug.LogFormat("Error while setting FuelTransferMode to None: {0}", e);
+                    }
                     if (fuelTankScript.FuelType == null || fuelTankScript.FuelType.Id != fuelType)
                     {
                         return;
@@ -143,16 +154,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     { 
                         return;
                     }
-
-                    fuelTankScript.FuelTransferMode = FuelTransferMode.Fill;
+                
+                    
                 }
             }
             catch (Exception e)
             {
-                /// <summary>
-                /// 如果添加燃料罐失败，则记录错误。
-                /// Logs an error if adding the fuel tank fails.
-                /// </summary>
                 Debug.LogErrorFormat("添加 {0} 类型的 FuelTank 失败: {1}", fuelType, e);
             }
         }
