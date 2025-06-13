@@ -53,7 +53,7 @@ namespace Assets.Scripts
             var harmony = new Harmony("com.SatelliteTorifune.Droodism");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
             Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
-            //Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.FlightView,OnBuildFlightViewInspectorPanel);
+            Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.FlightView,OnBuildFlightViewInspectorPanel);
             
 
         }
@@ -266,85 +266,60 @@ namespace Assets.Scripts
                 return;
         }
     }
-
-    [HarmonyPatch(typeof(EvaScript), nameof(EvaScript.LoadIntoCrewCompartment))]
-    public static class EvaScript_LoadIntoCrewCompartment_Patch
-    {
-        private static readonly FieldInfo loadingInProgressField = AccessTools.Field(typeof(EvaScript), "_loadingIntoCrewCompartmentInProgress");
-        [HarmonyPrefix]
-        public static void Prefix(CrewCompartmentScript crewCompartment, Action onCompleted, bool announceBoarding, EvaScript __instance)
-        {
-            Debug.LogFormat("Entering LoadIntoCrewCompartment: crewCompartment={0}, announceBoarding={1}, instance={2}",
-                crewCompartment != null ? crewCompartment.name : "null", announceBoarding, __instance.GetInstanceID());
-        }
-        
-        [HarmonyPostfix]
-        public static void Postfix(CrewCompartmentScript crewCompartment, Action onCompleted, bool announceBoarding, EvaScript __instance)
-        {
-            bool loadingInProgress = (bool)loadingInProgressField.GetValue(__instance);
-            Debug.LogFormat("Exiting LoadIntoCrewCompartment: crewCompartment={0}, loadingInProgress={1}",
-                crewCompartment != null ? crewCompartment.name : "null", loadingInProgress);
-        }
-        //
-        
-        /*
-        
-        [HarmonyTranspiler]
-    public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-    {
-        var code = new List<CodeInstruction>(instructions);
-        var logMethod = AccessTools.Method(typeof(Debug), nameof(Debug.LogFormat), new[] { typeof(string), typeof(object[]) });
-
-        // 辅助方法：在指定位置插入日志
-        void InjectLog(int index, string message, params string[] args)
-        {
-            var logInstructions = new List<CodeInstruction>
-            {
-                new CodeInstruction(OpCodes.Ldstr, message),
-                new CodeInstruction(OpCodes.Ldc_I4, args.Length),
-                new CodeInstruction(OpCodes.Newarr, typeof(object))
-            };
-
-            for (int i = 0; i < args.Length; i++)
-            {
-                logInstructions.Add(new CodeInstruction(OpCodes.Dup));
-                logInstructions.Add(new CodeInstruction(OpCodes.Ldc_I4, i));
-                logInstructions.Add(new CodeInstruction(OpCodes.Ldarg_S, int.Parse(args[i])));
-                logInstructions.Add(new CodeInstruction(OpCodes.Stelem_Ref));
-            }
-
-            logInstructions.Add(new CodeInstruction(OpCodes.Call, logMethod));
-            code.InsertRange(index, logInstructions);
-        }
-
-        // 在关键点插入日志
-        for (int i = 0; i < code.Count; i++)
-        {
-            // 检查 crewCompartment 是否为空之前记录
-            if (code[i].opcode == OpCodes.Call && code[i].operand.ToString().Contains("Object.op_Inequality"))
-            {
-                InjectLog(i, "检查 crewCompartment: {0}", "1");
-            }
-
-            // 访问 PartScript 之前记录
-            if (code[i].opcode == OpCodes.Ldfld && code[i].operand.ToString().Contains("PartScript"))
-            {
-                InjectLog(i, "访问 PartScript: {0}", "0");
-            }
-
-            // 调用嵌套方法 LoadIntoCompartment 之前记录
-            if (code[i].opcode == OpCodes.Ldftn && code[i].operand.ToString().Contains("LoadIntoCompartment"))
-            {
-                InjectLog(i, "调用 LoadIntoCompartment");
-            }
-        }
-
-        return code;
-    }*/
     
-        
-    }
+    [HarmonyPatch(typeof(EvaScript), nameof(EvaScript.OnModifiersCreated))]
+    public static class EvaScriptPatch
+    {
+        /// <summary>
+        /// 在 OnModifiersCreated 方法执行后运行的后置补丁。
+        /// Postfix patch to run after the OnModifiersCreated method.
+        /// </summary>
+        /// <param name="__instance">EvaScript 实例。The EvaScript instance.</param>
+        public static void Postfix(EvaScript __instance)
+        {
+            // 仅在飞行场景中执行修补
+            // Only execute the patch in the flight scene
+            if (!Game.InFlightScene)
+            {
+                return;
+            }
 
+            try
+            {
+                // 获取零件上所有的 FuelTankScript 组件
+                // Get all FuelTankScript components on the part
+                var fuelTanks = ((Component)__instance).GetComponents<FuelTankScript>();
+
+                // 查找燃料类型为 "JetPack" 的 FuelTankScript
+                // Find the FuelTankScript with fuel type "JetPack"
+                var jetPackFuelTank = fuelTanks.FirstOrDefault(tank => tank.FuelType?.Id == "Jetpack");
+
+                // 使用反射设置 _fuelTank 字段的值
+                // Use reflection to set the value of the _fuelTank field
+                var fuelTankField = AccessTools.Field(typeof(EvaScript), "_fuelTank");
+                if (fuelTankField != null)
+                {
+                    fuelTankField.SetValue(__instance, jetPackFuelTank);
+                    if (jetPackFuelTank == null)
+                    {
+                        Debug.LogWarning("[EvaScriptPatch] No FuelTankScript with fuel type 'JetPack' found. Setting _fuelTank to null.");
+                    }
+                    else
+                    {
+                        Debug.Log($"[EvaScriptPatch] Successfully set _fuelTank to JetPack fuel tank.");
+                    }
+                }
+                else
+                {
+                    Debug.LogError("[EvaScriptPatch] Failed to find _fuelTank field via reflection.");
+                }
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[EvaScriptPatch] Error in Postfix patch: {e.Message}");
+            }
+        }
+    }
     
   
     

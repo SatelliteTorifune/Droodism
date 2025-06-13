@@ -5,6 +5,7 @@ using ModApi.GameLoop;
 using ModApi.GameLoop.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Linq;
 using Assets.Scripts.Craft.Fuel;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
@@ -211,16 +212,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             UpdateCurrentPlanet();
             Game.Instance.FlightScene.CraftNode.ChangedSoI += OnSoiChanged;
             PartData partData = this.Data.Part;
-            
             if (partData.Modifiers.Count <= 6)
             {
                 
-                //AddTank("Oxygen", this.Data.DesireOxygenCapacity, this.Data.OxygenAmountBuffer);
-                //AddTank("Food", this.Data.DesireFoodCapacity, this.Data.FoodAmountBuffer);
-                //AddTank("H2O", this.Data.DesireWaterCapacity, this.Data.WaterAmountBuffer);
-                AddTank("Oxygen", 0,0);
-                AddTank("Food", 0,0);
-                AddTank("H2O", 0,0);
+                AddTank("Oxygen", this.Data.DesireOxygenCapacity, this.Data.OxygenAmountBuffer);
+                AddTank("Food", this.Data.DesireFoodCapacity, this.Data.FoodAmountBuffer);
+                AddTank("H2O", this.Data.DesireWaterCapacity, this.Data.WaterAmountBuffer);
             }
             
             try
@@ -518,7 +515,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             base.OnCraftLoaded(craftScript, movedToNewCraft);
             this.OnCraftStructureChanged(craftScript);
         }
-
+        
         
         private void OnFlightEnded(object sender, FlightEndedEventArgs e)
         {
@@ -532,50 +529,45 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             RemoveExtraTanks();
             
         }
+        public static XElement RemoveFuelTankXML(XElement partElement)
+        {
+            if (partElement == null)
+            {
+                UnityEngine.Debug.LogError("Part element is null.");
+                return null;
+            }
 
+            try
+            {
+                string[] fuelTypesToRemove = { "Oxygen", "Food", "H2O" };
+                partElement.Elements("FuelTank")
+                    .Where(fuelTank => fuelTypesToRemove.Contains(fuelTank.Attribute("fuelType")?.Value))
+                    .Remove();
+                UnityEngine.Debug.LogFormat("Successfully removed specified FuelTank nodes.{0}",partElement.ToString());
+                return partElement;
+               
+            }
+            catch (System.Exception ex)
+            {
+                UnityEngine.Debug.LogError($"Error removing FuelTank nodes: {ex.Message}");
+            }
+            return null;
+        }
         private void RemoveExtraTanks()
         {
             
             Debug.Log("RemoveExtraTanks Called");
-            isFirstTime = false;
-            foreach (var modifier in PartScript.Modifiers)
+            try
             {
-                if (modifier.GetData().Name.Contains("Tank"))
-                {
-                    FuelTankScript fts = modifier as FuelTankScript;
-                    if (fts.FuelType.Id.Contains("Oxygen"))
-                    {
-                        try
-                        {
-                            //this.Data.OxygenAmountBuffer =fts.TotalFuel;
-                            modifier.GetData().RemoveModifier();
-                            Debug.LogFormat("成功1");
-                            
-                            
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.LogErrorFormat("RemoveExtraTanks调用GetData出问题了{0}", e);    
-                        }
-                        
-                        
-                    }
-                    /*
-                    if (fts.FuelType.Id.Contains("Food"))
-                    {
-                        this.Data.FoodAmountBuffer = (float)fts.TotalFuel;
-                        
-                    }
-                    else if (fts.FuelType.Id.Contains("H2O"))
-                    {
-                        this.Data.WaterAmountBuffer = (float)fts.TotalFuel;
-                        
-                    }*/
-                }
-                
+                this.PartScript.Data.LoadXML(
+                RemoveFuelTankXML(this.PartScript.Data.GenerateXml(this.PartScript.CraftScript.Transform,false)),15);
+                Debug.Log("Successfully removed extra FuelTank nodes.");
+            }
+            catch (Exception e)
+            {
+                Debug.LogErrorFormat("RemoveExtraTanks调用RemoveFuelTankXML出问题了{0}", e);
             }
             
-
 
         }
 
