@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Reflection;
-using System.Threading;
+using System.Collections.Generic;
+using System.Reflection.Emit;
 using System.Xml.Linq;
 using Assets.Scripts.Craft;
 using Assets.Scripts.Craft.Parts;
@@ -49,8 +50,8 @@ namespace Assets.Scripts
         protected override void OnModInitialized()
         {
             base.OnModInitialized();
-            //var harmony = new Harmony("com.SatelliteTorifune.Droodism");
-            //harmony.PatchAll(Assembly.GetExecutingAssembly());
+            var harmony = new Harmony("com.SatelliteTorifune.Droodism");
+            harmony.PatchAll(Assembly.GetExecutingAssembly());
             Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
             Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.FlightView,OnBuildFlightViewInspectorPanel);
             
@@ -265,29 +266,85 @@ namespace Assets.Scripts
                 return;
         }
     }
-    //何意味?
-    /*[HarmonyPatch]
-    public class HarmonyPatches
+
+    [HarmonyPatch(typeof(EvaScript), nameof(EvaScript.LoadIntoCrewCompartment))]
+    public static class EvaScript_LoadIntoCrewCompartment_Patch
     {
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(FuelType), "Initialize")]
-        private static void AddingStaticFuelType(ref List<FuelType> fuels)
+        private static readonly FieldInfo loadingInProgressField = AccessTools.Field(typeof(EvaScript), "_loadingIntoCrewCompartmentInProgress");
+        [HarmonyPrefix]
+        public static void Prefix(CrewCompartmentScript crewCompartment, Action onCompleted, bool announceBoarding, EvaScript __instance)
         {
-            try
+            Debug.LogFormat("Entering LoadIntoCrewCompartment: crewCompartment={0}, announceBoarding={1}, instance={2}",
+                crewCompartment != null ? crewCompartment.name : "null", announceBoarding, __instance.GetInstanceID());
+        }
+        
+        [HarmonyPostfix]
+        public static void Postfix(CrewCompartmentScript crewCompartment, Action onCompleted, bool announceBoarding, EvaScript __instance)
+        {
+            bool loadingInProgress = (bool)loadingInProgressField.GetValue(__instance);
+            Debug.LogFormat("Exiting LoadIntoCrewCompartment: crewCompartment={0}, loadingInProgress={1}",
+                crewCompartment != null ? crewCompartment.name : "null", loadingInProgress);
+        }
+        //
+        
+        /*
+        
+        [HarmonyTranspiler]
+    public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+    {
+        var code = new List<CodeInstruction>(instructions);
+        var logMethod = AccessTools.Method(typeof(Debug), nameof(Debug.LogFormat), new[] { typeof(string), typeof(object[]) });
+
+        // 辅助方法：在指定位置插入日志
+        void InjectLog(int index, string message, params string[] args)
+        {
+            var logInstructions = new List<CodeInstruction>
             {
-                IniOxygen();
-                if (!fuels.Any(f => f.Id == Oxygen.Id))
-                {
-                    fuels.Add(Oxygen);
-                    Debug.Log($"已将自定义 FuelType ({Oxygen.Name}) 添加到 fuels 列表！");
-                }
+                new CodeInstruction(OpCodes.Ldstr, message),
+                new CodeInstruction(OpCodes.Ldc_I4, args.Length),
+                new CodeInstruction(OpCodes.Newarr, typeof(object))
+            };
+
+            for (int i = 0; i < args.Length; i++)
+            {
+                logInstructions.Add(new CodeInstruction(OpCodes.Dup));
+                logInstructions.Add(new CodeInstruction(OpCodes.Ldc_I4, i));
+                logInstructions.Add(new CodeInstruction(OpCodes.Ldarg_S, int.Parse(args[i])));
+                logInstructions.Add(new CodeInstruction(OpCodes.Stelem_Ref));
             }
-            catch (System.Exception e)
+
+            logInstructions.Add(new CodeInstruction(OpCodes.Call, logMethod));
+            code.InsertRange(index, logInstructions);
+        }
+
+        // 在关键点插入日志
+        for (int i = 0; i < code.Count; i++)
+        {
+            // 检查 crewCompartment 是否为空之前记录
+            if (code[i].opcode == OpCodes.Call && code[i].operand.ToString().Contains("Object.op_Inequality"))
             {
-                Debug.LogError($"添加自定义 FuelType 失败: {e}");
+                InjectLog(i, "检查 crewCompartment: {0}", "1");
+            }
+
+            // 访问 PartScript 之前记录
+            if (code[i].opcode == OpCodes.Ldfld && code[i].operand.ToString().Contains("PartScript"))
+            {
+                InjectLog(i, "访问 PartScript: {0}", "0");
+            }
+
+            // 调用嵌套方法 LoadIntoCompartment 之前记录
+            if (code[i].opcode == OpCodes.Ldftn && code[i].operand.ToString().Contains("LoadIntoCompartment"))
+            {
+                InjectLog(i, "调用 LoadIntoCompartment");
             }
         }
+
+        return code;
     }*/
+    
+        
+    }
+
     
   
     

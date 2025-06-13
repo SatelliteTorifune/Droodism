@@ -77,6 +77,7 @@ namespace Assets.Scripts
         // Method to update the count of droods, astronauts, and tourists on the craft
         private void UpdateDroodCount()
         {
+            
             // Get the current craft node from the game instance
             var craftNode = Game.Instance.FlightScene.CraftNode;
             
@@ -111,7 +112,7 @@ namespace Assets.Scripts
             // Update the total consume rates
             UpdateTotalConsumeRate();
         }
-
+        
         // Method to get the fuel source of a specific type from the entire craft
         private IFuelSource GetCraftFuelSource(string fuelType)
         {
@@ -166,8 +167,7 @@ namespace Assets.Scripts
             }
             return null;
             
-        }
-
+        } // Method to get the total fuel source for the craft    
         // Method to update the total fuel sources for oxygen, food, and water
         private void UpdateTotalFuel()
         {
@@ -266,7 +266,7 @@ namespace Assets.Scripts
                 }
             }
         }
-
+        
         // Method to build the flight view inspector panel with life support information
         private void OnBuildFlightViewInspectorPanel(BuildInspectorPanelRequest request)
         {

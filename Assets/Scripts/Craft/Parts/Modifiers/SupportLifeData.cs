@@ -41,6 +41,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         [SerializeField] [DesignerPropertySlider(0.1f, 3f, 51, Label = "<color=red>Water</color> Carry Amount(days)", Tooltip = "Define How much<color=red> Drink Water</color> Drood himself/herself will carry when Eva.")]
         private float desireWaterCapacity = 0.5f;
         
+        
         private int _fuelSourceAttachPoint;
         public int FuelSourceAttachPoint
         {
@@ -102,6 +103,26 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             get=>this.desireWaterCapacity*3;
             set=>this.desireWaterCapacity = value;
         }
+
+        public double OxygenAmountBuffer
+        {
+            get=>this.DesireOxygenCapacity;
+            set=>this.OxygenAmountBuffer = value;
+        }
+
+        public double FoodAmountBuffer
+        {
+            get=>this.DesireFoodCapacity;
+            set=>this.FoodAmountBuffer = value;
+        }
+
+        public double WaterAmountBuffer
+        {
+            get=>this.DesireWaterCapacity;
+            set=>this.WaterAmountBuffer = value;
+        }
+
+        
         
         
         protected override void OnDesignerInitialization(IDesignerPartPropertiesModifierInterface d)

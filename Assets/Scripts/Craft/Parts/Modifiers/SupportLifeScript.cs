@@ -5,12 +5,13 @@ using ModApi.GameLoop;
 using ModApi.GameLoop.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Xml.Linq;
 using Assets.Scripts.Craft.Fuel;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
 using Assets.Scripts.Flight;
+using ModApi;
+using ModApi.Flight.Events;
 using ModApi.Planet;
 using UnityEngine;
 using ModApi.Flight.Sim;
@@ -81,12 +82,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// Script for the grappling hook, if applicable.
         /// </summary>
         private GrapplingHookScript _grapplingHook;
+        
+        FlightSceneScript _flightSceneScript;
 
         /// <summary>
         /// 指示小蓝人是否在奔或是否为游客。
         /// Flags indicating if the crew member is running or if they are a tourist.
         /// </summary>
-        public bool isRunning, isTourist;
+        public bool isRunning, isTourist,isFirstTime;
         
         /// <summary>
         /// 在创建modifiers时调用，启用零件属性。
@@ -96,6 +99,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             base.OnModifiersCreated();
             this.Data.PartPropertiesEnabled = true;
+            isFirstTime = true;
         }
 
         /// <summary>
@@ -113,11 +117,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         /// <param name="fuelType">燃料类型（例如“氧气”、“食物”、“H2O”）。Type of fuel (e.g., "Oxygen", "Food", "H2O").</param>
         /// <param name="FuelCapacity">燃料罐的容量。Capacity of the fuel tank.</param>
-        private void AddTank(String fuelType, float FuelCapacity)
+        private void AddTank(String fuelType, double FuelCapacity,double FuelAmount)
         {
             XElement element = new XElement("FuelTank");
             element.SetAttributeValue("capacity", FuelCapacity);
-            element.SetAttributeValue("fuel", FuelCapacity);
+            element.SetAttributeValue("fuel", FuelAmount);
             element.SetAttributeValue("fuelType", fuelType);
             element.SetAttributeValue("utilization", -1);
             element.SetAttributeValue("autoFuelType", false);
@@ -164,13 +168,37 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 Debug.LogErrorFormat("添加 {0} 类型的 FuelTank 失败: {1}", fuelType, e);
             }
         }
-        
+
+        public override void OnInitialLaunch()
+        {
+            isFirstTime = true;
+            base.OnInitialLaunch();
+            if (this.PartScript.Data.PartType.Name == "Eva-Tourist")
+            {
+                isTourist = true;
+            }
+            
+            
+            UpdateCurrentPlanet();
+            
+            try
+            {
+                CraftRefeshFuelSource();
+            }
+            catch (Exception e)
+            {
+                Debug.LogErrorFormat("OnInitialLaunch调用CraftRefeshFuelSource出问题了{0}", e);
+            }
+        }
         /// <summary>
         /// 实现IFlightStart接口，在飞行场景开始时调用。
         /// Implements the IFlightStart interface, called at the start of the flight scene.
         /// </summary>
         void IFlightStart.FlightStart(in FlightFrameData frame)
         {
+            Game.Instance.FlightScene.FlightEnded+=OnFlightEnded;
+            Game.Instance.FlightScene.CraftNode.ChangedSoI += OnSoiChanged;
+            Game.Instance.FlightScene.PlayerChangedSoi += OnPlayerChangedSoi;
             base.OnInitialized();
             this.Data.InspectorEnabled = true;
             if (this.PartScript.Data.PartType.Name == "Eva-Tourist")
@@ -185,9 +213,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             PartData partData = this.Data.Part;
             if (partData.Modifiers.Count <= 6)
             {
-                AddTank("Oxygen", this.Data.DesireOxygenCapacity);
-                AddTank("Food", this.Data.DesireFoodCapacity);
-                AddTank("H2O", this.Data.DesireWaterCapacity);
+                
+                AddTank("Oxygen", this.Data.DesireOxygenCapacity, this.Data.OxygenAmountBuffer);
+                AddTank("Food", this.Data.DesireFoodCapacity, this.Data.FoodAmountBuffer);
+                AddTank("H2O", this.Data.DesireWaterCapacity, this.Data.WaterAmountBuffer);
             }
             
             try
@@ -196,7 +225,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             catch (Exception e)
             {
-                Debug.LogErrorFormat("2lazy{0}", e);
+                Debug.LogErrorFormat("FlightStart调用CraftRefeshFuelSource出问题了{0}", e);
             }
             //_crewCompartmentScript.CrewEnter+=OnCrewEnter;
             //_crewCompartmentScript.CrewExit+=OnCrewExit;
@@ -395,14 +424,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 try
                 {
-                    if (_evaScript.EvaActive)
-                        CraftRefeshFuelSource();
-                    else
-                        CraftRefeshFuelSource();
+                    CraftRefeshFuelSource();
+                    
+                        
                 }
                 catch (Exception e)
                 {
-                    Debug.LogErrorFormat("2lazy{0}", e);
+                    Debug.LogErrorFormat("RefreshFuelSource调用CraftRefeshFuelSource歇逼了{0}", e);
                 }
                 
                 if (this._oxygenSource == null)
@@ -487,6 +515,66 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             this.OnCraftStructureChanged(craftScript);
         }
 
+        
+        private void OnFlightEnded(object sender, FlightEndedEventArgs e)
+        {
+            Debug.Log("OnFlightEnded");
+            FlightEnd();
+        }
+        /// <summary>
+        /// Called when the craft ends, removes extra fuel tanks.
+        public override void FlightEnd()
+        {
+            RemoveExtraTanks();
+            
+        }
+
+        private void RemoveExtraTanks()
+        {
+            
+            Debug.Log("RemoveExtraTanks Called");
+            isFirstTime = false;
+            foreach (var modifier in PartScript.Modifiers)
+            {
+                if (modifier.GetData().Name.Contains("Tank"))
+                {
+                    FuelTankScript fts = modifier as FuelTankScript;
+                    if (fts.FuelType.Id.Contains("Oxygen"))
+                    {
+                        try
+                        {
+                            this.Data.OxygenAmountBuffer =fts.TotalFuel;
+                            modifier.GetData().RemoveModifier();
+                            Debug.LogFormat("成功1");
+                            
+                            
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.LogErrorFormat("RemoveExtraTanks调用GetData出问题了{0}", e);    
+                        }
+                        
+                        
+                    }
+                    /*
+                    if (fts.FuelType.Id.Contains("Food"))
+                    {
+                        this.Data.FoodAmountBuffer = (float)fts.TotalFuel;
+                        
+                    }
+                    else if (fts.FuelType.Id.Contains("H2O"))
+                    {
+                        this.Data.WaterAmountBuffer = (float)fts.TotalFuel;
+                        
+                    }*/
+                }
+                
+            }
+            
+
+
+        }
+
         /// <summary>
         /// 在飞船结构变化时调用，如果在飞行场景中，则刷新燃料源。
         /// Called when the craft structure changes, refreshes fuel sources if in flight scene.
@@ -544,6 +632,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             currentPlanetName = planetData?.Name;
         }
 
+        private void OnPlayerChangedSoi(ICraftNode craftNode, IOrbitNode orbitNode)
+        {
+            UpdateCurrentPlanet();
+        }
         /// <summary>
         /// SOI变化时的事件处理程序，更新当前行星。
         /// Event handler for when the sphere of influence changes, updates the current planet.
