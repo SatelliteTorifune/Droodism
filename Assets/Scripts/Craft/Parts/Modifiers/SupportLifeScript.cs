@@ -211,14 +211,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             UpdateCurrentPlanet();
             Game.Instance.FlightScene.CraftNode.ChangedSoI += OnSoiChanged;
             PartData partData = this.Data.Part;
-            /*
+            
             if (partData.Modifiers.Count <= 6)
             {
                 
-                AddTank("Oxygen", this.Data.DesireOxygenCapacity, this.Data.OxygenAmountBuffer);
-                AddTank("Food", this.Data.DesireFoodCapacity, this.Data.FoodAmountBuffer);
-                AddTank("H2O", this.Data.DesireWaterCapacity, this.Data.WaterAmountBuffer);
-            }*/
+                //AddTank("Oxygen", this.Data.DesireOxygenCapacity, this.Data.OxygenAmountBuffer);
+                //AddTank("Food", this.Data.DesireFoodCapacity, this.Data.FoodAmountBuffer);
+                //AddTank("H2O", this.Data.DesireWaterCapacity, this.Data.WaterAmountBuffer);
+                AddTank("Oxygen", 0,0);
+                AddTank("Food", 0,0);
+                AddTank("H2O", 0,0);
+            }
             
             try
             {
@@ -544,7 +547,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     {
                         try
                         {
-                            this.Data.OxygenAmountBuffer =fts.TotalFuel;
+                            //this.Data.OxygenAmountBuffer =fts.TotalFuel;
                             modifier.GetData().RemoveModifier();
                             Debug.LogFormat("成功1");
                             
