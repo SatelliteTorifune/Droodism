@@ -7,9 +7,6 @@
     <Fuel id="Food" name="Food" gamma="0" density="1.5" molecularWeight="128" combustionTemperature="0" price="25" explosivePower="0" description="The heavy compressed food Drood eat ">
       <Visual exhaustColor="#00000000" exhaustColorTip="#00000000" exhaustColorShock="#00000000" exhaustColorFlame="#00000000" exhaustColorSoot="#00000000" exhaustColorSmoke="#ffffff00" globalIntensity ="0" shockIntensity="-20" rimShade="0" />
     </Fuel>
-    <Fuel id="Drinking Water" name="Drinking Water" gamma="0" density="1.0" molecularWeight="11.8" combustionTemperature="0" price="2" explosivePower="0" description="This is the drinking water,not the rocket fuel.">
-      <Visual exhaustColor="#00000000" exhaustColorTip="#00000000" exhaustColorShock="#00000000" exhaustColorFlame="#00000000" exhaustColorSoot="#00000000" exhaustColorSmoke="#00000000" globalIntensity ="0" shockIntensity="-20" rimShade="0" />
-      </Fuel>
   </Fuels>
   <RocketEngines />
   <RocketNozzles />

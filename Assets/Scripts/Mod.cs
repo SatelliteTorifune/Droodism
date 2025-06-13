@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Reflection;
-using System.Threading;
+using System.Collections.Generic;
+using System.Reflection.Emit;
 using System.Xml.Linq;
 using Assets.Scripts.Craft;
 using Assets.Scripts.Craft.Parts;
@@ -27,7 +28,6 @@ namespace Assets.Scripts
     using ModApi.Mods;
     using UnityEngine;
     using UnityEngine.PlayerLoop;
-    using HarmonyLib;
 
     /// <summary>
     /// A singleton object representing this mod that is instantiated and initialize when the mod is loaded.
@@ -54,7 +54,6 @@ namespace Assets.Scripts
             harmony.PatchAll(Assembly.GetExecutingAssembly());
             Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
             Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.FlightView,OnBuildFlightViewInspectorPanel);
-            Debug.Log("OnBuildFlightViewInspectorPanel called when OnModInitialized");
             
 
         }
@@ -66,6 +65,18 @@ namespace Assets.Scripts
             {
                 Instance.Designer.CraftLoaded += OnCraftLoaded;
                 Created += OnPartAdded;
+            }
+
+            if (Instance.SceneManager.InFlightScene)
+            {
+                try
+                {
+                    UpdateDroodCount();
+                }
+                catch (Exception e1)
+                {
+                    Debug.LogFormat("你要干啥{0}",e1);
+                }
             }
             
         }
@@ -107,9 +118,15 @@ namespace Assets.Scripts
         public void OnCraftLoaded()
         {
             List<PartData> droodParts = CheckDrood(Craft);
+            List<PartData> genParts = CheckGenerator(Craft);
             foreach (PartData part in droodParts)
             {
                 AddLsModifier(part);
+            }
+
+            foreach (PartData part in genParts)
+            {
+                AddLSGModifier(part);
             }
 
         }
@@ -123,14 +140,18 @@ namespace Assets.Scripts
         {
             if (e.Part.Name=="Eva")
             {
-                Debug.LogFormat($"这是Drood,有{e.Part.Modifiers.Count}个modifier");
                 AddLsModifier(e.Part);
             }
 
             if (e.Part.Name == "Eva-Tourist")
             {
-                Debug.LogFormat($"这是游客,有{e.Part.Modifiers.Count}个modifier"); 
+               
                 AddLsModifier(e.Part);
+            }
+
+            if (e.Part.Name == "Generator1")
+            {
+                AddLSGModifier(e.Part);
             }
             
         }
@@ -204,31 +225,126 @@ namespace Assets.Scripts
             
         }
         
-        
-    }
-    //何意味?
-    /*[HarmonyPatch]
-    public class HarmonyPatches
-    {
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(FuelType), "Initialize")]
-        private static void AddingStaticFuelType(ref List<FuelType> fuels)
+        public List<PartData> CheckGenerator(CraftScript craft)
         {
-            try
+            List<PartData> GeneratorParts = new List<PartData>();
+            foreach (PartData part in craft.Data.Assembly.Parts)
             {
-                IniOxygen();
-                if (!fuels.Any(f => f.Id == Oxygen.Id))
+
+                if (part.Modifiers != null)
                 {
-                    fuels.Add(Oxygen);
-                    Debug.Log($"已将自定义 FuelType ({Oxygen.Name}) 添加到 fuels 列表！");
+                    foreach (var _pmd in part.Modifiers)
+                    {
+                        if (_pmd.Name=="Generator1")
+                        {
+                            GeneratorParts.Add(part);
+                        }
+
+                    }
                 }
             }
-            catch (System.Exception e)
+
+            return GeneratorParts;
+
+        }
+        public static void AddLSGModifier(PartData part)
+        {
+            if (!(part != null))
+                return;
+            LifeSupportGeneratorData _supportLifeData = part.GetModifier<LifeSupportGeneratorData>();
+            if (_supportLifeData==null)
             {
-                Debug.LogError($"添加自定义 FuelType 失败: {e}");
+                _supportLifeData = PartModifierData.CreateFromDefaultXml<LifeSupportGeneratorData>(part);
+                _supportLifeData.PartPropertiesEnabled = false;
+                _supportLifeData.InspectorEnabled = true;
             }
         }
+
+        public static void AddFuelTankModifier(PartData part, string fuelTypeId)
+        {
+            if (part==null)
+                return;
+        }
+    }
+
+    [HarmonyPatch(typeof(EvaScript), nameof(EvaScript.LoadIntoCrewCompartment))]
+    public static class EvaScript_LoadIntoCrewCompartment_Patch
+    {
+        private static readonly FieldInfo loadingInProgressField = AccessTools.Field(typeof(EvaScript), "_loadingIntoCrewCompartmentInProgress");
+        [HarmonyPrefix]
+        public static void Prefix(CrewCompartmentScript crewCompartment, Action onCompleted, bool announceBoarding, EvaScript __instance)
+        {
+            Debug.LogFormat("Entering LoadIntoCrewCompartment: crewCompartment={0}, announceBoarding={1}, instance={2}",
+                crewCompartment != null ? crewCompartment.name : "null", announceBoarding, __instance.GetInstanceID());
+        }
+        
+        [HarmonyPostfix]
+        public static void Postfix(CrewCompartmentScript crewCompartment, Action onCompleted, bool announceBoarding, EvaScript __instance)
+        {
+            bool loadingInProgress = (bool)loadingInProgressField.GetValue(__instance);
+            Debug.LogFormat("Exiting LoadIntoCrewCompartment: crewCompartment={0}, loadingInProgress={1}",
+                crewCompartment != null ? crewCompartment.name : "null", loadingInProgress);
+        }
+        //
+        
+        /*
+        
+        [HarmonyTranspiler]
+    public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+    {
+        var code = new List<CodeInstruction>(instructions);
+        var logMethod = AccessTools.Method(typeof(Debug), nameof(Debug.LogFormat), new[] { typeof(string), typeof(object[]) });
+
+        // 辅助方法：在指定位置插入日志
+        void InjectLog(int index, string message, params string[] args)
+        {
+            var logInstructions = new List<CodeInstruction>
+            {
+                new CodeInstruction(OpCodes.Ldstr, message),
+                new CodeInstruction(OpCodes.Ldc_I4, args.Length),
+                new CodeInstruction(OpCodes.Newarr, typeof(object))
+            };
+
+            for (int i = 0; i < args.Length; i++)
+            {
+                logInstructions.Add(new CodeInstruction(OpCodes.Dup));
+                logInstructions.Add(new CodeInstruction(OpCodes.Ldc_I4, i));
+                logInstructions.Add(new CodeInstruction(OpCodes.Ldarg_S, int.Parse(args[i])));
+                logInstructions.Add(new CodeInstruction(OpCodes.Stelem_Ref));
+            }
+
+            logInstructions.Add(new CodeInstruction(OpCodes.Call, logMethod));
+            code.InsertRange(index, logInstructions);
+        }
+
+        // 在关键点插入日志
+        for (int i = 0; i < code.Count; i++)
+        {
+            // 检查 crewCompartment 是否为空之前记录
+            if (code[i].opcode == OpCodes.Call && code[i].operand.ToString().Contains("Object.op_Inequality"))
+            {
+                InjectLog(i, "检查 crewCompartment: {0}", "1");
+            }
+
+            // 访问 PartScript 之前记录
+            if (code[i].opcode == OpCodes.Ldfld && code[i].operand.ToString().Contains("PartScript"))
+            {
+                InjectLog(i, "访问 PartScript: {0}", "0");
+            }
+
+            // 调用嵌套方法 LoadIntoCompartment 之前记录
+            if (code[i].opcode == OpCodes.Ldftn && code[i].operand.ToString().Contains("LoadIntoCompartment"))
+            {
+                InjectLog(i, "调用 LoadIntoCompartment");
+            }
+        }
+
+        return code;
     }*/
+    
+        
+    }
+
     
   
     

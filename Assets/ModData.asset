@@ -15,11 +15,12 @@ MonoBehaviour:
   _assemblies:
   - Droodism.dll
   _author: SatelliteTorifune
-  _description: '<color=green>Added Life Support To Droods
+  _description: '<color=green><size=125%>Added Life Support To Droods&Tourist</color></size>
 
+    They
+    Now Need Oxygen Water and Food to Survive
 
-    <color=red><size=250%>REQUIRE
-    JNO HARMONY'
+'
   _loadPriority: 400
   _name: Droodism
   _otherAssets: []
@@ -31,7 +32,7 @@ MonoBehaviour:
   _steamTitle: 
   _steamVisibility: 0
   _versionMajor: 0
-  _versionMinor: 12
+  _versionMinor: 15
   _partCategories: []
   _parts: []
   _partStyleExtensions: []

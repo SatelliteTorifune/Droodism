@@ -1,131 +1,387 @@
+using System;
 using Assets.Scripts.Craft;
+using Assets.Scripts.Craft.Fuel;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
+using Assets.Scripts.Flight.Sim;
 using Microsoft.CSharp.RuntimeBinder;
 using ModApi.Craft;
 using ModApi.Craft.Parts;
+using ModApi.Craft.Propulsion;
 using ModApi.Flight;
+using ModApi.Math;
 using ModApi.Mods;
 using ModApi.Ui.Inspector;
+using UnityEngine;
+using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
 
 namespace Assets.Scripts
 {
+    // Main class for the mod, inheriting from GameMod
+ 
     public partial class Mod : GameMod
     {
+        // Reference to the craft script
         ICraftScript _craftScript;
+        // Count of droods (crew members)
         public int DroodCount = 0;
+        // Count of astronauts
         public int AstronautCount = 0;
+        // Count of tourists
         public int TouristCount = 0;
+
+        // Reference to the oxygen fuel source
+        private IFuelSource _oxygenSource;
+        // Reference to the water fuel source
+        private IFuelSource _waterSource;
+        // Reference to the food fuel source
+        private IFuelSource _foodSource;
         
+        // Reference to the support life script
+        private SupportLifeScript _support;
+        // Flag indicating if the craft is an Eva
+        private bool isEva;
+
+        // Total oxygen consume rate
+        private double oxygenConsumeRateTotal;
+        // Total food consume rate
+        private double foodConsumeRateTotal;
+        // Total water consume rate
+        private double waterConsumeRateTotal;
+        
+        // Reference to the total oxygen fuel source for the craft
         public IFuelSource CraftTotalOxygenFuelSource;
-        
+
+        // Method called when the mod is initialized
         private void OnInitialized(IFlightScene flightScene)
         {
-            UpdateDroodCount();
-        }
-        private void OnCraftChanged(ICraftNode craftNode)
-        {
+            // Update the drood count when the mod is initialized
             UpdateDroodCount();
         }
 
-        private void OnCraftStructureChangedUI()
+        // Method called when the craft changes
+        private void OnCraftChanged(ICraftNode craftNode)
         {
+            // Update the drood count when the craft changes
             UpdateDroodCount();
         }
+
+        // Method called when the craft structure changes in the UI
+        private void OnCraftStructureChangedUI()
+        {
+            // Update the drood count when the craft structure changes in the UI
+            UpdateDroodCount();
+        }
+
+        // Method to update the count of droods, astronauts, and tourists on the craft
         private void UpdateDroodCount()
         {
-           var craftNode = Game.Instance.FlightScene.CraftNode;
-           
+            
+            // Get the current craft node from the game instance
+            var craftNode = Game.Instance.FlightScene.CraftNode;
+            
+            // Reset the counts of droods, astronauts, and tourists
             DroodCount = 0;
             AstronautCount = 0;
             TouristCount = 0;
-           foreach (var partData in craftNode.CraftScript.Data.Assembly.Parts)
-           {
-               if (partData.PartType.Name.Contains("Eva"))
-               {
-                   DroodCount++;
-                   if (partData.PartType.Name=="Eva")
-                   {
-                       AstronautCount++;
-                   }
-                   else
-                   {
-                       TouristCount++;
-                   }
-               }
-           }
-           
-          
-
+            
+            // Iterate through each part in the craft's assembly
+            foreach (var partData in craftNode.CraftScript.Data.Assembly.Parts)
+            {
+                // Check if the part type name contains "Eva"
+                if (partData.PartType.Name.Contains("Eva"))
+                {
+                    // Increment the drood count
+                    DroodCount++;
+                    // Check if the part type name is exactly "Eva"
+                    if (partData.PartType.Name == "Eva")
+                    {
+                        // Increment the astronaut count
+                        AstronautCount++;
+                    }
+                    else
+                    {
+                        // Increment the tourist count
+                        TouristCount++;
+                    }
+                }
+            }
+            // Update the total fuel sources
+            UpdateTotalFuel();
+            // Update the total consume rates
+            UpdateTotalConsumeRate();
+        }
+        
+        // Method to get the fuel source of a specific type from the entire craft
+        private IFuelSource GetCraftFuelSource(string fuelType)
+        {
+            // Retrieve all fuel sources from the craft's script
+            var craftSources = Game.Instance.FlightScene.CraftNode.CraftScript.FuelSources.FuelSources;
+            // Iterate through each fuel source
+            foreach (var source in craftSources)
+            {
+                // Check if the fuel source's type name contains the specified fuel type
+                if (source.FuelType.Name.Contains(fuelType))
+                {
+                    // Return the fuel source if it matches the specified type
+                    return source;
+                }
+            }
+            // Return null if no matching fuel source is found
+            return null;
         }
 
+        // Method to get the fuel source of a specific type from the craft's local sources (root part modifiers)
+        private IFuelSource GetLocalFuelSource(string fuelType)
+        {
+            if (isEva)
+            {
+                // Retrieve all modifiers from the craft's root part
+                var craftSources = Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Modifiers;
+            
+                // Iterate through each modifier
+                foreach (var source in craftSources)
+                {
+                    // Check if the modifier's name contains "Tank"
+                    if (source.GetData().Name.Contains("Tank"))
+                    {
+                        // Disable the inspector for this modifier
+                        source.GetData().InspectorEnabled = false;
+                        // Cast the modifier to FuelTankScript
+                        FuelTankScript fts = source as FuelTankScript;
+                        // Check if the fuel tank's type name contains the specified fuel type
+                        if (fts.FuelType.Name.Contains(fuelType))
+                        {
+                            // Return the fuel tank if it matches the specified type
+                            return fts;
+                        }
+                    }
+                
+                }
+                
+            }
+            else
+            {
+                return null;
+            }
+            return null;
+            
+        } // Method to get the total fuel source for the craft    
+        // Method to update the total fuel sources for oxygen, food, and water
+        private void UpdateTotalFuel()
+        {
+            // Check if the craft is a single Eva part
+            if (DroodCount == 1 && Game.Instance.FlightScene.CraftNode.CraftScript.Data.Assembly.Parts.Count == 1 && Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Data.PartType.Name.Contains("Eva"))
+            {
+                // Set the flag indicating that the craft is an Eva
+                isEva = true;
+                // Get local fuel sources for oxygen, food, and water
+                _oxygenSource = GetLocalFuelSource("Oxygen");
+                _foodSource = GetLocalFuelSource("Food");
+                _waterSource = GetLocalFuelSource("Water");
+            }
+            else
+            {
+                // Set the flag indicating that the craft is not a single Eva
+                isEva = false;
+                // Get craft fuel sources for oxygen, food, and water
+                _oxygenSource = GetCraftFuelSource("Oxygen");
+                _foodSource = GetCraftFuelSource("Food");
+                _waterSource = GetCraftFuelSource("Water");
+                // If the craft fuel source is null or empty, try to get the local fuel source
+                if (_oxygenSource == null || _oxygenSource.IsEmpty)
+                {
+                    _oxygenSource = GetLocalFuelSource("Oxygen");
+                    if (_oxygenSource==null)
+                    {
+                        _oxygenSource = new EmptyFuel();
+                        
+                    }
+                   
+                }
+                if (_foodSource == null || _foodSource.IsEmpty)
+                {
+                    _foodSource = GetLocalFuelSource("Food");
+                    if (_foodSource == null)
+                    {
+                        _foodSource = new EmptyFuel();
+                    }
+                }
+                if (_waterSource == null || _waterSource.IsEmpty)
+                {
+                    _waterSource = GetLocalFuelSource("Water");
+                    if (_waterSource==null)
+                    {
+                         _waterSource=new EmptyFuel();
+                    }
+                }
+                
+            }
+        }
+
+        // Method to update the total consume rate for oxygen, food, and water based on the number of crew members and their states
+        private void UpdateTotalConsumeRate()
+        {
+            // Initialize total consume rates to zero
+            oxygenConsumeRateTotal = 0;
+            waterConsumeRateTotal = 0;
+            foodConsumeRateTotal = 0;
+            
+            // Check if the craft is an Eva
+            if (isEva)
+            {
+                // Get the SupportLifeScript modifier from the root part
+                _support = Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.GetModifier<SupportLifeScript>();
+                // Calculate the total consume rates for oxygen, water, and food, considering if the system is running and if the Eva is a tourist
+                oxygenConsumeRateTotal = _support.Data.OxygenComsumeRate * (_support.isRunning ? 1.75 : 1) * (_support.isTourist ? 1.05 : 1);
+                waterConsumeRateTotal = _support.Data.WaterComsumeRate * (_support.isRunning ? 1.75 : 1) * (_support.isTourist ? 1.05 : 1);
+                foodConsumeRateTotal = _support.Data.FoodComsumeRate * (_support.isRunning ? 1.75 : 1) * (_support.isTourist ? 1.05 : 1);
+            }
+            else
+            {
+                // Iterate through each part in the craft's assembly
+                foreach (var part in Game.Instance.FlightScene.CraftNode.CraftScript.Data.Assembly.Parts)
+                {
+                    // Check if the part is an Eva
+                    if (part.PartType.Name.Contains("Eva"))
+                    {
+                        // Get the SupportLifeScript modifier from the Eva part
+                        var evaPart = part.PartScript;
+                        _support = evaPart.GetModifier<SupportLifeScript>();
+                        // Calculate the total consume rates based on the type of Eva (Astronaut or Tourist)
+                        if (part.PartType.Name == "Eva")
+                        {
+                            oxygenConsumeRateTotal += _support.Data.OxygenComsumeRate;
+                            waterConsumeRateTotal += _support.Data.WaterComsumeRate;
+                            foodConsumeRateTotal += _support.Data.FoodComsumeRate;
+                        }
+                        if (part.PartType.Name == "Eva-Tourist")
+                        {
+                            oxygenConsumeRateTotal += _support.Data.OxygenComsumeRate * 1.05;
+                            waterConsumeRateTotal += _support.Data.WaterComsumeRate * 1.05;
+                            foodConsumeRateTotal += _support.Data.FoodComsumeRate * 1.05;
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Method to build the flight view inspector panel with life support information
         private void OnBuildFlightViewInspectorPanel(BuildInspectorPanelRequest request)
         {
+            // Log that the method has been called
             Debug.Log("OnBuildFlightViewInspectorPanel called");
+            try
+            {
+                // Update the drood count (number of crew members)
+                UpdateDroodCount();
+                
+            }
+            catch (Exception e)
+            {
+                // Log any exceptions that occur during the update
+                Debug.Log(e.Message);
+            }
+            // Create a new group model for life support information
             var LS = new GroupModel("<color=green><size=105%>Life Support");
+            // Retrieve game settings and UI for flight scene
             var fs = Game.Instance.Settings.Game.Flight;
             var ui = Game.Instance.FlightScene.FlightSceneUI;
+            // Add the life support group to the request model
             request.Model.AddGroup(LS);
-
+            // Create a text model for the drood count and add it to the life support group
             var DroodCountTextModel = new TextModel("Drood Count",
                 () => (DroodCount == 0 ? "Craft Has No Crew" : this.DroodCount.ToString()));
             LS.Add(DroodCountTextModel);
 
+            // Create a text model for the astronaut count and add it to the life support group
             var AstronautCountTextModel = new TextModel("Astronaut Count",
                 () => (AstronautCount == 0 ? "N/A" : this.AstronautCount.ToString()));
             LS.Add(AstronautCountTextModel);
 
+            // Create a text model for the tourist count and add it to the life support group
             var TouristCountTextModel = new TextModel("Tourist Count",
                 () => (TouristCount == 0 ? "N/A" : this.TouristCount.ToString()));
             LS.Add(TouristCountTextModel);
-
-            var textButtonModel = new TextButtonModel(
-                "手动更新", b =>
-                {
-                    UpdateDroodCount();
-                    smjb();
-                });
-            LS.Add(textButtonModel);
-
-            var clearLogBottom = new TextButtonModel(
-                "clear", b =>
-                {
-                     Debug.ClearDeveloperConsole();
-                     
-                });
-            LS.Add(clearLogBottom);
-        
-
-
+            
+            // Create a progress bar model for the oxygen percentage and add it to the life support group
+            var OxygenProgressBarModel = new ProgressBarModel("Oxygen Percentage", () =>
+                (float)(_oxygenSource.TotalFuel / _oxygenSource.TotalCapacity));
+            LS.Add(OxygenProgressBarModel);
+            
+            // Create a text model for the oxygen supply time and add it to the life support group
+            var OxygenTime = new TextModel("Oxygen Supply Time",
+                () => ($"{Units.GetStopwatchTimeString(_oxygenSource.TotalFuel / (oxygenConsumeRateTotal * (isEva ? (Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.GetModifier<SupportLifeScript>().isTourist ? 1.05 : 1) : 1) * (isEva ? (Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.GetModifier<SupportLifeScript>().isRunning ? 1.75 : 1) : 1)))}"));
+            LS.Add(OxygenTime);
+            
+            // Create a progress bar model for the water percentage and add it to the life support group
+            var WaterProgressBarModel = new ProgressBarModel("Water Percentage", () =>
+                (float)(_waterSource.TotalFuel / _waterSource.TotalCapacity));
+            LS.Add(WaterProgressBarModel);
+            // Create a text model for the water supply time and add it to the life support group
+            var WaterTime = new TextModel("Water Supply Time",
+                () => ($"{Units.GetStopwatchTimeString(_waterSource.TotalFuel / (waterConsumeRateTotal * (isEva ? (Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.GetModifier<SupportLifeScript>().isTourist ? 1.05 : 1) : 1) * (isEva ? (Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.GetModifier<SupportLifeScript>().isRunning ? 1.75 : 1) : 1)))}"));
+            LS.Add(WaterTime);
+            
+            // Create a progress bar model for the food percentage and add it to the life support group
+            var FoodProgressBarModel = new ProgressBarModel("Food Percentage", () =>
+                (float)(_foodSource.TotalFuel / _foodSource.TotalCapacity));
+            LS.Add(FoodProgressBarModel);
+            // Create a text model for the food supply time and add it to the life support group
+            var FoodTime = new TextModel("Food Supply Time",
+                () => ($"{Units.GetStopwatchTimeString(_foodSource.TotalFuel / (foodConsumeRateTotal * (isEva ? (Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.GetModifier<SupportLifeScript>().isTourist ? 1.05 : 1) : 1) * (isEva ? (Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.GetModifier<SupportLifeScript>().isRunning ? 1.75 : 1) : 1)))}"));
+            LS.Add(FoodTime);
         }
-
-        private void smjb()
+        
+        
+        
+    }
+    public class EmptyFuel: IFuelSource
+    {
+        public double AddFuel(double amount)
         {
-            var craftNode = Game.Instance.FlightScene.CraftNode;
-            SupportLifeScript sls;
-            if (true)
-            {
-                foreach (var pd in craftNode.CraftScript.Data.Assembly.Parts)
-                {
-                    foreach (var pmd in pd.Modifiers)
-                    {
-                        if (pmd.Name.Contains("Support"))
-                        {
-                            sls = (SupportLifeScript)pmd.GetScript();
-                            sls.RefreshFuelSource();
-                            Debug.LogFormat("燃料已手动更新");
-                            Game.Instance.FlightScene.FlightSceneUI.ShowMessage("燃料已更新",false,5f);
-                        }
-                    }
-                    
-                }
-            }
+            return 0;
         }
 
-        
+        public double RemoveFuel(double amount)
+        {
+            return 0;
+        }
+
+        public FuelTransferMode FuelTransferMode { get; set; }
+        public FuelType FuelType { get; set; }
+        public bool IsDestroyed { get; }
+        public bool IsEmpty { get; }
+        public Vector3 Position { get; }
+        public int Priority { get; }
+        public int SubPriority { get; }
+        public bool SupportsFuelTransfer { get; }
+
+        public double TotalCapacity
+        {
+            get { return 0; }
+
+            set
+            {
+                this.TotalCapacity = value;
+            }
+
+        }
+
+        public double TotalFuel
+        {
+            get
+            {
+                return 0;
+            }
+            set
+            {
+                this.TotalFuel = value;
+            }
+
+        }
 
     }
-
-    
 }
+
