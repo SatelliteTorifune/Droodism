@@ -211,13 +211,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             UpdateCurrentPlanet();
             Game.Instance.FlightScene.CraftNode.ChangedSoI += OnSoiChanged;
             PartData partData = this.Data.Part;
+            /*
             if (partData.Modifiers.Count <= 6)
             {
                 
                 AddTank("Oxygen", this.Data.DesireOxygenCapacity, this.Data.OxygenAmountBuffer);
                 AddTank("Food", this.Data.DesireFoodCapacity, this.Data.FoodAmountBuffer);
                 AddTank("H2O", this.Data.DesireWaterCapacity, this.Data.WaterAmountBuffer);
-            }
+            }*/
             
             try
             {
