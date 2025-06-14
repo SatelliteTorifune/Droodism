@@ -38,7 +38,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             base.OnInitialized();
         }
-
+        
         public void FlightStart(in FlightFrameData frame)
         {
             _generatorScript = GetComponent<GeneratorScript>();
@@ -64,6 +64,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         void FillFuelTankLogic(FlightFrameData frame)
         {
+            if (LH2FuelTank==null)
+                return;
+            if (LH2FuelTank.IsEmpty)
+            {
+                return;
+            }
+            
             double WaterlToAdd = _generatorScript.Data.FuelFlow * this.Data.WaterConvertEfficiency * frame.DeltaTimeWorld;
             double OxygenlToAdd = _generatorScript.Data.FuelFlow * this.Data.OxygenConvertEfficiency * frame.DeltaTimeWorld;
             if (waterSource!=null)
@@ -95,10 +102,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             var craftSources = PartScript.CraftScript.FuelSources.FuelSources;
     
-            // 查找匹配的燃料源
+            
             foreach (var source in craftSources)
             {
-                if (source.FuelType.Name.Contains(fuelType))
+                if (source.FuelType.Id.Contains(fuelType))
                 {
                     return source;
                 }
@@ -108,8 +115,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private void Rechck()
         {
-            waterSource = GetCraftFuelSource("Water");
+            if (!Game.InFlightScene)
+            {
+                return;
+            }
+            waterSource = GetCraftFuelSource("H2O");
             oxygenSource = GetCraftFuelSource("Oxygen");
+            LH2FuelTank = GetCraftFuelSource("LOX/LH2");
         }
         #region 路边一条,无人在意
         public override void OnModifiersCreated()

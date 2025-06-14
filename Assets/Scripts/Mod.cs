@@ -265,6 +265,9 @@ namespace Assets.Scripts
         {
             if (part==null)
                 return;
+            FuelTankData _fuelTankData = part.GetModifier<FuelTankData>();
+            
+            
         }
     }
     

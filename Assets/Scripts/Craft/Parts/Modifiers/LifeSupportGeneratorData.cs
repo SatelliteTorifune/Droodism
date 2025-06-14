@@ -21,12 +21,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public float WaterConvertEfficiency
         {
-            get => this._waterConvertEfficiency;
+            get => this._waterConvertEfficiency*0.08f;
         }
         
         public float OxygenConvertEfficiency
         {
-            get => this._oxygenConvertEfficiency;
+            get => this._oxygenConvertEfficiency*2;
         }
     }
 }
