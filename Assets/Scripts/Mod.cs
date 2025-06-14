@@ -7,6 +7,7 @@ using Assets.Scripts.Craft;
 using Assets.Scripts.Craft.Parts;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
+using Assets.Scripts.Flight;
 using ModApi.Craft.Parts;
 using UnityEngine.SceneManagement;
 using ModApi.Design.Events;
@@ -320,7 +321,24 @@ namespace Assets.Scripts
             }
         }
     }
-    
+
+    [HarmonyPatch(typeof(FlightSceneScript), "GetCoordsAndTP")]
+
+    public static class FlightSceneScriptPatch
+    {
+        public static void Postfix(FlightSceneScript __instance)
+        {
+            try
+            {
+                Mod.Inctance.UpdateDroodCount();
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarningFormat("从GetCoordsAndTP调用UpdateDroodCount出错{0}",e);
+            }
+        
+        }
+    }
   
     
 }

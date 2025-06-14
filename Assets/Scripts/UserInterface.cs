@@ -15,6 +15,7 @@ using ModApi.Ui.Inspector;
 using UnityEngine;
 using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
+using TextButtonModel = ModApi.Ui.Inspector.TextButtonModel;
 
 namespace Assets.Scripts
 {
@@ -75,7 +76,7 @@ namespace Assets.Scripts
         }
 
         // Method to update the count of droods, astronauts, and tourists on the craft
-        private void UpdateDroodCount()
+        public void UpdateDroodCount()
         {
             
             // Get the current craft node from the game instance
@@ -94,11 +95,21 @@ namespace Assets.Scripts
                 {
                     // Increment the drood count
                     DroodCount++;
+                    try
+                    {
+                        partData.PartScript.GetModifier<SupportLifeScript>().UpdateCurrentPlanet(); 
+                    }
+                    catch (Exception e)
+                    {
+                       Debug.LogFormat("完犊子了，{0}",e);
+                    }
+                    // Set the flag indicating that the craft is an Eva 
                     // Check if the part type name is exactly "Eva"
                     if (partData.PartType.Name == "Eva")
                     {
                         // Increment the astronaut count
                         AstronautCount++;
+                        
                     }
                     else
                     {
@@ -332,6 +343,10 @@ namespace Assets.Scripts
             var FoodTime = new TextModel("Food Supply Time",
                 () => ($"{Units.GetStopwatchTimeString(_foodSource.TotalFuel / (foodConsumeRateTotal * (isEva ? (Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.GetModifier<SupportLifeScript>().isTourist ? 1.05 : 1) : 1) * (isEva ? (Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.GetModifier<SupportLifeScript>().isRunning ? 1.75 : 1) : 1)))}"));
             LS.Add(FoodTime);
+            
+            LS.Add(new TextButtonModel(
+                "Manual Update",
+                b => UpdateDroodCount()));
         }
         
         

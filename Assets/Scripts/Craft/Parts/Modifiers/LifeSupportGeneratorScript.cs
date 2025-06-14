@@ -10,7 +10,8 @@ using ModApi.Scripts.State.Validation;
 using ModApi.Ui.Inspector;
 using System;
 using System.Collections.Generic;
-using System.Xml.Linq;
+using Assets.Scripts.Menu.ListView;
+using HarmonyLib;
 using ModApi.Craft.Propulsion;
 using UnityEngine;
 
@@ -28,6 +29,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private bool IsFunctional;
         private IFuelSource waterSource;
         private IFuelSource oxygenSource;
+
+        private IFuelSource LH2FuelTank;
+        private FuelTankScript _fuelTank;
         
         
         void IDesignerStart.DesignerStart(in DesignerFrameData frame)
@@ -51,7 +55,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             if (frame.DeltaTimeWorld==0)
                 return;
-            if (IsFunctional&&this.PartScript.Data.Activated)
+            if (IsFunctional&&this.PartScript.Data.Activated&&_generatorScript.Data.FuelFlow>0)
             {   
                 FillFuelTankLogic(frame);
             }
@@ -60,12 +64,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         void FillFuelTankLogic(FlightFrameData frame)
         {
-            double fuelToAdd = _generatorScript.Data.FuelFlow * this.Data.HydroloxConvertEfficiency * frame.DeltaTimeWorld;
+            double WaterlToAdd = _generatorScript.Data.FuelFlow * this.Data.WaterConvertEfficiency * frame.DeltaTimeWorld;
+            double OxygenlToAdd = _generatorScript.Data.FuelFlow * this.Data.OxygenConvertEfficiency * frame.DeltaTimeWorld;
             if (waterSource!=null)
             {
                 if (waterSource.TotalCapacity-waterSource.TotalFuel>=0.001)
                 {
-                    waterSource.AddFuel(fuelToAdd);
+                    waterSource.AddFuel(WaterlToAdd);
                 }
             }
             else
@@ -76,7 +81,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 if (oxygenSource.TotalCapacity-oxygenSource.TotalFuel>=0.001)
                 {
-                    oxygenSource.AddFuel(fuelToAdd);
+                    oxygenSource.AddFuel(OxygenlToAdd);
                 }
             }
             else
@@ -142,9 +147,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         private void CreateInspectorModel(GroupModel model, bool flight)
         {
-            model.Add<TextModel>(new TextModel("Fuel Flow", (Func<string>) (() => Units.GetMassFlowRateString(_generatorScript.Data.FuelFlow * this.Data.HydroloxConvertEfficiency)), tooltip: "The kilograms of fuel being burnt per second."));
+            model.Add<TextModel>(new TextModel("Fuel Flow", (Func<string>) (() => Units.GetMassFlowRateString(_generatorScript.Data.FuelFlow * this.Data.WaterConvertEfficiency)), tooltip: "The kilograms of fuel being burnt per second."));
         }
-
-        
+         
     }
 }

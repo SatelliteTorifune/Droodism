@@ -13,6 +13,7 @@ using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
 using Assets.Scripts.Flight;
 using ModApi;
 using ModApi.Flight.Events;
+using ModApi.Flight.GameView;
 using ModApi.Planet;
 using UnityEngine;
 using ModApi.Flight.Sim;
@@ -85,13 +86,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private GrapplingHookScript _grapplingHook;
         
         FlightSceneScript _flightSceneScript;
+        
+        
 
         /// <summary>
         /// 指示小蓝人是否在奔或是否为游客。
         /// Flags indicating if the crew member is running or if they are a tourist.
         /// </summary>
         public bool isRunning, isTourist,isFirstTime;
-        
+        private double _lastOxygenFuelAmount, _lastFoodFuelAmount, _lastWaterFuelAmount;
         /// <summary>
         /// 在创建modifiers时调用，启用零件属性。
         /// Called when modifiers are created, enables part properties.
@@ -110,13 +113,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         void IDesignerStart.DesignerStart(in DesignerFrameData frame)
         {
             base.OnInitialized();
+            
         }
         
         /// <summary>
         /// 为指定的燃料类型添加具有给定容量的燃料罐。
         /// Adds a fuel tank for the specified fuel type with the given capacity.
         /// </summary>
-        /// <param name="fuelType">燃料类型（例如“氧气”、“食物”、“H2O”）。Type of fuel (e.g., "Oxygen", "Food", "H2O").</param>
         /// <param name="FuelCapacity">燃料罐的容量。Capacity of the fuel tank.</param>
         private void AddTank(String fuelType, double FuelCapacity,double FuelAmount)
         {
@@ -178,6 +181,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 isTourist = true;
             }
+            _lastFoodFuelAmount=this.Data.DesireFoodCapacity;
+            _lastOxygenFuelAmount=this.Data.DesireOxygenCapacity;
+            _lastWaterFuelAmount=this.Data.DesireWaterCapacity;
             
             
             UpdateCurrentPlanet();
@@ -200,6 +206,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             Game.Instance.FlightScene.FlightEnded+=OnFlightEnded;
             Game.Instance.FlightScene.CraftNode.ChangedSoI += OnSoiChanged;
             Game.Instance.FlightScene.PlayerChangedSoi += OnPlayerChangedSoi;
+            Game.Instance.FlightScene.CraftNode.PhysicsDisabled += OnPhysicsDisabled;
+            Game.Instance.FlightScene.CraftNode.PhysicsEnabled += OnPhysicsEnabled;
             base.OnInitialized();
             this.Data.InspectorEnabled = true;
             if (this.PartScript.Data.PartType.Name == "Eva-Tourist")
@@ -212,13 +220,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             UpdateCurrentPlanet();
             Game.Instance.FlightScene.CraftNode.ChangedSoI += OnSoiChanged;
             PartData partData = this.Data.Part;
-            if (partData.Modifiers.Count <= 6)
-            {
-                
-                AddTank("Oxygen", this.Data.DesireOxygenCapacity, this.Data.OxygenAmountBuffer);
-                AddTank("Food", this.Data.DesireFoodCapacity, this.Data.FoodAmountBuffer);
-                AddTank("H2O", this.Data.DesireWaterCapacity, this.Data.WaterAmountBuffer);
-            }
+            LoadFuelTanks();
             
             try
             {
@@ -263,6 +265,16 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             AutoRefillLogic(frame);
         }
 
+        public void LoadFuelTanks()
+        {
+            if (this.PartScript.Modifiers.Count <= 6)
+            {
+
+                AddTank("Oxygen", this.Data.DesireOxygenCapacity, _lastFoodFuelAmount);
+                AddTank("Food", this.Data.DesireFoodCapacity, _lastFoodFuelAmount);
+                AddTank("H2O", this.Data.DesireWaterCapacity, _lastWaterFuelAmount);
+            }
+        }
         /// <summary>
         /// 从飞船中检索指定燃料类型的燃料源。
         /// Retrieves the fuel source for the specified fuel type from the craft.
@@ -455,6 +467,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         private void CraftRefeshFuelSource()
         {
+            try
+            {
+                UpdateCurrentPlanet();
+            }
+            catch (Exception e)
+            {
+                Debug.LogErrorFormat("{0}", e);
+            }
+
             Debug.LogFormat("调用CraftRefeshFuelSource");
             _oxygenSource = GetCraftFuelSource("Oxygen");
             _foodSource = GetCraftFuelSource("Food");
@@ -526,9 +547,26 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// Called when the craft ends, removes extra fuel tanks.
         public override void FlightEnd()
         {
-            RemoveExtraTanks();
-            
+            OnCraftUnloaded();
         }
+
+        public void OnPhysicsEnabled(ICraftNode craftNode, PhysicsChangeReason reason)
+        {
+            if (reason == PhysicsChangeReason.Warp)
+            {
+                return;
+            }
+            LoadFuelTanks();
+        }
+        public void OnPhysicsDisabled(ICraftNode craftNode, PhysicsChangeReason reason)
+        {
+            if (reason == PhysicsChangeReason.Warp)
+            {
+                return;
+            }
+            OnCraftUnloaded();
+        }
+        
         public static XElement RemoveFuelTankXML(XElement partElement)
         {
             if (partElement == null)
@@ -553,15 +591,29 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             return null;
         }
-        private void RemoveExtraTanks()
+        private void OnCraftUnloaded()
         {
             
-            Debug.Log("RemoveExtraTanks Called");
+            Debug.LogFormat("{0}OnCraftUnloaded Called",PartScript.Data.Id);
+            //Game.Instance.FlightScene.TimeManager.RealTime
             try
             {
+                try
+                {
+                    _lastFoodFuelAmount = this._foodSource.TotalFuel;
+                    _lastOxygenFuelAmount = this._oxygenSource.TotalFuel;
+                    _lastWaterFuelAmount = this._waterSource.TotalFuel;
+                    Debug.LogFormat("缓冲区燃料:{0},{1},{2}", _lastFoodFuelAmount, _lastOxygenFuelAmount, _lastWaterFuelAmount);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogErrorFormat("缓冲区燃料爆了{0}", e);
+                }
+                
                 this.PartScript.Data.LoadXML(
                 RemoveFuelTankXML(this.PartScript.Data.GenerateXml(this.PartScript.CraftScript.Transform,false)),15);
                 Debug.Log("Successfully removed extra FuelTank nodes.");
+                
             }
             catch (Exception e)
             {
@@ -607,25 +659,42 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return true;
             }
 
-            if (currentPlanetName.Contains("Droo") || currentPlanetName.Contains("Kerbin") ||
-                currentPlanetName.Contains("Earth") || currentPlanetName.Contains("Nebra") ||
-                currentPlanetName.Contains("Laythe") || currentPlanetName.Contains("Oord"))
+            if (airDensity != 0)
             {
-                return false;
+                if (currentPlanetName==("Droo") || currentPlanetName==("Kerbin") ||
+                    currentPlanetName==("Earth") || currentPlanetName==("Nebra") ||
+                    currentPlanetName==("Laythe") || currentPlanetName==("Oord"))
+                {
+                    if(_evaScript.IsInWater && PartScript.CraftScript.FlightData.AltitudeAboveSeaLevel < 0.1)
+                    {
+                        return true;
+                    }
+                    return false;
+                }
+                else
+                    return true;
             }
-            
-            bool isSubmerged = _evaScript.IsInWater && PartScript.CraftScript.FlightData.AltitudeAboveSeaLevel < 0.1;
-            return isSubmerged;
+            return true;
         }
 
         /// <summary>
         /// 根据飞行场景数据更新当前行星名称。
         /// Updates the current planet name based on the flight scene data.
         /// </summary>
-        private void UpdateCurrentPlanet()
+        public void UpdateCurrentPlanet()
         {
-            IPlanetData planetData = Game.InFlightScene ? FlightSceneScript.Instance?.CraftNode?.Parent.PlanetData : null;
-            currentPlanetName = planetData?.Name;
+            Debug.LogFormat("调用UpdateCurrentPlanet");
+            try
+            {
+                currentPlanetName = Game.Instance.FlightScene?.CraftNode.CraftScript.FlightData.Orbit.Parent.PlanetData
+                    .Name;
+                Debug.LogFormat("当前行星:{0}:{1}", currentPlanetName,UsingInternalOxygen());
+            }
+            catch (Exception e)
+            {
+                Debug.LogErrorFormat("UpdateCurrentPlanet调用出问题了{0}", e);
+            }
+
         }
 
         private void OnPlayerChangedSoi(ICraftNode craftNode, IOrbitNode orbitNode)
