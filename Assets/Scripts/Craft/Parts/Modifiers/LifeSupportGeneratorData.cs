@@ -15,11 +15,18 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     public class LifeSupportGeneratorData : PartModifierData<LifeSupportGeneratorScript>
     {
         [SerializeField] [PartModifierProperty(true, false)]
-        private float _hydroloxConvertEfficiency=1f;
+        private float _waterConvertEfficiency=1f;
+        [SerializeField] [PartModifierProperty(true, false)]
+        private float _oxygenConvertEfficiency=1f;
 
-        public float HydroloxConvertEfficiency
+        public float WaterConvertEfficiency
         {
-            get => this._hydroloxConvertEfficiency;
+            get => this._waterConvertEfficiency*0.08f;
+        }
+        
+        public float OxygenConvertEfficiency
+        {
+            get => this._oxygenConvertEfficiency*2;
         }
     }
 }
