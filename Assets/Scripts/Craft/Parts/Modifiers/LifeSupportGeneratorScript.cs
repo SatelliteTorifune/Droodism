@@ -139,8 +139,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public override void OnCraftStructureChanged(ICraftScript craftScript)
         {
+            
             Rechck();
-            Debug.LogFormat("OnCraftStructureChanged调用Rechck");
         }
         
         private void OnCraftFuelSourceChanged(object sender, EventArgs e)

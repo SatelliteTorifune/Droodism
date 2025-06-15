@@ -1,6 +1,6 @@
 using ModApi.Craft;
 using ModApi.Craft.Parts;
-using ModApi.Craft.Parts.Input;
+using Assets.Scripts.Flight;
 using ModApi.GameLoop;
 using ModApi.GameLoop.Interfaces;
 using System;
@@ -10,8 +10,9 @@ using System.Xml.Linq;
 using Assets.Scripts.Craft.Fuel;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
-using Assets.Scripts.Flight;
+using Assets.Scripts.Input;
 using ModApi;
+using ModApi.Flight;
 using ModApi.Flight.Events;
 using ModApi.Flight.GameView;
 using ModApi.Planet;
@@ -267,6 +268,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public void LoadFuelTanks()
         {
+            Debug.Log("LoadFuelTanks called");
             if (this.PartScript.Modifiers.Count <= 6)
             {
 
@@ -335,7 +337,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                         var localFuelSource = GetLocalFuelSource("Oxygen");
                         if (localFuelSource.IsEmpty)
                         {
-                            DamageDrood(_oxygenSource, frame, Data.OxygenDamageScale);
+                            DamageDrood(_oxygenSource, frame, Data.OxygenDamageScale,true);
                         }
                         localFuelSource.RemoveFuel(num1);
                     }
@@ -363,7 +365,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     var localFood = GetLocalFuelSource("Food");
                     if (localFood.IsEmpty)
                     {
-                        DamageDrood(_foodSource, frame, Data.FoodDamageScale);
+                        DamageDrood(_foodSource, frame, Data.FoodDamageScale,true);
                     }
                     localFood.RemoveFuel(num1);
                 }
@@ -385,7 +387,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     var localWater = GetLocalFuelSource("H2O");
                     if (localWater.IsEmpty)
                     {
-                        DamageDrood(_waterSource, frame, Data.WaterDamageScale);
+                        DamageDrood(_waterSource, frame, Data.WaterDamageScale,true);
                     }
                     localWater.RemoveFuel(num1);
                 }
@@ -506,7 +508,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
         }
 
-        #region 无所弔谓
+        
         /// <summary>
         /// 从源燃料源补充目标燃料源。
         /// Refills the target fuel source from the source fuel source.
@@ -549,9 +551,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             OnCraftUnloaded();
         }
-
         public void OnPhysicsEnabled(ICraftNode craftNode, PhysicsChangeReason reason)
         {
+            Debug.LogFormat("OnPhysicsEnabled{0}",reason);
             if (reason == PhysicsChangeReason.Warp)
             {
                 return;
@@ -566,7 +568,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             OnCraftUnloaded();
         }
-        
         public static XElement RemoveFuelTankXML(XElement partElement)
         {
             if (partElement == null)
@@ -598,18 +599,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             //Game.Instance.FlightScene.TimeManager.RealTime
             try
             {
-                try
-                {
-                    _lastFoodFuelAmount = this._foodSource.TotalFuel;
-                    _lastOxygenFuelAmount = this._oxygenSource.TotalFuel;
-                    _lastWaterFuelAmount = this._waterSource.TotalFuel;
-                    Debug.LogFormat("缓冲区燃料:{0},{1},{2}", _lastFoodFuelAmount, _lastOxygenFuelAmount, _lastWaterFuelAmount);
-                }
-                catch (Exception e)
-                {
-                    Debug.LogErrorFormat("缓冲区燃料爆了{0}", e);
-                }
                 
+                SaveFuelAmountBuffer();
                 this.PartScript.Data.LoadXML(
                 RemoveFuelTankXML(this.PartScript.Data.GenerateXml(this.PartScript.CraftScript.Transform,false)),15);
                 Debug.Log("Successfully removed extra FuelTank nodes.");
@@ -623,6 +614,23 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         }
 
+        public void SaveFuelAmountBuffer()
+        {
+            try
+            {
+                _lastFoodFuelAmount = this._foodSource.TotalFuel;
+                _lastOxygenFuelAmount = this._oxygenSource.TotalFuel;
+                _lastWaterFuelAmount = this._waterSource.TotalFuel;
+                Debug.LogFormat("缓冲区燃料:{0},{1},{2}", _lastFoodFuelAmount, _lastOxygenFuelAmount, _lastWaterFuelAmount);
+            }
+            catch (Exception e)
+            {
+                Debug.LogErrorFormat("缓冲区燃料爆了{0}", e);
+            }
+        }
+        
+        
+        #region 无所弔谓
         /// <summary>
         /// 在飞船结构变化时调用，如果在飞行场景中，则刷新燃料源。
         /// Called when the craft structure changes, refreshes fuel sources if in flight scene.
@@ -718,7 +726,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// <param name="_fuelSource">要检查的燃料源。The fuel source to check.</param>
         /// <param name="frame">飞行帧数据。Flight frame data.</param>
         /// <param name="DamageScale">伤害的大小。Scale of the damage.</param>
-        private void DamageDrood(IFuelSource _fuelSource, FlightFrameData frame, float DamageScale)
+        private void DamageDrood(IFuelSource _fuelSource, FlightFrameData frame, float DamageScale,bool FullOrEmpty)
         {
             if (_fuelSource == null || _evaScript == null || PartScript == null || 
                 Game.Instance == null || Game.Instance.Settings?.Game?.Flight == null)
@@ -735,16 +743,31 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }   
             
             float num2 = (isRunning ? 1.75f : 1f) * (isTourist ? 1.05f : 1f) * DamageScale * (float)frame.DeltaTimeWorld;
-
-            if (_fuelSource.IsEmpty && _fuelSource.FuelType != null && 
-                (float)(Setting<float>)Game.Instance.Settings.Game.Flight.ImpactDamageScale > 0.0)
+            if (_fuelSource.IsEmpty && FullOrEmpty)
             {
-                this.PartScript.TakeDamage(num2 * Game.Instance.Settings.Game.Flight.ImpactDamageScale, PartDamageType.Basic);
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
-                    $"<color=red>Crew Member {_evaScript.Data.CrewName}(id:{this.PartScript.Data.Id}) is taking damage because running out of {_fuelSource.FuelType.Name}, " +
-                    $"he/she has {Units.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / ((isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1) * DamageScale))} left",
-                    false, 2f);
+                if ( _fuelSource.FuelType != null && 
+                     (float)(Setting<float>)Game.Instance.Settings.Game.Flight.ImpactDamageScale > 0.0)
+                {
+                    this.PartScript.TakeDamage(num2 * Game.Instance.Settings.Game.Flight.ImpactDamageScale, PartDamageType.Basic);
+                    Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
+                        $"<color=red>Crew Member {_evaScript.Data.CrewName}(id:{this.PartScript.Data.Id}) is taking damage because running out of {_fuelSource.FuelType.Name}, " +
+                        $"he/she has {Units.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / ((isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1) * DamageScale))} left",
+                        false, 2f);
+                }
             }
+            if (_fuelSource.TotalCapacity- _fuelSource.TotalFuel < 0.0001 &&!FullOrEmpty)
+            {
+                if ( _fuelSource.FuelType != null && 
+                     (float)(Setting<float>)Game.Instance.Settings.Game.Flight.ImpactDamageScale > 0.0)
+                {
+                    this.PartScript.TakeDamage(num2 * Game.Instance.Settings.Game.Flight.ImpactDamageScale, PartDamageType.Basic);
+                    Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
+                        $"<color=red>Crew Member {_evaScript.Data.CrewName}(id:{this.PartScript.Data.Id}) is taking damage because {_fuelSource.FuelType.Name} is Already Full, " +
+                        $"he/she has {Units.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / ((isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1) * DamageScale))} left",
+                        false, 2f);
+                }
+            }
+            
         }
 
         /// <summary>
