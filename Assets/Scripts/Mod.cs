@@ -96,6 +96,7 @@ namespace Assets.Scripts
                 Debug.LogFormat(" ActiveCommandPodChanged订阅OnCraftChanged");
                 Instance.FlightScene.ActiveCommandPodStateChanged += OnCraftChanged;
                 Debug.LogFormat(" ActiveCommandPodStateChanged订阅OnCraftChanged");
+                
             }
             catch (Exception e)
             {
