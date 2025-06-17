@@ -233,20 +233,30 @@ namespace Assets.Scripts
             foreach (PartData part in craft.Data.Assembly.Parts)
             {
 
-                if (part.Modifiers != null)
+               
+                if ( part.PartType.Name=="Generator1")
                 {
-                    foreach (var _pmd in part.Modifiers)
-                    {
-                        if (_pmd.Name=="Generator1")
-                        {
-                            GeneratorParts.Add(part);
-                        }
-
-                    }
+                    GeneratorParts.Add(part);
                 }
+                
             }
 
             return GeneratorParts;
+
+        }
+        public List<PartData> CheckCommandPod(CraftScript craft)
+        {
+            List<PartData> CommandPodParts = new List<PartData>();
+            foreach (PartData part in craft.Data.Assembly.Parts)
+            {
+                if ( part.PartType.Name.Contains("CommandPod"))
+                {
+                    CommandPodParts.Add(part);
+                }
+                
+            }
+
+            return CommandPodParts;
 
         }
         public static void AddLSGModifier(PartData part)

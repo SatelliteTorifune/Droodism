@@ -183,7 +183,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 // 强制刷新 CraftFuelSources
                 if (Game.InFlightScene && PartScript.CraftScript != null)
                 {
-                    RefreshFuelSource();
+                    //RefreshFuelSource();
+                    Debug.LogFormat("从Addtank中强制刷新CraftFuelSources");
                 }
             }
             catch (Exception e)
@@ -203,18 +204,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             Data._foodAmountBuffer=this.Data.DesireFoodCapacity;
             Data._oxygenAmountBuffer=this.Data.DesireOxygenCapacity;
             Data._waterAmountBuffer=this.Data.DesireWaterCapacity;
-            
-            
-            UpdateCurrentPlanet();
-            
-            try
-            {
-                RefreshFuelSource();
-            }
-            catch (Exception e)
-            {
-                Debug.LogErrorFormat("OnInitialLaunch调用RefreshFuelSource出问题了{0}", e);
-            }
         }
         /// <summary>
         /// 实现IFlightStart接口，在飞行场景开始时调用。
@@ -244,26 +233,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             try
             {
                 RefreshFuelSource();
+                Debug.LogFormat("FlightStart调用RefeshFuelSource成功");
             }
             catch (Exception e)
             {
                 Debug.LogErrorFormat("FlightStart调用RefeshFuelSource出问题了{0}", e);
             }
-            //_crewCompartmentScript.CrewEnter+=OnCrewEnter;
-            //_crewCompartmentScript.CrewExit+=OnCrewExit;
-        }
-
-        private void OnCrewEnter(EvaScript evaScript)
-        {
-            RefreshFuelSource();
-            Debug.Log("OnCrewEnter");
+            
         }
         
-        private void OnCrewExit(EvaScript evaScript)
-        {
-            RefreshFuelSource();
-            Debug.Log("OnCrewExit");
-        }
         /// <summary>
         /// 实现IFlightUpdate接口，在飞行期间每帧调用。
         /// Implements the IFlightUpdate interface, called every frame during flight.
@@ -486,10 +464,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         public void RefreshFuelSource()
         {
-            
-            if (!Game.InFlightScene) 
-                return;
-        
             if (PartScript == null || PartScript.Modifiers == null)
             {
                 return;
@@ -539,6 +513,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 if (_oxygenSource == null || _oxygenSource.IsEmpty)
                 {
                     _oxygenSource = GetLocalFuelSource("Oxygen");
+                    if(_oxygenSource!=null)
+                    {
+                        Debug.LogFormat("设置为本地oxygen");
+                    }
                     if (_oxygenSource == null)
                     {
                         Debug.LogWarning("未找到 Oxygen 类型的 FuelSource");
@@ -553,6 +531,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                         }
                         
                     }
+                    
                 }
                 else
                 {
@@ -561,6 +540,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 if (_foodSource == null || _foodSource.IsEmpty)
                 {
                     _foodSource = GetLocalFuelSource("Food");
+                    if(_foodSource!=null)
+                    {
+                        Debug.LogFormat("设置为本地food");
+                    }
                     if (_foodSource == null)
                     {
                         Debug.LogWarning("未找到 Oxygen 类型的 FuelSource");
@@ -582,6 +565,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 if (_waterSource == null || _waterSource.IsEmpty)
                 {
                     _waterSource = GetLocalFuelSource("H2O");
+                    if(_waterSource!=null)
+                    {
+                        Debug.LogFormat("设置为本地water");
+                    }
                     if (_waterSource == null)
                     {
                         Debug.LogWarning("未找到 water 类型的 FuelSource");
@@ -640,21 +627,16 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             Debug.LogFormat("OnCraftLoaded called for Part ID: {0}, MovedToNewCraft: {1}", PartScript.Data.Id, movedToNewCraft);
             
-            
         }
         
         
         private void OnFlightEnded(object sender, FlightEndedEventArgs e)
         {
             Debug.Log("OnFlightEnded");
-            FlightEnd();
+            OnCraftUnloaded();
         }
         /// <summary>
         /// Called when the craft ends, removes extra fuel tanks.
-        public override void FlightEnd()
-        {
-            OnCraftUnloaded();
-        }
         public void OnPhysicsEnabled(ICraftNode craftNode, PhysicsChangeReason reason)
         {
             Debug.LogFormat("OnPhysicsEnabled{0}",reason);
@@ -664,6 +646,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             LoadFuelTanks();
             RefreshFuelSource();
+            Debug.LogFormat("从OnPhysicsEnabled调用RefreshFuelSource");
             RemoveFuelAmonutInstantly();
         }
         public void OnPhysicsDisabled(ICraftNode craftNode, PhysicsChangeReason reason)
@@ -818,6 +801,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (Game.InFlightScene)
             {
                 RefreshFuelSource();
+                Debug.LogWarningFormat("从OnCraftStructureChanged调用RefreshFuelSource");
             }
         }
         
