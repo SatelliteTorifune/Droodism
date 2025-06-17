@@ -11,8 +11,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
     [Serializable]
     [DesignerPartModifier("SewageTreatDeivce")]
-    [PartModifierTypeId("Droodism.SewageTreatDeivce")]
+    [PartModifierTypeId("SewageTreatDeivce")]
     public class SewageTreatDeivceData : PartModifierData<SewageTreatDeivceScript>
     {
+        [SerializeField] [PartModifierProperty(true, false)]
+        private float _wastedWaterComsumeRate=1f;
     }
 }
