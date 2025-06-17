@@ -32,9 +32,11 @@ MonoBehaviour:
   _steamTitle: 
   _steamVisibility: 0
   _versionMajor: 0
-  _versionMinor: 17
-  _partCategories: []
-  _parts: []
+  _versionMinor: 18
+  _partCategories:
+  - {fileID: 11400000, guid: 7d2b6f557b8767544a162f30e61d22b6, type: 2}
+  _parts:
+  - {fileID: 4900000, guid: 40bbb2821f2c6b44ab6990bf28e48b6d, type: 3}
   _partStyleExtensions: []
   _partTextureStyles: []
   _persistentObjects: []

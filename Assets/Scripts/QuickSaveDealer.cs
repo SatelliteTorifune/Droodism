@@ -142,60 +142,6 @@ namespace Assets.Scripts
             Mod.Inctance.OnQuickSave();
         }
     }
-    /*
-    [HarmonyPatch(typeof(CraftFuelSources), nameof(CraftFuelSources.CreateFuelSourceForConnectedParts))]
-    class CreateFuelSourceForConnectedPartsPatch
-    {
-        static bool Prefix(CraftFuelSources __instance, IEnumerable<IPartScript> parts, bool removeDisconnectedCrossFeeds, List<IFuelSource> fuelSources)
-        {
-            
-            Debug.Log("Patching CraftFuelSources.CreateFuelSourceForConnectedParts");
-            if (!Game.Instance.SceneManager.InFlightScene)
-            {
-                return true;
-            }
-            try
-            {
-                if (parts == null || fuelSources == null)
-                {
-                    Debug.LogError($"CreateFuelSourceForConnectedParts: parts={parts != null}, fuelSources={fuelSources != null}");
-                    return false;
-                }
-
-                foreach (var part in parts)
-                {
-                    if (part == null || part.Modifiers == null)
-                    {
-                        Debug.LogWarning($"CreateFuelSourceForConnectedParts: Skipping Part ID {part.Data.Id} with null Modifiers");
-                        continue;
-                    }
-
-                    foreach (var modifier in part.Modifiers)
-                    {
-                        if (modifier is FuelTankScript fuelTank)
-                        {
-                            if (fuelTank.FuelType == null)
-                            {
-                                Debug.LogWarning($"CreateFuelSourceForConnectedParts: FuelTank in Part ID {part.Data.Id} has null FuelType");
-                                continue;
-                            }
-                            if (fuelTank.CraftFuelSource == null)
-                            {
-                                Debug.LogWarning($"CreateFuelSourceForConnectedParts: FuelTank in Part ID {part.Data.Id} has null CraftFuelSource");
-                                continue;
-                            }
-                        }
-                    }
-                }
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"CreateFuelSourceForConnectedParts Prefix failed: {ex}");
-                return false;
-            }
-        }
-    }*/
+    
 }
 

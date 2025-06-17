@@ -125,6 +125,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// <param name="FuelCapacity">燃料罐的容量。Capacity of the fuel tank.</param>
         private void AddTank(string fuelType, double fuelCapacity, double fuelAmount)
         {
+            if (fuelCapacity<fuelAmount)
+            {
+                fuelAmount = fuelCapacity;
+            }
             Debug.LogFormat("Adding FuelTank for {0} with capacity {1} and fuel {2}", fuelType, fuelCapacity, fuelAmount);
             try
             {
@@ -205,11 +209,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             try
             {
-                CraftRefeshFuelSource();
+                RefreshFuelSource();
             }
             catch (Exception e)
             {
-                Debug.LogErrorFormat("OnInitialLaunch调用CraftRefeshFuelSource出问题了{0}", e);
+                Debug.LogErrorFormat("OnInitialLaunch调用RefreshFuelSource出问题了{0}", e);
             }
         }
         /// <summary>
@@ -239,11 +243,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             try
             {
-                CraftRefeshFuelSource();
+                RefreshFuelSource();
             }
             catch (Exception e)
             {
-                Debug.LogErrorFormat("FlightStart调用CraftRefeshFuelSource出问题了{0}", e);
+                Debug.LogErrorFormat("FlightStart调用RefeshFuelSource出问题了{0}", e);
             }
             //_crewCompartmentScript.CrewEnter+=OnCrewEnter;
             //_crewCompartmentScript.CrewExit+=OnCrewExit;
@@ -288,45 +292,22 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             _waterSource=GetLocalFuelSource("H2O");
             if (_oxygenSource == null)
             {
-                if (this.Data.DesireOxygenCapacity <this.Data._oxygenAmountBuffer)
-                {
-                    AddTank("Oxygen", this.Data.DesireOxygenCapacity, Data.DesireOxygenCapacity);
-                    Debug.LogFormat("添加 Oxygen 类型的 FuelTank容量 满了");
-                }
-                else
-                {
-                    AddTank("Oxygen", this.Data.DesireOxygenCapacity, Data._oxygenAmountBuffer);
-                    Debug.LogFormat("添加 Oxygen 类型的 FuelTank容量{0}实际{1}",Data.DesireOxygenCapacity,Data._oxygenAmountBuffer);
-                }
+                AddTank("Oxygen", this.Data.DesireOxygenCapacity, Data._oxygenAmountBuffer);
+                Debug.LogFormat("添加 Oxygen 类型的 FuelTank容量{0}实际{1}",Data.DesireOxygenCapacity,Data._oxygenAmountBuffer);
+                
                
             }
             if (_waterSource == null)
             {
-                if (this.Data.DesireWaterCapacity <this.Data._waterAmountBuffer)
-                {
-                    AddTank("H2O", this.Data.DesireWaterCapacity, Data.DesireOxygenCapacity);
-                    Debug.LogFormat("添加 H2O 类型的 FuelTank容量 满了");
-                }
-                else
-                {
-                    AddTank("H2O", this.Data.DesireWaterCapacity, Data._waterAmountBuffer);
-                    Debug.LogFormat("添加 H2O 类型的 FuelTank容量{0}实际{1}",Data.DesireWaterCapacity,Data._waterAmountBuffer);
-                }
+                AddTank("H2O", this.Data.DesireWaterCapacity, Data._waterAmountBuffer);
+                Debug.LogFormat("添加 H2O 类型的 FuelTank容量{0}实际{1}",Data.DesireWaterCapacity,Data._waterAmountBuffer);
                
             }
+
             if (_foodSource == null)
             {
-                if (this.Data.DesireFoodCapacity <this.Data._foodAmountBuffer)
-                {
-                    AddTank("Food", this.Data.DesireFoodCapacity, Data.DesireFoodCapacity);
-                    Debug.LogFormat("添加 food 类型的 FuelTank容量 满了");
-                }
-                else
-                {
-                    AddTank("Food", this.Data.DesireFoodCapacity, Data._foodAmountBuffer);
-                    Debug.LogFormat("添加 food 类型的 FuelTank容量{0}实际{1}",Data.DesireFoodCapacity,Data._foodAmountBuffer);
-                }
-               
+                AddTank("Food", this.Data.DesireFoodCapacity, Data._foodAmountBuffer);
+                Debug.LogFormat("添加 Food 类型的 FuelTank容量{0}实际{1}",Data.DesireFoodCapacity,Data._foodAmountBuffer);
             }
             
               
@@ -505,6 +486,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         public void RefreshFuelSource()
         {
+            
             if (!Game.InFlightScene) 
                 return;
         
@@ -518,30 +500,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 try
                 {
                     CraftRefeshFuelSource();
-                    
-                        
                 }
                 catch (Exception e)
                 {
                     Debug.LogErrorFormat("RefreshFuelSource调用CraftRefeshFuelSource歇逼了{0}", e);
                 }
                 
-                if (this._oxygenSource == null)
-                {
-                    Debug.LogWarning("未找到 Oxygen 类型的 FuelSource，可能影响 DamageDrood 逻辑");
-                    LoadFuelTanks();
-                }
-                if (this._foodSource == null)
-                {
-                    Debug.LogWarning("未找到 Food 类型的 FuelSource，可能影响 DamageDrood 逻辑");
-                    LoadFuelTanks();
-                    
-                }
-                if (this._waterSource == null)
-                {
-                    Debug.LogWarning("未找到 H2O 类型的 FuelSource，可能影响 DamageDrood 逻辑");
-                    LoadFuelTanks();
-                }
             }
         }
         
@@ -569,6 +533,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 if (_oxygenSource != null && _foodSource != null && _waterSource != null)
                 {
                     Debug.LogFormat("刷新完成 Oxygen:{0},Food:{1},Water:{2}", _oxygenSource.TotalFuel, _foodSource.TotalFuel, _waterSource.TotalFuel);
+                    SaveFuelAmountBuffer();
+                    
                 }
                 if (_oxygenSource == null || _oxygenSource.IsEmpty)
                 {
@@ -634,6 +600,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 {
                     ReFill(_waterSource, GetLocalFuelSource("H2O"));
                 }
+                SaveFuelAmountBuffer();
             }
             catch (Exception e)
             {
@@ -672,6 +639,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             base.OnCraftLoaded(craftScript, movedToNewCraft);
             
             Debug.LogFormat("OnCraftLoaded called for Part ID: {0}, MovedToNewCraft: {1}", PartScript.Data.Id, movedToNewCraft);
+            
             
         }
         
