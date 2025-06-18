@@ -47,6 +47,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public double _foodAmountBuffer=1f;
         [SerializeField][PartModifierProperty(true, false)]
         public double _waterAmountBuffer=1f;
+        [SerializeField] [PartModifierProperty(true, false)]
+        public double _co2AmountBuffer=1f;
+        [SerializeField][PartModifierProperty(true, false)]
+        public double _wastedWaterAmountBuffer=1f;
+        [SerializeField][PartModifierProperty(true, false)]
+        public double _solidWasteAmountBuffer=1f;
+        [SerializeField][PartModifierProperty(true, false)]
+        public double evaConsumeEfficiency=0.3f;
         
         private int _fuelSourceAttachPoint;
         public int FuelSourceAttachPoint

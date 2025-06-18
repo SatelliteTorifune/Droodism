@@ -71,7 +71,7 @@ namespace Assets.Scripts
 
                     // 移除 fuelType 为 "Oxygen", "Food", 或 "Drinking Water" 的 FuelTank
                     var tanksToRemove = fuelTanks
-                        .Where(t => t.Attribute("fuelType")?.Value is "Oxygen" or "Food" or "H2O")
+                        .Where(t => t.Attribute("fuelType")?.Value is "Oxygen" or "Food" or "H2O" or"CO2" or"Wasted Water" or "Solid Waste")
                         .ToList();
 
                     if (tanksToRemove.Any())
