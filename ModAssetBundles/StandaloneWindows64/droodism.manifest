@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 493486421
+CRC: 2114098837
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 2eb7e5fdb09da1dbe4e457cce8e9a33b
+    Hash: ab1745fa1478dc26a74b0be314116ca5
   TypeTreeHash:
     serializedVersion: 2
-    Hash: b85121d15c675637a97172a0f22cf874
+    Hash: 38131a4b30c7e64b1c5c74fbfdeedd05
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 2eb7e5fdb09da1dbe4e457cce8e9a33b
+    Hash: ab1745fa1478dc26a74b0be314116ca5
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -33,16 +33,14 @@ ClassTypes:
 - Class: 65
   Script: {instanceID: 0}
 - Class: 114
+  Script: {fileID: 212942404, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
+- Class: 114
   Script: {fileID: 2121057919, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
 - Class: 114
   Script: {fileID: -468989955, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
 - Class: 114
-  Script: {fileID: 212942404, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
-- Class: 114
   Script: {fileID: 1851567402, guid: 55a7c5278766598448d9083b0de0861d, type: 3}
 - Class: 115
-  Script: {instanceID: 0}
-- Class: 134
   Script: {instanceID: 0}
 - Class: 213
   Script: {instanceID: 0}
@@ -50,8 +48,8 @@ SerializeReferenceClassIdentifiers: []
 Assets:
 - Assets/_ModAssets_/Droodism.dll.bytes
 - Assets/Resources/Craft/Parts/Prefabs/SewageTreatDeivce.prefab
-- Assets/Content/Craft/Parts/RocketEngines/Propulsion.xml
 - Assets/_ModAssets_/ModManifest.xml.bytes
+- Assets/Content/Craft/Parts/RocketEngines/Propulsion.xml
 - Assets/Content/Craft/Parts/Categories/LifeSupport.asset
 - Assets/Resources/Craft/Parts/Definitions/SewageTreatDeivce.xml
 Dependencies: []

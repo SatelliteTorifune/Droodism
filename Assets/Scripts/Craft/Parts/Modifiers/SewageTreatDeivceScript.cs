@@ -12,7 +12,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
 
-    public class SewageTreatDeivceScript : PartModifierScript<SewageTreatDeivceData>,IFlightStart, IDesignerStart
+    public class SewageTreatDeivceScript : PartModifierScript<SewageTreatDeivceData>,IFlightStart, IDesignerStart,IFlightUpdate
     {
         private IFuelSource waterSource, wastedWaterSource, _battery;
         private IFuelSource GetCraftFuelSource(string fuelType)
@@ -28,51 +28,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             return null;
         }
-        public override void OnCraftLoaded(ICraftScript craftScript, bool movedToNewCraft)
-        {
-            this.OnCraftStructureChanged(craftScript);
-        }
-        public override void OnCraftStructureChanged(ICraftScript craftScript)
-        {
-            Rechck();
-            _battery = PartScript.BatteryFuelSource;
-            waterSource = GetCraftFuelSource("H2O");
-            wastedWaterSource = GetCraftFuelSource("Wasted Water");
-        }
-        public override void OnSymmetry(SymmetryMode mode, IPartScript originalPart, bool created)
-        {
-            this.UpdateBase();
-            this.UpdateScale();
-            this.UpdateStretch();
-        }
-        
-        protected override void OnInitialized()
-        {
-            base.OnInitialized();
-            this.UpdateBase();
-            this.UpdateScale();
-            this.UpdateStretch();
-        }
-        private void OnCraftFuelSourceChanged(object sender, EventArgs e) => this.Rechck();
-        public void UpdateBase()
-        {
-           
-        }
-
-        /// <summary>Updates the scale of the generator.</summary>
-        public void UpdateScale()
-        {
-            
-        }
-
-        /// <summary>Updates the stretch of the RTG.</summary>
-        public void UpdateStretch()
-        {
-            
-        }
-        
-        
-        private void Rechck()
+        private void ReCheck()
         {
             waterSource = GetCraftFuelSource("H2O");
             wastedWaterSource = GetCraftFuelSource("Wasted Water");
@@ -81,15 +37,100 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public void FlightStart(in FlightFrameData frame)
         {
-            this.UpdateBase();
+            ReCheck();
             this.UpdateScale();
-            this.UpdateStretch();
+            Mod.Inctance.UpdateDroodCount();
+        }
+        public void FlightUpdate(in FlightFrameData frame)
+        {
+            if (!PartScript.Data.Activated)
+                return;
+            WorkingLogic(frame);
+            
+            
         }
 
+        private void WorkingLogic(in FlightFrameData frame)
+        {
+            if (_battery == null||waterSource == null||wastedWaterSource == null)
+            {
+                Debug.LogWarning("Battery or water source is null");
+                return;
+            }
+            if (_battery.IsEmpty||wastedWaterSource.IsEmpty||waterSource.TotalCapacity-waterSource.TotalFuel<=0.0000001f)
+                return;
+            else
+            {
+                double WastedWaterToRemove = Data.WastedWaterComsumeRate * frame.DeltaTimeWorld;
+                double WaterToAdd = WastedWaterToRemove * Data.ConvertEffiency;
+                double BatteryToRemove = Data.BatteryComsumeRate * WastedWaterToRemove;
+                wastedWaterSource.RemoveFuel(WastedWaterToRemove);
+                waterSource.AddFuel(WaterToAdd);
+                _battery.RemoveFuel(BatteryToRemove);
+
+            }
+
+
+
+        }
+
+        #region 路边一条
         public void DesignerStart(in DesignerFrameData frame)
         {
             this.UpdateScale();
-            this.UpdateStretch();
         }
+        public override void OnCraftLoaded(ICraftScript craftScript, bool movedToNewCraft)
+        {
+            this.OnCraftStructureChanged(craftScript);
+        }
+        public override void OnCraftStructureChanged(ICraftScript craftScript)
+        {
+            ReCheck();
+            _battery = PartScript.BatteryFuelSource;
+            waterSource = GetCraftFuelSource("H2O");
+            wastedWaterSource = GetCraftFuelSource("Wasted Water");
+        }
+        public override void OnSymmetry(SymmetryMode mode, IPartScript originalPart, bool created)
+        {
+            
+            this.UpdateScale();
+           
+        }
+        
+        protected override void OnInitialized()
+        {
+            base.OnInitialized();
+            
+            this.UpdateScale();
+            
+        }
+        
+        private void OnCraftFuelSourceChanged(object sender, EventArgs e) => this.ReCheck();
+        
+        #endregion
+
+        /// <summary>Updates the scale of the generator.</summary>
+        public void UpdateScale()
+        {
+            Transform transform = ((Component) this).transform.Find("Scalar");
+            if (transform == null)
+            {
+                Debug.LogWarning("Unable to find Scalar transform");
+                return;
+            }
+
+            foreach (AttachPointScript attachPointScript in this.PartScript.AttachPointScripts)
+            {
+                attachPointScript.AttachPoint.Scale = 0.8f * this.Data.Scale;
+            }
+            transform.localScale= Vector3.one*this.Data.Scale;
+
+        }
+
+       
+        
+        
+
+        
     }
 }

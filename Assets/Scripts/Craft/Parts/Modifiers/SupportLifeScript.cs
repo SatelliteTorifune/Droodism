@@ -498,6 +498,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 Debug.LogErrorFormat("{0}", e);
             }
 
+            //void CraftRefeshFuelSourceTemp(IFuelSource fuelSource,double)
+            //{
+            //    
+            //}
             Debug.LogFormat("调用CraftRefeshFuelSource");
             try
             {
@@ -644,6 +648,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 return;
             }
+            
+            if (isFirstTime)
+            {
+                return;
+            }
             LoadFuelTanks();
             RefreshFuelSource();
             Debug.LogFormat("从OnPhysicsEnabled调用RefreshFuelSource");
@@ -651,6 +660,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         public void OnPhysicsDisabled(ICraftNode craftNode, PhysicsChangeReason reason)
         {
+            isFirstTime = false;
             Debug.LogFormat("OnPhysicsDisabled 原因:{0}",reason);
             if (reason == PhysicsChangeReason.Warp||reason== PhysicsChangeReason.UnloadedFromGameView)
             {
@@ -742,7 +752,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             
             var time= Game.Instance.GameState.GetCurrentTime()-LastUnloadedTime;
-            Debug.LogFormat("调用RemoveFuelAmonutInstantly ,间隔{0}",time);
+            Debug.LogFormat($"调用RemoveFuelAmonutInstantly ,间隔是{Units.GetStopwatchTimeString(time)}");
             if (this._oxygenSource == null)
             {
                 Debug.LogFormat("调用RemoveFuelAmonutInstantly失败,_oxygenSource有他妈null");

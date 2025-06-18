@@ -133,7 +133,7 @@ namespace Assets.Scripts
             foreach (var source in craftSources)
             {
                 // Check if the fuel source's type name contains the specified fuel type
-                if (source.FuelType.Name.Contains(fuelType))
+                if (source.FuelType.Id.Contains(fuelType))
                 {
                     // Return the fuel source if it matches the specified type
                     return source;
@@ -162,7 +162,7 @@ namespace Assets.Scripts
                         // Cast the modifier to FuelTankScript
                         FuelTankScript fts = source as FuelTankScript;
                         // Check if the fuel tank's type name contains the specified fuel type
-                        if (fts.FuelType.Name.Contains(fuelType))
+                        if (fts.FuelType.Id.Contains(fuelType))
                         {
                             // Return the fuel tank if it matches the specified type
                             return fts;
@@ -190,7 +190,7 @@ namespace Assets.Scripts
                 // Get local fuel sources for oxygen, food, and water
                 _oxygenSource = GetLocalFuelSource("Oxygen");
                 _foodSource = GetLocalFuelSource("Food");
-                _waterSource = GetLocalFuelSource("Water");
+                _waterSource = GetLocalFuelSource("H2O");
             }
             else
             {
@@ -199,7 +199,7 @@ namespace Assets.Scripts
                 // Get craft fuel sources for oxygen, food, and water
                 _oxygenSource = GetCraftFuelSource("Oxygen");
                 _foodSource = GetCraftFuelSource("Food");
-                _waterSource = GetCraftFuelSource("Water");
+                _waterSource = GetCraftFuelSource("H2O");
                 // If the craft fuel source is null or empty, try to get the local fuel source
                 if (_oxygenSource == null || _oxygenSource.IsEmpty)
                 {
@@ -221,7 +221,7 @@ namespace Assets.Scripts
                 }
                 if (_waterSource == null || _waterSource.IsEmpty)
                 {
-                    _waterSource = GetLocalFuelSource("Water");
+                    _waterSource = GetLocalFuelSource("H2O");
                     if (_waterSource==null)
                     {
                          _waterSource=new EmptyFuel();
@@ -399,4 +399,3 @@ namespace Assets.Scripts
 
     }
 }
-
