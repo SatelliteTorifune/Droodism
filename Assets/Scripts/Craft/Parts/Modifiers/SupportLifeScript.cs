@@ -557,7 +557,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 try
                 {
-                    if (fuelType.Contains("Waste")||fuelType=="CO2")
+                    if (fuelType=="Wasted Water"||fuelType=="Solid Waste"||fuelType=="CO2")
                     {
                         if (fuelSource == null || fuelSource.TotalCapacity-fuelSource.TotalFuel <=0.00001)
                         {
@@ -635,8 +635,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 _solidWasteSource=GetCraftFuelSource("Solid Waste");
                 if (_oxygenSource != null && _foodSource != null && _waterSource != null&&_co2Source!= null&& _wastedWaterSource!= null&& _solidWasteSource != null)
                 {
-                    Debug.LogFormat("刷新完成 Oxygen:{0},Food:{1},Water:{2},CO2:{3},WastedWater:{4},SolidWaste:{5}", _oxygenSource.TotalFuel, _foodSource.TotalFuel, _waterSource.TotalFuel, _co2Source.TotalFuel, _wastedWaterSource.TotalFuel, _solidWasteSource.TotalFuel);
+                    Debug.LogFormat("调用CraftRefeshFuelSource 刷新完成 Oxygen:{0},Food:{1},Water:{2},CO2:{3},WastedWater:{4},SolidWaste:{5}", _oxygenSource.TotalFuel, _foodSource.TotalFuel, _waterSource.TotalFuel, _co2Source.TotalFuel, _wastedWaterSource.TotalFuel, _solidWasteSource.TotalFuel);
+                    ReFill(_oxygenSource, GetLocalFuelSource("Oxygen"));
+                    ReFill(_foodSource, GetLocalFuelSource("Food"));
+                    ReFill(_waterSource, GetLocalFuelSource("H2O"));
+                    RemoveWaste(_co2Source, GetLocalFuelSource("CO2"));
+                    RemoveWaste(_wastedWaterSource, GetLocalFuelSource("Wasted Water"));
+                    RemoveWaste(_solidWasteSource, GetLocalFuelSource("Solid Waste"));
                     SaveFuelAmountBuffer();
+                    return;
                     
                 }
                 HandleFuelSource("Oxygen", Data.DesireOxygenCapacity, Data._oxygenAmountBuffer, ref _oxygenSource);
@@ -683,11 +690,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 Craft.AddFuel(Eva.TotalFuel);
                 Eva.RemoveFuel(Eva.TotalFuel);
+                Debug.LogFormat("RemoveWaste 成功:{0}实际{1}",Eva.TotalFuel,Craft.TotalFuel);
             }
             else
             {
                 Eva.RemoveFuel(Craft.TotalCapacity - Craft.TotalFuel);
                 Craft.AddFuel(Craft.TotalCapacity - Craft.TotalFuel);
+                Debug.LogFormat("RemoveWaste 满了成功:{0}实际{1}", Eva.TotalFuel, Craft.TotalFuel);
             }
         }
 
@@ -747,7 +756,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
             try
             {
-                string[] fuelTypesToRemove = { "Oxygen", "Food", "H2O","CO2","Wasted Water","Solid Wasted" };
+                string[] fuelTypesToRemove = { "Oxygen", "Food", "H2O","CO2","Wasted Water","Solid Waste" };
                 var tanksToRemove = partElement.Elements("FuelTank")
                     .Where(fuelTank => fuelTypesToRemove.Contains(fuelTank.Attribute("fuelType")?.Value))
                     .ToList();

@@ -211,7 +211,7 @@ namespace Assets.Scripts
                 // If the craft fuel source is null or empty, try to get the local fuel source
                 void UpdateTotalFuelHandler(string fuelType, ref IFuelSource source)
                 {
-                    if (fuelType.Contains("Wasted")||fuelType=="CO2")
+                    if (fuelType=="Wasted Water"||fuelType=="CO2"||fuelType=="Solid Waste")
                     {
                         if (source==null || source.TotalCapacity-source.TotalFuel<=0.00001)
                         {
