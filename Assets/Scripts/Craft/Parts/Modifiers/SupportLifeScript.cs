@@ -416,36 +416,68 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// <param name="frame">飞行帧数据。Flight frame data.</param>
         private void ConsumptionLogic(in FlightFrameData frame)
         {
-            if (_oxygenSource != null)
+            if (_oxygenSource != null&&UsingInternalOxygen())
             {
-                if (UsingInternalOxygen())
+                double num1 = (double)Data.OxygenComsumeRate * frame.DeltaTimeWorld * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1);
+                if (_oxygenSource.IsEmpty)
                 {
-                    double num1 = (double)Data.OxygenComsumeRate * frame.DeltaTimeWorld * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1);
-                    if (_oxygenSource.IsEmpty)
+                    var localFuelSource = GetLocalFuelSource("Oxygen");
+                    if (localFuelSource.IsEmpty)
                     {
-                        var localFuelSource = GetLocalFuelSource("Oxygen");
-                        if (localFuelSource.IsEmpty)
-                        {
-                            DamageDrood(_oxygenSource, frame, Data.OxygenDamageScale,true);
-                        }
-                        localFuelSource.RemoveFuel(num1);
+                        DamageDrood(_oxygenSource, frame, Data.OxygenDamageScale);
                     }
-                    else
-                    {
-                        _oxygenSource.RemoveFuel(num1);
-                    }
+                    localFuelSource.RemoveFuel(num1);
                 }
                 else
                 {
-                    if (_oxygenSource == null)
-                        Debug.LogWarning("_oxygenSource is Null");
+                    _oxygenSource.RemoveFuel(num1);
+                }
+                
+            }
+            else
+            {
+                if (_oxygenSource == null)
+                    Debug.LogWarning("_oxygenSource is Null");
+            }
+
+            if (_co2Source != null && UsingInternalOxygen())
+            {
+                
+                double num1 = (double)Data.OxygenComsumeRate * frame.DeltaTimeWorld * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)*1.375*Data.evaConsumeEfficiency;
+                
+                if (_co2Source.TotalCapacity - _co2Source.TotalFuel <= 0.00001)
+                {
+                    var localFuelSource = GetLocalFuelSource("CO2");
+                    if (localFuelSource == null)
+                    {
+                        Debug.LogWarning("local CO2 is Null");
+                        return;
+                    }
+                    if (localFuelSource.TotalCapacity - localFuelSource.TotalFuel <= 0.00001)
+                    {
+                        DamageWaste(_co2Source, frame, Data.OxygenDamageScale);
+                    }
+                    if (!_oxygenSource.IsEmpty)
+                    {
+                        localFuelSource.AddFuel(num1);
+                    }
+                    
+                }
+
+                else
+                {
+                    if (!_oxygenSource.IsEmpty)
+                    {
+                        _co2Source.AddFuel(num1);
+                    }
+                    
                 }
             }
             else
             {
-                Debug.LogWarning("_oxygenSource is null");
+                if (_co2Source == null)
+                    Debug.LogWarning("_co2Source is Null");
             }
-
             if (_foodSource != null)
             {
                 double num1 = (double)Data.FoodComsumeRate * frame.DeltaTimeWorld * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1);
@@ -454,7 +486,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     var localFood = GetLocalFuelSource("Food");
                     if (localFood.IsEmpty)
                     {
-                        DamageDrood(_foodSource, frame, Data.FoodDamageScale,true);
+                        DamageDrood(_foodSource, frame, Data.FoodDamageScale);
                     }
                     localFood.RemoveFuel(num1);
                 }
@@ -467,7 +499,44 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 Debug.LogWarning("_foodSource is Null");
             }
+            if (_solidWasteSource != null)
+            {
+                
+                double num1 = (double)Data.FoodComsumeRate * frame.DeltaTimeWorld * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)*1.1*Data.evaConsumeEfficiency;
+                
+                if (_solidWasteSource.TotalCapacity - _solidWasteSource.TotalFuel <= 0.00001)
+                {
+                    var localFuelSource = GetLocalFuelSource("Solid Waste");
+                    if (localFuelSource == null)
+                    {
+                        Debug.LogWarning("local Solid Waste is Null");
+                        return;
+                    }
+                    if (localFuelSource.TotalCapacity - localFuelSource.TotalFuel <= 0.00001)
+                    {
+                        DamageWaste(_solidWasteSource, frame, Data.FoodDamageScale);
+                    }
+                    if (!_foodSource.IsEmpty)
+                    {
+                        localFuelSource.AddFuel(num1);
+                    }
+                    
+                }
 
+                else
+                {
+                    if (!_oxygenSource.IsEmpty)
+                    {
+                        _solidWasteSource.AddFuel(num1);
+                    }
+                    
+                }
+            }
+            else
+            {
+                if (_solidWasteSource == null)
+                    Debug.LogWarning("_solidWasteSource is Null");
+            }
             if (_waterSource != null)
             {
                 double num1 = (double)Data.WaterComsumeRate * frame.DeltaTimeWorld * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1);
@@ -476,7 +545,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     var localWater = GetLocalFuelSource("H2O");
                     if (localWater.IsEmpty)
                     {
-                        DamageDrood(_waterSource, frame, Data.WaterDamageScale,true);
+                        DamageDrood(_waterSource, frame, Data.WaterDamageScale);
                     }
                     localWater.RemoveFuel(num1);
                 }
@@ -488,6 +557,39 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             else
             {
                 Debug.LogWarning("_waterSource is Null");
+            }
+            if (_wastedWaterSource != null)
+            {
+                
+                double num1 = (double)Data.WaterComsumeRate * frame.DeltaTimeWorld * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)*1.1*Data.evaConsumeEfficiency;
+                
+                if (_wastedWaterSource.TotalCapacity - _wastedWaterSource.TotalFuel <= 0.00001)
+                {
+                    var localFuelSource = GetLocalFuelSource("Wasted Water");
+                    if (localFuelSource == null)
+                    {
+                        Debug.LogWarning("local Wasted Water is Null");
+                        return;
+                    }
+                    if (localFuelSource.TotalCapacity - localFuelSource.TotalFuel <= 0.00001)
+                    {
+                        DamageWaste(_wastedWaterSource, frame, Data.WaterDamageScale);
+                    }
+                    if (!_waterSource.IsEmpty)
+                    {
+                        localFuelSource.AddFuel(num1);
+                    }
+                    
+                }
+
+                else
+                {
+                    if (!_waterSource.IsEmpty)
+                    {
+                        _wastedWaterSource.AddFuel(num1);
+                    }
+                    
+                }
             }
         }
 
@@ -971,7 +1073,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// <param name="_fuelSource">要检查的燃料源。The fuel source to check.</param>
         /// <param name="frame">飞行帧数据。Flight frame data.</param>
         /// <param name="DamageScale">伤害的大小。Scale of the damage.</param>
-        private void DamageDrood(IFuelSource _fuelSource, FlightFrameData frame, float DamageScale,bool FullOrEmpty)
+        private void DamageDrood(IFuelSource _fuelSource, FlightFrameData frame, float DamageScale)
         {
             if (_fuelSource == null || _evaScript == null || PartScript == null || 
                 Game.Instance == null || Game.Instance.Settings?.Game?.Flight == null)
@@ -988,7 +1090,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }   
             
             float num2 = (isRunning ? 1.75f : 1f) * (isTourist ? 1.05f : 1f) * DamageScale * (float)frame.DeltaTimeWorld;
-            if (_fuelSource.IsEmpty && FullOrEmpty)
+            if (_fuelSource.IsEmpty)
             {
                 if ( _fuelSource.FuelType != null && 
                      (float)(Setting<float>)Game.Instance.Settings.Game.Flight.ImpactDamageScale > 0.0)
@@ -1000,19 +1102,36 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                         false, 2f);
                 }
             }
-            if (_fuelSource.TotalCapacity- _fuelSource.TotalFuel < 0.0001 &&!FullOrEmpty)
+        }
+
+        private void DamageWaste(IFuelSource _fuelSource, FlightFrameData frame, float DamageScale)
+        {
+            if (_fuelSource == null || _evaScript == null || PartScript == null ||
+                Game.Instance == null || Game.Instance.Settings?.Game?.Flight == null)
             {
-                if ( _fuelSource.FuelType != null && 
-                     (float)(Setting<float>)Game.Instance.Settings.Game.Flight.ImpactDamageScale > 0.0)
-                {
-                    this.PartScript.TakeDamage(num2 * Game.Instance.Settings.Game.Flight.ImpactDamageScale, PartDamageType.Basic);
-                    Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
-                        $"<color=red>Crew Member {_evaScript.Data.CrewName}(id:{this.PartScript.Data.Id}) is taking damage because {_fuelSource.FuelType.Name} is Already Full, " +
-                        $"he/she has {Units.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / ((isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1) * DamageScale))} left",
-                        false, 2f);
-                }
+                Debug.LogError("DamageWaste: null object found: - " +
+                               $"_fuelSource={_fuelSource != null}, _evaScript={_evaScript != null}, " +
+                               $"PartScript={PartScript != null}, Game.Instance={Game.Instance != null}, Settings={Game.Instance?.Settings != null}");
+                return;
             }
-            
+
+            if (frame.DeltaTimeWorld <= 0)
+            {
+                return;
+            }
+
+            float num2 = (isRunning ? 1.75f : 1f) * (isTourist ? 1.05f : 1f) * DamageScale *
+                         (float)frame.DeltaTimeWorld;
+            if (_fuelSource.FuelType != null &&
+                (float)(Setting<float>)Game.Instance.Settings.Game.Flight.ImpactDamageScale > 0.0)
+            {
+                this.PartScript.TakeDamage(num2 * Game.Instance.Settings.Game.Flight.ImpactDamageScale,
+                    PartDamageType.Basic);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
+                    $"<color=red>Crew Member {_evaScript.Data.CrewName}(id:{this.PartScript.Data.Id}) is taking damage because {_fuelSource.FuelType.Name} is Already Full, " +
+                    $"he/she has {Units.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / ((isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1) * DamageScale))} left",
+                    false, 2f);
+            }
         }
 
         /// <summary>
