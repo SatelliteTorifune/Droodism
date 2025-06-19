@@ -213,7 +213,7 @@ namespace Assets.Scripts
                 {
                     if (fuelType.Contains("Wasted")||fuelType=="CO2")
                     {
-                        if (source==null || source.TotalCapacity-source.TotalFuel<=0.0001)
+                        if (source==null || source.TotalCapacity-source.TotalFuel<=0.00001)
                         {
                             source=GetLocalFuelSource(fuelType);
                             if (source == null)
