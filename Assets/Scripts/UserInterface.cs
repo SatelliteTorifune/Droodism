@@ -39,6 +39,8 @@ namespace Assets.Scripts
         // Reference to the food fuel source
         private IFuelSource _foodSource;
         
+        private IFuelSource _co2Source,_wastedWaterSource,_solidWasteSource;
+        
         // Reference to the support life script
         private SupportLifeScript _support;
         // Flag indicating if the craft is an Eva
@@ -78,7 +80,7 @@ namespace Assets.Scripts
         // Method to update the count of droods, astronauts, and tourists on the craft
         public void UpdateDroodCount()
         {
-            
+            Debug.Log("UpdateDroodCount()called");
             // Get the current craft node from the game instance
             var craftNode = Game.Instance.FlightScene.CraftNode;
             
@@ -191,6 +193,9 @@ namespace Assets.Scripts
                 _oxygenSource = GetLocalFuelSource("Oxygen");
                 _foodSource = GetLocalFuelSource("Food");
                 _waterSource = GetLocalFuelSource("H2O");
+                _co2Source = GetLocalFuelSource("CO2");
+                _wastedWaterSource = GetLocalFuelSource("Wasted Water");
+                _solidWasteSource = GetLocalFuelSource("Solid Waste");
             }
             else
             {
@@ -200,33 +205,42 @@ namespace Assets.Scripts
                 _oxygenSource = GetCraftFuelSource("Oxygen");
                 _foodSource = GetCraftFuelSource("Food");
                 _waterSource = GetCraftFuelSource("H2O");
+                _co2Source = GetCraftFuelSource("CO2");
+                _wastedWaterSource = GetCraftFuelSource("Wasted Water");
+                _solidWasteSource = GetCraftFuelSource("Solid Waste");
                 // If the craft fuel source is null or empty, try to get the local fuel source
-                if (_oxygenSource == null || _oxygenSource.IsEmpty)
+                void UpdateTotalFuelHandler(string fuelType, ref IFuelSource source)
                 {
-                    _oxygenSource = GetLocalFuelSource("Oxygen");
-                    if (_oxygenSource==null)
+                    if (fuelType.Contains("Wasted")||fuelType=="CO2")
                     {
-                        _oxygenSource = new EmptyFuel();
-                        
+                        if (source==null || source.TotalCapacity-source.TotalFuel<=0.0001)
+                        {
+                            source=GetLocalFuelSource(fuelType);
+                            if (source == null)
+                            {
+                                source = new EmptyFuel();
+                            }
+                        }
                     }
-                   
-                }
-                if (_foodSource == null || _foodSource.IsEmpty)
-                {
-                    _foodSource = GetLocalFuelSource("Food");
-                    if (_foodSource == null)
+                    else
                     {
-                        _foodSource = new EmptyFuel();
+                        if (source==null || source.IsEmpty)
+                        {
+                            source=GetLocalFuelSource(fuelType);
+                            if (source == null)
+                            {
+                                source = new EmptyFuel();
+                            }
+                        } 
                     }
+                    
                 }
-                if (_waterSource == null || _waterSource.IsEmpty)
-                {
-                    _waterSource = GetLocalFuelSource("H2O");
-                    if (_waterSource==null)
-                    {
-                         _waterSource=new EmptyFuel();
-                    }
-                }
+                UpdateTotalFuelHandler("Oxygen", ref _oxygenSource);
+                UpdateTotalFuelHandler("Food", ref _foodSource);
+                UpdateTotalFuelHandler("H2O", ref _waterSource);
+                UpdateTotalFuelHandler("CO2", ref _co2Source);
+                UpdateTotalFuelHandler("Wasted Water", ref _wastedWaterSource);
+                UpdateTotalFuelHandler("Solid Waste", ref _solidWasteSource);
                 
             }
         }
@@ -257,6 +271,10 @@ namespace Assets.Scripts
                     // Check if the part is an Eva
                     if (part.PartType.Name.Contains("Eva"))
                     {
+                        if (part.PartType.Name.Contains("Chair"))
+                        {
+                            return;
+                        }
                         // Get the SupportLifeScript modifier from the Eva part
                         var evaPart = part.PartScript;
                         _support = evaPart.GetModifier<SupportLifeScript>();
@@ -343,6 +361,17 @@ namespace Assets.Scripts
             var FoodTime = new TextModel("Food Supply Time",
                 () => ($"{Units.GetStopwatchTimeString(_foodSource.TotalFuel / (foodConsumeRateTotal * (isEva ? (Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.GetModifier<SupportLifeScript>().isTourist ? 1.05 : 1) : 1) * (isEva ? (Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.GetModifier<SupportLifeScript>().isRunning ? 1.75 : 1) : 1)))}"));
             LS.Add(FoodTime);
+            
+            var CO2ProgressBarModel = new ProgressBarModel("CO2 level", () =>
+                (float)(_co2Source.TotalFuel / _co2Source.TotalCapacity));
+            LS.Add(CO2ProgressBarModel);
+            
+            var WastedWaterProgressBarModel = new ProgressBarModel("Wasted Water level", () =>
+                (float)(_wastedWaterSource.TotalFuel / _wastedWaterSource.TotalCapacity));
+            LS.Add(WastedWaterProgressBarModel);
+            var SolidWasteProgressBarModel = new ProgressBarModel("Solid Waste level", () =>
+                (float)(_solidWasteSource.TotalFuel / _solidWasteSource.TotalCapacity));
+            LS.Add(SolidWasteProgressBarModel);
             
             LS.Add(new TextButtonModel(
                 "Manual Update",

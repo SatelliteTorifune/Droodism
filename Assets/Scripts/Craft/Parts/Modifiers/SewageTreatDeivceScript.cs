@@ -61,9 +61,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return;
             else
             {
-                double WastedWaterToRemove = Data.WastedWaterComsumeRate * frame.DeltaTimeWorld;
+                double WastedWaterToRemove = Data.WastedWaterComsumeRate * frame.DeltaTimeWorld*Data.Scale;
                 double WaterToAdd = WastedWaterToRemove * Data.ConvertEffiency;
-                double BatteryToRemove = Data.BatteryComsumeRate * WastedWaterToRemove;
+                double BatteryToRemove = Data.BatteryComsumeRate * WastedWaterToRemove*Data.Scale;
                 wastedWaterSource.RemoveFuel(WastedWaterToRemove);
                 waterSource.AddFuel(WaterToAdd);
                 _battery.RemoveFuel(BatteryToRemove);
