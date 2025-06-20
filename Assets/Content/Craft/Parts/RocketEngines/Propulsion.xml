@@ -13,7 +13,7 @@
     <Fuel id="CO2" name="Carbon Dioxide" gamma="0" density="0.001977" molecularWeight="44" combustionTemperature="0" price="10" explosivePower="0" description="Carbon Dioxide Drood Generated">
       <Visual exhaustColor="#00000000" exhaustColorTip="#00000000" exhaustColorShock="#00000000" exhaustColorFlame="#00000000" exhaustColorSoot="#00000000" exhaustColorSmoke="#ffffff00" globalIntensity ="0" shockIntensity="-20" rimShade="0" />
     </Fuel>
-    <Fuel id="Solid Waste" name="Solid Waste" gamma="0" density="2" molecularWeight="100" combustionTemperature="0" price="0" explosivePower="0" description="Solid Waste Drood Generated">
+    <Fuel id="Solid Waste" name="Solid Waste" gamma="0" density="2" molecularWeight="100" combustionTemperature="0" price="0" explosivePower="15" description="Solid Waste Drood Generated,or you can call it sh1t">
       <Visual exhaustColor="#00000000" exhaustColorTip="#00000000" exhaustColorShock="#00000000" exhaustColorFlame="#00000000" exhaustColorSoot="#00000000" exhaustColorSmoke="#ffffff00" globalIntensity ="0" shockIntensity="-20" rimShade="0" />
     </Fuel>
   </Fuels>

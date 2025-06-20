@@ -61,6 +61,7 @@ namespace Assets.Scripts
         {
             // Update the drood count when the mod is initialized
             UpdateDroodCount();
+            Debug.Log("OnInitialized called UpdateDroodCount");
         }
 
         // Method called when the craft changes
@@ -68,6 +69,7 @@ namespace Assets.Scripts
         {
             // Update the drood count when the craft changes
             UpdateDroodCount();
+            Debug.Log("OnCraftChanged called UpdateDroodCount");
         }
 
         // Method called when the craft structure changes in the UI
@@ -75,12 +77,13 @@ namespace Assets.Scripts
         {
             // Update the drood count when the craft structure changes in the UI
             UpdateDroodCount();
+            Debug.Log("OnCraftStructureChangedUI calledUpdateDroodCount");
         }
 
         // Method to update the count of droods, astronauts, and tourists on the craft
         public void UpdateDroodCount()
         {
-            Debug.Log("UpdateDroodCount()called");
+            
             // Get the current craft node from the game instance
             var craftNode = Game.Instance.FlightScene.CraftNode;
             
@@ -305,6 +308,7 @@ namespace Assets.Scripts
             {
                 // Update the drood count (number of crew members)
                 UpdateDroodCount();
+                Debug.Log("OnBuildFlightViewInspectorPanel called UpdateDroodCount");
                 
             }
             catch (Exception e)
