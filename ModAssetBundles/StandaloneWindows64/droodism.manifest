@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 667762666
+CRC: 2278374654
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 72e7f38a681653973d885fd44d55e032
+    Hash: 9a78376c81ee3cdcdcc571edc0063dcb
   TypeTreeHash:
     serializedVersion: 2
     Hash: 5bbb56ce1301bf09de32bc8b07a8b8a8
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 72e7f38a681653973d885fd44d55e032
+    Hash: 9a78376c81ee3cdcdcc571edc0063dcb
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -51,9 +51,11 @@ ClassTypes:
 SerializeReferenceClassIdentifiers: []
 Assets:
 - Assets/Resources/Craft/Parts/Definitions/Sodium Peroxide Container.xml
+- Assets/Resources/Craft/Parts/Prefabs/ElectrolyticDevice.prefab
 - Assets/Resources/Craft/Parts/Prefabs/SewageTreatDeivce.prefab
 - Assets/Content/Craft/Parts/RocketEngines/Propulsion.xml
 - Assets/Content/Craft/Parts/Categories/LifeSupport.asset
+- Assets/Resources/Craft/Parts/Definitions/ElectrolyticDevice.xml
 - Assets/_ModAssets_/Droodism.dll.bytes
 - Assets/Resources/Craft/Parts/Prefabs/Sodium Peroxide Container.prefab
 - Assets/_ModAssets_/ModManifest.xml.bytes

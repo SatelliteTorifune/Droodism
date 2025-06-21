@@ -36,6 +36,7 @@ MonoBehaviour:
   _partCategories:
   - {fileID: 11400000, guid: 7d2b6f557b8767544a162f30e61d22b6, type: 2}
   _parts:
+  - {fileID: 4900000, guid: 14776ff5d3403f64eba601b94451442d, type: 3}
   - {fileID: 4900000, guid: 40bbb2821f2c6b44ab6990bf28e48b6d, type: 3}
   - {fileID: 4900000, guid: 11a692886d113e149937457d57601c68, type: 3}
   _partStyleExtensions: []

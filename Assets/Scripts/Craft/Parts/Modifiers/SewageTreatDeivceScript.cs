@@ -86,9 +86,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public override void OnCraftStructureChanged(ICraftScript craftScript)
         {
             ReCheck();
-            _battery = PartScript.BatteryFuelSource;
-            waterSource = GetCraftFuelSource("H2O");
-            wastedWaterSource = GetCraftFuelSource("Wasted Water");
         }
         public override void OnSymmetry(SymmetryMode mode, IPartScript originalPart, bool created)
         {

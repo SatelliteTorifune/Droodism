@@ -35,11 +35,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         [SerializeField] 
         [DesignerPropertySlider(0.1f, 3f, 51, Label = "<color=green>Oxygen</color> Carry Amount(days)", Tooltip = "Define How much <color=green>Oxygen</color> Drood himself/herself will carry when Eva.")]
-        private float desireOxygenCapacity = 0.3f;
+        private float desireOxygenCapacity = 0.1f;
         [SerializeField] [DesignerPropertySlider(0.1f, 3f, 51, Label = "<color=yellow>Food</color> Carry Amount(days)", Tooltip = "Define How much <color=yellow>Food</color> Drood himself/herself will carry when Eva.")]
-        private float desireFoodCapacity = 1f;
+        private float desireFoodCapacity = 0.1f;
         [SerializeField] [DesignerPropertySlider(0.1f, 3f, 51, Label = "<color=red>Water</color> Carry Amount(days)", Tooltip = "Define How much<color=red> Drink Water</color> Drood himself/herself will carry when Eva.")]
-        private float desireWaterCapacity = 0.5f;
+        private float desireWaterCapacity = 0.1f;
         
         [SerializeField] [PartModifierProperty(true, false)]
         public double _oxygenAmountBuffer=1f;
