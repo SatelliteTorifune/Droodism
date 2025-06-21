@@ -123,8 +123,8 @@ Material:
     - _VaporMaskBaseStrength: 1
     - _VaporMaskWrapAmount: -0.2
     - _ZWrite: 1
-    - _metallicness: 0.9
-    - _smoothness: 0.3
+    - _metallicness: 0.3
+    - _smoothness: 0.8
     m_Colors:
     - _Color: {r: 1, g: 0, b: 0, a: 1}
     - _DecalTextureMaterialIds: {r: 0, g: 0, b: 1, a: 1}

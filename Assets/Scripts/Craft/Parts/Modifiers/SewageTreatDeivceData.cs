@@ -55,7 +55,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         public override long Price
         {
-            get;//TODO: Implement price calculation
+            get => (long)(this.ConvertEffiency * _baseMass * _baseMass*1e4f);
         }
         
         public override float MassDry

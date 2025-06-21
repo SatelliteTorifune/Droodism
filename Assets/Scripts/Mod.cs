@@ -61,18 +61,20 @@ namespace Assets.Scripts
         public void OnSceneLoaded(object sender, SceneEventArgs e)
         {
             subPlus();
+            Debug.LogFormat($"SceneLoaded事件触发{e.Scene}");
             
-            if (Instance.SceneManager.InDesignerScene)
+            if (e.Scene=="Flight")
             {
                 Instance.Designer.CraftLoaded += OnCraftLoaded;
                 Created += OnPartAdded;
             }
 
-            if (Instance.SceneManager.InFlightScene)
+            if (e.Scene.Contains("Flight"))
             {
                 try
                 {
                     UpdateDroodCount();
+                    Debug.LogFormat("OnSceneLoaded更新Drood数量");
                 }
                 catch (Exception e1)
                 {

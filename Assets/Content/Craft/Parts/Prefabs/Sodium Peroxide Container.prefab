@@ -64,38 +64,6 @@ Transform:
   - {fileID: 1228110766400296301}
   m_Father: {fileID: 6528271071462818476}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1523884352189411394
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8214981594548502903}
-  m_Layer: 0
-  m_Name: Rotate
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &8214981594548502903
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1523884352189411394}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0.000000113246855, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0, z: -0.004}
-  m_LocalScale: {x: 100, y: 100, z: 100}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 3962241326592717047}
-  m_Father: {fileID: 3208461943758161065}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2870632676431205726
 GameObject:
   m_ObjectHideFlags: 0
@@ -125,8 +93,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 7772274670621603160}
-  - {fileID: 8214981594548502903}
+  - {fileID: 1653531665655014655}
   m_Father: {fileID: 6528271071462818476}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4447135113886444109
@@ -141,10 +108,9 @@ GameObject:
   - component: {fileID: 95541973370371922}
   - component: {fileID: 2789867418698222488}
   - component: {fileID: 4688791845223401049}
-  - component: {fileID: 1831330123593592158}
   - component: {fileID: 4562568281496366073}
   m_Layer: 0
-  m_Name: Na2O2cap
+  m_Name: Na2O2cap mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -158,12 +124,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4447135113886444109}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 8214981594548502903}
+  m_Father: {fileID: 2837531156749680245}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &95541973370371922
 MeshFilter:
@@ -234,18 +200,6 @@ MonoBehaviour:
   _usesAlphaOverride: 0
   _usesEmissiveOverride: 0
   _isDepthMask: 0
---- !u!114 &1831330123593592158
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4447135113886444109}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1074686348, guid: 55a7c5278766598448d9083b0de0861d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &4562568281496366073
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -377,6 +331,38 @@ MonoBehaviour:
   m_Script: {fileID: 1250404296, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &4703864396060981974
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2837531156749680245}
+  m_Layer: 0
+  m_Name: Na2O2cap
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2837531156749680245
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4703864396060981974}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.0000000754979, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: -0, z: 0}
+  m_LocalScale: {x: 100, y: 100, z: 100}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 3962241326592717047}
+  m_Father: {fileID: 1653531665655014655}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6379134262290026068
 GameObject:
   m_ObjectHideFlags: 0
@@ -428,6 +414,39 @@ MonoBehaviour:
     _xmlName: 
     _styles: {fileID: 1738811065503313295}
   _subpartsSharePartStyle: 0
+--- !u!1 &6705336098497541099
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1653531665655014655}
+  m_Layer: 0
+  m_Name: Na2O2container
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1653531665655014655
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6705336098497541099}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 7772274670621603160}
+  - {fileID: 2837531156749680245}
+  m_Father: {fileID: 3208461943758161065}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7720779013962973004
 GameObject:
   m_ObjectHideFlags: 0
@@ -440,11 +459,10 @@ GameObject:
   - component: {fileID: 6722775560913338759}
   - component: {fileID: 5697336404260525127}
   - component: {fileID: 2997855759385966175}
-  - component: {fileID: 2050565027454834072}
   - component: {fileID: 4009673263759396796}
-  - component: {fileID: 2236388627268469197}
+  - component: {fileID: 1201436833373207053}
   m_Layer: 0
-  m_Name: Na2O2container
+  m_Name: Na2O2container mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -459,11 +477,11 @@ Transform:
   m_GameObject: {fileID: 7720779013962973004}
   serializedVersion: 2
   m_LocalRotation: {x: -0.0000000754979, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0, z: 0}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 3208461943758161065}
+  m_Father: {fileID: 1653531665655014655}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &6722775560913338759
 MeshFilter:
@@ -537,7 +555,23 @@ MonoBehaviour:
   _usesAlphaOverride: 0
   _usesEmissiveOverride: 0
   _isDepthMask: 0
---- !u!65 &2050565027454834072
+--- !u!114 &4009673263759396796
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7720779013962973004}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -468989955, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _ignoreDesignerCollisions: 0
+  _ignoreFirstPersonCollisions: 0
+  _isPrimary: 1
+  _selectionEnabledInFlight: 1
+--- !u!65 &1201436833373207053
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -558,34 +592,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.0030449098, y: 0.0069689006, z: 0.00304491}
   m_Center: {x: 0.000000003085006, y: -0.000010350486, z: -0.000060501974}
---- !u!114 &4009673263759396796
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7720779013962973004}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -468989955, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _ignoreDesignerCollisions: 0
-  _ignoreFirstPersonCollisions: 0
-  _isPrimary: 1
-  _selectionEnabledInFlight: 1
---- !u!114 &2236388627268469197
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7720779013962973004}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1074686348, guid: 55a7c5278766598448d9083b0de0861d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &9003503367339918613
 GameObject:
   m_ObjectHideFlags: 0
@@ -649,18 +655,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: PartType
       objectReference: {fileID: 0}
-    - target: {fileID: 6375634930458189250, guid: 4d9ac9beacf25a940965a114e110dc0d, type: 3}
-      propertyPath: Data._subPartPath
-      value: Na2O2container
-      objectReference: {fileID: 0}
-    - target: {fileID: 6375634930458189250, guid: 4d9ac9beacf25a940965a114e110dc0d, type: 3}
-      propertyPath: Data._syncActivationGroup
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6375634930458189250, guid: 4d9ac9beacf25a940965a114e110dc0d, type: 3}
-      propertyPath: Data._currentEnabledPercent
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 8050732432831115048, guid: 4d9ac9beacf25a940965a114e110dc0d, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -719,6 +713,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5199267947503085931}
     m_Modifications:
+    - target: {fileID: 3148173382454296947, guid: 4d9ac9beacf25a940965a114e110dc0d, type: 3}
+      propertyPath: Data._description
+      value: Taking in CO2/Wasted Water and Give out <color=green>Oxygen</color>
+        when emergency,does not require electricity charge to work
+      objectReference: {fileID: 0}
     - target: {fileID: 3533311010914190510, guid: 4d9ac9beacf25a940965a114e110dc0d, type: 3}
       propertyPath: m_Name
       value: Default

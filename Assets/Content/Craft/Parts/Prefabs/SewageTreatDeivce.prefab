@@ -160,7 +160,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Data:
-    _allowInvertedConnection: 1
+    _allowInvertedConnection: 0
     _allowRotation: 1
     _canReceive: 1
     _canSeek: 1
@@ -170,7 +170,7 @@ MonoBehaviour:
     _displayName: Device Connection
     _fuelLine: 1
     _hidden: 0
-    _ignoreSurfaces: 1
+    _ignoreSurfaces: 0
     _jointType: 0
     _localJointAxis: {x: 0, y: 0, z: 1}
     _position: {x: 0, y: 0, z: 0}

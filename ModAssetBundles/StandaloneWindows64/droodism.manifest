@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 260802168
+CRC: 667762666
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 7e1b0f378fb66c2ba381204fd37666d4
+    Hash: 72e7f38a681653973d885fd44d55e032
   TypeTreeHash:
     serializedVersion: 2
-    Hash: eedfd15cd58d40efc063bc7b8c0da3f0
+    Hash: 5bbb56ce1301bf09de32bc8b07a8b8a8
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 7e1b0f378fb66c2ba381204fd37666d4
+    Hash: 72e7f38a681653973d885fd44d55e032
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -42,8 +42,6 @@ ClassTypes:
   Script: {fileID: 264738313, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
 - Class: 114
   Script: {fileID: 1851567402, guid: 55a7c5278766598448d9083b0de0861d, type: 3}
-- Class: 114
-  Script: {fileID: 1074686348, guid: 55a7c5278766598448d9083b0de0861d, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 134
@@ -52,12 +50,12 @@ ClassTypes:
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers: []
 Assets:
-- Assets/_ModAssets_/Droodism.dll.bytes
 - Assets/Resources/Craft/Parts/Definitions/Sodium Peroxide Container.xml
 - Assets/Resources/Craft/Parts/Prefabs/SewageTreatDeivce.prefab
-- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/Content/Craft/Parts/RocketEngines/Propulsion.xml
 - Assets/Content/Craft/Parts/Categories/LifeSupport.asset
+- Assets/_ModAssets_/Droodism.dll.bytes
 - Assets/Resources/Craft/Parts/Prefabs/Sodium Peroxide Container.prefab
+- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/Resources/Craft/Parts/Definitions/SewageTreatDeivce.xml
 Dependencies: []
