@@ -44,22 +44,22 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public double WaterComsuptionRate
         {
-            get => this.waterComsuptionRate;
+            get => this.waterComsuptionRate*0.00025;
         }
         
         public double OxygenGenerationRate
         {
-            get => this.oxygenGenerationRate;
+            get => this.oxygenGenerationRate*0.145;
         }
         
         public double HydrogenGenerationRate
         {
-            get => this.hyrogenGenerationRate;
+            get => this.hyrogenGenerationRate*3E-04;
         }
         
         public double PowerConsumptionRate
         {
-            get => this.powerConsumptionRate;
+            get => this.powerConsumptionRate*4.2;
         }
         
         public string SubPartPath => this._subPartPath;

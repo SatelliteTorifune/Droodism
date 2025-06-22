@@ -44,8 +44,8 @@ GameObject:
   - component: {fileID: 700961621069551144}
   - component: {fileID: 3878166031491779833}
   - component: {fileID: 7735770706007759719}
-  - component: {fileID: 9050023578557446819}
   - component: {fileID: 590084112613564797}
+  - component: {fileID: 9050023578557446819}
   m_Layer: 0
   m_Name: Device Mesh
   m_TagString: Untagged
@@ -96,10 +96,10 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 6395377666227884376, guid: c2bb2e2d133ed504cad74fcfdf399661, type: 3}
-  - {fileID: 9058338632961139721, guid: c2bb2e2d133ed504cad74fcfdf399661, type: 3}
-  - {fileID: -2430165163995097129, guid: c2bb2e2d133ed504cad74fcfdf399661, type: 3}
-  - {fileID: -4827766069773975671, guid: c2bb2e2d133ed504cad74fcfdf399661, type: 3}
+  - {fileID: 2100000, guid: b43fe0520cdb9254ab262fea8bcb0906, type: 2}
+  - {fileID: 2100000, guid: 3df63180aecedb1419aa1bc50a459bf7, type: 2}
+  - {fileID: 2100000, guid: 214bdb3c156f78b469e345b034881522, type: 2}
+  - {fileID: 2100000, guid: ba6dbe485e0f0a343b35dbfabe36997c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -140,24 +140,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.009851485, y: 0.00583547, z: 0.008767155}
-  m_Center: {x: 0.00028602986, y: 0.002146471, z: 0.00058659166}
---- !u!114 &9050023578557446819
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3571345176318156219}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -468989955, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _ignoreDesignerCollisions: 0
-  _ignoreFirstPersonCollisions: 0
-  _isPrimary: 1
-  _selectionEnabledInFlight: 1
+  m_Size: {x: 0.0098749995, y: 0.00583547, z: 0.008767155}
+  m_Center: {x: 0.00026918322, y: 0.002146471, z: 0.00058659166}
 --- !u!114 &590084112613564797
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -177,6 +161,22 @@ MonoBehaviour:
   _usesAlphaOverride: 0
   _usesEmissiveOverride: 0
   _isDepthMask: 0
+--- !u!114 &9050023578557446819
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3571345176318156219}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -468989955, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _ignoreDesignerCollisions: 0
+  _ignoreFirstPersonCollisions: 0
+  _isPrimary: 1
+  _selectionEnabledInFlight: 1
 --- !u!1 &6122422209593328057
 GameObject:
   m_ObjectHideFlags: 0

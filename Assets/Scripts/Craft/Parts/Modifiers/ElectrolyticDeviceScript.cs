@@ -32,6 +32,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         
         private Transform fanTransform;
+        private Transform fanTransform2;
         private Transform _offset;
         private Vector3 _offsetPositionInverse;
 
@@ -131,8 +132,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 this.SetSubPart(subPart);
             else
                 this.SetSubPart(Utilities.FindFirstGameObjectMyselfOrChildren(this.Data.SubPartPath, this.gameObject)?.transform);
-            //if ((UnityEngine.Object) this.fanTransform != (UnityEngine.Object) null)
-            //    this.SetEnabledPercent(this.Data.CurrentEnabledPercent);
+            
         }
         
         public void SetSubPart(Transform subPart)
@@ -150,6 +150,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             this._offset.position = this.fanTransform.TransformPoint(this.Data.PositionOffset);
             this._offsetPositionInverse = this._offset.InverseTransformPoint(this.fanTransform.position);
         }
+        
         public void AnimateComponents(bool active)
         {
             

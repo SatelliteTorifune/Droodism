@@ -63,13 +63,13 @@ namespace Assets.Scripts
             subPlus();
             Debug.LogFormat($"SceneLoaded事件触发{e.Scene}");
             
-            if (e.Scene=="Flight")
+            if (ModApi.Common.Game.InDesignerScene)
             {
                 Instance.Designer.CraftLoaded += OnCraftLoaded;
                 Created += OnPartAdded;
             }
 
-            if (e.Scene.Contains("Flight"))
+            if (InFlightScene)
             {
                 try
                 {
@@ -121,16 +121,20 @@ namespace Assets.Scripts
         /// </summary>
         public void OnCraftLoaded()
         {
-            List<PartData> droodParts = CheckDrood(Craft);
-            List<PartData> genParts = CheckGenerator(Craft);
-            foreach (PartData part in droodParts)
+            
+            foreach (PartData part in CheckDrood(Craft))
             {
                 AddLsModifier(part);
             }
 
-            foreach (PartData part in genParts)
+            foreach (PartData part in  CheckGenerator(Craft))
             {
                 AddLSGModifier(part);
+            }
+
+            foreach (PartData part in  CheckCommandPod(Craft))
+            {
+                //AddFuelTankModifier(part);
             }
 
         }
@@ -142,146 +146,26 @@ namespace Assets.Scripts
         /// <param name="e"></param>
         public void OnPartAdded(object sender,CreatedPartEventArgs e)
         {
-            if (e.Part.Name=="Eva")
+            
+            Debug.LogFormat($"{e.Part.Name},id{e.Part.Id}有{e.Part.Modifiers.Count}个modifier,1:{e.PartType.Name}");
+            if (e.Part.Name=="Eva"||e.Part.Name == "Eva-Tourist")
             {
                 AddLsModifier(e.Part);
             }
-
-            if (e.Part.Name == "Eva-Tourist")
-            {
-               
-                AddLsModifier(e.Part);
-            }
-
+            
             if (e.Part.Name == "Generator1")
             {
                 AddLSGModifier(e.Part);
             }
-            
-        }
-        
-        /// <summary>
-        /// CheckDrood方法接受CraftScript参数,遍历所有modifier,得到含有Eva Modifier的Part的类型为PartData的列表
-        /// CheckDrood Method receives CraftScript as a parameter,checks all modifier inside the craft,returns with a list (which type is PartData) of Parts with Eva Modifier
-        /// </summary>
-        /// <param name="craft"></param>
-        public List<PartData> CheckDrood(CraftScript craft)
-        {
-            List<PartData> DroodParts = new List<PartData>();
-            var parts = craft.Data.Assembly.Parts;
-            foreach (PartData part in parts)
+
+            if (e.PartXml.HasElements)
             {
-                bool isDrood = false;
-                bool hasLifeSupport = false;
-                List<PartModifierScript> modifiers = part.PartScript.Modifiers;
-                if (modifiers != null)
-                {
-                    foreach (PartModifierScript _pms in modifiers)
-                    {
-
-                        PartModifierData _modifierData = _pms.GetData();
-
-                        if (_modifierData.Name == "EvaData")
-                        {
-                            isDrood = true;
-                        }
-
-                        if (_modifierData.Name == "SupportLifeData")
-                        {
-                            hasLifeSupport = true;
-                        }
-                    }
-                }
-
-                if (isDrood && !hasLifeSupport)
-                {
-
-                    DroodParts.Add(part);
-                }
-
-            }
-
-            for (int i = 0; i < DroodParts.Count; i++)
-            {
-                Debug.LogFormat("DroodParts的 ID 是{0}", DroodParts[i].Id);
-            }
-
-            return DroodParts;
-
-        }
-        
-        /// <summary>
-        /// AddLSModifier方法接受PartData参数,为此part添加SupportLife和FuelTank的modifier
-        /// AddLSModifier Method receive ParaData as a parameter,adding this part with SupportLife and FuelTank Modifier
-        /// </summary>
-        /// <param name="part"></param>
-        public static void AddLsModifier(PartData part)
-        {
-            if (!(part != null))
-                return;
-            SupportLifeData _supportLifeData = part.GetModifier<SupportLifeData>();
-            if (_supportLifeData==null)
-            {
-                _supportLifeData = PartModifierData.CreateFromDefaultXml<SupportLifeData>(part);
-                _supportLifeData.PartPropertiesEnabled = true;
-                _supportLifeData.InspectorEnabled = true;
+                AddFuelTankModifier(e.Part);
             }
             
         }
         
-        public List<PartData> CheckGenerator(CraftScript craft)
-        {
-            List<PartData> GeneratorParts = new List<PartData>();
-            foreach (PartData part in craft.Data.Assembly.Parts)
-            {
-
-               
-                if ( part.PartType.Name=="Generator1")
-                {
-                    GeneratorParts.Add(part);
-                }
-                
-            }
-
-            return GeneratorParts;
-
-        }
-        public List<PartData> CheckCommandPod(CraftScript craft)
-        {
-            List<PartData> CommandPodParts = new List<PartData>();
-            foreach (PartData part in craft.Data.Assembly.Parts)
-            {
-                if ( part.PartType.Name.Contains("CommandPod"))
-                {
-                    CommandPodParts.Add(part);
-                }
-                
-            }
-
-            return CommandPodParts;
-
-        }
-        public static void AddLSGModifier(PartData part)
-        {
-            if (!(part != null))
-                return;
-            LifeSupportGeneratorData _supportLifeData = part.GetModifier<LifeSupportGeneratorData>();
-            if (_supportLifeData==null)
-            {
-                _supportLifeData = PartModifierData.CreateFromDefaultXml<LifeSupportGeneratorData>(part);
-                _supportLifeData.PartPropertiesEnabled = false;
-                _supportLifeData.InspectorEnabled = true;
-            }
-        }
-
-        public static void AddFuelTankModifier(PartData part, string fuelTypeId)
-        {
-            if (part==null)
-                return;
-            FuelTankData _fuelTankData = part.GetModifier<FuelTankData>();
-            
-            
-        }
+        
     }
     
     [HarmonyPatch(typeof(EvaScript), nameof(EvaScript.OnModifiersCreated))]
