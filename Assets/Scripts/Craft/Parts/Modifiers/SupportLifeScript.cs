@@ -1032,7 +1032,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             else
             {
-                this._wastedWaterSource.AddFuel(Data.WaterComsumeRate*Data.evaConsumeEfficiency*(time/xishu));
+                this._wastedWaterSource.AddFuel(
+                    0.9 * Data.WaterComsumeRate * Data.evaConsumeEfficiency * (time / xishu));
                 Debug.LogFormat("调用AddWastedAmountInstantly,理论:{0}",Data.WaterComsumeRate*Data.evaConsumeEfficiency*(time/xishu)*1.1);
             }
             if (Data.FoodComsumeRate*Data.evaConsumeEfficiency*1.1*(time/xishu) >= this._solidWasteSource.TotalCapacity-_solidWasteSource.TotalFuel)
@@ -1042,8 +1043,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             else
             {
-                this._solidWasteSource.AddFuel(Data.FoodComsumeRate*Data.evaConsumeEfficiency*(time/xishu));
-                Debug.LogFormat("调用AddWastedAmountInstantly,理论:{0}",Data.FoodComsumeRate*Data.evaConsumeEfficiency*(time/xishu)*1.1);
+                this._solidWasteSource.AddFuel(Data.FoodComsumeRate*Data.evaConsumeEfficiency*(time/xishu)*1.1*0.06);
+                Debug.LogFormat("调用AddWastedAmountInstantly,理论:{0}",Data.FoodComsumeRate*Data.evaConsumeEfficiency*(time/xishu)*1.1*0.06);
             }
 
             if (UsingInternalOxygen())
@@ -1055,7 +1056,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
                 else
                 {
-                    this._co2Source.AddFuel(Data.OxygenComsumeRate*Data.evaConsumeEfficiency*(time/xishu)*1.375);
+                    this._co2Source.AddFuel(Data.OxygenComsumeRate*Data.evaConsumeEfficiency*(time/xishu)*1.1);
                     Debug.LogFormat("调用AddWastedAmountInstantly,理论:{0}",Data.OxygenComsumeRate*Data.evaConsumeEfficiency*(time/xishu));
                 }
             }
