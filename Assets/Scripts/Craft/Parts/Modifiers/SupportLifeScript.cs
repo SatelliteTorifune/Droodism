@@ -946,7 +946,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public void RemoveFuelAmonutInstantly()
         {
-            
+            return;
             var time= Game.Instance.GameState.GetCurrentTime()-LastUnloadedTime;
             Debug.LogFormat("调用RemoveFuelAmonutInstantly ,间隔{0}",time);
             if (this._oxygenSource == null)

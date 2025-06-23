@@ -84,7 +84,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             if (!isUsedUp&&isActive)
             {
-                if (_oxygenSource != null && (_co2Source != null || wastedWaterSource != null || waterSource! != null))
+                if (_oxygenSource != null && (_co2Source != null || wastedWaterSource != null))
                 {
                     if (_co2Source != null&&!_co2Source.IsEmpty)
                     {
@@ -99,17 +99,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     {
                         double num2 = Data.WastedWaterComsumeRate * frame.DeltaTimeWorld;
                         wastedWaterSource.RemoveFuel(num2);
-                        _oxygenSource.AddFuel(num2*this.Data.oxygenGeneratorScale*1000);
+                        _oxygenSource.AddFuel(num2*this.Data.oxygenGeneratorScale*2);
                         oxygenGeneratedAmount += (float)num2;
                     }
 
-                    //if (waterSource!= null&&!waterSource.IsEmpty)
-                    //{
-                    //    double num3 = Data.WaterComsumeRate * frame.DeltaTimeWorld;
-                    //    waterSource.RemoveFuel(num3);
-                    //    _oxygenSource.AddFuel(num3*this.Data.oxygenGeneratorScale*400);
-                    //    oxygenGeneratedAmount += (float)num3;
-                    //}
                 }
             }
             

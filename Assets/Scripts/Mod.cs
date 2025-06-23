@@ -160,7 +160,7 @@ namespace Assets.Scripts
 
             if (e.PartXml.HasElements)
             {
-                AddFuelTankModifier(e.Part);
+                //AddFuelTankModifier(e.Part);
             }
             
         }
