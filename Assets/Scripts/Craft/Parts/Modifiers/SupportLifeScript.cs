@@ -193,6 +193,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public override void OnInitialLaunch()
         {
+            
             isFirstTime = true;
             base.OnInitialLaunch();
             if (this.PartScript.Data.PartType.Name == "Eva-Tourist")
@@ -217,6 +218,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 Debug.LogErrorFormat("OnInitialLaunch调用RefreshFuelSource出问题了{0}", e);
             }
+
+            LastUnloadedTime = Game.Instance.FlightScene.FlightState.Time;
         }
         /// <summary>
         /// 实现IFlightStart接口，在飞行场景开始时调用。
@@ -809,13 +812,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 Craft.AddFuel(Eva.TotalFuel);
                 Eva.RemoveFuel(Eva.TotalFuel);
-                Debug.LogFormat("RemoveWaste 成功:{0}实际{1}",Eva.TotalFuel,Craft.TotalFuel);
+                //Debug.LogFormat("RemoveWaste 成功:{0}实际{1}",Eva.TotalFuel,Craft.TotalFuel);
             }
             else
             {
                 Eva.RemoveFuel(Craft.TotalCapacity - Craft.TotalFuel);
                 Craft.AddFuel(Craft.TotalCapacity - Craft.TotalFuel);
-                Debug.LogFormat("RemoveWaste 满了成功:{0}实际{1}", Eva.TotalFuel, Craft.TotalFuel);
+                //Debug.LogFormat("RemoveWaste 满了成功:{0}实际{1}", Eva.TotalFuel, Craft.TotalFuel);
             }
         }
 
@@ -847,13 +850,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public void OnPhysicsEnabled(ICraftNode craftNode, PhysicsChangeReason reason)
         {
             Debug.LogFormat("OnPhysicsEnabled{0}",reason);
-            if (reason == PhysicsChangeReason.Warp)
+            if (reason == PhysicsChangeReason.Warp||reason == PhysicsChangeReason.LoadedIntoGameView)
             {
                 return;
             }
             LoadFuelTanks();
             RefreshFuelSource();
             RemoveFuelAmonutInstantly();
+            AddWastedAmountInstantly();
         }
         public void OnPhysicsDisabled(ICraftNode craftNode, PhysicsChangeReason reason)
         {
@@ -907,7 +911,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             Debug.LogFormat("{0} 调用OnCraftUnloaded",PartScript.Data.Id);
             try
             {
-                LastUnloadedTime = Game.Instance.GameState.GetCurrentTime();
+                LastUnloadedTime = Game.Instance.FlightScene.FlightState.Time;
                 SaveFuelAmountBuffer();
                 this.PartScript.Data.LoadXML(
                 RemoveFuelTankXML(this.PartScript.Data.GenerateXml(this.PartScript.CraftScript.Transform,false)),15);
@@ -930,6 +934,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     Data._oxygenAmountBuffer = _oxygenSource.TotalFuel;
                     Data._foodAmountBuffer = _foodSource.TotalFuel;
                     Data._waterAmountBuffer = _waterSource.TotalFuel;
+                    Data._co2AmountBuffer = _co2Source.TotalFuel;
+                    Data._wastedWaterAmountBuffer = _wastedWaterSource.TotalFuel;
+                    Data._solidWasteAmountBuffer = _solidWasteSource.TotalFuel;
                     Debug.LogFormat("缓冲区燃料:食物{0},oxygen{1},water,{2},二氧化碳:{3},WastedWater:{4},SolidWaste:{5}", Data._solidWasteAmountBuffer, Data._foodAmountBuffer, Data._oxygenAmountBuffer, Data._waterAmountBuffer, Data._co2AmountBuffer, Data._wastedWaterAmountBuffer);
                 }
                 else
@@ -946,8 +953,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public void RemoveFuelAmonutInstantly()
         {
-            return;
-            var time= Game.Instance.GameState.GetCurrentTime()-LastUnloadedTime;
+                
+            double xishu=360;
+            var time= Game.Instance.FlightScene.FlightState.Time-LastUnloadedTime;
             Debug.LogFormat("调用RemoveFuelAmonutInstantly ,间隔{0}",time);
             if (this._oxygenSource == null)
             {
@@ -964,36 +972,95 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 Debug.LogFormat("调用RemoveFuelAmonutInstantly失败,_waterSource有他妈null");
                 return;
             }
-            if (Data.FoodComsumeRate*(time/360) > this._foodSource.TotalFuel)
+            if (Data.FoodComsumeRate*(time/xishu) > this._foodSource.TotalFuel)
             {
                 this._foodSource.RemoveFuel(_foodSource.TotalCapacity);
-                Debug.LogFormat("调用RemoveFuelAmonutInstantly,理论:{0}实际{1}",Data.FoodComsumeRate*(time/360),this._foodSource.TotalFuel);
+                Debug.LogFormat("调用RemoveFuelAmonutInstantly,理论:{0}实际{1}",Data.FoodComsumeRate*(time/xishu),this._foodSource.TotalFuel);
             }
             else
             {
-                this._foodSource.RemoveFuel(Data.FoodComsumeRate*(time/360));
+                this._foodSource.RemoveFuel(Data.FoodComsumeRate*(time/xishu));
             }
             
-            if (Data.WaterComsumeRate*(time/360) > this._waterSource.TotalFuel)
+            if (Data.WaterComsumeRate*(time/xishu) > this._waterSource.TotalFuel)
             {
                 this._waterSource.RemoveFuel(_waterSource.TotalCapacity);
             }
             else
             {
-                this._waterSource.RemoveFuel(Data.WaterComsumeRate*(time/360));
+                this._waterSource.RemoveFuel(Data.WaterComsumeRate*(time/xishu));
             }
 
             if (UsingInternalOxygen())
             {
-                if (Data.OxygenComsumeRate*(time/360) > this._oxygenSource.TotalFuel)
+                if (Data.OxygenComsumeRate*(time/xishu) > this._oxygenSource.TotalFuel)
                 {
                     this._oxygenSource.RemoveFuel(_oxygenSource.TotalCapacity);
                 }
                 else
                 {
-                    this._oxygenSource.RemoveFuel(Data.OxygenComsumeRate*(time/360));
+                    this._oxygenSource.RemoveFuel(Data.OxygenComsumeRate*(time/xishu));
                 }
             }
+            
+        }
+        
+        public void AddWastedAmountInstantly()
+        {
+            double xishu=360;
+            var time= Game.Instance.FlightScene.FlightState.Time-LastUnloadedTime;
+            Debug.LogFormat("AddWastedAmountInstantly ,间隔{0}",time);
+            if (this._co2Source == null)
+            {
+                Debug.LogFormat("调用AddWastedAmountInstantly失败,_co2Source有他妈null");
+                return;
+            }
+
+            if (_wastedWaterSource==null)
+            {
+                Debug.LogFormat("调用AddWastedAmountInstantly失败,_wastedWaterSource有他妈null");
+            }
+
+            if (_solidWasteSource == null)
+            {
+                Debug.LogFormat("调用AddWastedAmountInstantly失败,_solidWasteSource有他妈null");
+            }
+            if (Data.WaterComsumeRate*Data.evaConsumeEfficiency*1.1*(time/xishu) >= this._wastedWaterSource.TotalCapacity-_wastedWaterSource.TotalFuel)
+            {
+                this._wastedWaterSource.AddFuel(this._wastedWaterSource.TotalCapacity-_wastedWaterSource.TotalFuel);
+                Debug.LogFormat("调用AddWastedAmountInstantly,满的,理论:{0}实际{1}",Data.WaterComsumeRate*Data.evaConsumeEfficiency*(time/xishu),this._wastedWaterSource.TotalCapacity-_wastedWaterSource.TotalFuel);
+            }
+            else
+            {
+                this._wastedWaterSource.AddFuel(Data.WaterComsumeRate*Data.evaConsumeEfficiency*(time/xishu));
+                Debug.LogFormat("调用AddWastedAmountInstantly,理论:{0}",Data.WaterComsumeRate*Data.evaConsumeEfficiency*(time/xishu)*1.1);
+            }
+            if (Data.FoodComsumeRate*Data.evaConsumeEfficiency*1.1*(time/xishu) >= this._solidWasteSource.TotalCapacity-_solidWasteSource.TotalFuel)
+            {
+                this._solidWasteSource.AddFuel(this._solidWasteSource.TotalCapacity-_solidWasteSource.TotalFuel);
+                Debug.LogFormat("调用AddWastedAmountInstantly,满的,理论:{0}实际{1}",Data.FoodComsumeRate*Data.evaConsumeEfficiency*(time/xishu),this._solidWasteSource.TotalCapacity-_solidWasteSource.TotalFuel);
+            }
+            else
+            {
+                this._solidWasteSource.AddFuel(Data.FoodComsumeRate*Data.evaConsumeEfficiency*(time/xishu));
+                Debug.LogFormat("调用AddWastedAmountInstantly,理论:{0}",Data.FoodComsumeRate*Data.evaConsumeEfficiency*(time/xishu)*1.1);
+            }
+
+            if (UsingInternalOxygen())
+            {
+                if (Data.OxygenComsumeRate*Data.evaConsumeEfficiency*1.375*(time/xishu) >= this._co2Source.TotalCapacity-_co2Source.TotalFuel)
+                {
+                    this._co2Source.AddFuel(this._co2Source.TotalCapacity-_co2Source.TotalFuel);
+                    Debug.LogFormat("调用AddWastedAmountInstantly,满的,理论:{0}实际{1}",Data.OxygenComsumeRate*Data.evaConsumeEfficiency*(time/xishu),this._co2Source.TotalCapacity-_co2Source.TotalFuel);
+                }
+                else
+                {
+                    this._co2Source.AddFuel(Data.OxygenComsumeRate*Data.evaConsumeEfficiency*(time/xishu)*1.375);
+                    Debug.LogFormat("调用AddWastedAmountInstantly,理论:{0}",Data.OxygenComsumeRate*Data.evaConsumeEfficiency*(time/xishu));
+                }
+            }
+            
+            
             
         }
         #region 无所弔谓
