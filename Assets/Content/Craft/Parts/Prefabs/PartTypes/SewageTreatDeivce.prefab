@@ -157,7 +157,7 @@ MonoBehaviour:
     _raiseWaterEventsEvenIfNotBuoyant: 0
     _renderQueue: 0
     _stageActivationType: 0
-    _supportsActivation: 0
+    _supportsActivation: 1
     _supportsTransparency: 1
     _thermalMassRatio: 1
     _tutorialId: 
@@ -182,3 +182,7 @@ MonoBehaviour:
     _version: 1
     _versionLast: 1
     _versionsAllowed: 
+    _wastedWaterComsumeRate: 1
+    _convertEffiency: 1
+    _batteryComsumeRate: 1
+    _scale: 1
