@@ -15,18 +15,82 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     public class PhotoBioReactorScript : PartModifierScript<PhotoBioReactorData>, IFlightStart, IFlightUpdate,
         IDesignerStart
     {
-        private IFuelSource battery,_co2Source,_waterSource,_foodSource,_solidWastedSource;
+        private IFuelSource _battery,_co2Source,_waterSource,_foodSource,_solidWastedSource,_oxygenSource;
+        private float _efficiency, _rechargeRate, _rechargeEfficiency,_area;
+        private Transform _panel = (Transform) null;
+
+        private float growProgress;
         public void FlightStart(in FlightFrameData frame)
         {
-            
+            _efficiency = 0;
+            _rechargeEfficiency = 0f;
+            this._rechargeRate = 0f;
+            ReFreshSources();
         }
 
         public void FlightUpdate(in FlightFrameData frame)
         {
-            
+            ICraftFlightData flightData = this.PartScript.CraftScript.FlightData;
+            this._efficiency = this.Data.Efficiency;
+            this._rechargeRate = (float) flightData.SolarRadiationIntensity * this._efficiency * this._area;
+            if ((double) this._rechargeRate > 0.0)
+            {
+                this._rechargeEfficiency = Mathf.Max(0.0f, Vector3.Dot(this._panel.up, -flightData.SolarRadiationFrameDirection));
+                this._rechargeRate *= this._rechargeEfficiency;
+            }
+            else
+                this._rechargeEfficiency = 0.0f;
+            this._battery.AddFuel((double) this._rechargeRate * frame.DeltaTimeWorld * (1.0 / 1000.0));
+            WorkingLogic(frame, PartScript.Data.Activated);
         }
 
-        
+        public void WorkingLogic(in FlightFrameData frame, bool isUsingArtificialLight)
+        {
+            if (_co2Source==null||_waterSource==null||_oxygenSource==null||_battery==null)
+            {
+                return;
+            }
+            if(isUsingArtificialLight)
+            {
+                if (!_co2Source.IsEmpty&&!_waterSource.IsEmpty&&!_battery.IsEmpty&&!_oxygenSource.IsEmpty)
+                {
+                    _co2Source.RemoveFuel(Data.Co2ConsumptionRate * frame.DeltaTimeWorld);
+                    _waterSource.RemoveFuel(Data.WaterConsumptionRate * frame.DeltaTimeWorld);
+                    _battery.RemoveFuel(Data.PowerConsumptionRate * frame.DeltaTimeWorld);
+                    growProgress += Data.GrowSpeed*Data.Efficiency;
+                    if (growProgress >= Data.GrowProgressTotal)
+                    {
+                        growProgress = 0;
+                        OnProgressBarFull();
+                    }
+                    if (_oxygenSource.TotalCapacity-_oxygenSource.TotalFuel<=0.00001f)
+                    {
+                        _oxygenSource.AddFuel(Data.OxygenGenerationRate * frame.DeltaTimeWorld);
+                    }
+                }
+            }
+            else
+            {
+                
+            }
+        }
+        private void OnProgressBarFull()
+        {
+            if (_foodSource == null)
+            {
+                Debug.LogFormat("Photobio Reactor: No food source found");
+                return;
+            }
+            
+            if (_foodSource.TotalCapacity-_foodSource.TotalFuel<=Data.FoodGeneratedScale)
+            {
+                _foodSource.AddFuel(_foodSource.TotalCapacity-_foodSource.TotalFuel);
+            }
+            else
+            {
+                _foodSource.AddFuel(Data.FoodGeneratedScale);
+            }
+        }        
         #region 路边一条
         
         public void DesignerStart(in DesignerFrameData frame)
@@ -66,7 +130,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             _co2Source = GetCraftFuelSource("CO2");
             _foodSource = GetCraftFuelSource("FO2");
             _solidWastedSource = GetCraftFuelSource("Solid Wasted");
-            battery = PartScript.BatteryFuelSource;
+            _battery = PartScript.BatteryFuelSource;
         }
         
         private IFuelSource GetCraftFuelSource(string fuelType)
