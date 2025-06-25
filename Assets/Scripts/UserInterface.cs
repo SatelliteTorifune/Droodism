@@ -105,7 +105,8 @@ namespace Assets.Scripts
                     DroodCount++;
                     try
                     {
-                        partData.PartScript.GetModifier<SupportLifeScript>().UpdateCurrentPlanet(); 
+                        partData.PartScript.GetModifier<SupportLifeScript>().UpdateCurrentPlanet();
+                        partData.PartScript.GetModifier<SupportLifeScript>().RefreshFuelSource();
                     }
                     catch (Exception e)
                     {

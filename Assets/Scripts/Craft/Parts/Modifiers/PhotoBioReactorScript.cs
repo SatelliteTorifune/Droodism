@@ -54,10 +54,19 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 if (!_co2Source.IsEmpty&&!_waterSource.IsEmpty&&!_battery.IsEmpty&&!_oxygenSource.IsEmpty)
                 {
+                    bool isBoosted = false;   
                     _co2Source.RemoveFuel(Data.Co2ConsumptionRate * frame.DeltaTimeWorld);
                     _waterSource.RemoveFuel(Data.WaterConsumptionRate * frame.DeltaTimeWorld);
                     _battery.RemoveFuel(Data.PowerConsumptionRate * frame.DeltaTimeWorld);
-                    growProgress += Data.GrowSpeed*Data.Efficiency;
+                    if (_solidWastedSource!= null)
+                    {
+                        if (!_solidWastedSource.IsEmpty)
+                        {
+                            _solidWastedSource.RemoveFuel(Data.SolidWasteConsumptionRate * frame.DeltaTimeWorld);
+                            isBoosted = true;
+                        }
+                    }
+                    growProgress += Data.GrowSpeed*Data.Efficiency*(isBoosted?Data.BoosteScale:1.0f);
                     if (growProgress >= Data.GrowProgressTotal)
                     {
                         growProgress = 0;
@@ -67,6 +76,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     {
                         _oxygenSource.AddFuel(Data.OxygenGenerationRate * frame.DeltaTimeWorld);
                     }
+                }
+                else
+                {
+                    if (growProgress > 0)
+                    {
+                        growProgress -= Data.DecaySpeed;
+                    } 
                 }
             }
             else
@@ -78,7 +94,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             if (_foodSource == null)
             {
-                Debug.LogFormat("Photobio Reactor: No food source found");
+                Debug.LogFormat("PhotobioReactor:OnProgressBarFull: No food source found");
                 return;
             }
             
@@ -129,6 +145,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             _waterSource = GetCraftFuelSource("H2O");
             _co2Source = GetCraftFuelSource("CO2");
             _foodSource = GetCraftFuelSource("FO2");
+            _oxygenSource = GetCraftFuelSource("Oxygen");
             _solidWastedSource = GetCraftFuelSource("Solid Wasted");
             _battery = PartScript.BatteryFuelSource;
         }

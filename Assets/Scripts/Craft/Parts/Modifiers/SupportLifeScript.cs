@@ -354,7 +354,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// <returns>如果找到则返回燃料源，否则返回null。The fuel source if found, otherwise null.</returns>
         private IFuelSource GetCraftFuelSource(string fuelType)
         {
-            if (PartScript.Data.IsRootPart)
+            if (this.PartScript.CraftScript.Data.Assembly.Parts.Count == 1)
             {
                 return null;
             }
@@ -595,6 +595,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     
                 }
             }
+
+            if (_co2Source==null||_oxygenSource==null||_foodSource==null||_waterSource==null||_wastedWaterSource==null||_solidWasteSource==null)
+            {
+               LoadFuelTanks();
+               Debug.Log("ConsumptionLogic调用LoadFuelTanks");
+            }
         }
 
         /// <summary>
@@ -761,21 +767,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 HandleFuelSource("CO2", Data.DesireOxygenCapacity*1.1, Data._co2AmountBuffer, ref _co2Source);
                 HandleFuelSource("Wasted Water", Data.DesireWaterCapacity*1.1, Data._wastedWaterAmountBuffer, ref _wastedWaterSource);
                 HandleFuelSource("Solid Waste", Data.DesireFoodCapacity*1.1, Data._solidWasteAmountBuffer, ref _solidWasteSource);
-                
-                Debug.LogFormat("从CraftRefeshFuelSoucre调用LoadFuelTanks");
                 SaveFuelAmountBuffer();
-                
-                //if (AddingTankFlag == false) 
-                //{
-                //    Debug.LogFormat("AddingTankFlag为false,调用AddTank");
-                //    foreach (var data in DataLocal)
-                //    {
-                //        AddTank(data.Item1, data.Item2, data.Item3);
-                //        Debug.LogFormat("RefreshFuelSource 种添加 {0} 类型,容量{1},实际{2}", data.Item1, data.Item2, data.Item3);
-                //    }
-                //}
-                
-                
                 
             }
             catch (Exception e)
@@ -829,9 +821,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public override void OnCraftLoaded(ICraftScript craftScript, bool movedToNewCraft)
         {
             base.OnCraftLoaded(craftScript, movedToNewCraft);
-            
-            Debug.LogFormat("OnCraftLoaded called for Part ID: {0}, MovedToNewCraft: {1}", PartScript.Data.Id, movedToNewCraft);
-            
+            Debug.LogFormat("OnCraftLoaded called for Part ID: {0}, MovedToNewCraft: {1},isRootPart:{2}", PartScript.Data.Id, movedToNewCraft,PartScript.Data.IsRootPart);
+            if (!PartScript.Data.IsRootPart)
+            {
+                RefreshFuelSource();
+                Debug.LogFormat("OnCraftLoaded 调用RefreshFuelSource");
+
+            }
             
         }
         
@@ -856,8 +852,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             LoadFuelTanks();
             RefreshFuelSource();
-            RemoveFuelAmonutInstantly();
-            AddWastedAmountInstantly();
+            if (ModSettings.Instance.ConsumeResourceWhenUnloaded)
+            {
+                RemoveFuelAmonutInstantly();
+                AddWastedAmountInstantly();
+            }
+            
         }
         public void OnPhysicsDisabled(ICraftNode craftNode, PhysicsChangeReason reason)
         {

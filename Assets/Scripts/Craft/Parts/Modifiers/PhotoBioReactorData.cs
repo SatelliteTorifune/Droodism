@@ -37,6 +37,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private float _waterConsumptionRate = 1f;
         [SerializeField] [PartModifierProperty(true, false)]
         private float _powerConsumptionRate = 1f;
+        [SerializeField] [PartModifierProperty(true, false)]
+        private float _solidWasteConsumptionRate = 1f;
+        [SerializeField] [PartModifierProperty(true, false)]
+        private float _boosteScale = 1.5f;
         public float FoodGeneratedScale
         {
             get=>this._foodGeneratedScale*1f;
@@ -79,6 +83,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public float PowerConsumptionRate
         {
             get=>this._powerConsumptionRate*1f;
+        }
+
+        public float SolidWasteConsumptionRate
+        {
+            get=>this._solidWasteConsumptionRate*1f;
+        }
+        public float BoosteScale
+        {
+            get=>this._boosteScale*1f;
         }
     }
 }
