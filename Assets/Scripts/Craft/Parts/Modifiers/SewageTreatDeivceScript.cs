@@ -11,6 +11,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using ModApi.Craft.Parts;
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
+    using static UnityEngine.Debug;
 
     public class SewageTreatDeivceScript : PartModifierScript<SewageTreatDeivceData>,IFlightStart, IDesignerStart,IFlightUpdate
     {
@@ -46,8 +47,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (!PartScript.Data.Activated)
                 return;
             WorkingLogic(frame);
-            
-            
         }
 
         private void WorkingLogic(in FlightFrameData frame)
@@ -67,11 +66,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 wastedWaterSource.RemoveFuel(WastedWaterToRemove);
                 waterSource.AddFuel(WaterToAdd);
                 _battery.RemoveFuel(BatteryToRemove);
-
             }
-
-
-
         }
 
         #region 路边一条
@@ -89,17 +84,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         public override void OnSymmetry(SymmetryMode mode, IPartScript originalPart, bool created)
         {
-            
             this.UpdateScale();
-           
         }
         
         protected override void OnInitialized()
         {
             base.OnInitialized();
-            
             this.UpdateScale();
-            
         }
         
         private void OnCraftFuelSourceChanged(object sender, EventArgs e) => this.ReCheck();
@@ -123,11 +114,5 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             transform.localScale= Vector3.one*this.Data.Scale;
 
         }
-
-       
-        
-        
-
-        
     }
 }
