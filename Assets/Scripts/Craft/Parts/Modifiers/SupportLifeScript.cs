@@ -213,6 +213,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             try
             {
                 RefreshFuelSource();
+                
             }
             catch (Exception e)
             {
