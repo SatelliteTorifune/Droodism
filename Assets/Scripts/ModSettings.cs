@@ -40,6 +40,7 @@ namespace Assets.Scripts
         ///// The TestSetting1 value.
         ///// </value>
         //public NumericSetting<float> TestSetting1 { get; private set; }
+        public BoolSetting ConsumeResourceWhenUnloaded { get; set; }
 
         /// <summary>
         /// Initializes the settings in the category.
@@ -50,6 +51,9 @@ namespace Assets.Scripts
             //    .SetDescription("A test setting that does nothing.")
             //    .SetDisplayFormatter(x => x.ToString("F1"))
             //    .SetDefault(2f);
+            ConsumeResourceWhenUnloaded=CreateBool("Drood Consume Resource When Unloaded")
+                .SetDescription("Drood will still Consume Resource Even the Craft is Unloaded.")
+                .SetDefault(false);
         }
     }
 }

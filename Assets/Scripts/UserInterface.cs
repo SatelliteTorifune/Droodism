@@ -53,8 +53,7 @@ namespace Assets.Scripts
         // Total water consume rate
         private double waterConsumeRateTotal;
         
-        // Reference to the total oxygen fuel source for the craft
-        public IFuelSource CraftTotalOxygenFuelSource;
+        
 
         // Method called when the mod is initialized
         private void OnInitialized(IFlightScene flightScene)
@@ -85,7 +84,7 @@ namespace Assets.Scripts
         {
             
             // Get the current craft node from the game instance
-            var craftNode = Game.Instance.FlightScene.CraftNode;
+            var craftScript = Game.Instance.FlightScene.CraftNode.CraftScript;
             
             // Reset the counts of droods, astronauts, and tourists
             DroodCount = 0;
@@ -93,16 +92,21 @@ namespace Assets.Scripts
             TouristCount = 0;
             
             // Iterate through each part in the craft's assembly
-            foreach (var partData in craftNode.CraftScript.Data.Assembly.Parts)
+            foreach (var partData in craftScript.Data.Assembly.Parts)
             {
                 // Check if the part type name contains "Eva"
                 if (partData.PartType.Name.Contains("Eva"))
                 {
+                    if (partData.PartType.Name.Contains("Chair"))
+                    {
+                        return;
+                    }
                     // Increment the drood count
                     DroodCount++;
                     try
                     {
-                        partData.PartScript.GetModifier<SupportLifeScript>().UpdateCurrentPlanet(); 
+                        partData.PartScript.GetModifier<SupportLifeScript>().UpdateCurrentPlanet();
+                        partData.PartScript.GetModifier<SupportLifeScript>().RefreshFuelSource();
                     }
                     catch (Exception e)
                     {
@@ -114,7 +118,6 @@ namespace Assets.Scripts
                     {
                         // Increment the astronaut count
                         AstronautCount++;
-                        
                     }
                     else
                     {
@@ -216,13 +219,9 @@ namespace Assets.Scripts
                 {
                     if (fuelType=="Wasted Water"||fuelType=="CO2"||fuelType=="Solid Waste")
                     {
-                        if (source==null || source.TotalCapacity-source.TotalFuel<=0.00001)
+                        if (source==null)
                         {
-                            source=GetLocalFuelSource(fuelType);
-                            if (source == null)
-                            {
-                                source = new EmptyFuel();
-                            }
+                            source = new EmptyFuel();
                         }
                     }
                     else

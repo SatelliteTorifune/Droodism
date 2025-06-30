@@ -221,24 +221,7 @@ namespace Assets.Scripts
             }
         }
     }
-
-    [HarmonyPatch(typeof(FlightSceneScript), "GetCoordsAndTP")]
-
-    public static class FlightSceneScriptPatch
-    {
-        public static void Postfix(FlightSceneScript __instance)
-        {
-            try
-            {
-                Mod.Inctance.UpdateDroodCount();
-            }
-            catch (Exception e)
-            {
-                Debug.LogWarningFormat("从GetCoordsAndTP调用UpdateDroodCount出错{0}",e);
-            }
-        
-        }
-    }
+    
   
     
 }
