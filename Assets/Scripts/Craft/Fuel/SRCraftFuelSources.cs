@@ -158,6 +158,7 @@ namespace Assets.Scripts.Craft.Fuel
                     else if (item.FuelType.Name =="Oxygen")
                     {
                         Debug.LogFormat("SRCraftFuelSources:Oxygen fuel");
+                        
                     }
                 }
 
@@ -197,7 +198,7 @@ namespace Assets.Scripts.Craft.Fuel
         //     The craft script.
         public void Rebuild(ICraftScript craftScript)
         {
-            //Debug.Log("Patched Rebuild firing");
+            Debug.Log("Patched Rebuild firing");
             _fuelSources.Clear();
             _crossFeeds.Clear();
             CraftFuelSource batteryFuelSource = CreateFuelSource(FuelType.Battery);
