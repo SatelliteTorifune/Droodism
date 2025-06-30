@@ -234,14 +234,16 @@ namespace Assets.Scripts.Craft.Fuel
                 commandPodScript.JetFuelSource = CreateFuelSource(FuelType.Jet, reverseSubPriority: true);
                 commandPodScript.MonoFuelSource = CreateFuelSource(FuelType.Monopropellant, reverseSubPriority: true);
                 
+                
+                
                 try
                 {
-                    patchScript.OxygenFuelSource = CreateFuelSource(new FuelType(StaticFuelTypes.oxygenFuelType,null), reverseSubPriority: true);
-                    patchScript.WastedWaterFuelSource= CreateFuelSource(new FuelType(StaticFuelTypes.wastedWaterFuel,null), reverseSubPriority: true);
-                    patchScript.FoodFuelSource = CreateFuelSource(new FuelType(StaticFuelTypes.foodFuel,null), reverseSubPriority: true);
-                    patchScript.WastedWaterFuelSource= CreateFuelSource(new FuelType(StaticFuelTypes.wastedWaterFuel,null), reverseSubPriority: true);
-                    patchScript.CO2FuelSource = CreateFuelSource(new FuelType(StaticFuelTypes.co2Fuel,null), reverseSubPriority: true);
-                    patchScript.WaterFuelSource = CreateFuelSource(new FuelType(StaticFuelTypes.WaterFuel,null), reverseSubPriority: true);
+                    patchScript.OxygenFuelSource = CreateFuelSource(Game.Instance.PropulsionData.GetFuelType("Oxygen"), reverseSubPriority: true);
+                    patchScript.WastedWaterFuelSource= CreateFuelSource(Game.Instance.PropulsionData.GetFuelType("Wasted Water"), reverseSubPriority: true);
+                    patchScript.FoodFuelSource = CreateFuelSource(Game.Instance.PropulsionData.GetFuelType("Food"), reverseSubPriority: true);
+                    patchScript.SolidWasteFuelSource= CreateFuelSource(Game.Instance.PropulsionData.GetFuelType("Solid Waste"), reverseSubPriority: true);
+                    patchScript.CO2FuelSource = CreateFuelSource(Game.Instance.PropulsionData.GetFuelType("CO2"), reverseSubPriority: true);
+                    patchScript.WaterFuelSource = CreateFuelSource(Game.Instance.PropulsionData.GetFuelType("H2O"), reverseSubPriority: true);
                 }
                 catch (Exception e)
                 {
