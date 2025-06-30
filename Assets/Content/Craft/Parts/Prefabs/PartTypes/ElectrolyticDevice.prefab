@@ -188,5 +188,4 @@ MonoBehaviour:
     hyrogenGenerationRate: 1
     powerConsumptionRate: 1
     _subPartPath: Device/DeviceFan
-    _subPartPath2: Device/DeviceFan2
     _positionOffset: {x: 0, y: 0, z: 0}

@@ -20,7 +20,10 @@ MonoBehaviour:
     They
     Now Need Oxygen Water and Food to Survive
 
-    v0.2 Update:Added Wasted Generation'
+    v0.2 Update:Added Wasted Generation
+
+    v0.22
+    Update:Added 2 new parts'
   _loadPriority: 400
   _name: Droodism
   _otherAssets: []
@@ -32,7 +35,7 @@ MonoBehaviour:
   _steamTitle: 
   _steamVisibility: 0
   _versionMajor: 0
-  _versionMinor: 211
+  _versionMinor: 22
   _partCategories:
   - {fileID: 11400000, guid: 7d2b6f557b8767544a162f30e61d22b6, type: 2}
   _parts:

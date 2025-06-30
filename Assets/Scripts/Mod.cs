@@ -1,9 +1,9 @@
 using System.Diagnostics;
-using System.Reflection;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using System.Xml.Linq;
 using Assets.Scripts.Craft;
+using Assets.Scripts.Craft.Fuel;
 using Assets.Scripts.Craft.Parts;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
@@ -14,9 +14,11 @@ using ModApi.Design.Events;
 using ModApi.Scenes.Events;
 using ModApi.Craft.Parts.Events;
 using HarmonyLib;
+using ModApi.Craft;
 using ModApi.Ui.Inspector;
 using static ModApi.Common.Game;
 using static ModApi.Craft.Parts.PartData;
+using Assembly = System.Reflection.Assembly;
 
 namespace Assets.Scripts
 {
@@ -134,7 +136,7 @@ namespace Assets.Scripts
 
             foreach (PartData part in  CheckCommandPod(Craft))
             {
-                //AddFuelTankModifier(part);
+                PatchCommandPod(part);
             }
 
         }
@@ -158,9 +160,9 @@ namespace Assets.Scripts
                 AddLSGModifier(e.Part);
             }
 
-            if (e.PartXml.HasElements)
+            if (e.Part.Name.Contains("Command")||e.Part.Name.Contains("Capusle"))
             {
-                //AddFuelTankModifier(e.Part);
+               PatchCommandPod(e.Part);
             }
             
         }
@@ -221,7 +223,19 @@ namespace Assets.Scripts
             }
         }
     }
-    
+    [HarmonyPatch(typeof(CraftFuelSources), "Rebuild")]
+    class RebuildPatch
+    {
+        static bool Prefix(CraftFuelSources __instance, ref List<CrossFeedScript> ____crossFeeds, ref List<Tuple<IFuelSource, IFuelSource>> ____equalizeCrossFeeds, ref List<CraftFuelSource> ____fuelSources, IFuelTransferManager ____fuelTransferManager, ICraftScript craftScript)
+        {
+            SRCraftFuelSources sources =  new SRCraftFuelSources(____fuelTransferManager);
+            sources.Rebuild(craftScript);
+            ____crossFeeds = sources.CrossFeeds;
+            ____equalizeCrossFeeds = sources.EqualizeCrossFeeds;
+            ____fuelSources = sources.FuelSources;
+            return false;
+        }
+    }
   
     
 }

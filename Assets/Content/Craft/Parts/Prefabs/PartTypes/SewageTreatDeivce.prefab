@@ -182,6 +182,8 @@ MonoBehaviour:
     _version: 1
     _versionLast: 1
     _versionsAllowed: 
+    _fuelSourceAttachPoint: 0
+    _baseMass: 100
     _wastedWaterComsumeRate: 1
     _convertEffiency: 1
     _batteryComsumeRate: 1
