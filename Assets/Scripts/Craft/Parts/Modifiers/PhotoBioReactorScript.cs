@@ -139,7 +139,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private void OnCraftFuelSourceChanged(object sender, EventArgs e) => this.ReFreshSources();
         
         #endregion
-        
+        private void DeployAnimate()
+        {
+            
+            }
         private void ReFreshSources()
         {
             _waterSource = GetCraftFuelSource("H2O");
