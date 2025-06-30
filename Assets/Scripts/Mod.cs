@@ -134,7 +134,7 @@ namespace Assets.Scripts
 
             foreach (PartData part in  CheckCommandPod(Craft))
             {
-                //AddFuelTankModifier(part);
+                PatchCommandPod(part);
             }
 
         }
@@ -158,9 +158,9 @@ namespace Assets.Scripts
                 AddLSGModifier(e.Part);
             }
 
-            if (e.PartXml.HasElements)
+            if (e.Part.Name.Contains("Command")||e.Part.Name.Contains("Capusle"))
             {
-                //AddFuelTankModifier(e.Part);
+               PatchCommandPod(e.Part);
             }
             
         }

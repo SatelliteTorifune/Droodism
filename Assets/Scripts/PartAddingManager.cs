@@ -112,7 +112,7 @@ namespace Assets.Scripts
             List<PartData> CommandPodParts = new List<PartData>();
             foreach (PartData part in craft.Data.Assembly.Parts)
             {
-                if (part.Name.Contains("Capsule"))
+                if (part.Name.Contains("Capsule")||part.Name.Contains("Command"))
                 {
                     if (part.PartScript.Modifiers.Count <11)
                     {
@@ -138,84 +138,23 @@ namespace Assets.Scripts
                 _supportLifeData.InspectorEnabled = true;
             }
         }
-
-        public void AddFuelTankModifier(PartData part)
+        
+        public static void PatchCommandPod(PartData part)
         {
-            if (part==null||part.Modifiers.Count>11)
+            if (part==null)
                 return;
-            Debug.LogFormat("AddFuelTankModifier Called");
-            void AddSingleFuelTankModifier(string fuelType, double fuelCapacity, double fuelAmount)
+            CommandPodData cmd=part.GetModifier<CommandPodData>();
+            if (cmd==null)
+            {return;}
+            STCommandPodPatchData targetScript = part.GetModifier<STCommandPodPatchData>();
+            if (targetScript==null)
             {
-                Assets.Scripts.Craft.Parts.Modifiers.FuelTankData _fuelTankData;
-                _fuelTankData = PartModifierData.CreateFromDefaultXml<FuelTankData>(part);
-                _fuelTankData.Fuel=fuelAmount;
-                _fuelTankData.Capacity=fuelCapacity;
-                SetFuelType(_fuelTankData, fuelType);
-                SetAutoFuelType(_fuelTankData);
-                _fuelTankData.InspectorEnabled = false;
-                _fuelTankData.PartPropertiesEnabled = false;
-                _fuelTankData.SubPriority = 29;
-
-
-            }
-            AddSingleFuelTankModifier("Oxygen",60,60);
-            AddSingleFuelTankModifier("H2O",0.3,0.3);
-            AddSingleFuelTankModifier("Food",5,5);
-            AddSingleFuelTankModifier("Wasted Water",0.3,0);
-            AddSingleFuelTankModifier("CO2",60,0);
-            AddSingleFuelTankModifier("Solid Waste",5,0);
-            try
-            {
-                XElement _xml;
-                _xml = part.GenerateXml(part.PartScript.CraftScript.Transform, false);
-                part.LoadXML(_xml, 15);
-            }
-            catch (Exception e)
-            {
-                Debug.LogFormat("最后一步出事儿啦{0}",e);
-            }
-            
-        }
-        
-        private void SetFuelType(FuelTankData fuelTankData, string fuelTypeId)
-        {
-            try
-            {
-                var fieldInfo = AccessTools.Field(typeof(FuelTankData), "_fuelType");
-                if (fieldInfo == null)
-                {
-                    Debug.LogError($"Cannot find _fuelType field in FuelTankData");
-                    return;
-                }
-
-                fieldInfo.SetValue(fuelTankData, fuelTypeId);
-                Debug.Log($"Set FuelType {fuelTypeId} for FuelTankData");
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"SetFuelType 出错 for {fuelTypeId}: {e}");
+                targetScript = PartModifierData.CreateFromDefaultXml<STCommandPodPatchData>(part);
+                targetScript.PartPropertiesEnabled = false;
+                targetScript.InspectorEnabled = false;
             }
         }
-        
-        private void SetAutoFuelType(FuelTankData fuelTankData)
-        {
-            try
-            {
-                var fieldInfo = AccessTools.Field(typeof(FuelTankData), "_autoFuelType");
-                if (fieldInfo == null)
-                {
-                    Debug.LogError($"Cannot find _fuelType field in FuelTankData");
-                    return;
-                }
 
-                fieldInfo.SetValue(fuelTankData, false);
-                Debug.Log($"Set AutoFuelType for FuelTankData");
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"SetFuelType 出错 for {fuelTankData.FuelType.Name}: {e}");
-            }
-        }
         
     }
 }
