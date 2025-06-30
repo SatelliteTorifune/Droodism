@@ -177,7 +177,7 @@ namespace Assets.Scripts.Craft.Fuel
                     {
                         craftFuelSource=patch?.FoodFuelSource as CraftFuelSource;
                     }
-                    else if (item.FuelType.Id =="Solid Wasted")
+                    else if (item.FuelType.Id =="Solid Waste")
                     {
                         craftFuelSource=patch?.SolidWasteFuelSource as CraftFuelSource;
                     }
