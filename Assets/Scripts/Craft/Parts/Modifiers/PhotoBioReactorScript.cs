@@ -21,6 +21,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private float _efficiency, _rechargeRate, _rechargeEfficiency,_area;
         private Transform _panel = (Transform) null;
         private Transform MainPipe,L1,L2,L3,R1,R2,R3=(Transform)null;
+        
+        private Transform _offset;
+        private Vector3 _offsetPositionInverse;
 
         private float growProgress;
         public void FlightStart(in FlightFrameData frame)
@@ -52,13 +55,25 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 this.Data.CurrentEnabledPercent = Mathf.MoveTowards(this.Data.CurrentEnabledPercent, target, frame.DeltaTime * this.Data.RotationRate);
                 DeployAnimate(Data.CurrentEnabledPercent);
-                
             }
+
+            
+            if (Data.Part.Activated&&Data.CurrentEnabledPercent>=0.99f)
+            {
+                WorkingLogic(frame, false);
+            }
+            
+            if (!Data.Part.Activated&&Data.CurrentEnabledPercent<=0.01f&&Data.UseEletricityWhenFold)
+            {
+                WorkingLogic(frame, true);
+            }
+            
         }
 
         
         public void WorkingLogic(in FlightFrameData frame, bool isUsingArtificialLight)
         {
+            return;
             if (_co2Source==null||_waterSource==null||_oxygenSource==null||_battery==null)
             {
                 return;
@@ -168,6 +183,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 L1 = MainPipe.Find("L1");
                 L2 = L1.Find("L2");
                 L3 = L2.Find("L3");
+                R1= MainPipe.Find("R1");
+                R2= R1.Find("R2");
+                R3= R2.Find("R3");
 
                 if (L1 == null) Debug.LogWarning("L1 not found under MainPipe");
                 if (L2 == null) Debug.LogWarning("L2 not found under L1");
@@ -175,8 +193,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
         }
 
-        private Transform _offset;
-        private Vector3 _offsetPositionInverse;
         public void SetSubPart(Transform subPart)
         {
             if ((UnityEngine.Object) this._offset != (UnityEngine.Object) null)
@@ -189,10 +205,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return;
             this._offset = new GameObject("SubPartRotatorOffset").transform;
             this._offset.SetParent(this.MainPipe.parent, false);
-            this._offset.position = this.MainPipe.TransformPoint(this.Data.PositionOffset1);
+            this._offset.position = this.MainPipe.TransformPoint(Data.PositionOffset1);
             this._offsetPositionInverse = this._offset.InverseTransformPoint(this.MainPipe.position);
         }
-        float fanSpeed = 0.0f;
         public float AngleMultiplier { get; set; } = 1f;
         private void DeployAnimate(float percent)
         {
@@ -200,10 +215,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 Debug.LogWarning((object) "SubPartRotator has no defined sub part.", (UnityEngine.Object) this);
             }
-            MainPipe.localRotation = this.Data.AngleLerp != SubPartRotatorData.AngleLerpType.Quaternion ? Quaternion.Euler(Vector3.Lerp(this.Data.DisabledRotation * this.AngleMultiplier, this.Data.EnabledRotation * this.AngleMultiplier, percent)) : Quaternion.Lerp(Quaternion.Euler(this.Data.DisabledRotation * this.AngleMultiplier), Quaternion.Euler(this.Data.EnabledRotation * this.AngleMultiplier),percent);
-            L1.localRotation = this.Data.AngleLerp != SubPartRotatorData.AngleLerpType.Quaternion ? Quaternion.Euler(Vector3.Lerp(this.Data.DisabledRotation * this.AngleMultiplier, this.Data.EnabledRotation2 * this.AngleMultiplier, percent)) : Quaternion.Lerp(Quaternion.Euler(this.Data.DisabledRotation * this.AngleMultiplier), Quaternion.Euler(this.Data.EnabledRotation2 * this.AngleMultiplier),percent);
-            RotateSub(ref L1,this.Data.EnabledRotation2 * this.AngleMultiplier,this.Data.DisabledRotation * this.AngleMultiplier);
-            RotateSub(ref L2,this.Data.EnabledRotation3 * this.AngleMultiplier,new Vector3(0,0,-90));
+            MainPipe.localRotation = this.Data.AngleLerp != SubPartRotatorData.AngleLerpType.Quaternion ? Quaternion.Euler(Vector3.Lerp(this.Data.DisabledRotation * this.AngleMultiplier, new Vector3(90,0,0) * this.AngleMultiplier, percent)) : Quaternion.Lerp(Quaternion.Euler(this.Data.DisabledRotation * this.AngleMultiplier), Quaternion.Euler(new Vector3(90,0,0) * this.AngleMultiplier),percent);
+            RotateSub(ref L1,new Vector3(0,0,45) * this.AngleMultiplier,this.Data.DisabledRotation * this.AngleMultiplier);
+            RotateSub(ref L2,new Vector3(0,0,-75) * this.AngleMultiplier,new Vector3(0,0,-90));
+            RotateSub(ref L3,new Vector3(0,0,60)  * this.AngleMultiplier,this.Data.DisabledRotation);
+            RotateSub(ref R1,new Vector3(0,0,-45) * this.AngleMultiplier,this.Data.DisabledRotation);
+            RotateSub(ref R2,new Vector3(0,0,75) * this.AngleMultiplier,new Vector3(0,0,90));
+            RotateSub(ref R3,new Vector3(0,0,-60) * this.AngleMultiplier,this.Data.DisabledRotation);
             
 
             void RotateSub(ref Transform t,Vector3 euler,Vector3 disableRotation)
@@ -218,7 +236,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             this.Data.CurrentEnabledPercent = percent;
         }
-
         private void ReFreshSources()
         {
             _waterSource = GetCraftFuelSource("H2O");
