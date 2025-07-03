@@ -11,7 +11,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
     [Serializable]
     [DesignerPartModifier("PhotoBioReactor")]
-    [PartModifierTypeId("Droodism.PhotoBioReactor")]
+    [PartModifierTypeId("PhotoBioReactor")]
     public class PhotoBioReactorData : PartModifierData<PhotoBioReactorScript>
     {
         [SerializeField] 
@@ -41,6 +41,53 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private float _solidWasteConsumptionRate = 1f;
         [SerializeField] [PartModifierProperty(true, false)]
         private float _boosteScale = 1.5f;
+        [SerializeField]
+        [PartModifierProperty(true, false)]
+        private string _subPartPath = string.Empty;
+        [SerializeField]
+        [PartModifierProperty(true, false)]
+        private Vector3 _positionOffset1 = Vector3.zero;
+        [SerializeField]
+        [PartModifierProperty(true, false)]
+        private SubPartRotatorData.AngleLerpType _angleLerp = SubPartRotatorData.AngleLerpType.Euler;
+        public SubPartRotatorData.AngleLerpType AngleLerp => this._angleLerp;
+        public Vector3 PositionOffset1
+        {
+            get => this._positionOffset1;
+            set => this._positionOffset1 = value;
+        }
+        [SerializeField]
+        [PartModifierProperty(true, false)]
+        private Vector3 _disabledRotation = Vector3.zero;
+        public Vector3 DisabledRotation
+        {
+            get => this._disabledRotation;
+            set => this._disabledRotation = value;
+        }
+        [SerializeField]
+        [PartModifierProperty(true, false)]
+        private Vector3 _enabledRotation = Vector3.zero;
+        public Vector3 EnabledRotation
+        {
+            get => this._enabledRotation;
+            set => this._enabledRotation = value;
+        }
+        [SerializeField]
+        [PartModifierProperty(true, false)]
+        private float _currentEnabledPercent = 0.0f;
+
+        public float CurrentEnabledPercent
+        {
+            get => this._currentEnabledPercent*1f;
+            set => this._currentEnabledPercent = value;
+        }
+        [SerializeField]
+        [DesignerPropertySlider(0.5f, 2.5f, 41, Label = "Rotation Speed")]
+        private float _rotationSpeed = 1f;
+        [SerializeField]
+        [PartModifierProperty(true, false)]
+        private float _rotationRate = 0.1f;
+        public float RotationRate => this._rotationRate * this._rotationSpeed;
         public float FoodGeneratedScale
         {
             get=>this._foodGeneratedScale*1f;
@@ -93,5 +140,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             get=>this._boosteScale*1f;
         }
+        
+        public string SubPartPath=>this._subPartPath;
     }
 }

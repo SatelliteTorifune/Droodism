@@ -149,7 +149,7 @@ namespace Assets.Scripts
         public void OnPartAdded(object sender,CreatedPartEventArgs e)
         {
             
-            Debug.LogFormat($"{e.Part.Name},id{e.Part.Id}有{e.Part.Modifiers.Count}个modifier,1:{e.PartType.Name}");
+            //Debug.LogFormat($"{e.Part.Name},id{e.Part.Id}有{e.Part.Modifiers.Count}个modifier,1:{e.PartType.Name}");
             if (e.Part.Name=="Eva"||e.Part.Name == "Eva-Tourist")
             {
                 AddLsModifier(e.Part);

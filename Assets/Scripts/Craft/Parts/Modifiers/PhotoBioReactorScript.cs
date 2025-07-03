@@ -1,3 +1,4 @@
+using ModApi;
 using ModApi.Craft;
 using ModApi.Design;
 using ModApi.GameLoop;
@@ -18,6 +19,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private IFuelSource _battery,_co2Source,_waterSource,_foodSource,_solidWastedSource,_oxygenSource;
         private float _efficiency, _rechargeRate, _rechargeEfficiency,_area;
         private Transform _panel = (Transform) null;
+        private Transform MainPipe=(Transform)null;
 
         private float growProgress;
         public void FlightStart(in FlightFrameData frame)
@@ -28,8 +30,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             ReFreshSources();
         }
 
+        private float current = 0;
         public void FlightUpdate(in FlightFrameData frame)
         {
+            /*
             ICraftFlightData flightData = this.PartScript.CraftScript.FlightData;
             this._efficiency = this.Data.Efficiency;
             this._rechargeRate = (float) flightData.SolarRadiationIntensity * this._efficiency * this._area;
@@ -41,9 +45,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             else
                 this._rechargeEfficiency = 0.0f;
             this._battery.AddFuel((double) this._rechargeRate * frame.DeltaTimeWorld * (1.0 / 1000.0));
-            WorkingLogic(frame, PartScript.Data.Activated);
+            WorkingLogic(frame, PartScript.Data.Activated);*/
+            float target = this.Data.Part.Activated ? 1f : 0.0f;
+            if ((double) Data.CurrentEnabledPercent != (double) target)
+            {
+                this.Data.CurrentEnabledPercent = Mathf.MoveTowards(this.Data.CurrentEnabledPercent, target, frame.DeltaTime * this.Data.RotationRate);
+                DeployAnimate(Data.CurrentEnabledPercent);
+                
+            }
         }
 
+        
         public void WorkingLogic(in FlightFrameData frame, bool isUsingArtificialLight)
         {
             if (_co2Source==null||_waterSource==null||_oxygenSource==null||_battery==null)
@@ -131,18 +143,61 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         protected override void OnInitialized()
         {
             base.OnInitialized();
-            
             this.UpdateScale();
+            UpdateComponents();
             
         }
         
         private void OnCraftFuelSourceChanged(object sender, EventArgs e) => this.ReFreshSources();
         
         #endregion
-        private void DeployAnimate()
+
+        private void UpdateComponents()
         {
-            
+            string[] strArray = this.Data.SubPartPath.Split('/', StringSplitOptions.None);
+            Transform subPart = this.transform;
+            foreach (string n in strArray)
+                subPart = subPart.Find(n) ?? subPart;
+            if (subPart.name == strArray[strArray.Length - 1])
+                this.SetSubPart(subPart);
+            else
+                this.SetSubPart(Utilities.FindFirstGameObjectMyselfOrChildren(this.Data.SubPartPath, this.gameObject)?.transform);
+        }
+
+        private Transform _offset;
+        private Vector3 _offsetPositionInverse;
+        public void SetSubPart(Transform subPart)
+        {
+            if ((UnityEngine.Object) this._offset != (UnityEngine.Object) null)
+            {
+                UnityEngine.Object.Destroy((UnityEngine.Object) this._offset.gameObject);
+                this._offset = (Transform) null;
             }
+            this.MainPipe = subPart;
+            if (!((UnityEngine.Object) this.MainPipe != (UnityEngine.Object) null) || (double) this.Data.PositionOffset1.magnitude <= 0.0)
+                return;
+            this._offset = new GameObject("SubPartRotatorOffset").transform;
+            this._offset.SetParent(this.MainPipe.parent, false);
+            this._offset.position = this.MainPipe.TransformPoint(this.Data.PositionOffset1);
+            this._offsetPositionInverse = this._offset.InverseTransformPoint(this.MainPipe.position);
+        }
+        float fanSpeed = 0.0f;
+        public float AngleMultiplier { get; set; } = 1f;
+        private void DeployAnimate(float percent)
+        {
+            if ((UnityEngine.Object) this.MainPipe == (UnityEngine.Object) null)
+            {
+                Debug.LogWarning((object) "SubPartRotator has no defined sub part.", (UnityEngine.Object) this);
+            }
+            MainPipe.localRotation = this.Data.AngleLerp != SubPartRotatorData.AngleLerpType.Quaternion ? Quaternion.Euler(Vector3.Lerp(this.Data.DisabledRotation * this.AngleMultiplier, this.Data.EnabledRotation * this.AngleMultiplier, percent)) : Quaternion.Lerp(Quaternion.Euler(this.Data.DisabledRotation * this.AngleMultiplier), Quaternion.Euler(this.Data.EnabledRotation * this.AngleMultiplier),percent);
+            if ((UnityEngine.Object) this._offset != (UnityEngine.Object) null)
+            {
+                this._offset.localRotation = this.MainPipe.localRotation;
+                this.MainPipe.position = this._offset.TransformPoint(this._offsetPositionInverse);
+            }
+            this.Data.CurrentEnabledPercent = percent;
+        }
+
         private void ReFreshSources()
         {
             _waterSource = GetCraftFuelSource("H2O");

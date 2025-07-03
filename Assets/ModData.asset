@@ -41,10 +41,12 @@ MonoBehaviour:
   _parts:
   - {fileID: 4900000, guid: 14776ff5d3403f64eba601b94451442d, type: 3}
   - {fileID: 4900000, guid: 21a224a5845f95b48a100381457d8adc, type: 3}
+  - {fileID: 4900000, guid: 8ab442a4620aba345a00dddf639c5d2c, type: 3}
   - {fileID: 4900000, guid: 40bbb2821f2c6b44ab6990bf28e48b6d, type: 3}
   - {fileID: 4900000, guid: 11a692886d113e149937457d57601c68, type: 3}
   - {fileID: 4900000, guid: 3187f51072da32145ad84924d186c061, type: 3}
   _partStyleExtensions: []
   _partTextureStyles: []
   _persistentObjects: []
-  _uiResourceDatabases: []
+  _uiResourceDatabases:
+  - {fileID: 11400000, guid: f4a792f930de4064aa7af08996bcf44f, type: 2}

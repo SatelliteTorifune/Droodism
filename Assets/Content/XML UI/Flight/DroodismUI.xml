@@ -1,0 +1,30 @@
+<XmlLayout xmlns="" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="Assets/ModTools/UI/XmlLayout.xsd">
+	<Include path="Ui/Xml/Flight/FlightStyles.xml" />
+	<Include path="Ui/Xml/InspectorPanel.xml" />
+
+	<Defaults>
+	</Defaults>
+
+	<RectTransform class="safe-area">
+		<!--Main Panel-->
+		<Panel id="DroodismUI-Panel" class="flight-panel draggable" width="350" height="400" rectAlignment="LowerRight" offsetXY="-100 100" border="border" active="true">
+			<Panel class="inspector-header translucent-panel" height="30" rectAlignment="UpperCenter">
+				<TextMeshPro class="inspector-title" text="Life Support Resources Inspector" margin="5 0 50 0" />
+				<Image class="inspector-panel-pin" width="24" height="24" rectAlignment="MiddleRight" sprite="Assets/Content/XML UI/Sprites/DroodsimUIIcon.png" onClick="OnTogglePanelState" hoverClass="inspector-panel-pin-hover"/>
+			</Panel>
+			<Panel width="100%" height="370" rectAlignment="LowerCenter">
+				<VerticalScrollView class="no-image">
+					<VerticalLayout id="event-list" class="no-image" contentSizeFitter="vertical" padding="4" spacing="4" childForceExpandHeight="false"></VerticalLayout>
+				</VerticalScrollView>
+			</Panel>
+			<Image class="audio-btn-click" width="30" height="30" rectAlignment="LowerCenter" offsetXY="32 4" sprite="Ui/Sprites/Flight/IconTimeWarp" onClick="OnWarpButtonClicked" tooltip="Warp To Next Event"/>
+			<Image id="add-event-button" class="audio-btn-click" width="30" height="30" rectAlignment="LowerCenter" offsetXY="-32 4" sprite="Ui/Sprites/Common/IconAdd" onClick="AddEventButtonClicked" hoverClass="inspector-panel-pin-hover"/>
+		</Panel>
+		
+	</RectTransform>
+	<!--Templates-->
+	<Panel id="text-list-item" class="audio-btn-click" color="#2e353e7F" preferredHeight="35" active="false" onClick="OnEventListItemClicked(this)">
+		<TextMeshPro internalId="label" class="label column-left" offsetXY="4 0" fontSize="15" text="label"/>
+		<TextMeshPro internalId="value" class="label column-right" offsetXY="-4 0" fontSize="15" text="value"/>
+	</Panel>
+</XmlLayout>
