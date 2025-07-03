@@ -51,6 +51,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         [PartModifierProperty(true, false)]
         private SubPartRotatorData.AngleLerpType _angleLerp = SubPartRotatorData.AngleLerpType.Euler;
         public SubPartRotatorData.AngleLerpType AngleLerp => this._angleLerp;
+        public SubPartRotatorData.AngleLerpType AngleLerp2 => SubPartRotatorData.AngleLerpType.Quaternion;
         public Vector3 PositionOffset1
         {
             get => this._positionOffset1;
@@ -71,6 +72,30 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             get => this._enabledRotation;
             set => this._enabledRotation = value;
+        }
+        [SerializeField]
+        [PartModifierProperty(true, false)]
+        private Vector3 _enabledRotation2 = Vector3.zero;
+        public Vector3 EnabledRotation2
+        {
+            get => this._enabledRotation2;
+            set => this._enabledRotation2 = value;
+        }
+        [SerializeField]
+        [PartModifierProperty(true, false)]
+        private Vector3 _enabledRotation3 = Vector3.zero;
+        public Vector3 EnabledRotation3
+        {
+            get => this._enabledRotation3;
+            set => this._enabledRotation3 = value;
+        }
+        [SerializeField]
+        [PartModifierProperty(true, false)]
+        private Vector3 _enabledRotation4 = Vector3.zero;
+        public Vector3 EnabledRotation4
+        {
+            get => this._enabledRotation4;
+            set => this._enabledRotation4= value;
         }
         [SerializeField]
         [PartModifierProperty(true, false)]

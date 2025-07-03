@@ -202,10 +202,13 @@ MonoBehaviour:
     _solidWasteConsumptionRate: 1
     _boosteScale: 1.5
     _subPartPath: DeviceBase/MainPipe
-    _positionOffset1: {x: 0, y: 0, z: 0}
+    _positionOffset1: {x: 0, y: 0, z: 0.65}
     _angleLerp: 1
     _disabledRotation: {x: 0, y: 0, z: 0}
     _enabledRotation: {x: 90, y: 0, z: 0}
+    _enabledRotation2: {x: 0, y: 0, z: 0}
+    _enabledRotation3: {x: 0, y: 0, z: 0}
+    _enabledRotation4: {x: 0, y: 0, z: 0}
     _currentEnabledPercent: 0
     _rotationSpeed: 1
     _rotationRate: 0.1

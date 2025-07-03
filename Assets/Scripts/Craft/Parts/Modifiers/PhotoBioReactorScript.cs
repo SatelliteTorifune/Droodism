@@ -1,3 +1,4 @@
+using System.Numerics;
 using ModApi;
 using ModApi.Craft;
 using ModApi.Design;
@@ -19,7 +20,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private IFuelSource _battery,_co2Source,_waterSource,_foodSource,_solidWastedSource,_oxygenSource;
         private float _efficiency, _rechargeRate, _rechargeEfficiency,_area;
         private Transform _panel = (Transform) null;
-        private Transform MainPipe=(Transform)null;
+        private Transform MainPipe,L1,L2,L3,R1,R2,R3=(Transform)null;
 
         private float growProgress;
         public void FlightStart(in FlightFrameData frame)
@@ -162,6 +163,16 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 this.SetSubPart(subPart);
             else
                 this.SetSubPart(Utilities.FindFirstGameObjectMyselfOrChildren(this.Data.SubPartPath, this.gameObject)?.transform);
+            if (MainPipe != null)
+            {
+                L1 = MainPipe.Find("L1");
+                L2 = L1.Find("L2");
+                L3 = L2.Find("L3");
+
+                if (L1 == null) Debug.LogWarning("L1 not found under MainPipe");
+                if (L2 == null) Debug.LogWarning("L2 not found under L1");
+                if (L3 == null) Debug.LogWarning("L3 not found under L3");
+            }
         }
 
         private Transform _offset;
@@ -185,11 +196,21 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public float AngleMultiplier { get; set; } = 1f;
         private void DeployAnimate(float percent)
         {
-            if ((UnityEngine.Object) this.MainPipe == (UnityEngine.Object) null)
+            if ((UnityEngine.Object) this.MainPipe == (UnityEngine.Object) null||(UnityEngine.Object) this.L1 == (UnityEngine.Object) null)
             {
                 Debug.LogWarning((object) "SubPartRotator has no defined sub part.", (UnityEngine.Object) this);
             }
             MainPipe.localRotation = this.Data.AngleLerp != SubPartRotatorData.AngleLerpType.Quaternion ? Quaternion.Euler(Vector3.Lerp(this.Data.DisabledRotation * this.AngleMultiplier, this.Data.EnabledRotation * this.AngleMultiplier, percent)) : Quaternion.Lerp(Quaternion.Euler(this.Data.DisabledRotation * this.AngleMultiplier), Quaternion.Euler(this.Data.EnabledRotation * this.AngleMultiplier),percent);
+            L1.localRotation = this.Data.AngleLerp != SubPartRotatorData.AngleLerpType.Quaternion ? Quaternion.Euler(Vector3.Lerp(this.Data.DisabledRotation * this.AngleMultiplier, this.Data.EnabledRotation2 * this.AngleMultiplier, percent)) : Quaternion.Lerp(Quaternion.Euler(this.Data.DisabledRotation * this.AngleMultiplier), Quaternion.Euler(this.Data.EnabledRotation2 * this.AngleMultiplier),percent);
+            RotateSub(ref L1,this.Data.EnabledRotation2 * this.AngleMultiplier,this.Data.DisabledRotation * this.AngleMultiplier);
+            RotateSub(ref L2,this.Data.EnabledRotation3 * this.AngleMultiplier,new Vector3(0,0,-90));
+            
+
+            void RotateSub(ref Transform t,Vector3 euler,Vector3 disableRotation)
+            {
+                t.localRotation = this.Data.AngleLerp != SubPartRotatorData.AngleLerpType.Quaternion ? Quaternion.Euler(Vector3.Lerp(disableRotation * this.AngleMultiplier, euler, percent)) : Quaternion.Lerp(Quaternion.Euler(disableRotation * this.AngleMultiplier), Quaternion.Euler(euler),percent);
+            }
+
             if ((UnityEngine.Object) this._offset != (UnityEngine.Object) null)
             {
                 this._offset.localRotation = this.MainPipe.localRotation;
