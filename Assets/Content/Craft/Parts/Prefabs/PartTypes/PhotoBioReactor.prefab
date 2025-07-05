@@ -84,12 +84,12 @@ MonoBehaviour:
       Food,powered by solar
 
 
-      When<color=red>Deactive</color>,turning CO2/Water
-      to Oxygen and Food,Consuming Electricity charge
+      When<color=red>Deactive</color>,and enabled function
+      of working on fold,turning CO2/Water to Oxygen and Food,Consuming Electricity
+      charge
 
 
-      Solid Waste Will boost
-      the food generation'
+      Solid Waste Will boost the food generation'
     _displayOrder: 0
     _iconPath: 
     _iconType: 0
@@ -123,7 +123,7 @@ MonoBehaviour:
     _version: 1
     _versionLast: 1
     _versionsAllowed: 
-    _autoActivateIfNoStageOrActivationGroup: 1
+    _autoActivateIfNoStageOrActivationGroup: 0
     _buoyancyBaseScale: 1
     _buoyancyUserScale: 1
     _castShadows: 1
@@ -194,12 +194,13 @@ MonoBehaviour:
     _efficiency: 0.46
     _growProgressTotal: 1
     _growSpeed: 1
-    _decaySpeed: 1
+    _decaySpeed: 0.3
     _co2ConsumptionRate: 1
     _oxygenGenerationRate: 1
     _waterConsumptionRate: 1
     _powerConsumptionRate: 1
     _solidWasteConsumptionRate: 1
-    _boosteScale: 1.5
+    _wastedWaterGenerationRate: 1
+    _boosteScale: 3
     useEletricityWhenFold: 0
     SubPartPath: DeviceBase/MainPipe

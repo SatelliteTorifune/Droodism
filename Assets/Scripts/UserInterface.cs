@@ -341,7 +341,8 @@ namespace Assets.Scripts
             var OxygenProgressBarModel = new ProgressBarModel("Oxygen Percentage", () =>
                 (float)(_oxygenSource.TotalFuel / _oxygenSource.TotalCapacity));
             LS.Add(OxygenProgressBarModel);
-            
+            LS.Add(new TextModel("Oxygen Percentage",
+                () => Units.GetPercentageString((float)(_oxygenSource.TotalFuel / _oxygenSource.TotalCapacity))));
             // Create a text model for the oxygen supply time and add it to the life support group
             var OxygenTime = new TextModel("Oxygen Supply Time",
                 () => ($"{Units.GetStopwatchTimeString(_oxygenSource.TotalFuel / (oxygenConsumeRateTotal * (isEva ? (Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.GetModifier<SupportLifeScript>().isTourist ? 1.05 : 1) : 1) * (isEva ? (Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.GetModifier<SupportLifeScript>().isRunning ? 1.75 : 1) : 1)))}"));
@@ -351,6 +352,8 @@ namespace Assets.Scripts
             var WaterProgressBarModel = new ProgressBarModel("Water Percentage", () =>
                 (float)(_waterSource.TotalFuel / _waterSource.TotalCapacity));
             LS.Add(WaterProgressBarModel);
+            LS.Add(new TextModel("Water Percentage",
+                () => Units.GetPercentageString((float)(_waterSource.TotalFuel / _waterSource.TotalCapacity))));
             // Create a text model for the water supply time and add it to the life support group
             var WaterTime = new TextModel("Water Supply Time",
                 () => ($"{Units.GetStopwatchTimeString(_waterSource.TotalFuel / (waterConsumeRateTotal * (isEva ? (Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.GetModifier<SupportLifeScript>().isTourist ? 1.05 : 1) : 1) * (isEva ? (Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.GetModifier<SupportLifeScript>().isRunning ? 1.75 : 1) : 1)))}"));
@@ -360,6 +363,8 @@ namespace Assets.Scripts
             var FoodProgressBarModel = new ProgressBarModel("Food Percentage", () =>
                 (float)(_foodSource.TotalFuel / _foodSource.TotalCapacity));
             LS.Add(FoodProgressBarModel);
+            LS.Add(new TextModel("Food Percentage",
+                () => Units.GetPercentageString((float)(_foodSource.TotalFuel / _foodSource.TotalCapacity))));
             // Create a text model for the food supply time and add it to the life support group
             var FoodTime = new TextModel("Food Supply Time",
                 () => ($"{Units.GetStopwatchTimeString(_foodSource.TotalFuel / (foodConsumeRateTotal * (isEva ? (Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.GetModifier<SupportLifeScript>().isTourist ? 1.05 : 1) : 1) * (isEva ? (Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.GetModifier<SupportLifeScript>().isRunning ? 1.75 : 1) : 1)))}"));
@@ -368,13 +373,18 @@ namespace Assets.Scripts
             var CO2ProgressBarModel = new ProgressBarModel("CO2 level", () =>
                 (float)(_co2Source.TotalFuel / _co2Source.TotalCapacity));
             LS.Add(CO2ProgressBarModel);
-            
+            LS.Add(new TextModel("CO2 Percentage",
+                () => Units.GetPercentageString((float)(_co2Source.TotalFuel / _co2Source.TotalCapacity))));
             var WastedWaterProgressBarModel = new ProgressBarModel("Wasted Water level", () =>
                 (float)(_wastedWaterSource.TotalFuel / _wastedWaterSource.TotalCapacity));
             LS.Add(WastedWaterProgressBarModel);
+            LS.Add(new TextModel("Wasted Water Percentage",
+                () => Units.GetPercentageString((float)(_wastedWaterSource.TotalFuel / _wastedWaterSource.TotalCapacity))));
             var SolidWasteProgressBarModel = new ProgressBarModel("Solid Waste level", () =>
                 (float)(_solidWasteSource.TotalFuel / _solidWasteSource.TotalCapacity));
             LS.Add(SolidWasteProgressBarModel);
+            LS.Add(new TextModel("Solid Waste Percentage",
+                () => Units.GetPercentageString((float)(_solidWasteSource.TotalFuel / _solidWasteSource.TotalCapacity))));
             
             LS.Add(new TextButtonModel(
                 "Manual Update",

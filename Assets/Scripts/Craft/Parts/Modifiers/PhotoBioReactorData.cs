@@ -22,7 +22,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private float _efficiency = 0.46f;
         [SerializeField]
         [PartModifierProperty(true, false)]
-        private float _growProgressTotal = 1f;
+        private float _growProgressTotal = 100f;
         [SerializeField]
         [PartModifierProperty(true, false)]
         private float _growSpeed = 1f;
@@ -39,6 +39,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private float _powerConsumptionRate = 1f;
         [SerializeField] [PartModifierProperty(true, false)]
         private float _solidWasteConsumptionRate = 1f;
+        [SerializeField] [PartModifierProperty(true, false)]
+        private float _wastedWaterGenerationRate = 1f;
         [SerializeField] [PartModifierProperty(true, false)]
         private float _boosteScale = 1.5f;
 
@@ -80,7 +82,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public float RotationRate => this._rotationRate * this._rotationSpeed;
         public float FoodGeneratedScale
         {
-            get=>this._foodGeneratedScale*1f;
+            get=>this._foodGeneratedScale*0.5f;
         }
 
         public float Efficiency
@@ -90,7 +92,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public float GrowProgressTotal
         {
-            get=>this._growProgressTotal*1f;
+            get=>this._growProgressTotal*40000f;
         }
 
         public float GrowSpeed
@@ -105,26 +107,30 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public float Co2ConsumptionRate
         {
-            get=>this._co2ConsumptionRate*1f;
+            get=>this._co2ConsumptionRate*0.0028f;
         }
 
         public float OxygenGenerationRate
         {
-            get=>this._oxygenGenerationRate*1f;
+            get=>this._oxygenGenerationRate*0.003f;
         }
         public float WaterConsumptionRate
         {
-            get=>this._waterConsumptionRate*1f;
+            get=>this._waterConsumptionRate*0.023f;
         }
 
         public float PowerConsumptionRate
         {
-            get=>this._powerConsumptionRate*1f;
+            get=>this._powerConsumptionRate*0.5f;
         }
 
+        public float WastedWaterGenerationRate
+        {
+            get=>this._wastedWaterGenerationRate*0.004f;
+        }
         public float SolidWasteConsumptionRate
         {
-            get=>this._solidWasteConsumptionRate*1f;
+            get=>this._solidWasteConsumptionRate*2E-05f;
         }
         public float BoosteScale
         {

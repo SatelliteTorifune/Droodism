@@ -61,7 +61,7 @@ MonoBehaviour:
     _mirrorConfig:
       _hasRotationOffset: 0
       _rotationOffsetEuler: {x: 0, y: 0, z: 0}
-    _name: Sodium Peroxide Container
+    _name: 
     _partCollisionHandling: 0
     _price: 10000
     _unscaledMass: 10
@@ -81,8 +81,8 @@ MonoBehaviour:
   Data:
     _activationGroup: 0
     _category: {fileID: 11400000, guid: 7d2b6f557b8767544a162f30e61d22b6, type: 2}
-    _description: Taking in CO2/Water/Wasted Water and Give out <color=green>Oxygen</color>
-      when emergency,does not require electricity charge to work
+    _description: Taking in CO2/Wasted Water and Give out <color=green>Oxygen</color>
+      when emergency,does not require electricity charge to work|
     _displayOrder: 0
     _iconPath: 
     _iconType: 0

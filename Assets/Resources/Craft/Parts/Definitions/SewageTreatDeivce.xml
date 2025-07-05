@@ -6,7 +6,7 @@
       <SewageTreatDeivce fuelSourceAttachPoint="0" baseMass="100" wastedWaterComsumeRate="1" convertEffiency="1" batteryComsumeRate="1" scale="1" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
     </Modifiers>
     <AttachPoints>
-      <AttachPoint name="AttachPoint1" displayName="Device Connection" position="0,-0.775,0" rotation="270,0,0" positionOffset="0,0,0" rotationOffset="0,0,0" allowRotation="true" allowInvertedConnection="false" canReceive="true" canSeek="true" ignoreSurfaces="false" radius="1" fuelLine="true" disableJointCollisions="true" />
+      <AttachPoint name="AttachPoint1" displayName="Device Connection" position="0,-0.775,0" rotation="90,0,0" positionOffset="0,0,0" rotationOffset="0,0,0" allowRotation="true" allowInvertedConnection="false" canReceive="true" canSeek="true" ignoreSurfaces="false" radius="1" fuelLine="true" />
     </AttachPoints>
     <SubpartTypes>
       <SubpartType index="0" xmlName="" displayName="Part" />
