@@ -123,10 +123,10 @@ namespace Assets.Scripts
         /// </summary>
         public void OnCraftLoaded()
         {
-            
             foreach (PartData part in CheckDrood(Craft))
             {
                 AddLsModifier(part);
+                //PatchCommandPod(part);
             }
 
             foreach (PartData part in  CheckGenerator(Craft))
@@ -153,6 +153,7 @@ namespace Assets.Scripts
             if (e.Part.Name=="Eva"||e.Part.Name == "Eva-Tourist")
             {
                 AddLsModifier(e.Part);
+                //PatchCommandPod(e.Part);
             }
             
             if (e.Part.Name == "Generator1")

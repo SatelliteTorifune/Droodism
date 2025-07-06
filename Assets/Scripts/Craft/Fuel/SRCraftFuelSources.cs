@@ -233,22 +233,22 @@ namespace Assets.Scripts.Craft.Fuel
                 commandPodScript.BatteryFuelSource = CreateFuelSource(FuelType.Battery);
                 commandPodScript.JetFuelSource = CreateFuelSource(FuelType.Jet, reverseSubPriority: true);
                 commandPodScript.MonoFuelSource = CreateFuelSource(FuelType.Monopropellant, reverseSubPriority: true);
-                
-                
-                try
+                if (patchScript != null)
                 {
-                    patchScript.OxygenFuelSource = CreateFuelSource(Game.Instance.PropulsionData.GetFuelType("Oxygen"), reverseSubPriority: true);
-                    patchScript.WastedWaterFuelSource= CreateFuelSource(Game.Instance.PropulsionData.GetFuelType("Wasted Water"), reverseSubPriority: true);
-                    patchScript.FoodFuelSource = CreateFuelSource(Game.Instance.PropulsionData.GetFuelType("Food"), reverseSubPriority: true);
-                    patchScript.SolidWasteFuelSource= CreateFuelSource(Game.Instance.PropulsionData.GetFuelType("Solid Waste"), reverseSubPriority: true);
-                    patchScript.CO2FuelSource = CreateFuelSource(Game.Instance.PropulsionData.GetFuelType("CO2"), reverseSubPriority: true);
-                    patchScript.WaterFuelSource = CreateFuelSource(Game.Instance.PropulsionData.GetFuelType("H2O"), reverseSubPriority: true);
+                    try
+                    {
+                        patchScript.OxygenFuelSource = CreateFuelSource(Game.Instance.PropulsionData.GetFuelType("Oxygen"), reverseSubPriority: true);
+                        patchScript.WastedWaterFuelSource= CreateFuelSource(Game.Instance.PropulsionData.GetFuelType("Wasted Water"), reverseSubPriority: true);
+                        patchScript.FoodFuelSource = CreateFuelSource(Game.Instance.PropulsionData.GetFuelType("Food"), reverseSubPriority: true);
+                        patchScript.SolidWasteFuelSource= CreateFuelSource(Game.Instance.PropulsionData.GetFuelType("Solid Waste"), reverseSubPriority: true);
+                        patchScript.CO2FuelSource = CreateFuelSource(Game.Instance.PropulsionData.GetFuelType("CO2"), reverseSubPriority: true);
+                        patchScript.WaterFuelSource = CreateFuelSource(Game.Instance.PropulsionData.GetFuelType("H2O"), reverseSubPriority: true);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogFormat($"SRCCraftFuelSources.Rebuild: Error creating fuel sources: {e}");
+                    }
                 }
-                catch (Exception e)
-                {
-                    Debug.LogFormat($"SRCCraftFuelSources.Rebuild: Error creating fuel sources: {e}");
-                }
-                
             }
 
             IReadOnlyList<PartData> parts = craftScript.Data.Assembly.Parts;

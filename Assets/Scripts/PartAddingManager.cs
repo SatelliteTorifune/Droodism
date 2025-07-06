@@ -56,10 +56,8 @@ namespace Assets.Scripts
 
                 if (isDrood && !hasLifeSupport)
                 {
-
                     DroodParts.Add(part);
                 }
-
             }
 
             for (int i = 0; i < DroodParts.Count; i++)
@@ -95,8 +93,6 @@ namespace Assets.Scripts
             List<PartData> GeneratorParts = new List<PartData>();
             foreach (PartData part in craft.Data.Assembly.Parts)
             {
-
-               
                 if ( part.PartType.Name=="Generator1")
                 {
                     GeneratorParts.Add(part);
@@ -114,11 +110,7 @@ namespace Assets.Scripts
             {
                 if (part.Name.Contains("Capsule")||part.Name.Contains("Command"))
                 {
-                    if (part.PartScript.Modifiers.Count <11)
-                    {
-                        CommandPodParts.Add(part);
-                    }
-                    
+                    CommandPodParts.Add(part);
                 }
                 
             }
@@ -139,13 +131,10 @@ namespace Assets.Scripts
             }
         }
         
-        public static void PatchCommandPod(PartData part)
+        public  void PatchCommandPod(PartData part)
         {
             if (part==null)
                 return;
-            CommandPodData cmd=part.GetModifier<CommandPodData>();
-            if (cmd==null)
-            {return;}
             STCommandPodPatchData targetScript = part.GetModifier<STCommandPodPatchData>();
             if (targetScript==null)
             {

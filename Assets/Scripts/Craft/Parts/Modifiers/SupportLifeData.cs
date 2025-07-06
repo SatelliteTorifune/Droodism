@@ -41,17 +41,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         [SerializeField] [DesignerPropertySlider(0.1f, 3f, 51, Label = "<color=red>Water</color> Carry Amount(days)", Tooltip = "Define How much<color=red> Drink Water</color> Drood himself/herself will carry when Eva.")]
         private float desireWaterCapacity = 0.1f;
         
-        [SerializeField] [PartModifierProperty(true, false)]
         public double _oxygenAmountBuffer=1f;
-        [SerializeField][PartModifierProperty(true, false)]
         public double _foodAmountBuffer=1f;
-        [SerializeField][PartModifierProperty(true, false)]
-        public double _waterAmountBuffer=1f;
-        [SerializeField] [PartModifierProperty(true, false)]
+        public double _waterAmountBuffer = 1f;
         public double _co2AmountBuffer=1f;
-        [SerializeField][PartModifierProperty(true, false)]
         public double _wastedWaterAmountBuffer=1f;
-        [SerializeField][PartModifierProperty(true, false)]
         public double _solidWasteAmountBuffer=1f;
         [SerializeField][PartModifierProperty(true, false)]
         public double evaConsumeEfficiency=0.3f;

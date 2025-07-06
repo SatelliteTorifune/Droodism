@@ -23,7 +23,13 @@ MonoBehaviour:
     v0.2 Update:Added Wasted Generation
 
     v0.22
-    Update:Added 2 new parts'
+    Update:Added 2 new parts
+
+    v0.232 Update:1 new part
+
+
+    <color=red><size=250%>Require
+    JUNO Harmony</size></color>'
   _loadPriority: 400
   _name: Droodism
   _otherAssets: []
@@ -35,7 +41,7 @@ MonoBehaviour:
   _steamTitle: 
   _steamVisibility: 0
   _versionMajor: 0
-  _versionMinor: 23
+  _versionMinor: 232
   _partCategories:
   - {fileID: 11400000, guid: 7d2b6f557b8767544a162f30e61d22b6, type: 2}
   _parts:
