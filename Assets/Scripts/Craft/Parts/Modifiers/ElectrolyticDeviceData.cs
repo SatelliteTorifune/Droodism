@@ -30,11 +30,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         [SerializeField]
         [PartModifierProperty(true, false)]
         private double powerConsumptionRate = 1;
-        [SerializeField]
-        [PartModifierProperty(true, false)]
-        private string _subPartPath = string.Empty;
-        [SerializeField]
-        [PartModifierProperty(true, false)]
+
+        private string _subPartPath = "Device/DeviceFan";
         private Vector3 _positionOffset = Vector3.zero;
         public Vector3 PositionOffset
         {

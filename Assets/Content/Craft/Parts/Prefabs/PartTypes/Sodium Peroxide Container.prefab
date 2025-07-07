@@ -61,7 +61,7 @@ MonoBehaviour:
     _mirrorConfig:
       _hasRotationOffset: 0
       _rotationOffsetEuler: {x: 0, y: 0, z: 0}
-    _name: 
+    _name: Sodium Peroxide Container
     _partCollisionHandling: 0
     _price: 10000
     _unscaledMass: 10
