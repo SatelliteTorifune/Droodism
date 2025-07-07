@@ -141,6 +141,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             var WastedWaterProgressBarModel = new ProgressBarModel("Generation Progress", () =>
                 (float)(oxygenGeneratedAmount/Data.MaxOxygenGenerateAmount));
+            var statesIndicatorModel = new TextModel("Current State", () => isUsedUp ? "<color=red>This Container is used up</color>" : isActive&&!isUsedUp ? "<color=green>Working</color>" : "<color=yellow>Idle</color>");
+            model.Add(statesIndicatorModel);
             model.Add(WastedWaterProgressBarModel);
         }
         

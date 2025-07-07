@@ -18,8 +18,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using UnityEngine;
 
     [Serializable]
-    [DesignerPartModifier("Sewage Treat Deivce")]
-    [PartModifierTypeId("SewageTreatDeivce")]
+    [DesignerPartModifier("Sewage Treat Device")]
+    [PartModifierTypeId("SewageTreatDevice")]
     public class SewageTreatDeivceData : PartModifierData<SewageTreatDeivceScript>
     {
         [SerializeField]
