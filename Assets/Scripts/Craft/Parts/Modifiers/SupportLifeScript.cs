@@ -506,7 +506,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (_solidWasteSource != null)
             {
                 
-                double num1 = (double)Data.FoodComsumeRate * frame.DeltaTimeWorld * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)*1.1*Data.evaConsumeEfficiency*0.05;
+                double num1 = (double)Data.FoodComsumeRate * frame.DeltaTimeWorld * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)*1.1*Data.evaConsumeEfficiency*0.04;
                 
                 if (_solidWasteSource.TotalCapacity - _solidWasteSource.TotalFuel <= 0.00001)
                 {
@@ -529,7 +529,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
                 else
                 {
-                    if (!_oxygenSource.IsEmpty)
+                    if (!_foodSource.IsEmpty)
                     {
                         _solidWasteSource.AddFuel(num1);
                     }

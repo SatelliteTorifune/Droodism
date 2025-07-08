@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 1506478685
+CRC: 2841257188
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 32caca891db29460fd526eb9f217c700
+    Hash: f227aa8be833ab3efaece22de95e5738
   TypeTreeHash:
     serializedVersion: 2
     Hash: aa5f0c762ad15862a703c2ae01b97865
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 32caca891db29460fd526eb9f217c700
+    Hash: f227aa8be833ab3efaece22de95e5738
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -52,19 +52,19 @@ SerializeReferenceClassIdentifiers:
 - AssemblyName: XmlLayout
   ClassName: UI.Xml.XmlLayoutResourceEntry
 Assets:
+- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/Resources/Craft/Parts/Prefabs/WaterTank.prefab
 - Assets/Resources/Craft/Parts/Definitions/Sodium Peroxide Container.xml
 - Assets/Resources/Craft/Parts/Prefabs/FoodTank.prefab
 - Assets/Resources/Craft/Parts/Prefabs/ElectrolyticDevice.prefab
-- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/Resources/Craft/Parts/Definitions/FoodTank.xml
-- Assets/_ModAssets_/Droodism.dll.bytes
 - Assets/Content/Craft/Parts/RocketEngines/Propulsion.xml
 - Assets/Content/Craft/Parts/Categories/LifeSupport.asset
 - Assets/Resources/Craft/Parts/Definitions/ElectrolyticDevice.xml
 - Assets/Resources/Craft/Parts/Prefabs/SewageTreatDevice.prefab
 - Assets/Resources/Craft/Parts/Prefabs/Sodium Peroxide Container.prefab
 - Assets/Resources/Craft/Parts/Definitions/PhotoBioReactor.xml
+- Assets/_ModAssets_/Droodism.dll.bytes
 - Assets/Content/XML UI/UIResourceDatabase.asset
 - Assets/Resources/Craft/Parts/Definitions/SewageTreatDevice.xml
 - Assets/Resources/Craft/Parts/Prefabs/PhotoBioReactor.prefab
