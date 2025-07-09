@@ -24,7 +24,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private float _area = 10;
         private Transform _panel = (Transform) null;
         private Transform MainPipe,L1,L2,L3,R1,R2,R3=(Transform)null;
-        private bool isGeneraing = false;
         bool isBoosted = false;
         private Transform _offset;
         private Vector3 _offsetPositionInverse;

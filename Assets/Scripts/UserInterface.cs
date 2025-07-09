@@ -302,7 +302,6 @@ namespace Assets.Scripts
         private void OnBuildFlightViewInspectorPanel(BuildInspectorPanelRequest request)
         {
             return;
-            // Log that the method has been called
             Debug.Log("OnBuildFlightViewInspectorPanel called");
             try
             {

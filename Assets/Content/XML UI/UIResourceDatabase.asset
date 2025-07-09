@@ -19,6 +19,6 @@ MonoBehaviour:
   AutomaticallyRemoveEntries: 1
   entries:
   - path: Droodism/Sprites/DroodsimUIIcon
-    resource: {fileID: 21300000, guid: ee4d3ba745dddaa4890ccb07c8694b13, type: 3}
+    resource: {fileID: 21300000, guid: c2503f6c8b1301f47931ce7891b9443b, type: 3}
   - path: Droodism/UIResourceDatabase
     resource: {fileID: 11400000}

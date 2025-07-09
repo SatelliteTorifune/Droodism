@@ -32,7 +32,8 @@ MonoBehaviour:
     JUNO Harmony</size></color>'
   _loadPriority: 400
   _name: Droodism
-  _otherAssets: []
+  _otherAssets:
+  - {fileID: 2800000, guid: c2503f6c8b1301f47931ce7891b9443b, type: 3}
   _prefabs: []
   _steamDescription: 
   _steamLanguage: English
