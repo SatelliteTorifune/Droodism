@@ -1,0 +1,13 @@
+<XmlLayout xmlns="http://www.w3schools.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="Asset/ModTools/UI/XmlLayout.xsd">
+    <Include path="Ui/Xml/Flight/FlightStyles.xml" />
+    <Include path="Ui/Xml/InspectorPanel.xml" />
+    <RectTransform class="safe-area">
+    <!--Main Panel-->
+    <Panel id="droodism-inspect-panel" class="flight-panel draggable" width="350" height="400" rectAlignment="LowerRight" offsetXY="-100 100" border="border" active="true">
+        <Panel class="inspector-header translucent-panel" height="30" rectAlignment="UpperCenter">
+            <TextMeshPro class="inspector-title" text="Droodism" margin="5 0 50 0" />
+            <Image class="inspector-panel-pin" width="24" height="24" rectAlignment="MiddleRight" sprite="Ui/Sprites/Common/IconCloseFlyout" onClick="OnTogglePanelState" hoverClass="inspector-panel-pin-hover"/>
+        </Panel>
+    </Panel>
+    </RectTransform>
+</XmlLayout>

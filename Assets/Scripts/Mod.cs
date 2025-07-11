@@ -82,7 +82,7 @@ namespace Assets.Scripts
             var harmony = new Harmony("com.SatelliteTorifune.Droodism");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
             Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
-            DroodismUIManager.Initialize();
+            //DroodismUIManager.Initialize();
         }
 
 

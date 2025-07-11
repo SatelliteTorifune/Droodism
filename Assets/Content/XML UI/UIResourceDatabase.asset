@@ -18,6 +18,8 @@ MonoBehaviour:
   - Content/XML UI
   AutomaticallyRemoveEntries: 1
   entries:
+  - path: Droodism/Flight/DroodismInspectPanel
+    resource: {fileID: 4900000, guid: 6c3e4d1a7c5747e18a0277f1009f941e, type: 3}
   - path: Droodism/Sprites/DroodsimUIIcon
     resource: {fileID: 21300000, guid: c2503f6c8b1301f47931ce7891b9443b, type: 3}
   - path: Droodism/UIResourceDatabase

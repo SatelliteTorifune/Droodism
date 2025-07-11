@@ -13,7 +13,9 @@ namespace Assets.Scripts
 {
     public partial class Mod : ModApi.Mods.GameMod
     {
-       [HarmonyPatch(typeof(EvaScript), nameof(EvaScript.OnModifiersCreated))]
+        private DroodismUIManager droodismUIManagerInstance { get; set; }
+
+        [HarmonyPatch(typeof(EvaScript), nameof(EvaScript.OnModifiersCreated))]
         public static class EvaScriptPatch
     {
         /// <summary>
@@ -86,11 +88,20 @@ namespace Assets.Scripts
     }
 
         [HarmonyPatch(typeof(NavPanelController), "LayoutRebuilt")]
-        class LayoutRebuilt_Patch
-        {
+        class LayoutRebuiltPatch
+        { 
             static bool Prefix(NavPanelController __instance)
             {
-                __instance.xmlLayout.GetElementById(DroodismUIManager.droodismBottomId).AddOnClickEvent(DroodismUIManager.OnToggleDroodismInspectorPanelState);
+                try
+                {
+                    __instance.xmlLayout.GetElementById(DroodismUIManager.droodismBottomId).AddOnClickEvent(DroodismUIManager.Instance.OnToggleDroodismInspectorPanelState,true);
+                
+                }
+                catch (Exception e)
+                {
+                    Debug.LogFormat("Error while adding click event to{0}",e);
+                }
+            
                 return true;
             }
         }
