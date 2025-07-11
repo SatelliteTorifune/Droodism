@@ -10,9 +10,11 @@ using HarmonyLib;
 using Jundroo.ModTools;
 using ModApi.Craft;
 using ModApi.Craft.Parts;
+using ModApi.Craft.Parts.Events;
 using ModApi.Craft.Propulsion;
 using ModApi.Design;
 using ModApi.Mods;
+using ModApi.Scenes.Events;
 using Panteleymonov;
 using UnityEngine;
 
@@ -21,6 +23,58 @@ namespace Assets.Scripts
     public partial class Mod:GameMod
 
     {
+        
+        /// <summary>
+        /// 在加载Craft时使用"CheckDrood"方法遍历所有modifier得到零件并添加SupportLife的modifier
+        /// When load a craft get all Craft's modifier using "CheckDrood" method and adding a "SupportLife"modifie to the part
+        /// </summary>
+        public void OnCraftLoaded()
+        {
+            foreach (PartData part in CheckDrood(Craft))
+            {
+                AddLsModifier(part);
+                //PatchCommandPod(part);
+            }
+
+            foreach (PartData part in  CheckGenerator(Craft))
+            {
+                AddLSGModifier(part);
+            }
+
+            foreach (PartData part in  CheckCommandPod(Craft))
+            {
+                PatchCommandPod(part);
+            }
+
+        }
+        /// <summary>
+        /// 在part添加时检测如果是Drood则添加SupportLife modifier和其他属性
+        /// Adding SupportLife modifier when the added part is Drood
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void OnPartAdded(object sender,CreatedPartEventArgs e)
+        {
+            
+            //Debug.LogFormat($"{e.Part.Name},id{e.Part.Id}有{e.Part.Modifiers.Count}个modifier,1:{e.PartType.Name}");
+            if (e.Part.Name=="Eva"||e.Part.Name == "Eva-Tourist")
+            {
+                AddLsModifier(e.Part);
+                //PatchCommandPod(e.Part);
+            }
+            
+            if (e.Part.Name == "Generator1")
+            {
+                AddLSGModifier(e.Part);
+            }
+
+            if (e.Part.Name.Contains("Command")||e.Part.Name.Contains("Capusle"))
+            {
+                PatchCommandPod(e.Part);
+            }
+            
+            
+        }
         /// <summary>
         /// CheckDrood方法接受CraftScript参数,遍历所有modifier,得到含有Eva Modifier的Part的类型为PartData的列表
         /// CheckDrood Method receives CraftScript as a parameter,checks all modifier inside the craft,returns with a list (which type is PartData) of Parts with Eva Modifier
