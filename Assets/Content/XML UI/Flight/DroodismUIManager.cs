@@ -52,7 +52,6 @@ namespace Assets.Scripts
             if (newDroodismUIIntance == null) {
                 return;
             }
-            log("UpdateDroodismUIPanel");
             newDroodismUIIntance.SetUIVisibility(Game.Instance.FlightScene.FlightSceneUI.Visible);
 
         }
