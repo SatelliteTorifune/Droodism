@@ -41,5 +41,8 @@
     <Panel class="map-disabled:map-button" active="false" />
     <Panel class="map-controls" active="false" />
     <Panel class="map-active:map-controls" active="true" />
+    <Style class="progress-container" padding="2" />
+    <Style class="progress-background" radius="3" />
+    <Style class="progress-fill" radius="3" />
   </Defaults>
 </XmlLayout>

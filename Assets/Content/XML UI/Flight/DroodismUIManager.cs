@@ -42,17 +42,20 @@ namespace Assets.Scripts
 
         private void Update()
         {   
-            if (!Game.Instance.SceneManager.InFlightScene) {
+            if (!Game.Instance.SceneManager.InFlightScene||Game.Instance.FlightScene.TimeManager.Paused) 
+            {
                 return;
             }
             UpdateDroodismUIPanel();
         }
         private void UpdateDroodismUIPanel() 
         {
-            if (newDroodismUIIntance == null) {
+            if (newDroodismUIIntance == null) 
+            {
                 return;
             }
             newDroodismUIIntance.SetUIVisibility(Game.Instance.FlightScene.FlightSceneUI.Visible);
+            newDroodismUIIntance.UpdateFuelPercentageItemTemplate();
 
         }
 
