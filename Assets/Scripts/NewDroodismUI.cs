@@ -83,15 +83,32 @@ namespace Assets.Scripts
             // 更新每个燃料项的进度
             for (int i = 0; i < fuelTypeIDList.Count; i++)
             {
-                double percentage = UpdateFuelPercentageValue(fuelTypeIDList[i]);
-                UpdateFuelItem(fuelXMLItems[i], fuelTypeIDList[i], percentage);
+                UpdateFuelItem(fuelXMLItems[i], fuelTypeIDList[i], UpdateFuelPercentageValue(fuelTypeIDList[i]));
             }
         }
 
         private void UpdateFuelItem(XmlElement item, string fuelType, double percentage)
         {
+            bool isWasted = (fuelType.Contains("Waste") ||fuelType.Contains("CO2"));
+            Color progressColor = GetProgressColor(percentage,isWasted);
             // 更新文本
-            item.GetElementByInternalId("FuelPercentage").SetText($"{percentage:P2}");
+            item.GetElementByInternalId("FuelPercentage").SetText("<color=#"+ColorUtility.ToHtmlStringRGB(progressColor)+$">{percentage:P2}</color>");
+            XmlElement progressBar = item.GetElementByInternalId("FuelProgressBar");
+            try
+            {
+                float pixelWidth = 200 * (float)percentage;
+    
+                // 使用锚点设置进度条宽度
+                progressBar.SetAndApplyAttribute("anchorMax", $"{percentage},1");
+                Debug.LogFormat("NewDroodismUI:UpdateFuelItem1");
+                progressBar.SetAndApplyAttribute("offsetMax", $"{pixelWidth},0");
+                Debug.LogFormat("NewDroodismUI:UpdateFuelItem2");
+                
+            }
+            catch (Exception e)
+            {
+                Debug.LogFormat("NewDroodismUI:FAILED :{0}", e);
+            }
             // 更新进度条
             /*
             XmlElement progressBar = item.GetElementByInternalId("FuelProgressBar");
@@ -113,12 +130,22 @@ namespace Assets.Scripts
             */
         }
 
-        private Color GetProgressColor(double percentage)
+        private Color GetProgressColor(double percentage,bool isWasted)
         {
-            // 根据百分比返回不同颜色
-            if (percentage > 0.6) return new Color(0, 0.63f, 0.95f); // 蓝色
-            if (percentage > 0.3) return new Color(1, 0.6f, 0);       // 橙色
-            return new Color(1, 0.2f, 0.2f);                          // 红色
+            if (!isWasted)
+            {
+                if (percentage > 0.6) return new Color(0.1f, 0.8f, 0.1f);   // 蓝色
+                if (percentage > 0.3) return new Color(1, 0.6f, 0);       // 橙色
+                return new Color(1, 0.2f, 0.2f);     // 红色
+            }
+            else
+            {
+                if (percentage > 0.9) return new Color(1, 0.2f, 0.2f);// 蓝色
+                if (percentage > 0.4) return new Color(1, 0.6f, 0);       // 橙色
+                return new Color(0.1f, 0.8f, 0.1f);    
+            }
+            
+                                  
         }
 
         public void SetUIVisibility(bool state)
@@ -126,9 +153,9 @@ namespace Assets.Scripts
             mainPanel.SetActive(state && _mainPanelVisible);
         }
 
-        public void OnFuelPercentageItemClick()
+        public void OnFuelPercentageItemClick(XmlElement item)
         {
-            Debug.Log("Fuel Percentage Item Clicked");
+            Debug.LogFormat("Fuel Percentage Item Clicked{0}",item);
         }
         
 
