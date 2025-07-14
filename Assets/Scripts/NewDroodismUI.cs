@@ -6,6 +6,7 @@ using ModApi.Math;
 using System.Collections.Generic;
 using ModApi.Audio;
 using ModApi.Craft.Parts;
+using ModApi.Craft.Parts.Input;
 
 namespace Assets.Scripts
 {
@@ -86,53 +87,16 @@ namespace Assets.Scripts
                 UpdateFuelItem(fuelXMLItems[i], fuelTypeIDList[i], UpdateFuelPercentageValue(fuelTypeIDList[i]));
             }
         }
-
         private void UpdateFuelItem(XmlElement item, string fuelType, double percentage)
         {
             bool isWasted = (fuelType.Contains("Waste") ||fuelType.Contains("CO2"));
             Color progressColor = GetProgressColor(percentage,isWasted);
-            // 更新文本
             item.GetElementByInternalId("FuelPercentage").SetText("<color=#"+ColorUtility.ToHtmlStringRGB(progressColor)+$">{percentage:P2}</color>");
             XmlElement progressBar = item.GetElementByInternalId("FuelProgressBar");
-            try
-            {
-                
-                float pixelWidth = 40 * (float)percentage;
-                // 使用锚点设置进度条宽度
-                progressBar.SetAndApplyAttribute("anchorMax", $"{percentage},1");
-                progressBar.SetAndApplyAttribute("offsetMax", $"{pixelWidth},0");
-                progressBar.SetAndApplyAttribute("color", $"#{ColorUtility.ToHtmlStringRGB(progressColor)}");
-                if (fuelType=="Oxygen")
-                {
-                    Debug.LogFormat($"anchorMax{percentage},offsetMax{pixelWidth}");
-                }
-                
-
-
-            }
-            catch (Exception e)
-            {
-                Debug.LogFormat("NewDroodismUI:FAILED :{0}", e);
-            }
-            // 更新进度条
-            /*
-            XmlElement progressBar = item.GetElementByInternalId("FuelProgressBar");
-            try
-            {
-                progressBar.SetAndApplyAttribute("width", $"{percentage * 100}%");
-                Debug.LogFormat("NewDroodismUI:UpdateFuelItem2.5");
-            }
-            catch (Exception e)
-            {
-                Debug.LogFormat("NewDroodismUI:FAILED :{0}", e);
-            }
-
-        // 根据百分比改变颜色 (可选)
-            Color progressColor = GetProgressColor(percentage);
-            Debug.LogFormat("NewDroodismUI:UpdateFuelItem3");
-            progressBar.SetAndApplyAttribute("color", $"#{ColorUtility.ToHtmlStringRGBA(progressColor)}");
-            Debug.LogFormat("NewDroodismUI:UpdateFuelItem4");
-            */
+            progressBar.SetAndApplyAttribute("width", $"{percentage*100}%");
+            progressBar.SetAndApplyAttribute("offsetXY", $"{-100 + (100 * (float)percentage)},0");
+            progressBar.SetAndApplyAttribute("color", $"#{ColorUtility.ToHtmlStringRGB(progressColor)}");
+            
         }
 
         private Color GetProgressColor(double percentage,bool isWasted)
