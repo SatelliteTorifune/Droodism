@@ -70,7 +70,7 @@ namespace Assets.Scripts
             component.ApplyAttributes();
             
             // 设置初始文本
-            component.GetElementByInternalId("FuelTypeName").SetText(fuelType);
+            component.GetElementByInternalId("FuelTypeName").SetText(Game.Instance.PropulsionData.GetFuelType(fuelType).Name);
             
             fuelXMLItems.Add(component);
             Debug.LogFormat("NewDroodismUI:AddFuelListItem:{0}", fuelType);
@@ -96,14 +96,19 @@ namespace Assets.Scripts
             XmlElement progressBar = item.GetElementByInternalId("FuelProgressBar");
             try
             {
-                float pixelWidth = 200 * (float)percentage;
-    
+                
+                float pixelWidth = 40 * (float)percentage;
                 // 使用锚点设置进度条宽度
                 progressBar.SetAndApplyAttribute("anchorMax", $"{percentage},1");
-                Debug.LogFormat("NewDroodismUI:UpdateFuelItem1");
                 progressBar.SetAndApplyAttribute("offsetMax", $"{pixelWidth},0");
-                Debug.LogFormat("NewDroodismUI:UpdateFuelItem2");
+                progressBar.SetAndApplyAttribute("color", $"#{ColorUtility.ToHtmlStringRGB(progressColor)}");
+                if (fuelType=="Oxygen")
+                {
+                    Debug.LogFormat($"anchorMax{percentage},offsetMax{pixelWidth}");
+                }
                 
+
+
             }
             catch (Exception e)
             {

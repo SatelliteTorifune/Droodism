@@ -42,7 +42,7 @@ namespace Assets.Scripts
 
         private void Update()
         {   
-            if (!Game.Instance.SceneManager.InFlightScene||Game.Instance.FlightScene.TimeManager.Paused) 
+            if (!Game.Instance.SceneManager.InFlightScene) 
             {
                 return;
             }
