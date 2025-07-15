@@ -4,6 +4,8 @@ using ModApi.Ui;
 using UnityEngine;
 using ModApi.Math;
 using System.Collections.Generic;
+using Assets.Scripts.Craft.Parts.Modifiers;
+using ModApi.Mods;
 using ModApi.Audio;
 using ModApi.Craft.Parts;
 using ModApi.Craft.Parts.Input;
@@ -18,13 +20,14 @@ namespace Assets.Scripts
         private XmlElement fuelPercentageList;
         private List<XmlElement> fuelXMLItems = new List<XmlElement>();
 
-        private bool _mainPanelVisible = false;
+        public bool _mainPanelVisible = false;
         private bool _createEventPanelVisible = false;
         private bool _notifPanelVisible = false;
 
         private int _lastClickedId = -1;
         private float _lastClickTime = 0.0f;
         private int _editEventId = -1;
+        public readonly string[] _massTypes = { "g", "kg", "t", "kt" };
 
         private List<string> fuelTypeIDList = new List<string>() {  "Oxygen","H2O","Food","CO2","Wasted Water","Solid Waste"};
         public void OnTogglePanelState() 
@@ -44,10 +47,7 @@ namespace Assets.Scripts
             // 清除现有项
             foreach (var item in new List<XmlElement>(fuelPercentageList.childElements))
                 fuelPercentageList.RemoveChildElement(item, true);
-            Debug.LogFormat("NewDroodismUI:1");
-            
             fuelXMLItems.Clear();
-            Debug.LogFormat("NewDroodismUI:2");
             
             // 为每种燃料类型创建UI项
             foreach (var fuelType in fuelTypeIDList)
@@ -80,18 +80,35 @@ namespace Assets.Scripts
         public void UpdateFuelPercentageItemTemplate()
         {
             if (fuelXMLItems.Count == 0) return;
-            
-            // 更新每个燃料项的进度
-            for (int i = 0; i < fuelTypeIDList.Count; i++)
+            if ( Game.Instance.FlightScene.CraftNode.CraftScript.Data.Assembly.Parts.Count == 1 && Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Data.PartType.Name.Contains("Eva"))
             {
-                UpdateFuelItem(fuelXMLItems[i], fuelTypeIDList[i], UpdateFuelPercentageValue(fuelTypeIDList[i]));
+                for (int i = 0; i < fuelTypeIDList.Count; i++)
+                {
+                    UpdateEvaFuelParameterValue(fuelTypeIDList[i],out double fuelAmount,out double fuelCapacity);
+                    UpdateFuelItem(fuelXMLItems[i], fuelTypeIDList[i], fuelAmount,fuelCapacity);
+                } 
             }
+            else
+            
+            {for (int i = 0; i < fuelTypeIDList.Count; i++)
+            {
+                UpdateCraftFuelParameterValue(fuelTypeIDList[i],out double fuelAmount,out double fuelCapacity);
+                UpdateFuelItem(fuelXMLItems[i], fuelTypeIDList[i], fuelAmount,fuelCapacity);
+            } }
+            
         }
-        private void UpdateFuelItem(XmlElement item, string fuelType, double percentage)
+        private void UpdateFuelItem(XmlElement item, string fuelType, double fuelAmount,double fuelCapacity)
         {
+            float fuelDensity = Game.Instance.PropulsionData.GetFuelType(fuelType).Density;
+            double percentage = fuelAmount / fuelCapacity;
             bool isWasted = (fuelType.Contains("Waste") ||fuelType.Contains("CO2"));
-            Color progressColor = GetProgressColor(percentage,isWasted);
+            string temp=Mod.Inctance.FormatFuel(fuelAmount*fuelDensity, _massTypes) + "/" + Mod.Inctance.FormatFuel(fuelCapacity*fuelDensity, _massTypes);
+            Color progressColor = GetProgressBarColor(percentage,isWasted);
+            
             item.GetElementByInternalId("FuelPercentage").SetText("<color=#"+ColorUtility.ToHtmlStringRGB(progressColor)+$">{percentage:P2}</color>");
+            
+            item.GetElementByInternalId("FuelAmountPercentage").SetText(temp);
+            
             XmlElement progressBar = item.GetElementByInternalId("FuelProgressBar");
             progressBar.SetAndApplyAttribute("width", $"{percentage*100}%");
             progressBar.SetAndApplyAttribute("offsetXY", $"{-100 + (100 * (float)percentage)},0");
@@ -99,7 +116,7 @@ namespace Assets.Scripts
             
         }
 
-        private Color GetProgressColor(double percentage,bool isWasted)
+        private Color GetProgressBarColor(double percentage,bool isWasted)
         {
             if (!isWasted)
             {
@@ -114,7 +131,7 @@ namespace Assets.Scripts
                 return new Color(0.1f, 0.8f, 0.1f);    
             }
             
-                                  
+                                
         }
 
         public void SetUIVisibility(bool state)
@@ -124,22 +141,64 @@ namespace Assets.Scripts
 
         public void OnFuelPercentageItemClick(XmlElement item)
         {
-            Debug.LogFormat("Fuel Percentage Item Clicked{0}",item);
+            try
+            {
+                Debug.LogFormat("Fuel Percentage Item Clicked{0}", item.GetAttribute("fuel-type-id"));
+            }
+            catch (Exception e)
+            {
+                Debug.LogFormat($"我操{e}");
+            }
         }
-        
 
-        public double UpdateFuelPercentageValue(string fuelTypeId)
+        private void UpdateEvaFuelParameterValue(string fuelTypeId, out double fuelAmount, out double fuelCapacity)
         {
-            var craftSources = Game.Instance.FlightScene.CraftNode.CraftScript.FuelSources.FuelSources;
+            Debug.Log("UpdateEvaFuelParameterValue");
+            fuelAmount = 0;
+            fuelCapacity = 0;
+            if (Game.Instance.FlightScene.CraftNode.CraftScript.Data.Assembly.Parts.Count == 1 &&
+                Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Data.PartType.Name.Contains("Eva"))
+            {
+                var craftSources = Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Modifiers;
             
+                // Iterate through each modifier
+                foreach (var source in craftSources)
+                {
+                    // Check if the modifier's name contains "Tank"
+                    if (source.GetData().Name.Contains("Tank"))
+                    {
+                        // Disable the inspector for this modifier
+                        source.GetData().InspectorEnabled = false;
+                        // Cast the modifier to FuelTankScript
+                        FuelTankScript fts = source as FuelTankScript;
+                        // Check if the fuel tank's type name contains the specified fuel type
+                        if (fts.FuelType.Id.Contains(fuelTypeId))
+                        {
+                            // Return the fuel tank if it matches the specified type
+                           fuelAmount=fts.TotalFuel;
+                           fuelCapacity=fts.TotalCapacity;
+                        }
+                    }
+                
+                }
+            }
+        }
+
+        private void UpdateCraftFuelParameterValue(string fuelTypeId,out double fuelAmount,out double fuelCapacity)
+        {
+            Debug.Log("UpdateCraftFuelParameterValue");
+            fuelAmount = 0;
+            fuelCapacity = 0;
+            var craftSources =Game.Instance.FlightScene.CraftNode.CraftScript.FuelSources.FuelSources;
             foreach (var source in craftSources)
             {
                 if (source.FuelType.Id.Contains(fuelTypeId))
                 {
-                    return (source.TotalFuel/source.TotalCapacity);
+                    fuelAmount = source.TotalFuel;
+                    fuelCapacity = source.TotalCapacity;
                 }
-            }
-            return 0.0d;
+            }  
+                
         }
         
     }

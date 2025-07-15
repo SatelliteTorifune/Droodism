@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 1035922661
+CRC: 1357421291
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 8754d26e33648d5a9e0598a34e581c26
+    Hash: 308909ce40b06edd6e4f4a10d0bd34f4
   TypeTreeHash:
     serializedVersion: 2
     Hash: 847790c4082ee91029d8c7419a86a075
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 8754d26e33648d5a9e0598a34e581c26
+    Hash: 308909ce40b06edd6e4f4a10d0bd34f4
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -54,8 +54,8 @@ SerializeReferenceClassIdentifiers:
 - AssemblyName: XmlLayout
   ClassName: UI.Xml.XmlLayoutResourceEntry
 Assets:
+- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/Resources/Craft/Parts/Prefabs/WaterTank.prefab
-- Assets/_ModAssets_/Droodism.dll.bytes
 - Assets/Resources/Craft/Parts/Definitions/Sodium Peroxide Container.xml
 - Assets/Resources/Craft/Parts/Prefabs/FoodTank.prefab
 - Assets/Resources/Craft/Parts/Prefabs/ElectrolyticDevice.prefab
@@ -67,9 +67,9 @@ Assets:
 - Assets/Content/XML UI/Sprites/DroodsimUIIcon.png
 - Assets/Resources/Craft/Parts/Prefabs/SewageTreatDevice.prefab
 - Assets/Resources/Craft/Parts/Prefabs/Sodium Peroxide Container.prefab
-- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/Resources/Craft/Parts/Definitions/PhotoBioReactor.xml
 - Assets/Content/XML UI/UIResourceDatabase.asset
+- Assets/_ModAssets_/Droodism.dll.bytes
 - Assets/Resources/Craft/Parts/Definitions/SewageTreatDevice.xml
 - Assets/Resources/Craft/Parts/Prefabs/PhotoBioReactor.prefab
 - Assets/Resources/Craft/Parts/Definitions/WaterTank.xml

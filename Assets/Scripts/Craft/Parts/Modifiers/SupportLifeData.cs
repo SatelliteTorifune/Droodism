@@ -34,11 +34,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private float waterDamageScale=1f;
         
         [SerializeField] 
-        [DesignerPropertySlider(0.1f, 3f, 51, Label = "<color=green>Oxygen</color> Carry Amount(days)", Tooltip = "Define How much <color=green>Oxygen</color> Drood himself/herself will carry when Eva.")]
+        [DesignerPropertySlider(0.1f, 3f, 30, Label = "<color=green>Oxygen</color> Carry Amount(days)", Tooltip = "Define How much <color=green>Oxygen</color> Drood himself/herself will carry when Eva.")]
         private float desireOxygenCapacity = 0.1f;
-        [SerializeField] [DesignerPropertySlider(0.1f, 3f, 51, Label = "<color=yellow>Food</color> Carry Amount(days)", Tooltip = "Define How much <color=yellow>Food</color> Drood himself/herself will carry when Eva.")]
+        [SerializeField] [DesignerPropertySlider(0.1f, 3f, 30, Label = "<color=yellow>Food</color> Carry Amount(days)", Tooltip = "Define How much <color=yellow>Food</color> Drood himself/herself will carry when Eva.")]
         private float desireFoodCapacity = 0.1f;
-        [SerializeField] [DesignerPropertySlider(0.1f, 3f, 51, Label = "<color=red>Water</color> Carry Amount(days)", Tooltip = "Define How much<color=red> Drink Water</color> Drood himself/herself will carry when Eva.")]
+        [SerializeField] [DesignerPropertySlider(0.1f, 3f, 30, Label = "<color=red>Water</color> Carry Amount(days)", Tooltip = "Define How much<color=red> Drink Water</color> Drood himself/herself will carry when Eva.")]
         private float desireWaterCapacity = 0.1f;
         
         public double _oxygenAmountBuffer=1f;
@@ -68,7 +68,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public float FoodComsumeRate
         {
             get
-                =>this._foodComsumeRate*0.00058f;
+                =>this._foodComsumeRate*0.0000058f;
             set=>this._foodComsumeRate = value;
         }
 
@@ -102,7 +102,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         public float DesireFoodCapacity
         {
-            get=>this.desireFoodCapacity*50f;
+            get=>this.desireFoodCapacity*0.5f;
             set=>this.desireFoodCapacity = value;
         }
         

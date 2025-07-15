@@ -82,7 +82,8 @@ namespace Assets.Scripts
             var harmony = new Harmony("com.SatelliteTorifune.Droodism");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
             Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
-            //DroodismUIManager.Initialize();
+            Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.FlightView,OnBuildFlightViewInspectorPanel);
+            
         }
 
 
@@ -116,5 +117,18 @@ namespace Assets.Scripts
             Instance.FlightScene.ActiveCommandPodChanged -= OnCraftChanged;
             Instance.FlightScene.ActiveCommandPodStateChanged -= OnCraftChanged;
         }
-    }
+        
+        public string FormatFuel(double totalFuel, string[] format)
+        {
+            // Converts into lowest unit type
+            //Code by Chaotic Graviton
+            totalFuel *= 1e3;
+            if (Math.Abs(totalFuel) > 1e9)
+                return (totalFuel * 1e-9).ToString("0.00") + format[3];
+            else if (Math.Abs(totalFuel) > 1e6)
+                return (totalFuel * 1e-6).ToString("0.00") + format[2];
+            else if (Math.Abs(totalFuel) > 1e3)
+                return (totalFuel * 1e-3).ToString("0.00") + format[1];
+            return totalFuel.ToString("0.00") + format[0];
+        }    }
 }

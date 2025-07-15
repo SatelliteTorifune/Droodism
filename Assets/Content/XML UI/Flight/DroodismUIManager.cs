@@ -31,9 +31,8 @@ namespace Assets.Scripts
         {
             Instance = this;
         }
-        private void Start()
+        private void Start() 
         {
-            log("Start");
             Instance = this;
             Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
             Game.Instance.UserInterface.AddBuildUserInterfaceXmlAction(UserInterfaceIds.Flight.NavPanel, OnBuildFlightUI);
@@ -55,8 +54,11 @@ namespace Assets.Scripts
                 return;
             }
             newDroodismUIIntance.SetUIVisibility(Game.Instance.FlightScene.FlightSceneUI.Visible);
-            newDroodismUIIntance.UpdateFuelPercentageItemTemplate();
-
+            if (newDroodismUIIntance._mainPanelVisible)
+            {
+                newDroodismUIIntance.UpdateFuelPercentageItemTemplate();
+            }
+           
         }
 
         public void OnSceneLoaded(object sender, SceneEventArgs e)
@@ -89,9 +91,8 @@ namespace Assets.Scripts
                         new XAttribute("sprite", "Droodism/Sprites/DroodsimUIIcon"))));
         }
 
-        public  void OnToggleDroodismInspectorPanelState()
+        public void OnToggleDroodismInspectorPanelState()
         {
-            log("OnToggleDroodismInspectorPanelState");
             newDroodismUIIntance.OnTogglePanelState();
         }
         

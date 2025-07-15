@@ -301,7 +301,7 @@ namespace Assets.Scripts
         // Method to build the flight view inspector panel with life support information
         private void OnBuildFlightViewInspectorPanel(BuildInspectorPanelRequest request)
         {
-            return;
+            
             Debug.Log("OnBuildFlightViewInspectorPanel called");
             try
             {
