@@ -18,9 +18,11 @@ MonoBehaviour:
   - Content/XML UI
   AutomaticallyRemoveEntries: 1
   entries:
-  - path: Droodism/Flight/DroodismUI
-    resource: {fileID: 4900000, guid: 0c848216fe8d48a4b8ff651469586d7b, type: 3}
+  - path: Droodism/Flight/DroodismInspectPanel
+    resource: {fileID: 4900000, guid: 6c3e4d1a7c5747e18a0277f1009f941e, type: 3}
+  - path: Droodism/ProgressBar
+    resource: {fileID: 4900000, guid: c9e328e754f82224796ba9060dc05abd, type: 3}
   - path: Droodism/Sprites/DroodsimUIIcon
-    resource: {fileID: 21300000, guid: ee4d3ba745dddaa4890ccb07c8694b13, type: 3}
+    resource: {fileID: 21300000, guid: c2503f6c8b1301f47931ce7891b9443b, type: 3}
   - path: Droodism/UIResourceDatabase
     resource: {fileID: 11400000}

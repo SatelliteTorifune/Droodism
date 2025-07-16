@@ -35,10 +35,10 @@ namespace Assets.Scripts
     /// <summary>
     /// A singleton object representing this mod that is instantiated and initialize when the mod is loaded.
     /// </summary>
-    
+
     public partial class Mod : ModApi.Mods.GameMod
     {
-        
+
         /// <summary>
         /// Prevents a default instance of the <see cref="Mod"/> class from being created.
         /// </summary>
@@ -46,25 +46,15 @@ namespace Assets.Scripts
         {
 
         }
+
         public static Mod Inctance { get; } = GetModInstance<Mod>();
         private CraftScript Craft => Instance.Designer.CraftScript as CraftScript;
-        
 
-        protected override void OnModInitialized()
-        {
-            base.OnModInitialized();
-            var harmony = new Harmony("com.SatelliteTorifune.Droodism");
-            harmony.PatchAll(Assembly.GetExecutingAssembly());
-            Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
-            Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.FlightView,OnBuildFlightViewInspectorPanel);
-            
-
-        }
         public void OnSceneLoaded(object sender, SceneEventArgs e)
         {
             subPlus();
             Debug.LogFormat($"SceneLoaded事件触发{e.Scene}");
-            
+
             if (ModApi.Common.Game.InDesignerScene)
             {
                 Instance.Designer.CraftLoaded += OnCraftLoaded;
@@ -80,11 +70,22 @@ namespace Assets.Scripts
                 }
                 catch (Exception e1)
                 {
-                    Debug.LogFormat("你要干啥{0}",e1);
+                    Debug.LogFormat("你要干啥{0}", e1);
                 }
             }
+
+        }
+
+        protected override void OnModInitialized()
+        {
+            base.OnModInitialized();
+            var harmony = new Harmony("com.SatelliteTorifune.Droodism");
+            harmony.PatchAll(Assembly.GetExecutingAssembly());
+            Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
+            Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.FlightView,OnBuildFlightViewInspectorPanel);
             
         }
+
 
         private void subPlus()
         {
@@ -100,15 +101,14 @@ namespace Assets.Scripts
                 Debug.LogFormat(" ActiveCommandPodChanged订阅OnCraftChanged");
                 Instance.FlightScene.ActiveCommandPodStateChanged += OnCraftChanged;
                 Debug.LogFormat(" ActiveCommandPodStateChanged订阅OnCraftChanged");
-                
+
             }
             catch (Exception e)
             {
                 Debug.LogWarningFormat($"订阅有问题{e}");
             }
-            
+
         }
-        
         private void subMinus()
         {
             Instance.FlightScene.Initialized -= OnInitialized;
@@ -117,126 +117,18 @@ namespace Assets.Scripts
             Instance.FlightScene.ActiveCommandPodChanged -= OnCraftChanged;
             Instance.FlightScene.ActiveCommandPodStateChanged -= OnCraftChanged;
         }
-        /// <summary>
-        /// 在加载Craft时使用"CheckDrood"方法遍历所有modifier得到零件并添加SupportLife的modifier
-        /// When load a craft get all Craft's modifier using "CheckDrood" method and adding a "SupportLife"modifie to the part
-        /// </summary>
-        public void OnCraftLoaded()
-        {
-            foreach (PartData part in CheckDrood(Craft))
-            {
-                AddLsModifier(part);
-                //PatchCommandPod(part);
-            }
-
-            foreach (PartData part in  CheckGenerator(Craft))
-            {
-                AddLSGModifier(part);
-            }
-
-            foreach (PartData part in  CheckCommandPod(Craft))
-            {
-                PatchCommandPod(part);
-            }
-
-        }
-        /// <summary>
-        /// 在part添加时检测如果是Drood则添加SupportLife modifier和其他属性
-        /// Adding SupportLife modifier when the added part is Drood
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void OnPartAdded(object sender,CreatedPartEventArgs e)
-        {
-            
-            //Debug.LogFormat($"{e.Part.Name},id{e.Part.Id}有{e.Part.Modifiers.Count}个modifier,1:{e.PartType.Name}");
-            if (e.Part.Name=="Eva"||e.Part.Name == "Eva-Tourist")
-            {
-                AddLsModifier(e.Part);
-                //PatchCommandPod(e.Part);
-            }
-            
-            if (e.Part.Name == "Generator1")
-            {
-                AddLSGModifier(e.Part);
-            }
-
-            if (e.Part.Name.Contains("Command")||e.Part.Name.Contains("Capusle"))
-            {
-               PatchCommandPod(e.Part);
-            }
-            
-        }
         
-        
-    }
-    
-    [HarmonyPatch(typeof(EvaScript), nameof(EvaScript.OnModifiersCreated))]
-    public static class EvaScriptPatch
-    {
-        /// <summary>
-        /// 在 OnModifiersCreated 方法执行后运行的后置补丁。
-        /// Postfix patch to run after the OnModifiersCreated method.
-        /// </summary>
-        /// <param name="__instance">EvaScript 实例。The EvaScript instance.</param>
-        public static void Postfix(EvaScript __instance)
+        public string FormatFuel(double totalFuel, string[] format)
         {
-            // 仅在飞行场景中执行修补
-            // Only execute the patch in the flight scene
-            if (!Game.InFlightScene)
-            {
-                return;
-            }
-
-            try
-            {
-                // 获取零件上所有的 FuelTankScript 组件
-                // Get all FuelTankScript components on the part
-                var fuelTanks = ((Component)__instance).GetComponents<FuelTankScript>();
-
-                // 查找燃料类型为 "JetPack" 的 FuelTankScript
-                // Find the FuelTankScript with fuel type "JetPack"
-                var jetPackFuelTank = fuelTanks.FirstOrDefault(tank => tank.FuelType?.Id == "Jetpack");
-
-                // 使用反射设置 _fuelTank 字段的值
-                // Use reflection to set the value of the _fuelTank field
-                var fuelTankField = AccessTools.Field(typeof(EvaScript), "_fuelTank");
-                if (fuelTankField != null)
-                {
-                    fuelTankField.SetValue(__instance, jetPackFuelTank);
-                    if (jetPackFuelTank == null)
-                    {
-                        Debug.LogWarning("[EvaScriptPatch] No FuelTankScript with fuel type 'JetPack' found. Setting _fuelTank to null.");
-                    }
-                    else
-                    {
-                        Debug.Log($"[EvaScriptPatch] Successfully set _fuelTank to JetPack fuel tank.");
-                    }
-                }
-                else
-                {
-                    Debug.LogError("[EvaScriptPatch] Failed to find _fuelTank field via reflection.");
-                }
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogError($"[EvaScriptPatch] Error in Postfix patch: {e.Message}");
-            }
-        }
-    }
-    [HarmonyPatch(typeof(CraftFuelSources), "Rebuild")]
-    class RebuildPatch
-    {
-        static bool Prefix(CraftFuelSources __instance, ref List<CrossFeedScript> ____crossFeeds, ref List<Tuple<IFuelSource, IFuelSource>> ____equalizeCrossFeeds, ref List<CraftFuelSource> ____fuelSources, IFuelTransferManager ____fuelTransferManager, ICraftScript craftScript)
-        {
-            SRCraftFuelSources sources =  new SRCraftFuelSources(____fuelTransferManager);
-            sources.Rebuild(craftScript);
-            ____crossFeeds = sources.CrossFeeds;
-            ____equalizeCrossFeeds = sources.EqualizeCrossFeeds;
-            ____fuelSources = sources.FuelSources;
-            return false;
-        }
-    }
-  
-    
+            // Converts into lowest unit type
+            //Code by Chaotic Graviton
+            totalFuel *= 1e3;
+            if (Math.Abs(totalFuel) > 1e9)
+                return (totalFuel * 1e-9).ToString("0.00") + format[3];
+            else if (Math.Abs(totalFuel) > 1e6)
+                return (totalFuel * 1e-6).ToString("0.00") + format[2];
+            else if (Math.Abs(totalFuel) > 1e3)
+                return (totalFuel * 1e-3).ToString("0.00") + format[1];
+            return totalFuel.ToString("0.00") + format[0];
+        }    }
 }

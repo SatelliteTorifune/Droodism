@@ -47,7 +47,7 @@ namespace Assets.Scripts
         /// </summary>
         protected override void InitializeSettings()
         {
-            ConsumeResourceWhenUnloaded=CreateBool("Drood Consume Resource When Unloaded<color=red>Unstable,Use with caution.</color>")
+            ConsumeResourceWhenUnloaded=CreateBool("Drood Consume Resource When Unloaded")
                 .SetDescription("Drood will still Consume Resource Even the Craft is Unloaded.<br>known bug the time calculate went a <size=125%><color=red>LITTLE BIT</color></size> wrong way")
                 .SetDefault(false);
         }

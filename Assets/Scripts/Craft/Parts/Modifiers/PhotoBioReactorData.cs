@@ -116,7 +116,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         public float WaterConsumptionRate
         {
-            get=>this._waterConsumptionRate*0.023f;
+            get=>this._waterConsumptionRate*0.011f;
         }
 
         public float PowerConsumptionRate
@@ -126,7 +126,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public float WastedWaterGenerationRate
         {
-            get=>this._wastedWaterGenerationRate*0.004f;
+            get=>this._wastedWaterGenerationRate*0.002f;
         }
         public float SolidWasteConsumptionRate
         {
