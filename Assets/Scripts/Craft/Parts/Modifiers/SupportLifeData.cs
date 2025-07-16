@@ -62,57 +62,60 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         public float OxygenComsumeRate
         {
-            get =>this._oxygenComsumeRate*0.007f; 
+            get =>IsLegal(this._oxygenComsumeRate)*0.007f; 
             private set=>this._oxygenComsumeRate = value;
         }
         public float FoodComsumeRate
         {
             get
-                =>this._foodComsumeRate*0.0000058f;
+                =>this.IsLegal(_foodComsumeRate)*0.0000058f;
             set=>this._foodComsumeRate = value;
         }
 
         public float WaterComsumeRate
         {
-            get => _waterComsumeRate*0.0000347f;
+            get => IsLegal(_waterComsumeRate)*0.0000347f;
             set => this._waterComsumeRate = value;
         }
         public float OxygenDamageScale
         {
-            get=>this._oxygenDamageScale*0.35f;
+            get=>IsLegal(this._oxygenDamageScale)*0.35f;
             set=>this._oxygenDamageScale = value;
         }
         public float FoodDamageScale
         {
-            get=>this.foodDamageScale*0.0002f;
+            get=>IsLegal(this.foodDamageScale)*0.0002f;
             set=>this.foodDamageScale = value;
         }
         
         public float WaterDamageScale
         {
-            get=>this.waterDamageScale*0.001f;
+            get=>IsLegal(waterDamageScale)*0.001f;
             set=>this.waterDamageScale = value;
         }
         
         public float DesireOxygenCapacity
         {
-            get=>this.desireOxygenCapacity*600;
+            get=>IsLegal(desireOxygenCapacity)*600;
             private set=>this.desireOxygenCapacity = value;
         }
         
         public float DesireFoodCapacity
         {
-            get=>this.desireFoodCapacity*0.5f;
+            get=>this.IsLegal(desireFoodCapacity)*0.5f;
             set=>this.desireFoodCapacity = value;
         }
         
         public float DesireWaterCapacity
         {
-            get=>this.desireWaterCapacity*3;
+            get=>this.IsLegal(this.desireWaterCapacity)*3;
             set=>this.desireWaterCapacity = value;
         }
 
-        
+        private float IsLegal(float value)
+        {
+            return value>0?value:1;
+        }
 
         
         

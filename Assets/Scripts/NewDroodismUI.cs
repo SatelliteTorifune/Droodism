@@ -153,7 +153,7 @@ namespace Assets.Scripts
 
         private void UpdateEvaFuelParameterValue(string fuelTypeId, out double fuelAmount, out double fuelCapacity)
         {
-            Debug.Log("UpdateEvaFuelParameterValue");
+            
             fuelAmount = 0;
             fuelCapacity = 0;
             if (Game.Instance.FlightScene.CraftNode.CraftScript.Data.Assembly.Parts.Count == 1 &&
@@ -186,7 +186,8 @@ namespace Assets.Scripts
 
         private void UpdateCraftFuelParameterValue(string fuelTypeId,out double fuelAmount,out double fuelCapacity)
         {
-            Debug.Log("UpdateCraftFuelParameterValue");
+            List<IFuelSource> ManymanySources=new List<IFuelSource>();
+            IFuelSource randomNameSourve=null;
             fuelAmount = 0;
             fuelCapacity = 0;
             var craftSources =Game.Instance.FlightScene.CraftNode.CraftScript.FuelSources.FuelSources;
@@ -194,10 +195,15 @@ namespace Assets.Scripts
             {
                 if (source.FuelType.Id.Contains(fuelTypeId))
                 {
-                    fuelAmount = source.TotalFuel;
-                    fuelCapacity = source.TotalCapacity;
+                    ManymanySources.Add(source);
                 }
-            }  
+            }
+
+            foreach (var source2 in ManymanySources)
+            {
+                
+            }
+            
                 
         }
         
