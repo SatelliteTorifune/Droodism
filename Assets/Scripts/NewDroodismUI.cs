@@ -141,14 +141,8 @@ namespace Assets.Scripts
 
         public void OnFuelPercentageItemClick(XmlElement item)
         {
-            try
-            {
-                Debug.LogFormat("Fuel Percentage Item Clicked{0}", item.GetAttribute("fuel-type-id"));
-            }
-            catch (Exception e)
-            {
-                Debug.LogFormat($"我操{e}");
-            }
+            string fuelTypeId = item.GetAttribute("fuel-type-id");
+            Debug.LogFormat("NewDroodismUI:OnFuelPercentageItemClick:燃料名称{0}", Game.Instance.PropulsionData.GetFuelType(fuelTypeId).Name);
         }
 
         private void UpdateEvaFuelParameterValue(string fuelTypeId, out double fuelAmount, out double fuelCapacity)
@@ -196,6 +190,8 @@ namespace Assets.Scripts
                 if (source.FuelType.Id.Contains(fuelTypeId))
                 {
                     ManymanySources.Add(source);
+                    fuelAmount=source.TotalFuel;
+                    fuelCapacity=source.TotalCapacity;
                 }
             }
 
