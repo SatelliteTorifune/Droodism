@@ -8,6 +8,7 @@ using Assets.Scripts.Flight.UI;
 using ModApi.Ui;
 using UnityEngine;
 using HarmonyLib;
+using ModApi.Craft;
 using ModApi.Flight;
 using ModApi.Math;
 using ModApi.Scenes.Events;
@@ -68,6 +69,8 @@ namespace Assets.Scripts
                 newDroodismUIIntance = Game.Instance.UserInterface.BuildUserInterfaceFromResource<NewDroodismUI>(
                     "Droodism/Flight/DroodismInspectPanel",
                     (script, controller) => script.OnLayoutRebuilt(controller));
+                newDroodismUIIntance.UpdateDroodInfo();
+                ModApi.Common.Game.Instance.FlightScene.CraftChanged+=OnCraftChanged;
                 log("OnSceneLoaded");
             }
         }
@@ -91,6 +94,21 @@ namespace Assets.Scripts
                         new XAttribute("sprite", "Droodism/Sprites/DroodsimUIIcon"))));
         }
 
+        public void OnCraftChanged(ICraftNode craftNode)
+        {
+            newDroodismUIIntance.UpdateDroodInfo();
+            craftNode.CraftNodeMerged+=OnCraftMerged;
+            craftNode.CraftScript.RootPart.MovedToNewCraft+=MovedToNewCraft;
+        }
+
+        private void MovedToNewCraft(ICraftScript craftNodeA, ICraftScript craftNodeB)
+        {
+            newDroodismUIIntance.UpdateDroodInfo();
+        }
+        private void OnCraftMerged(ICraftNode craftNodeA, ICraftNode craftNodeB)
+        {
+            newDroodismUIIntance.UpdateDroodInfo();
+        }
         public void OnToggleDroodismInspectorPanelState()
         {
             newDroodismUIIntance.OnTogglePanelState();

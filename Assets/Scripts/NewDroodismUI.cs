@@ -10,6 +10,7 @@ using ModApi.Mods;
 using ModApi.Audio;
 using ModApi.Craft.Parts;
 using ModApi.Craft.Parts.Input;
+using UnityEngine.Serialization;
 
 namespace Assets.Scripts
 {
@@ -29,10 +30,13 @@ namespace Assets.Scripts
         private float _lastClickTime = 0.0f;
         private int _editEventId = -1;
         public readonly string[] _massTypes = { "g", "kg", "t", "kt" };
+        public List<Vector3> DroodPosistion = new List<Vector3>();
+        public int DroodCountTotal, AstronautCount;
+        [FormerlySerializedAs("TouristCountl")] public int TouristCount;
 
         private List<string> fuelTypeIDList = new List<string>() {  "Oxygen","H2O","Food","CO2","Wasted Water","Solid Waste"};
         public void OnTogglePanelState() 
-        { 
+        {
             _mainPanelVisible = !_mainPanelVisible;
         }
         public void OnLayoutRebuilt(IXmlLayoutController layoutController)
@@ -81,7 +85,7 @@ namespace Assets.Scripts
         
         private void UpdateFuelItem(XmlElement item, string fuelType, IFuelSource fuelSource)
         {
-            Debug.LogFormat("");
+           
             float fuelDensity = fuelSource.FuelType.Density;
             double percentage = fuelSource.TotalFuel / fuelSource.TotalCapacity;
             bool isWasted = (fuelType.Contains("Waste") ||fuelType.Contains("CO2"));
@@ -142,17 +146,70 @@ namespace Assets.Scripts
 
         private IFuelSource UpdateCraftFuelParameterValue(string fuelTypeId)
         {
-            
-            FuelSourceGroup fuelSourceGroup = new FuelSourceGroup(1,1,ModApi.Common.Game.Instance.PropulsionData.GetFuelType(fuelTypeId));
-            foreach (var source in ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.FuelSources.FuelSources)
+            switch ((ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.Data.Assembly.Parts.Count == 1 &&
+                     ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Data.PartType.Name
+                         .Contains("Eva"))
+                        ? "Eva"
+                        : "Other")
             {
-                if (source.FuelType.Id == fuelTypeId)
+                case "Eva": 
+                    foreach (var modifier in ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Modifiers)
+                    {
+                        if(modifier.GetData().Name.Contains("FuelTank"))
+                        {
+                            FuelTankScript fts=modifier as FuelTankScript;
+                            if (fts.FuelType.Id == fuelTypeId)
+                            {
+                                return fts;
+                            }
+                        }
+                    }
+
+                    break;
+                case "Other":
+                    FuelSourceGroup fuelSourceGroup = new FuelSourceGroup(1,1,ModApi.Common.Game.Instance.PropulsionData.GetFuelType(fuelTypeId));
+                    foreach (var source in ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.FuelSources.FuelSources)
+                    {
+                        if (source.FuelType.Id == fuelTypeId&&source.IsDestroyed==false&&DroodPosistion.Contains(source.Position)==false)
+                        {
+                            fuelSourceGroup.AddFuelSource(source);
+                        }
+                    }
+
+                    return fuelSourceGroup;
+                    
+            }
+            return null;
+
+        }
+
+        public void UpdateDroodInfo()
+        {
+            DroodPosistion.Clear();
+            DroodCountTotal = AstronautCount = TouristCount = 0;
+            UpdateDroodCount();
+            
+
+            void UpdateDroodCount()
+            {
+                foreach (var pd in ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.Data.Assembly.Parts)
                 {
-                    fuelSourceGroup.AddFuelSource(source);
+                    if (pd.PartType.Name=="Eva")
+                    {
+                        DroodCountTotal++;
+                        AstronautCount++;
+                        DroodPosistion.Add(pd.Position);
+                    }
+
+                    if (pd.PartType.Name=="Eva-Tourist")
+                    {
+                        DroodCountTotal++;
+                        AstronautCount++;
+                        DroodPosistion.Add(pd.Position);
+                    }
+
                 }
             }
-
-            return fuelSourceGroup;
         }
     }
 }
