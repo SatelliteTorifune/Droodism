@@ -4,6 +4,7 @@ using ModApi.Ui;
 using UnityEngine;
 using ModApi.Math;
 using System.Collections.Generic;
+using Assets.Scripts.Craft.Fuel;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using ModApi.Mods;
 using ModApi.Audio;
@@ -77,32 +78,14 @@ namespace Assets.Scripts
             Debug.LogFormat("NewDroodismUI:AddFuelListItem:{0}", fuelType);
         }
         
-        public void UpdateFuelPercentageItemTemplate()
+        
+        private void UpdateFuelItem(XmlElement item, string fuelType, IFuelSource fuelSource)
         {
-            if (fuelXMLItems.Count == 0) return;
-            if ( Game.Instance.FlightScene.CraftNode.CraftScript.Data.Assembly.Parts.Count == 1 && Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Data.PartType.Name.Contains("Eva"))
-            {
-                for (int i = 0; i < fuelTypeIDList.Count; i++)
-                {
-                    UpdateEvaFuelParameterValue(fuelTypeIDList[i],out double fuelAmount,out double fuelCapacity);
-                    UpdateFuelItem(fuelXMLItems[i], fuelTypeIDList[i], fuelAmount,fuelCapacity);
-                } 
-            }
-            else
-            
-            {for (int i = 0; i < fuelTypeIDList.Count; i++)
-            {
-                UpdateCraftFuelParameterValue(fuelTypeIDList[i],out double fuelAmount,out double fuelCapacity);
-                UpdateFuelItem(fuelXMLItems[i], fuelTypeIDList[i], fuelAmount,fuelCapacity);
-            } }
-            
-        }
-        private void UpdateFuelItem(XmlElement item, string fuelType, double fuelAmount,double fuelCapacity)
-        {
-            float fuelDensity = Game.Instance.PropulsionData.GetFuelType(fuelType).Density;
-            double percentage = fuelAmount / fuelCapacity;
+            Debug.LogFormat("");
+            float fuelDensity = fuelSource.FuelType.Density;
+            double percentage = fuelSource.TotalFuel / fuelSource.TotalCapacity;
             bool isWasted = (fuelType.Contains("Waste") ||fuelType.Contains("CO2"));
-            string temp=Mod.Inctance.FormatFuel(fuelAmount*fuelDensity, _massTypes) + "/" + Mod.Inctance.FormatFuel(fuelCapacity*fuelDensity, _massTypes);
+            string temp=Mod.Inctance.FormatFuel(fuelSource.TotalFuel*fuelDensity, _massTypes) + "/" + Mod.Inctance.FormatFuel(fuelSource.TotalCapacity*fuelDensity, _massTypes);
             Color progressColor = GetProgressBarColor(percentage,isWasted);
             
             item.GetElementByInternalId("FuelPercentage").SetText("<color=#"+ColorUtility.ToHtmlStringRGB(progressColor)+$">{percentage:P2}</color>");
@@ -144,64 +127,32 @@ namespace Assets.Scripts
             string fuelTypeId = item.GetAttribute("fuel-type-id");
             Debug.LogFormat("NewDroodismUI:OnFuelPercentageItemClick:燃料名称{0}", Game.Instance.PropulsionData.GetFuelType(fuelTypeId).Name);
         }
-
-        private void UpdateEvaFuelParameterValue(string fuelTypeId, out double fuelAmount, out double fuelCapacity)
+        public void UpdateFuelPercentageItemTemplate()
         {
-            
-            fuelAmount = 0;
-            fuelCapacity = 0;
-            if (Game.Instance.FlightScene.CraftNode.CraftScript.Data.Assembly.Parts.Count == 1 &&
-                Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Data.PartType.Name.Contains("Eva"))
+            if (fuelXMLItems.Count == 0) return;
+            for (int i = 0; i < fuelTypeIDList.Count; i++)
             {
-                var craftSources = Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Modifiers;
-            
-                // Iterate through each modifier
-                foreach (var source in craftSources)
+                var source = UpdateCraftFuelParameterValue(fuelTypeIDList[i]);
+                if (source!= null)
                 {
-                    // Check if the modifier's name contains "Tank"
-                    if (source.GetData().Name.Contains("Tank"))
-                    {
-                        // Disable the inspector for this modifier
-                        source.GetData().InspectorEnabled = false;
-                        // Cast the modifier to FuelTankScript
-                        FuelTankScript fts = source as FuelTankScript;
-                        // Check if the fuel tank's type name contains the specified fuel type
-                        if (fts.FuelType.Id.Contains(fuelTypeId))
-                        {
-                            // Return the fuel tank if it matches the specified type
-                           fuelAmount=fts.TotalFuel;
-                           fuelCapacity=fts.TotalCapacity;
-                        }
-                    }
-                
+                    UpdateFuelItem(fuelXMLItems[i], fuelTypeIDList[i],source);
                 }
-            }
+            } 
         }
 
-        private void UpdateCraftFuelParameterValue(string fuelTypeId,out double fuelAmount,out double fuelCapacity)
+        private IFuelSource UpdateCraftFuelParameterValue(string fuelTypeId)
         {
-            List<IFuelSource> ManymanySources=new List<IFuelSource>();
-            IFuelSource randomNameSourve=null;
-            fuelAmount = 0;
-            fuelCapacity = 0;
-            var craftSources =Game.Instance.FlightScene.CraftNode.CraftScript.FuelSources.FuelSources;
-            foreach (var source in craftSources)
+            
+            FuelSourceGroup fuelSourceGroup = new FuelSourceGroup(1,1,ModApi.Common.Game.Instance.PropulsionData.GetFuelType(fuelTypeId));
+            foreach (var source in ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.FuelSources.FuelSources)
             {
-                if (source.FuelType.Id.Contains(fuelTypeId))
+                if (source.FuelType.Id == fuelTypeId)
                 {
-                    ManymanySources.Add(source);
-                    fuelAmount=source.TotalFuel;
-                    fuelCapacity=source.TotalCapacity;
+                    fuelSourceGroup.AddFuelSource(source);
                 }
             }
 
-            foreach (var source2 in ManymanySources)
-            {
-                
-            }
-            
-                
+            return fuelSourceGroup;
         }
-        
     }
 }
