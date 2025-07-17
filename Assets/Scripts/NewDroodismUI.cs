@@ -4,12 +4,15 @@ using ModApi.Ui;
 using UnityEngine;
 using ModApi.Math;
 using System.Collections.Generic;
+using System.Xml.Linq;
 using Assets.Scripts.Craft.Fuel;
 using Assets.Scripts.Craft.Parts.Modifiers;
+using Assets.Scripts.Flight;
 using ModApi.Mods;
 using ModApi.Audio;
 using ModApi.Craft.Parts;
 using ModApi.Craft.Parts.Input;
+using ModApi.State;
 using UnityEngine.Serialization;
 
 namespace Assets.Scripts
@@ -128,8 +131,9 @@ namespace Assets.Scripts
 
         public void OnFuelPercentageItemClick(XmlElement item)
         {
-            string fuelTypeId = item.GetAttribute("fuel-type-id");
+            string fuelTypeId = item.GetAttribute("fuel-type-id"); 
             Debug.LogFormat("NewDroodismUI:OnFuelPercentageItemClick:燃料名称{0}", Game.Instance.PropulsionData.GetFuelType(fuelTypeId).Name);
+            
         }
         public void UpdateFuelPercentageItemTemplate()
         {
@@ -211,5 +215,7 @@ namespace Assets.Scripts
                 }
             }
         }
+        
+       
     }
 }

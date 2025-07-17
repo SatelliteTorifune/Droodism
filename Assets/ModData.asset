@@ -38,6 +38,7 @@ MonoBehaviour:
   _name: Droodism
   _otherAssets:
   - {fileID: 2800000, guid: c2503f6c8b1301f47931ce7891b9443b, type: 3}
+  - {fileID: 4900000, guid: 2f28744980bce6a46b09955e6f949278, type: 3}
   - {fileID: 2800000, guid: 3f4d05df030de054c89ccb84352006ed, type: 3}
   _prefabs: []
   _steamDescription: 

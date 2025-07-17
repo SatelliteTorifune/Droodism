@@ -1,16 +1,20 @@
 using System;
+using System.Xml.Linq;
 using Assets.Scripts.Craft;
 using Assets.Scripts.Craft.Fuel;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
+using Assets.Scripts.Flight;
 using Assets.Scripts.Flight.Sim;
 using Microsoft.CSharp.RuntimeBinder;
 using ModApi.Craft;
 using ModApi.Craft.Parts;
 using ModApi.Craft.Propulsion;
 using ModApi.Flight;
+using ModApi.Flight.Sim;
 using ModApi.Math;
 using ModApi.Mods;
+using ModApi.State;
 using ModApi.Ui.Inspector;
 using UnityEngine;
 using UnityEngine.UI;
@@ -389,8 +393,53 @@ namespace Assets.Scripts
             LS.Add(new TextButtonModel(
                 "Manual Update",
                 b => UpdateDroodCount()));
+            LS.Add(new TextButtonModel(
+                "Plant Flag",
+                b => SpawnFlag()));
+             void SpawnFlag() 
+             {
+                 
+                var templateText = Mod.ResourceLoader.LoadAsset<TextAsset>("Assets/Content/Resources/flag.xml");
+                var craftData = Game.Instance.CraftLoader.LoadCraftImmediate(XDocument.Parse(templateText.text).Root);
+                    
+                var xml = craftData.GenerateXml((Transform)null, false, true);
+                    
+
+                Vector3d position = Game.Instance.FlightScene.CraftNode.Position;
+                Debug.LogFormat("12");
+                double latitude = ConvertPlanetPositionToLatLongAgl(position).x;
+                Debug.LogFormat("13");
+                double longitude=ConvertPlanetPositionToLatLongAgl(position).y;
+                Debug.LogFormat("wehhao2");
+                var location = new LaunchLocation(
+                    "location",
+                    LaunchLocationType.SurfaceLockedGround,
+                    Game.Instance.FlightScene.CraftNode.Parent.PlanetData.Name,
+                    latitude,
+                    longitude,
+                    new Vector3d(0.0, 0.0, 3000.0),
+                    0,
+                    1);
+                Debug.LogFormat("14");
+                var flag = ((FlightSceneScript)Game.Instance.FlightScene).SpawnCraft("flag", craftData, location, xml);
+                flag.AllowPlayerControl = false;
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Planted Flag at<color=green> {Game.Instance.FlightScene.CraftNode.Parent.Name} </color>'s surface,at {ConvertPlanetPositionToLatLongAgl(position).x:P2}° latitude and {ConvertPlanetPositionToLatLongAgl(position).y:P2}° longitude",true,120f);
+            }
         }
-        
+        public Vector3d ConvertPlanetPositionToLatLongAgl(Vector3d position)
+        {
+            if (double.IsNaN(position.x) || double.IsNaN(position.y) || double.IsNaN(position.z))
+                return Vector3d.zero;
+            IPlanetNode parent = Game.Instance.FlightScene.CraftNode.Parent;
+            Vector3d surfaceVector = parent.PlanetVectorToSurfaceVector(position);
+            double latitude;
+            double longitude;
+            parent.GetSurfaceCoordinates(surfaceVector, out latitude, out longitude);
+            double num = parent.GetTerrainHeight(position);
+            if (parent.PlanetData.HasWater && num < (double) parent.PlanetData.SeaLevel)
+                num = (double) parent.PlanetData.SeaLevel;
+            return new Vector3d(latitude * 57.29578, longitude * 57.29578, position.magnitude - (parent.PlanetData.Radius + num));
+        }
         
         
     }
