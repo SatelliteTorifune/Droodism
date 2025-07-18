@@ -36,5 +36,12 @@
                     <TextMeshPro internalId="FuelPercentage" class="label column-right" offsetXY="-4 0" fontSize="15" text="FuelPercentage"/>
                 </Panel>
             </Panel>
+            <!--FuelItemInspector-->
+            <Panel id="droodism-fuel-item-inspector" class="flight-panel draggable" width="400" height="300" rectAlignment="LowerRight" offsetXY="-150 150" border="border" active="true">
+                <Panel class="inspector-header translucent-panel" height="30" rectAlignment="UpperCenter">
+                    <TextMeshPro internalId="FuelItemInspectorTitle" class="inspector-title" text="TODO" margin="5 0 50 0" />
+                    <Image class="inspector-panel-pin" width="24" height="24" offsetXY="0 0" sprite="Ui/Sprites/Common/IconCloseFlyout" rectAlignment="MiddleRight" onClick="CloseShowFuelItemWindow(this)" hoverClass="inspector-panel-pin-hover"/>
+                </Panel>
+            </Panel>
         </RectTransform>
     </XmlLayout>

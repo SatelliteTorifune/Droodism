@@ -54,8 +54,8 @@ namespace Assets.Scripts
             {
                 return;
             }
-            newDroodismUIIntance.SetUIVisibility(Game.Instance.FlightScene.FlightSceneUI.Visible);
-            if (newDroodismUIIntance._mainPanelVisible)
+            newDroodismUIIntance.SetMainUIVisibility(Game.Instance.FlightScene.FlightSceneUI.Visible);
+            if (newDroodismUIIntance.mainPanelVisible)
             {
                 newDroodismUIIntance.UpdateFuelPercentageItemTemplate();
             }

@@ -398,19 +398,12 @@ namespace Assets.Scripts
                 b => SpawnFlag()));
              void SpawnFlag() 
              {
-                 
                 var templateText = Mod.ResourceLoader.LoadAsset<TextAsset>("Assets/Content/Resources/flag.xml");
                 var craftData = Game.Instance.CraftLoader.LoadCraftImmediate(XDocument.Parse(templateText.text).Root);
-                    
                 var xml = craftData.GenerateXml((Transform)null, false, true);
-                    
-
                 Vector3d position = Game.Instance.FlightScene.CraftNode.Position;
-                Debug.LogFormat("12");
                 double latitude = ConvertPlanetPositionToLatLongAgl(position).x;
-                Debug.LogFormat("13");
                 double longitude=ConvertPlanetPositionToLatLongAgl(position).y;
-                Debug.LogFormat("wehhao2");
                 var location = new LaunchLocation(
                     "location",
                     LaunchLocationType.SurfaceLockedGround,
@@ -419,7 +412,7 @@ namespace Assets.Scripts
                     longitude,
                     new Vector3d(0.0, 0.0, 3000.0),
                     0,
-                    1);
+                    0.1);
                 Debug.LogFormat("14");
                 var flag = ((FlightSceneScript)Game.Instance.FlightScene).SpawnCraft("flag", craftData, location, xml);
                 flag.AllowPlayerControl = false;
@@ -440,8 +433,6 @@ namespace Assets.Scripts
                 num = (double) parent.PlanetData.SeaLevel;
             return new Vector3d(latitude * 57.29578, longitude * 57.29578, position.magnitude - (parent.PlanetData.Radius + num));
         }
-        
-        
     }
     public class EmptyFuel: IFuelSource
     {

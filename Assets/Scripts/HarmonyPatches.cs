@@ -4,10 +4,15 @@ using System.Linq;
 using Assets.Scripts.Craft.Fuel;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
+using Assets.Scripts.Flight.Sim;
 using Assets.Scripts.Flight.UI;
 using HarmonyLib;
+using ModApi;
+using ModApi.Common.Extensions;
 using ModApi.Craft;
 using ModApi.Craft.Parts;
+using ModApi.Planet;
+using ModApi.Settings;
 using UnityEngine;
 namespace Assets.Scripts
 {
@@ -40,7 +45,7 @@ namespace Assets.Scripts
 
                 // 查找燃料类型为 "JetPack" 的 FuelTankScript
                 // Find the FuelTankScript with fuel type "JetPack"
-                var jetPackFuelTank = fuelTanks.FirstOrDefault(tank => tank.FuelType?.Id == "Jetpack");
+                var jetPackFuelTank = Enumerable.FirstOrDefault(fuelTanks, tank => tank.FuelType?.Id == "Jetpack");
 
                 // 使用反射设置 _fuelTank 字段的值
                 // Use reflection to set the value of the _fuelTank field
@@ -105,5 +110,6 @@ namespace Assets.Scripts
                 return true;
             }
         }
+        
     }
 }

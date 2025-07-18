@@ -12,6 +12,7 @@ using ModApi.Mods;
 using ModApi.Audio;
 using ModApi.Craft.Parts;
 using ModApi.Craft.Parts.Input;
+using ModApi.Craft.Propulsion;
 using ModApi.State;
 using UnityEngine.Serialization;
 
@@ -24,14 +25,11 @@ namespace Assets.Scripts
         private XmlElement FuelPercentageItemTemplate;
         private XmlElement fuelPercentageList;
         private List<XmlElement> fuelXMLItems = new List<XmlElement>();
-
-        public bool _mainPanelVisible = false;
-        private bool _createEventPanelVisible = false;
+        
+        public bool mainPanelVisible = false;
+        public bool fuelItemInspectorVisible = false;
         private bool _notifPanelVisible = false;
-
-        private int _lastClickedId = -1;
-        private float _lastClickTime = 0.0f;
-        private int _editEventId = -1;
+        
         public readonly string[] _massTypes = { "g", "kg", "t", "kt" };
         public List<Vector3> DroodPosistion = new List<Vector3>();
         public int DroodCountTotal, AstronautCount;
@@ -40,7 +38,7 @@ namespace Assets.Scripts
         private List<string> fuelTypeIDList = new List<string>() {  "Oxygen","H2O","Food","CO2","Wasted Water","Solid Waste"};
         public void OnTogglePanelState() 
         {
-            _mainPanelVisible = !_mainPanelVisible;
+            mainPanelVisible = !mainPanelVisible;
         }
         public void OnLayoutRebuilt(IXmlLayoutController layoutController)
         {
@@ -86,7 +84,7 @@ namespace Assets.Scripts
         }
         
         
-        private void UpdateFuelItem(XmlElement item, string fuelType, IFuelSource fuelSource)
+        private void UpdateFuelTemplateItem(XmlElement item, string fuelType, IFuelSource fuelSource)
         {
            
             float fuelDensity = fuelSource.FuelType.Density;
@@ -95,10 +93,9 @@ namespace Assets.Scripts
             string temp=Mod.Inctance.FormatFuel(fuelSource.TotalFuel*fuelDensity, _massTypes) + "/" + Mod.Inctance.FormatFuel(fuelSource.TotalCapacity*fuelDensity, _massTypes);
             Color progressColor = GetProgressBarColor(percentage,isWasted);
             
+            
             item.GetElementByInternalId("FuelPercentage").SetText("<color=#"+ColorUtility.ToHtmlStringRGB(progressColor)+$">{percentage:P2}</color>");
-            
             item.GetElementByInternalId("FuelAmountPercentage").SetText(temp);
-            
             XmlElement progressBar = item.GetElementByInternalId("FuelProgressBar");
             progressBar.SetAndApplyAttribute("width", $"{percentage*100}%");
             progressBar.SetAndApplyAttribute("offsetXY", $"{-100 + (100 * (float)percentage)},0");
@@ -124,17 +121,38 @@ namespace Assets.Scripts
                                 
         }
 
-        public void SetUIVisibility(bool state)
+        public void SetMainUIVisibility(bool state)
         {
-            mainPanel.SetActive(state && _mainPanelVisible);
+            mainPanel.SetActive(state && mainPanelVisible);
+            controller.xmlLayout.GetElementById("droodism-fuel-item-inspector").SetActive(state && fuelItemInspectorVisible);
         }
 
         public void OnFuelPercentageItemClick(XmlElement item)
         {
             string fuelTypeId = item.GetAttribute("fuel-type-id"); 
             Debug.LogFormat("NewDroodismUI:OnFuelPercentageItemClick:燃料名称{0}", Game.Instance.PropulsionData.GetFuelType(fuelTypeId).Name);
+            ShowFuelItemWindow(fuelTypeId);
             
         }
+
+        private void ShowFuelItemWindow(string fuelTypeId)
+        {
+            fuelItemInspectorVisible = true;
+            FuelType currentFuelType=Game.Instance.PropulsionData.GetFuelType(fuelTypeId);
+            XmlElement fuelItemWindow = controller.xmlLayout.GetElementById("droodism-fuel-item-inspector");
+            fuelItemWindow.GetElementByInternalId("FuelItemInspectorTitle").SetText(Game.Instance.PropulsionData.GetFuelType(fuelTypeId).Name+" Inspcector Window");
+            
+        }
+        public void CloseShowFuelItemWindow()
+        {
+            fuelItemInspectorVisible = false;
+        }
+
+        private void OnFuelItemInspectorToggle(XmlElement item)
+        {
+            Debug.LogFormat("NewDroodismUI:OnFuelItemInspectorToggle:item:{0}", item);
+        }
+        #region UI数据更新相关函数
         public void UpdateFuelPercentageItemTemplate()
         {
             if (fuelXMLItems.Count == 0) return;
@@ -143,7 +161,7 @@ namespace Assets.Scripts
                 var source = UpdateCraftFuelParameterValue(fuelTypeIDList[i]);
                 if (source!= null)
                 {
-                    UpdateFuelItem(fuelXMLItems[i], fuelTypeIDList[i],source);
+                    UpdateFuelTemplateItem(fuelXMLItems[i], fuelTypeIDList[i],source);
                 }
             } 
         }
@@ -215,7 +233,7 @@ namespace Assets.Scripts
                 }
             }
         }
-        
+        #endregion
        
     }
 }

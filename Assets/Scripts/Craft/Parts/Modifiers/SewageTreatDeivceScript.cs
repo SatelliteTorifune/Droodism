@@ -54,7 +54,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             if (_battery == null||waterSource == null||wastedWaterSource == null)
             {
-                Debug.LogWarning("Battery or water source is null");
+    
                 return;
             }
             if (_battery.IsEmpty||wastedWaterSource.IsEmpty||waterSource.TotalCapacity-waterSource.TotalFuel<=0.0000001f)
