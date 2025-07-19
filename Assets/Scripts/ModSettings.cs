@@ -47,12 +47,8 @@ namespace Assets.Scripts
         /// </summary>
         protected override void InitializeSettings()
         {
-            //this.TestSetting1 = this.CreateNumeric<float>("Test Setting 1", 1f, 10f, 1f)
-            //    .SetDescription("A test setting that does nothing.")
-            //    .SetDisplayFormatter(x => x.ToString("F1"))
-            //    .SetDefault(2f);
             ConsumeResourceWhenUnloaded=CreateBool("Drood Consume Resource When Unloaded")
-                .SetDescription("Drood will still Consume Resource Even the Craft is Unloaded.")
+                .SetDescription("Drood will still Consume Resource Even the Craft is Unloaded.<br>known bug the time calculate went a <size=125%><color=red>LITTLE BIT</color></size> wrong way")
                 .SetDefault(false);
         }
     }

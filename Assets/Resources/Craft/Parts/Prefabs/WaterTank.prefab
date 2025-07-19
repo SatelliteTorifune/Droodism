@@ -145,9 +145,41 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -4015842467960183452, guid: a71bd8ac6358a0f41a835c543dc1ca22, type: 3}
+      propertyPath: m_LocalScale.y
+      value: -1.3030186
+      objectReference: {fileID: 0}
+    - target: {fileID: -4015842467960183452, guid: a71bd8ac6358a0f41a835c543dc1ca22, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4015842467960183452, guid: a71bd8ac6358a0f41a835c543dc1ca22, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.21
+      objectReference: {fileID: 0}
+    - target: {fileID: -4015842467960183452, guid: a71bd8ac6358a0f41a835c543dc1ca22, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -1654013101514911480, guid: a71bd8ac6358a0f41a835c543dc1ca22, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 359ad7b05c5a45f4aab03936c1aba7da, type: 2}
+    - target: {fileID: -1253996098385199550, guid: a71bd8ac6358a0f41a835c543dc1ca22, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.105
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: a71bd8ac6358a0f41a835c543dc1ca22, type: 3}
       propertyPath: m_Name
       value: WasteTank
+      objectReference: {fileID: 0}
+    - target: {fileID: 2181260872189816153, guid: a71bd8ac6358a0f41a835c543dc1ca22, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6207855328733609767, guid: a71bd8ac6358a0f41a835c543dc1ca22, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

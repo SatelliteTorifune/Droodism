@@ -132,7 +132,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 this.SetSubPart(subPart);
             else
                 this.SetSubPart(Utilities.FindFirstGameObjectMyselfOrChildren(this.Data.SubPartPath, this.gameObject)?.transform);
-            
         }
         
         public void SetSubPart(Transform subPart)

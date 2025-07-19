@@ -20,10 +20,26 @@ MonoBehaviour:
     They
     Now Need Oxygen Water and Food to Survive
 
-    v0.2 Update:Added Wasted Generation'
+    v0.2 Update:Added Wasted Generation
+
+    v0.22
+    Update:Added 2 new parts
+
+    v0.232 Update:1 new part
+
+    V0.241 UI rebuilding
+
+    <color=green></size=150%>?
+
+
+    <color=red><size=250%>Require
+    JUNO Harmony</size></color>'
   _loadPriority: 400
   _name: Droodism
-  _otherAssets: []
+  _otherAssets:
+  - {fileID: 2800000, guid: c2503f6c8b1301f47931ce7891b9443b, type: 3}
+  - {fileID: 4900000, guid: 2f28744980bce6a46b09955e6f949278, type: 3}
+  - {fileID: 2800000, guid: 3f4d05df030de054c89ccb84352006ed, type: 3}
   _prefabs: []
   _steamDescription: 
   _steamLanguage: English
@@ -32,16 +48,19 @@ MonoBehaviour:
   _steamTitle: 
   _steamVisibility: 0
   _versionMajor: 0
-  _versionMinor: 211
+  _versionMinor: 242
   _partCategories:
   - {fileID: 11400000, guid: 7d2b6f557b8767544a162f30e61d22b6, type: 2}
   _parts:
   - {fileID: 4900000, guid: 14776ff5d3403f64eba601b94451442d, type: 3}
   - {fileID: 4900000, guid: 21a224a5845f95b48a100381457d8adc, type: 3}
-  - {fileID: 4900000, guid: 40bbb2821f2c6b44ab6990bf28e48b6d, type: 3}
+  - {fileID: 4900000, guid: 8ab442a4620aba345a00dddf639c5d2c, type: 3}
+  - {fileID: 4900000, guid: 94d3c8abb77d8b54291b1cf067f7ddbf, type: 3}
   - {fileID: 4900000, guid: 11a692886d113e149937457d57601c68, type: 3}
   - {fileID: 4900000, guid: 3187f51072da32145ad84924d186c061, type: 3}
   _partStyleExtensions: []
   _partTextureStyles: []
-  _persistentObjects: []
-  _uiResourceDatabases: []
+  _persistentObjects:
+  - {fileID: 4200080080812055326, guid: 929425bcb0e376a4d8ea0ef148fe8683, type: 3}
+  _uiResourceDatabases:
+  - {fileID: 11400000, guid: f4a792f930de4064aa7af08996bcf44f, type: 2}

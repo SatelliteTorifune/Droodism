@@ -10,9 +10,11 @@ using HarmonyLib;
 using Jundroo.ModTools;
 using ModApi.Craft;
 using ModApi.Craft.Parts;
+using ModApi.Craft.Parts.Events;
 using ModApi.Craft.Propulsion;
 using ModApi.Design;
 using ModApi.Mods;
+using ModApi.Scenes.Events;
 using Panteleymonov;
 using UnityEngine;
 
@@ -21,6 +23,58 @@ namespace Assets.Scripts
     public partial class Mod:GameMod
 
     {
+        
+        /// <summary>
+        /// 在加载Craft时使用"CheckDrood"方法遍历所有modifier得到零件并添加SupportLife的modifier
+        /// When load a craft get all Craft's modifier using "CheckDrood" method and adding a "SupportLife"modifie to the part
+        /// </summary>
+        public void OnCraftLoaded()
+        {
+            foreach (PartData part in CheckDrood(Craft))
+            {
+                AddLsModifier(part);
+                //PatchCommandPod(part);
+            }
+
+            foreach (PartData part in  CheckGenerator(Craft))
+            {
+                AddLSGModifier(part);
+            }
+
+            foreach (PartData part in  CheckCommandPod(Craft))
+            {
+                PatchCommandPod(part);
+            }
+
+        }
+        /// <summary>
+        /// 在part添加时检测如果是Drood则添加SupportLife modifier和其他属性
+        /// Adding SupportLife modifier when the added part is Drood
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void OnPartAdded(object sender,CreatedPartEventArgs e)
+        {
+            
+            //Debug.LogFormat($"{e.Part.Name},id{e.Part.Id}有{e.Part.Modifiers.Count}个modifier,1:{e.PartType.Name}");
+            if (e.Part.Name=="Eva"||e.Part.Name == "Eva-Tourist")
+            {
+                AddLsModifier(e.Part);
+                //PatchCommandPod(e.Part);
+            }
+            
+            if (e.Part.Name == "Generator1")
+            {
+                AddLSGModifier(e.Part);
+            }
+
+            if (e.Part.Name.Contains("Command")||e.Part.Name.Contains("Capusle"))
+            {
+                PatchCommandPod(e.Part);
+            }
+            
+            
+        }
         /// <summary>
         /// CheckDrood方法接受CraftScript参数,遍历所有modifier,得到含有Eva Modifier的Part的类型为PartData的列表
         /// CheckDrood Method receives CraftScript as a parameter,checks all modifier inside the craft,returns with a list (which type is PartData) of Parts with Eva Modifier
@@ -56,10 +110,8 @@ namespace Assets.Scripts
 
                 if (isDrood && !hasLifeSupport)
                 {
-
                     DroodParts.Add(part);
                 }
-
             }
 
             for (int i = 0; i < DroodParts.Count; i++)
@@ -95,8 +147,6 @@ namespace Assets.Scripts
             List<PartData> GeneratorParts = new List<PartData>();
             foreach (PartData part in craft.Data.Assembly.Parts)
             {
-
-               
                 if ( part.PartType.Name=="Generator1")
                 {
                     GeneratorParts.Add(part);
@@ -112,13 +162,9 @@ namespace Assets.Scripts
             List<PartData> CommandPodParts = new List<PartData>();
             foreach (PartData part in craft.Data.Assembly.Parts)
             {
-                if (part.Name.Contains("Capsule"))
+                if (part.Name.Contains("Capsule")||part.Name.Contains("Command"))
                 {
-                    if (part.PartScript.Modifiers.Count <11)
-                    {
-                        CommandPodParts.Add(part);
-                    }
-                    
+                    CommandPodParts.Add(part);
                 }
                 
             }
@@ -138,84 +184,20 @@ namespace Assets.Scripts
                 _supportLifeData.InspectorEnabled = true;
             }
         }
-
-        public void AddFuelTankModifier(PartData part)
+        
+        public  void PatchCommandPod(PartData part)
         {
-            if (part==null||part.Modifiers.Count>11)
+            if (part==null)
                 return;
-            Debug.LogFormat("AddFuelTankModifier Called");
-            void AddSingleFuelTankModifier(string fuelType, double fuelCapacity, double fuelAmount)
+            STCommandPodPatchData targetScript = part.GetModifier<STCommandPodPatchData>();
+            if (targetScript==null)
             {
-                Assets.Scripts.Craft.Parts.Modifiers.FuelTankData _fuelTankData;
-                _fuelTankData = PartModifierData.CreateFromDefaultXml<FuelTankData>(part);
-                _fuelTankData.Fuel=fuelAmount;
-                _fuelTankData.Capacity=fuelCapacity;
-                SetFuelType(_fuelTankData, fuelType);
-                SetAutoFuelType(_fuelTankData);
-                _fuelTankData.InspectorEnabled = false;
-                _fuelTankData.PartPropertiesEnabled = false;
-                _fuelTankData.SubPriority = 29;
-
-
-            }
-            AddSingleFuelTankModifier("Oxygen",60,60);
-            AddSingleFuelTankModifier("H2O",0.3,0.3);
-            AddSingleFuelTankModifier("Food",5,5);
-            AddSingleFuelTankModifier("Wasted Water",0.3,0);
-            AddSingleFuelTankModifier("CO2",60,0);
-            AddSingleFuelTankModifier("Solid Waste",5,0);
-            try
-            {
-                XElement _xml;
-                _xml = part.GenerateXml(part.PartScript.CraftScript.Transform, false);
-                part.LoadXML(_xml, 15);
-            }
-            catch (Exception e)
-            {
-                Debug.LogFormat("最后一步出事儿啦{0}",e);
-            }
-            
-        }
-        
-        private void SetFuelType(FuelTankData fuelTankData, string fuelTypeId)
-        {
-            try
-            {
-                var fieldInfo = AccessTools.Field(typeof(FuelTankData), "_fuelType");
-                if (fieldInfo == null)
-                {
-                    Debug.LogError($"Cannot find _fuelType field in FuelTankData");
-                    return;
-                }
-
-                fieldInfo.SetValue(fuelTankData, fuelTypeId);
-                Debug.Log($"Set FuelType {fuelTypeId} for FuelTankData");
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"SetFuelType 出错 for {fuelTypeId}: {e}");
+                targetScript = PartModifierData.CreateFromDefaultXml<STCommandPodPatchData>(part);
+                targetScript.PartPropertiesEnabled = false;
+                targetScript.InspectorEnabled = false;
             }
         }
-        
-        private void SetAutoFuelType(FuelTankData fuelTankData)
-        {
-            try
-            {
-                var fieldInfo = AccessTools.Field(typeof(FuelTankData), "_autoFuelType");
-                if (fieldInfo == null)
-                {
-                    Debug.LogError($"Cannot find _fuelType field in FuelTankData");
-                    return;
-                }
 
-                fieldInfo.SetValue(fuelTankData, false);
-                Debug.Log($"Set AutoFuelType for FuelTankData");
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"SetFuelType 出错 for {fuelTankData.FuelType.Name}: {e}");
-            }
-        }
         
     }
 }

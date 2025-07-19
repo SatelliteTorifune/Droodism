@@ -714,9 +714,13 @@ PrefabInstance:
     m_TransformParent: {fileID: 5199267947503085931}
     m_Modifications:
     - target: {fileID: 3148173382454296947, guid: 4d9ac9beacf25a940965a114e110dc0d, type: 3}
+      propertyPath: Data._name
+      value: Sodium Peroxide Container
+      objectReference: {fileID: 0}
+    - target: {fileID: 3148173382454296947, guid: 4d9ac9beacf25a940965a114e110dc0d, type: 3}
       propertyPath: Data._description
       value: Taking in CO2/Wasted Water and Give out <color=green>Oxygen</color>
-        when emergency,does not require electricity charge to work
+        when emergency,does not require electricity charge to work|
       objectReference: {fileID: 0}
     - target: {fileID: 3533311010914190510, guid: 4d9ac9beacf25a940965a114e110dc0d, type: 3}
       propertyPath: m_Name

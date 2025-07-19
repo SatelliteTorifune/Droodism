@@ -55,12 +55,12 @@ MonoBehaviour:
     _defaultColorIndexTrim2: 2
     _defaultColorIndexTrim3: 3
     _defaultColorIndexTrim4: 4
-    _id: SewageTreatDeivce
+    _id: SewageTreatDevice
     _includeInBodyDrag: 1
     _mirrorConfig:
       _hasRotationOffset: 0
       _rotationOffsetEuler: {x: 0, y: 0, z: 0}
-    _name: Sewage Treat Deivce
+    _name: Sewage Treat Device
     _partCollisionHandling: 0
     _price: 10
     _unscaledMass: 10
@@ -85,7 +85,7 @@ MonoBehaviour:
     _displayOrder: 0
     _iconPath: 
     _iconType: 0
-    _name: SewageTreatDeivce
+    _name: SewageTreatDevice
     _partTypeOverrides: []
     _position: {x: 0, y: 0, z: 0}
     _rotation: {x: 0, y: 0, z: 0}
@@ -182,6 +182,8 @@ MonoBehaviour:
     _version: 1
     _versionLast: 1
     _versionsAllowed: 
+    _fuelSourceAttachPoint: 0
+    _baseMass: 100
     _wastedWaterComsumeRate: 1
     _convertEffiency: 1
     _batteryComsumeRate: 1

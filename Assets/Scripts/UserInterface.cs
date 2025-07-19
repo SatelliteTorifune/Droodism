@@ -1,16 +1,20 @@
 using System;
+using System.Xml.Linq;
 using Assets.Scripts.Craft;
 using Assets.Scripts.Craft.Fuel;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
+using Assets.Scripts.Flight;
 using Assets.Scripts.Flight.Sim;
 using Microsoft.CSharp.RuntimeBinder;
 using ModApi.Craft;
 using ModApi.Craft.Parts;
 using ModApi.Craft.Propulsion;
 using ModApi.Flight;
+using ModApi.Flight.Sim;
 using ModApi.Math;
 using ModApi.Mods;
+using ModApi.State;
 using ModApi.Ui.Inspector;
 using UnityEngine;
 using UnityEngine.UI;
@@ -301,7 +305,7 @@ namespace Assets.Scripts
         // Method to build the flight view inspector panel with life support information
         private void OnBuildFlightViewInspectorPanel(BuildInspectorPanelRequest request)
         {
-            // Log that the method has been called
+            
             Debug.Log("OnBuildFlightViewInspectorPanel called");
             try
             {
@@ -341,7 +345,8 @@ namespace Assets.Scripts
             var OxygenProgressBarModel = new ProgressBarModel("Oxygen Percentage", () =>
                 (float)(_oxygenSource.TotalFuel / _oxygenSource.TotalCapacity));
             LS.Add(OxygenProgressBarModel);
-            
+            LS.Add(new TextModel("Oxygen Percentage",
+                () => Units.GetPercentageString((float)(_oxygenSource.TotalFuel / _oxygenSource.TotalCapacity))));
             // Create a text model for the oxygen supply time and add it to the life support group
             var OxygenTime = new TextModel("Oxygen Supply Time",
                 () => ($"{Units.GetStopwatchTimeString(_oxygenSource.TotalFuel / (oxygenConsumeRateTotal * (isEva ? (Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.GetModifier<SupportLifeScript>().isTourist ? 1.05 : 1) : 1) * (isEva ? (Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.GetModifier<SupportLifeScript>().isRunning ? 1.75 : 1) : 1)))}"));
@@ -351,6 +356,8 @@ namespace Assets.Scripts
             var WaterProgressBarModel = new ProgressBarModel("Water Percentage", () =>
                 (float)(_waterSource.TotalFuel / _waterSource.TotalCapacity));
             LS.Add(WaterProgressBarModel);
+            LS.Add(new TextModel("Water Percentage",
+                () => Units.GetPercentageString((float)(_waterSource.TotalFuel / _waterSource.TotalCapacity))));
             // Create a text model for the water supply time and add it to the life support group
             var WaterTime = new TextModel("Water Supply Time",
                 () => ($"{Units.GetStopwatchTimeString(_waterSource.TotalFuel / (waterConsumeRateTotal * (isEva ? (Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.GetModifier<SupportLifeScript>().isTourist ? 1.05 : 1) : 1) * (isEva ? (Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.GetModifier<SupportLifeScript>().isRunning ? 1.75 : 1) : 1)))}"));
@@ -360,6 +367,8 @@ namespace Assets.Scripts
             var FoodProgressBarModel = new ProgressBarModel("Food Percentage", () =>
                 (float)(_foodSource.TotalFuel / _foodSource.TotalCapacity));
             LS.Add(FoodProgressBarModel);
+            LS.Add(new TextModel("Food Percentage",
+                () => Units.GetPercentageString((float)(_foodSource.TotalFuel / _foodSource.TotalCapacity))));
             // Create a text model for the food supply time and add it to the life support group
             var FoodTime = new TextModel("Food Supply Time",
                 () => ($"{Units.GetStopwatchTimeString(_foodSource.TotalFuel / (foodConsumeRateTotal * (isEva ? (Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.GetModifier<SupportLifeScript>().isTourist ? 1.05 : 1) : 1) * (isEva ? (Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.GetModifier<SupportLifeScript>().isRunning ? 1.75 : 1) : 1)))}"));
@@ -368,21 +377,62 @@ namespace Assets.Scripts
             var CO2ProgressBarModel = new ProgressBarModel("CO2 level", () =>
                 (float)(_co2Source.TotalFuel / _co2Source.TotalCapacity));
             LS.Add(CO2ProgressBarModel);
-            
+            LS.Add(new TextModel("CO2 Percentage",
+                () => Units.GetPercentageString((float)(_co2Source.TotalFuel / _co2Source.TotalCapacity))));
             var WastedWaterProgressBarModel = new ProgressBarModel("Wasted Water level", () =>
                 (float)(_wastedWaterSource.TotalFuel / _wastedWaterSource.TotalCapacity));
             LS.Add(WastedWaterProgressBarModel);
+            LS.Add(new TextModel("Wasted Water Percentage",
+                () => Units.GetPercentageString((float)(_wastedWaterSource.TotalFuel / _wastedWaterSource.TotalCapacity))));
             var SolidWasteProgressBarModel = new ProgressBarModel("Solid Waste level", () =>
                 (float)(_solidWasteSource.TotalFuel / _solidWasteSource.TotalCapacity));
             LS.Add(SolidWasteProgressBarModel);
+            LS.Add(new TextModel("Solid Waste Percentage",
+                () => Units.GetPercentageString((float)(_solidWasteSource.TotalFuel / _solidWasteSource.TotalCapacity))));
             
             LS.Add(new TextButtonModel(
                 "Manual Update",
                 b => UpdateDroodCount()));
+            LS.Add(new TextButtonModel(
+                "Plant Flag",
+                b => SpawnFlag()));
+             void SpawnFlag() 
+             {
+                var templateText = Mod.ResourceLoader.LoadAsset<TextAsset>("Assets/Content/Resources/flag.xml");
+                var craftData = Game.Instance.CraftLoader.LoadCraftImmediate(XDocument.Parse(templateText.text).Root);
+                var xml = craftData.GenerateXml((Transform)null, false, true);
+                Vector3d position = Game.Instance.FlightScene.CraftNode.Position;
+                double latitude = ConvertPlanetPositionToLatLongAgl(position).x;
+                double longitude=ConvertPlanetPositionToLatLongAgl(position).y;
+                var location = new LaunchLocation(
+                    "location",
+                    LaunchLocationType.SurfaceLockedGround,
+                    Game.Instance.FlightScene.CraftNode.Parent.PlanetData.Name,
+                    latitude,
+                    longitude,
+                    new Vector3d(0.0, 0.0, 3000.0),
+                    0,
+                    0.2);
+                Debug.LogFormat("14");
+                var flag = ((FlightSceneScript)Game.Instance.FlightScene).SpawnCraft($"Flag at{Game.Instance.FlightScene.CraftNode.Parent.Name},{(ConvertPlanetPositionToLatLongAgl(position).x)} latitude,{(ConvertPlanetPositionToLatLongAgl(position).y)}longitude", craftData, location, xml);
+                flag.AllowPlayerControl = false;
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Planted Flag at <color=green> {Game.Instance.FlightScene.CraftNode.Parent.Name} </color>'s surface,at{(ConvertPlanetPositionToLatLongAgl(position).x)}° latitude and {(ConvertPlanetPositionToLatLongAgl(position).y)}° longitude",true,120f);
+            }
         }
-        
-        
-        
+        public Vector3d ConvertPlanetPositionToLatLongAgl(Vector3d position)
+        {
+            if (double.IsNaN(position.x) || double.IsNaN(position.y) || double.IsNaN(position.z))
+                return Vector3d.zero;
+            IPlanetNode parent = Game.Instance.FlightScene.CraftNode.Parent;
+            Vector3d surfaceVector = parent.PlanetVectorToSurfaceVector(position);
+            double latitude;
+            double longitude;
+            parent.GetSurfaceCoordinates(surfaceVector, out latitude, out longitude);
+            double num = parent.GetTerrainHeight(position);
+            if (parent.PlanetData.HasWater && num < (double) parent.PlanetData.SeaLevel)
+                num = (double) parent.PlanetData.SeaLevel;
+            return new Vector3d(latitude * 57.29578, longitude * 57.29578, position.magnitude - (parent.PlanetData.Radius + num));
+        }
     }
     public class EmptyFuel: IFuelSource
     {

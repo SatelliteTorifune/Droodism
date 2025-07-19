@@ -54,19 +54,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             if (_battery == null||waterSource == null||wastedWaterSource == null)
             {
-                Debug.LogWarning("Battery or water source is null");
+    
                 return;
             }
             if (_battery.IsEmpty||wastedWaterSource.IsEmpty||waterSource.TotalCapacity-waterSource.TotalFuel<=0.0000001f)
                 return;
             else
             {
-                double WastedWaterToRemove = Data.WastedWaterComsumeRate * frame.DeltaTimeWorld*Data.Scale;
-                double WaterToAdd = WastedWaterToRemove * Data.ConvertEffiency*0.25f;
-                double BatteryToRemove = Data.BatteryComsumeRate * WastedWaterToRemove*Data.Scale;
-                wastedWaterSource.RemoveFuel(WastedWaterToRemove);
-                waterSource.AddFuel(WaterToAdd);
-                _battery.RemoveFuel(BatteryToRemove);
+                
+                wastedWaterSource.RemoveFuel( Data.WastedWaterComsumeRate * frame.DeltaTimeWorld*Data.Scale);
+                waterSource.AddFuel(  Data.ConvertEffiency*0.3f*Data.WastedWaterComsumeRate * frame.DeltaTimeWorld*Data.Scale);
+                _battery.RemoveFuel( Data.BatteryComsumeRate * Data.WastedWaterComsumeRate * frame.DeltaTimeWorld*Data.Scale);
 
             }
 

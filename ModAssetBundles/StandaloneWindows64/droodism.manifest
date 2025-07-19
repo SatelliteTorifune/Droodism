@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 3849654266
+CRC: 3847830413
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: b8214553b3f46de9b33371fa02ef0c2f
+    Hash: d17701091db935ae387645e8786a618b
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 5bbb56ce1301bf09de32bc8b07a8b8a8
+    Hash: 847790c4082ee91029d8c7419a86a075
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: b8214553b3f46de9b33371fa02ef0c2f
+    Hash: d17701091db935ae387645e8786a618b
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -35,33 +35,44 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 212942404, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
 - Class: 114
+  Script: {fileID: 11500000, guid: 21d232c8cc85f2143ac45bab630e8754, type: 3}
+- Class: 114
+  Script: {fileID: 462600611, guid: a67a49df4508efd41b25d5ea1d54bed1, type: 3}
+- Class: 114
   Script: {fileID: 2121057919, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
 - Class: 114
   Script: {fileID: -468989955, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
 - Class: 114
   Script: {fileID: 264738313, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
-- Class: 114
-  Script: {fileID: 1851567402, guid: 55a7c5278766598448d9083b0de0861d, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 134
   Script: {instanceID: 0}
 - Class: 213
   Script: {instanceID: 0}
-SerializeReferenceClassIdentifiers: []
+SerializeReferenceClassIdentifiers:
+- AssemblyName: XmlLayout
+  ClassName: UI.Xml.XmlLayoutResourceEntry
 Assets:
 - Assets/Resources/Craft/Parts/Prefabs/WaterTank.prefab
+- Assets/Content/XML UI/Sprites/White.png
 - Assets/Resources/Craft/Parts/Definitions/Sodium Peroxide Container.xml
 - Assets/Resources/Craft/Parts/Prefabs/FoodTank.prefab
+- Assets/_ModAssets_/Droodism.dll.bytes
+- Assets/Content/Resources/flag.xml
 - Assets/Resources/Craft/Parts/Prefabs/ElectrolyticDevice.prefab
-- Assets/Resources/Craft/Parts/Prefabs/SewageTreatDeivce.prefab
 - Assets/Resources/Craft/Parts/Definitions/FoodTank.xml
 - Assets/Content/Craft/Parts/RocketEngines/Propulsion.xml
-- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/Content/Craft/Parts/Categories/LifeSupport.asset
 - Assets/Resources/Craft/Parts/Definitions/ElectrolyticDevice.xml
-- Assets/_ModAssets_/Droodism.dll.bytes
+- Assets/Content/Prefabs/DroodismUI.prefab
+- Assets/Content/XML UI/Sprites/DroodsimUIIcon.png
+- Assets/Resources/Craft/Parts/Prefabs/SewageTreatDevice.prefab
 - Assets/Resources/Craft/Parts/Prefabs/Sodium Peroxide Container.prefab
-- Assets/Resources/Craft/Parts/Definitions/SewageTreatDeivce.xml
+- Assets/Resources/Craft/Parts/Definitions/PhotoBioReactor.xml
+- Assets/Content/XML UI/UIResourceDatabase.asset
+- Assets/Resources/Craft/Parts/Definitions/SewageTreatDevice.xml
+- Assets/_ModAssets_/ModManifest.xml.bytes
+- Assets/Resources/Craft/Parts/Prefabs/PhotoBioReactor.prefab
 - Assets/Resources/Craft/Parts/Definitions/WaterTank.xml
 Dependencies: []

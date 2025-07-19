@@ -1,0 +1,8 @@
+<XmlLayout xmlns="http://www.w3schools.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\XmlLayout.xsd">
+    <Include path="Ui/Xml/Styles.xml" />
+    <Defaults>
+        <Style class="progress-container" padding="2" />
+        <Style class="progress-background" radius="3" />
+        <Style class="progress-fill" radius="3" />
+    </Defaults>
+</XmlLayout>

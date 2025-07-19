@@ -138,10 +138,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public override void OnGenerateInspectorModel(PartInspectorModel model)
         {
             base.OnGenerateInspectorModel(model);
-            //GroupModel groupModel = new GroupModel("<color=green><size=115%>Sodium Peroxide</size></color>");
-            //model.AddGroup(groupModel);
+            
             var WastedWaterProgressBarModel = new ProgressBarModel("Generation Progress", () =>
                 (float)(oxygenGeneratedAmount/Data.MaxOxygenGenerateAmount));
+            var statesIndicatorModel = new TextModel("Current State", () => isUsedUp ? "<color=red>This Container is used up</color>" : isActive&&!isUsedUp ? "<color=green>Working</color>" : "<color=yellow>Idle</color>");
+            model.Add(statesIndicatorModel);
             model.Add(WastedWaterProgressBarModel);
         }
         
