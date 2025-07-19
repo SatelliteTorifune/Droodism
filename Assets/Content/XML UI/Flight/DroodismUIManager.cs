@@ -62,6 +62,10 @@ namespace Assets.Scripts
            
         }
 
+        public NewDroodismUI GetDroodismUI()
+        {
+            return newDroodismUIIntance;
+        }
         public void OnSceneLoaded(object sender, SceneEventArgs e)
         {
             if (e.Scene == "Flight")

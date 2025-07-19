@@ -33,13 +33,14 @@ namespace Assets.Scripts
         public readonly string[] _massTypes = { "g", "kg", "t", "kt" };
         public List<Vector3> DroodPosistion = new List<Vector3>();
         public int DroodCountTotal, AstronautCount;
-        [FormerlySerializedAs("TouristCountl")] public int TouristCount;
+        public int TouristCount;
 
         private List<string> fuelTypeIDList = new List<string>() {  "Oxygen","H2O","Food","CO2","Wasted Water","Solid Waste"};
         public void OnTogglePanelState() 
         {
             mainPanelVisible = !mainPanelVisible;
         }
+       
         public void OnLayoutRebuilt(IXmlLayoutController layoutController)
         {
             controller = (XmlLayoutController)layoutController;

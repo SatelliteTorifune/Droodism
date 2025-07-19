@@ -412,11 +412,11 @@ namespace Assets.Scripts
                     longitude,
                     new Vector3d(0.0, 0.0, 3000.0),
                     0,
-                    0.1);
+                    0.2);
                 Debug.LogFormat("14");
-                var flag = ((FlightSceneScript)Game.Instance.FlightScene).SpawnCraft("flag", craftData, location, xml);
+                var flag = ((FlightSceneScript)Game.Instance.FlightScene).SpawnCraft($"Flag at{Game.Instance.FlightScene.CraftNode.Parent.Name},{(ConvertPlanetPositionToLatLongAgl(position).x)} latitude,{(ConvertPlanetPositionToLatLongAgl(position).y)}longitude", craftData, location, xml);
                 flag.AllowPlayerControl = false;
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Planted Flag at<color=green> {Game.Instance.FlightScene.CraftNode.Parent.Name} </color>'s surface,at {ConvertPlanetPositionToLatLongAgl(position).x:P2}° latitude and {ConvertPlanetPositionToLatLongAgl(position).y:P2}° longitude",true,120f);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Planted Flag at <color=green> {Game.Instance.FlightScene.CraftNode.Parent.Name} </color>'s surface,at{(ConvertPlanetPositionToLatLongAgl(position).x)}° latitude and {(ConvertPlanetPositionToLatLongAgl(position).y)}° longitude",true,120f);
             }
         }
         public Vector3d ConvertPlanetPositionToLatLongAgl(Vector3d position)

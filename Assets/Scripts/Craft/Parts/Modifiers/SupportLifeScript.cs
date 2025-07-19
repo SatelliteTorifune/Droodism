@@ -59,6 +59,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         FlightSceneScript _flightSceneScript;
 
         public double LastUnloadedTime;
+        private List<Vector3> DroodPosistion = new List<Vector3>();
+        
+        
+        
         
         /// <summary>
         /// 指示小蓝人是否在跑或是否为游客。
@@ -142,7 +146,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             _evaScript = GetComponent<EvaScript>();
             _crewCompartmentScript = GetComponent<CrewCompartmentScript>();
-            
+            Debug.LogFormat("GET");
             UpdateCurrentPlanet();
             Game.Instance.FlightScene.CraftNode.ChangedSoI += OnSoiChanged;
             PartData partData = this.Data.Part;
@@ -197,6 +201,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
        
         private IFuelSource GetCraftFuelSource(string fuelType)
         {
+            DroodPosistion.Clear();
+            UpdateDroodPosistion();
             if (this.PartScript.CraftScript.Data.Assembly.Parts.Count == 1)
             {
                 return null;
@@ -206,19 +212,31 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 var craftSources = PartScript.CraftScript.FuelSources.FuelSources;
                 foreach (var source in craftSources)
                 {
-                    if (source.FuelType.Id.Contains(fuelType))
+                    if(source.FuelType.Id.Contains(fuelType)&&DroodPosistion.Contains(source.Position)==false)
                     {
                         return source;
                     }
                 }
                 return null;
+                
+                
             }
             catch (Exception e)
             {
                 Debug.LogErrorFormat("GetCraftFuelSource出问题了{0}", e);
             }
             return null;
-        
+
+            void UpdateDroodPosistion()
+            {
+                foreach (var pd in PartScript.CraftScript.Data.Assembly.Parts)
+                {
+                    if (pd.PartType.Name=="Eva"||pd.PartType.Name=="Eva-Tourist")
+                    {
+                        DroodPosistion.Add(pd.Position);
+                    }
+                }
+            }
             
         }
 
