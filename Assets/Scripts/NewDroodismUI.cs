@@ -34,8 +34,14 @@ namespace Assets.Scripts
         public List<Vector3> DroodPosistion = new List<Vector3>();
         public int DroodCountTotal, AstronautCount;
         public int TouristCount;
+        
+        
+      
 
-        private List<string> fuelTypeIDList = new List<string>() {  "Oxygen","H2O","Food","CO2","Wasted Water","Solid Waste"};
+        private IReadOnlyList<string> fuelTypeIDList = new List<string>() {  "Oxygen","H2O","Food","CO2","Wasted Water","Solid Waste"};
+        private double oxygenRate, h2oRate, foodRate, co2Rate, wastedWaterRate, solidWasteRate;
+        private double photoBioReactorGrowRate;
+        
         public void OnTogglePanelState() 
         {
             mainPanelVisible = !mainPanelVisible;
@@ -85,15 +91,15 @@ namespace Assets.Scripts
         }
         
         
-        private void UpdateFuelTemplateItem(XmlElement item, string fuelType, IFuelSource fuelSource)
+        private void UpdateFuelTemplateItem(XmlElement item, IFuelSource fuelSource)
         {
-           
+            string fuelType = fuelSource.FuelType.Id;
             float fuelDensity = fuelSource.FuelType.Density;
             double percentage = fuelSource.TotalFuel / fuelSource.TotalCapacity;
             bool isWasted = (fuelType.Contains("Waste") ||fuelType.Contains("CO2"));
             string temp=Mod.Inctance.FormatFuel(fuelSource.TotalFuel*fuelDensity, _massTypes) + "/" + Mod.Inctance.FormatFuel(fuelSource.TotalCapacity*fuelDensity, _massTypes);
             Color progressColor = GetProgressBarColor(percentage,isWasted);
-            
+           
             
             item.GetElementByInternalId("FuelPercentage").SetText("<color=#"+ColorUtility.ToHtmlStringRGB(progressColor)+$">{percentage:P2}</color>");
             item.GetElementByInternalId("FuelAmountPercentage").SetText(temp);
@@ -133,6 +139,7 @@ namespace Assets.Scripts
             string fuelTypeId = item.GetAttribute("fuel-type-id"); 
             Debug.LogFormat("NewDroodismUI:OnFuelPercentageItemClick:燃料名称{0}", Game.Instance.PropulsionData.GetFuelType(fuelTypeId).Name);
             ShowFuelItemWindow(fuelTypeId);
+            Mod.Inctance.SpawnFlag();
             
         }
 
@@ -162,7 +169,7 @@ namespace Assets.Scripts
                 var source = UpdateCraftFuelParameterValue(fuelTypeIDList[i]);
                 if (source!= null)
                 {
-                    UpdateFuelTemplateItem(fuelXMLItems[i], fuelTypeIDList[i],source);
+                    UpdateFuelTemplateItem(fuelXMLItems[i],source);
                 }
             } 
         }
@@ -231,6 +238,96 @@ namespace Assets.Scripts
                         DroodPosistion.Add(pd.Position);
                     }
 
+                }
+            }
+        }
+
+        private void UpdateFuelConsumption()
+        {
+            oxygenRate=h2oRate=foodRate=co2Rate=wastedWaterRate=solidWasteRate=0;
+            foreach (var pd in ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.Data.Assembly.Parts)
+            {
+                if (pd.PartType.Name=="Eva"||pd.PartType.Name=="Eva-Tourist")
+                {
+                    var supportLifeData = pd.PartScript.GetModifier<SupportLifeScript>().Data;
+                    oxygenRate -= supportLifeData.OxygenComsumeRate;
+                    h2oRate -= supportLifeData.WaterComsumeRate;
+                    foodRate -= supportLifeData.FoodComsumeRate;
+                    co2Rate += (supportLifeData.OxygenComsumeRate * supportLifeData.evaConsumeEfficiency);
+                    wastedWaterRate += (supportLifeData.WaterComsumeRate * supportLifeData.evaConsumeEfficiency);
+                    solidWasteRate += (supportLifeData.FoodComsumeRate * supportLifeData.evaConsumeEfficiency);
+                }
+
+                if (pd.PartType.Name=="Generator1")
+                {
+                    if (pd.PartScript.GetModifier<GeneratorScript>().Data.FuelType.Id=="LOX/LH2"||pd.Activated)
+                    {
+                        var data = pd.PartScript.GetModifier<LifeSupportGeneratorScript>().Data;
+                        if (data!= null)
+                        {
+                            oxygenRate += data.OxygenConvertEfficiency *
+                                          pd.PartScript.GetModifier<GeneratorScript>().Data.FuelFlow;
+                            h2oRate += data.WaterConvertEfficiency * pd.PartScript.GetModifier<GeneratorScript>().Data.FuelFlow;
+                        }
+                        
+                    }
+                }
+
+                if (pd.PartType.Name=="ElectrolyticDevice")
+                {
+                    if (pd.Activated)
+                    {
+                        h2oRate -= pd.PartScript.GetModifier<ElectrolyticDeviceScript>().Data.WaterComsuptionRate;
+                        oxygenRate += pd.PartScript.GetModifier<ElectrolyticDeviceScript>().Data.OxygenGenerationRate;
+                    }
+                }
+
+                if (pd.PartType.Name=="SewageTreatDevice")
+                {
+                    if (pd.Activated)
+                    {
+                        wastedWaterRate-=pd.PartScript.GetModifier<SewageTreatDeivceScript>().Data.WastedWaterComsumeRate* pd.PartScript.GetModifier<SewageTreatDeivceScript>().Data.Scale;
+                        h2oRate += pd.PartScript.GetModifier<SewageTreatDeivceScript>().Data.WastedWaterComsumeRate * pd.PartScript.GetModifier<SewageTreatDeivceScript>().Data.ConvertEffiency * pd.PartScript.GetModifier<SewageTreatDeivceScript>().Data.Scale;
+                    }
+                }
+
+                if (pd.PartType.Name == "PhotoBioReactor")
+                {
+                    
+                    var data = pd.PartScript.GetModifier<PhotoBioReactorScript>().Data;
+                    if (data.UseEletricityWhenFold == true) 
+                    {
+                        if (pd.Activated)
+                        {
+                            co2Rate -= data.Co2ConsumptionRate;
+                            wastedWaterRate=+data.WaterConsumptionRate;
+                            h2oRate -= data.WaterConsumptionRate;
+                            solidWasteRate-=data.SolidWasteConsumptionRate;
+                            oxygenRate+=data.OxygenGenerationRate;
+                            photoBioReactorGrowRate =pd.PartScript.GetModifier<PhotoBioReactorScript>()._rechargePointingEfficiency*data.GrowSpeed * data.Efficiency * (UpdateCraftFuelParameterValue("Solid Waste").IsEmpty ? 1 : data.BoosteScale);
+                        }
+                        else
+                        {
+                            co2Rate -= data.Co2ConsumptionRate;
+                            wastedWaterRate=+data.WaterConsumptionRate;
+                            h2oRate -= data.WaterConsumptionRate;
+                            solidWasteRate-=data.SolidWasteConsumptionRate;
+                            oxygenRate+=data.OxygenGenerationRate;
+                            photoBioReactorGrowRate =data.GrowSpeed * data.Efficiency * (UpdateCraftFuelParameterValue("Solid Waste").IsEmpty ? 1 : data.BoosteScale);
+                        }
+                    }
+                    else
+                    {
+                        if (pd.Activated)
+                        {
+                            co2Rate -= data.Co2ConsumptionRate;
+                            wastedWaterRate=+data.WaterConsumptionRate;
+                            h2oRate -= data.WaterConsumptionRate;
+                            solidWasteRate-=data.SolidWasteConsumptionRate;
+                            oxygenRate+=data.OxygenGenerationRate;
+                            photoBioReactorGrowRate =data.GrowSpeed * data.Efficiency * (UpdateCraftFuelParameterValue("Solid Waste").IsEmpty ? 1 : data.BoosteScale);
+                        }
+                    }
                 }
             }
         }

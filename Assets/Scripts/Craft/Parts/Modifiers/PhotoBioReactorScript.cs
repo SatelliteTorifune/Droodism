@@ -20,7 +20,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         IDesignerStart
     {
         private IFuelSource _battery,_co2Source,_waterSource,_foodSource,_solidWastedSource,_oxygenSource,_wastedWaterSource;
-        private float _efficiency, _rechargeRate, _rechargePointingEfficiency;
+        public float _efficiency, _rechargeRate, _rechargePointingEfficiency;
         private float _area = 10;
         private Transform _panel = (Transform) null;
         private Transform MainPipe,L1,L2,L3,R1,R2,R3=(Transform)null;
