@@ -41,6 +41,15 @@ namespace Assets.Scripts
         private IReadOnlyList<string> fuelTypeIDList = new List<string>() {  "Oxygen","H2O","Food","CO2","Wasted Water","Solid Waste"};
         private double oxygenRate, h2oRate, foodRate, co2Rate, wastedWaterRate, solidWasteRate;
         private double photoBioReactorGrowRate;
+        private Dictionary<string, (double Current, double Previous)> FuelMap = new Dictionary<string, (double, double)>
+        {
+            { "Oxygen", (0, 0) },
+            { "H2O", (0, 0) },
+            {"Food", (0, 0) },
+            {"CO2", (0, 0) },
+            {"Wasted Water", (0, 0) },
+            {"Solid Waste", (0, 0) }
+        };
         
         public void OnTogglePanelState() 
         {
@@ -90,24 +99,55 @@ namespace Assets.Scripts
             Debug.LogFormat("NewDroodismUI:AddFuelListItem:{0}", fuelType);
         }
         
-        
+        /// <summary>
+        /// 更新UpdateFuelTemplate项目用的,属于是我拉的第二坨屎山,纯纯恶臭,我也不知道为什么要这么写,本来是为了解决性能问题的,但是这函数在Upddate()里面调用,而且还有贼鸡巴多的别的函数和foreach调用,你说这能要是能优化性能我给你嗦几把.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="fuelSource"></param>
         private void UpdateFuelTemplateItem(XmlElement item, IFuelSource fuelSource)
         {
-            string fuelType = fuelSource.FuelType.Id;
+            if (Game.Instance.FlightScene.TimeManager.Paused)
+            {
+                return;
+            }
+            double currentFuel,previousFuel;
+            string fuelTypeId = fuelSource.FuelType.Id;
+            if (FuelMap.ContainsKey(fuelTypeId))
+            {
+                currentFuel = fuelSource.TotalFuel;
+                previousFuel = FuelMap[fuelTypeId].Previous;
+                FuelMap[fuelTypeId] = (currentFuel, FuelMap[fuelTypeId].Previous);
+            }
+            else
+            {
+                currentFuel = fuelSource.TotalFuel;
+                previousFuel = 0;
+            }
             float fuelDensity = fuelSource.FuelType.Density;
             double percentage = fuelSource.TotalFuel / fuelSource.TotalCapacity;
-            bool isWasted = (fuelType.Contains("Waste") ||fuelType.Contains("CO2"));
-            string temp=Mod.Inctance.FormatFuel(fuelSource.TotalFuel*fuelDensity, _massTypes) + "/" + Mod.Inctance.FormatFuel(fuelSource.TotalCapacity*fuelDensity, _massTypes);
+            
+            bool isWasted = (fuelTypeId.Contains("Waste") ||fuelTypeId.Contains("CO2"));
+            string FuelAmountPercentage=Mod.Inctance.FormatFuel(fuelSource.TotalFuel*fuelDensity, _massTypes) + "/" + Mod.Inctance.FormatFuel(fuelSource.TotalCapacity*fuelDensity, _massTypes);
             Color progressColor = GetProgressBarColor(percentage,isWasted);
+            double fuelConsumption=(currentFuel-previousFuel)/Game.Instance.FlightScene.TimeManager.DeltaTime;
+            string fuelConsumptionStr=Mod.Inctance.FormatFuel(fuelConsumption*fuelDensity, _massTypes)+"/s";
+            string timeLeft = isWasted ?  $"{Mod.GetStopwatchTimeString(Math.Abs((fuelSource.TotalCapacity-fuelSource.TotalFuel)/fuelConsumption))}" : $"{Mod.GetStopwatchTimeString(Math.Abs(fuelSource.TotalFuel/fuelConsumption))}";
+            ;
            
             
             item.GetElementByInternalId("FuelPercentage").SetText("<color=#"+ColorUtility.ToHtmlStringRGB(progressColor)+$">{percentage:P2}</color>");
-            item.GetElementByInternalId("FuelAmountPercentage").SetText(temp);
+            item.GetElementByInternalId("FuelConsumption").SetText(fuelConsumptionStr);
+            item.GetElementByInternalId("FuelTimeLeft").SetText(timeLeft);
+            item.GetElementByInternalId("FuelAmountPercentage").SetText(FuelAmountPercentage);
             XmlElement progressBar = item.GetElementByInternalId("FuelProgressBar");
             progressBar.SetAndApplyAttribute("width", $"{percentage*100}%");
             progressBar.SetAndApplyAttribute("offsetXY", $"{-100 + (100 * (float)percentage)},0");
             progressBar.SetAndApplyAttribute("color", $"#{ColorUtility.ToHtmlStringRGB(progressColor)}");
-            
+            if (FuelMap.ContainsKey(fuelTypeId))
+            {
+                FuelMap[fuelTypeId] = (currentFuel, currentFuel);
+            }
+           
         }
 
         private Color GetProgressBarColor(double percentage,bool isWasted)

@@ -1179,7 +1179,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     this.PartScript.TakeDamage(num2 * Game.Instance.Settings.Game.Flight.ImpactDamageScale, PartDamageType.Basic);
                     Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
                         $"<color=red>Crew Member {_evaScript.Data.CrewName}(id:{this.PartScript.Data.Id}) is taking damage because running out of {_fuelSource.FuelType.Name}, " +
-                        $"he/she has {Units.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / ((isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1) * DamageScale))} left",
+                        $"he/she has {Mod.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / ((isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1) * DamageScale))} left",
                         false, 2f);
                 }
             }
@@ -1210,7 +1210,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     PartDamageType.Basic);
                 Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
                     $"<color=red>Crew Member {_evaScript.Data.CrewName}(id:{this.PartScript.Data.Id}) is taking damage because {_fuelSource.FuelType.Name} level is too high, " +
-                    $"he/she has {Units.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / ((isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1) * DamageScale))} left",
+                    $"he/she has {Mod.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / ((isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1) * DamageScale))} left",
                     false, 2f);
             }
         }
@@ -1245,7 +1245,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 {
                     float percentage = (float)(_oxygenSource.TotalFuel / _oxygenSource.TotalCapacity);
                     string oxygenTextColor = percentage > 0.5 ? "green" : percentage >= 0.25 ? "yellow" : "red";
-                    return $"<color={oxygenTextColor}>"+Units.GetStopwatchTimeString(_oxygenSource.TotalFuel / (Data.OxygenComsumeRate * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)));
+                    return $"<color={oxygenTextColor}>"+Mod.GetStopwatchTimeString(_oxygenSource.TotalFuel / (Data.OxygenComsumeRate * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)));
                 }
                 else if (!UsingInternalOxygen())
                 {
@@ -1271,7 +1271,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 {
                     float waterPercentage = (float)(_waterSource.TotalFuel / _waterSource.TotalCapacity);
                     string waterTextColor = waterPercentage > 0.5 ? "green" : waterPercentage >= 0.25 ? "yellow" : "red";
-                    return $"<color={waterTextColor}>"+Units.GetStopwatchTimeString(_waterSource.TotalFuel / (Data.WaterComsumeRate * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)));
+                    return $"<color={waterTextColor}>"+Mod.GetStopwatchTimeString(_waterSource.TotalFuel / (Data.WaterComsumeRate * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)));
                 }
                 return "N/A";
             })));
@@ -1293,7 +1293,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 {
                     float foodPercentage = (float)(_foodSource.TotalFuel / _foodSource.TotalCapacity);
                     string foodTextColor = foodPercentage > 0.5 ? "green" : foodPercentage >= 0.25 ? "yellow" : "red";
-                    return $"<color={foodTextColor}>"+Units.GetStopwatchTimeString(_foodSource.TotalFuel / (Data.FoodComsumeRate * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)));
+                    return $"<color={foodTextColor}>"+Mod.GetStopwatchTimeString(_foodSource.TotalFuel / (Data.FoodComsumeRate * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)));
                 }
                 return "N/A";
             })));
