@@ -729,17 +729,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             if (_co2Source == null)
             {
-                DataLocal.Add(("CO2", this.Data.DesireOxygenCapacity*0.42f, Data._co2AmountBuffer));
+                DataLocal.Add(("CO2", 0.42*600, Data._co2AmountBuffer));
             }
 
             if (_wastedWaterSource == null)
             {
-                DataLocal.Add(("Wasted Water", this.Data.DesireWaterCapacity*0.35f, Data._wastedWaterAmountBuffer));
+                DataLocal.Add(("Wasted Water", 3*0.35f, Data._wastedWaterAmountBuffer));
             }
 
             if (_solidWasteSource == null)
             {
-                DataLocal.Add(("Solid Waste", this.Data.DesireFoodCapacity*0.02f, Data._solidWasteAmountBuffer));
+                DataLocal.Add(("Solid Waste", 0.1f, Data._solidWasteAmountBuffer));
             }
             foreach (var data in DataLocal)
             {

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8776782991278370212}
   - component: {fileID: 3739063249243364795}
   - component: {fileID: 7578659924666033344}
+  - component: {fileID: 5205674132226812977}
   m_Layer: 0
   m_Name: CarbonDeoxideFilter
   m_TagString: Untagged
@@ -54,12 +55,12 @@ MonoBehaviour:
     _defaultColorIndexTrim2: 2
     _defaultColorIndexTrim3: 3
     _defaultColorIndexTrim4: 4
-    _id: CarbonDeoxideFilter
+    _id: CarbonDioxideFilter
     _includeInBodyDrag: 1
     _mirrorConfig:
       _hasRotationOffset: 0
       _rotationOffsetEuler: {x: 0, y: 0, z: 0}
-    _name: CarbonDeoxideFilter
+    _name: CarbonDioxideFilter
     _partCollisionHandling: 0
     _price: 0
     _unscaledMass: 0
@@ -78,12 +79,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Data:
     _activationGroup: 0
-    _category: {fileID: 0}
+    _category: {fileID: 11400000, guid: 7d2b6f557b8767544a162f30e61d22b6, type: 2}
     _description: 
     _displayOrder: 0
     _iconPath: 
     _iconType: 0
-    _name: CarbonDeoxideFilter
+    _name: CarbonDioxideFilter
     _partTypeOverrides: []
     _position: {x: 0, y: 0, z: 0}
     _rotation: {x: 0, y: 0, z: 0}
@@ -155,7 +156,31 @@ MonoBehaviour:
     _raiseWaterEventsEvenIfNotBuoyant: 0
     _renderQueue: 0
     _stageActivationType: 0
-    _supportsActivation: 0
+    _supportsActivation: 1
     _supportsTransparency: 1
     _thermalMassRatio: 1
     _tutorialId: 
+--- !u!114 &5205674132226812977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2334884181698491464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c34ce91eee02f2429d0132806b1846c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Data:
+    _id: 
+    _inputId: 
+    _inspectorEnabled: 1
+    _partPropertiesEnabled: 1
+    _staticPriceAndMass: 0
+    _version: 1
+    _versionLast: 1
+    _versionsAllowed: 
+    co2ConsumptionRate: 1
+    eletricityPowerConsumptionRatePerCo2: 1
+    _fanSpeed: 1

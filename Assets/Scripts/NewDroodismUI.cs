@@ -131,7 +131,8 @@ namespace Assets.Scripts
             Color progressColor = GetProgressBarColor(percentage,isWasted);
             double fuelConsumption=(currentFuel-previousFuel)/Game.Instance.FlightScene.TimeManager.DeltaTime;
             string fuelConsumptionStr=Mod.Inctance.FormatFuel(fuelConsumption*fuelDensity, _massTypes)+"/s";
-            string timeLeft = isWasted ?  $"{Mod.GetStopwatchTimeString(Math.Abs((fuelSource.TotalCapacity-fuelSource.TotalFuel)/fuelConsumption))}" : $"{Mod.GetStopwatchTimeString(Math.Abs(fuelSource.TotalFuel/fuelConsumption))}";
+            
+            string timeLeft =isWasted?(fuelConsumption >= 0 ?  $"<color=#E05D6A>{Mod.GetStopwatchTimeString(Math.Abs((fuelSource.TotalCapacity-fuelSource.TotalFuel)/fuelConsumption))}</color>" : $"<color=#81EE80>{Mod.GetStopwatchTimeString(Math.Abs(fuelSource.TotalFuel/fuelConsumption))}</color>"): (fuelConsumption >= 0 ?  $"<color=#81EE80>{Mod.GetStopwatchTimeString(Math.Abs((fuelSource.TotalCapacity-fuelSource.TotalFuel)/fuelConsumption))}</color>" : $"<color=#E05D6A>{Mod.GetStopwatchTimeString(Math.Abs(fuelSource.TotalFuel/fuelConsumption))}</color>");
             ;
            
             

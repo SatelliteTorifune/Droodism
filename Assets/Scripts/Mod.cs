@@ -9,8 +9,6 @@ using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using Assets.Scripts.Flight;
 using ModApi.Craft.Parts;
-using UnityEngine.SceneManagement;
-using ModApi.Design.Events;
 using ModApi.Scenes.Events;
 using ModApi.Craft.Parts.Events;
 using HarmonyLib;

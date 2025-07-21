@@ -1,3 +1,6 @@
+using ModApi.GameLoop;
+using ModApi.GameLoop.Interfaces;
+
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
     using System;
@@ -10,9 +13,38 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using UnityEngine;
 
     [Serializable]
-    [DesignerPartModifier("CarbonDeoxideFilter")]
-    [PartModifierTypeId("Droodism.CarbonDeoxideFilter")]
+    [DesignerPartModifier("CarbonDioxideFilter")]
+    [PartModifierTypeId("CarbonDioxideFilter")]
     public class CarbonDeoxideFilterData : PartModifierData<CarbonDeoxideFilterScript>
     {
+        private Vector3 _positionOffset1 = Vector3.zero;
+        public Vector3 PositionOffset1
+        {
+            get => this._positionOffset1;
+            set => this._positionOffset1 = value;
+        }
+        [SerializeField][PartModifierProperty]
+        private float co2ConsumptionRate = 1.0f;
+        [SerializeField][PartModifierProperty]
+        private float eletricityPowerConsumptionRatePerCo2 = 1.0f;
+        [SerializeField][PartModifierProperty]
+        private float _fanSpeed = 1.0f;
+        public float FanSpeed
+        {
+            get => this._fanSpeed;
+            set => this._fanSpeed = value;
+        }
+
+        public float Co2ConsumptionRate
+        {
+            get => this.co2ConsumptionRate;
+        }
+
+        public float ElectricityPowerConsumptionRatePerCo2
+        {
+            get => this.eletricityPowerConsumptionRatePerCo2;
+        }
+
+        
     }
 }
