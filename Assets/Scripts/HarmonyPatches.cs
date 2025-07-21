@@ -4,15 +4,10 @@ using System.Linq;
 using Assets.Scripts.Craft.Fuel;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
-using Assets.Scripts.Flight.Sim;
 using Assets.Scripts.Flight.UI;
 using HarmonyLib;
-using ModApi;
-using ModApi.Common.Extensions;
 using ModApi.Craft;
 using ModApi.Craft.Parts;
-using ModApi.Planet;
-using ModApi.Settings;
 using UnityEngine;
 namespace Assets.Scripts
 {

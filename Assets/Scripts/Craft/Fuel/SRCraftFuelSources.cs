@@ -6,10 +6,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Linq;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
-using Assets.Scripts.Craft;
 using ModApi.Craft;
 using ModApi.Craft.Parts;
 using ModApi.Craft.Propulsion;

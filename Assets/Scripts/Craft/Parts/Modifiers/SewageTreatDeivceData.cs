@@ -1,9 +1,6 @@
 using System.Linq.Expressions;
 using Assets.Scripts.Design;
 using ModApi;
-using ModApi.Craft.Parts.Attributes;
-using ModApi.Design.PartProperties;
-using UnityEngine;
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
