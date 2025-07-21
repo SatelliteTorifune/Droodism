@@ -53,7 +53,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (PartScript.Data.Activated)
             {
                 co2Source.RemoveFuel(Data.Co2ConsumptionRate*frame.DeltaTimeWorld);
-                batterySource.AddFuel(Data.ElectricityPowerConsumptionRatePerCo2*Data.Co2ConsumptionRate*frame.DeltaTimeWorld);
+                batterySource.RemoveFuel(Data.ElectricityPowerConsumptionRatePerCo2*Data.Co2ConsumptionRate*frame.DeltaTimeWorld);
             }
             
         }

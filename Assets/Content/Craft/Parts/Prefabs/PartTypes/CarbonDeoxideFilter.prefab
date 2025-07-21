@@ -62,8 +62,8 @@ MonoBehaviour:
       _rotationOffsetEuler: {x: 0, y: 0, z: 0}
     _name: CarbonDioxideFilter
     _partCollisionHandling: 0
-    _price: 0
-    _unscaledMass: 0
+    _price: 100000
+    _unscaledMass: 500
     _usePreferredNodeName: 1
 --- !u!114 &3739063249243364795
 MonoBehaviour:
@@ -80,7 +80,9 @@ MonoBehaviour:
   Data:
     _activationGroup: 0
     _category: {fileID: 11400000, guid: 7d2b6f557b8767544a162f30e61d22b6, type: 2}
-    _description: 
+    _description: A Filter to removed<color=red> CarbonDioxide </color>when you don't
+      want to make use of it,the device simply throw the waste CarbonDioxide out
+      of craft using eletricity charge to run
     _displayOrder: 0
     _iconPath: 
     _iconType: 0

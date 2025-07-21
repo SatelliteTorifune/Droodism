@@ -18,6 +18,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private float _waterConvertEfficiency=1f;
         [SerializeField] [PartModifierProperty(true, false)]
         private float _oxygenConvertEfficiency=1f;
+        [SerializeField] [PartModifierProperty(true, false)]
+        private float _fossilFuelConvertEfficiency=1f;
 
         public float WaterConvertEfficiency
         {
@@ -26,7 +28,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         public float OxygenConvertEfficiency
         {
-            get => this._oxygenConvertEfficiency*2;
+            get => this._oxygenConvertEfficiency*4;
+        }
+
+        public float FossilFuelConvertEfficiency
+        {
+            get => this._fossilFuelConvertEfficiency * 0.1f;
         }
     }
 }

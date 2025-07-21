@@ -37,12 +37,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public float Co2ConsumptionRate
         {
-            get => this.co2ConsumptionRate;
+            get => this.co2ConsumptionRate*0.02f;
         }
 
         public float ElectricityPowerConsumptionRatePerCo2
         {
-            get => this.eletricityPowerConsumptionRatePerCo2;
+            get => this.eletricityPowerConsumptionRatePerCo2*400;
         }
 
         

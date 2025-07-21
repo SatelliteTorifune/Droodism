@@ -26,12 +26,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     {
         
         private GeneratorScript _generatorScript;
-        private bool IsFunctional;
-        private IFuelSource waterSource;
-        private IFuelSource oxygenSource;
-
-        private IFuelSource LH2FuelTank;
-        private FuelTankScript _fuelTank;
+        private bool IsHydroloxFunctional;
+        private int FossilFuelTypeIndex;
+        private IFuelSource waterSource,hydroLoxSource,oxygenSource,co2Source,fossilSource;
         
         
         void IDesignerStart.DesignerStart(in DesignerFrameData frame)
@@ -42,31 +39,39 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public void FlightStart(in FlightFrameData frame)
         {
             _generatorScript = GetComponent<GeneratorScript>();
+            var fuelTypeId = _generatorScript.Data.FuelType.Id;
+            IsHydroloxFunctional = fuelTypeId=="LOX/LH2";
+            FossilFuelTypeIndex = fuelTypeId == "LOX/RP1" ? 1 : fuelTypeId == "LOX/CH4" ? 2:fuelTypeId == "Jet"?3 : 0;
             Rechck();
-            IsFunctional = _generatorScript.Data.FuelType.Id.Contains("LOX/LH2");
-            if (!IsFunctional)
-            {
-                Debug.LogFormat("路边一条");
-            }
-
         }
 
         public void FlightUpdate(in FlightFrameData frame)
         {
             if (frame.DeltaTimeWorld==0)
                 return;
-            if (IsFunctional&&this.PartScript.Data.Activated&&_generatorScript.Data.FuelFlow>0)
-            {   
-                FillFuelTankLogic(frame);
+            
+            if (this.PartScript.Data.Activated && _generatorScript.Data.FuelFlow > 0)
+            {
+                if (IsHydroloxFunctional)
+                {
+                    HydroloxFillFuelTankLogic(frame);
+                }
+
+                if (FossilFuelTypeIndex!=0)
+                {
+                    FossilFuelFillFuelTankLogic(frame);
+                }
+
+                
             }
             
         }
 
-        void FillFuelTankLogic(FlightFrameData frame)
+        void HydroloxFillFuelTankLogic(FlightFrameData frame)
         {
-            if (LH2FuelTank==null)
+            if (hydroLoxSource==null)
                 return;
-            if (LH2FuelTank.IsEmpty)
+            if (hydroLoxSource.IsEmpty)
             {
                 return;
             }
@@ -97,6 +102,35 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             
         }
+
+        void FossilFuelFillFuelTankLogic(FlightFrameData frame)
+        {
+            if (fossilSource==null)
+                return;
+            if (fossilSource.IsEmpty)
+            {
+                return;
+            }
+
+            if (co2Source != null)
+            {
+                if (co2Source.TotalCapacity-co2Source.TotalFuel>=0.00001)
+                {
+                    co2Source.AddFuel(Data.FossilFuelConvertEfficiency*_generatorScript.Data.FuelFlow * frame.DeltaTimeWorld);
+                }
+            }
+
+            if (FossilFuelTypeIndex==2)
+            {
+                if (waterSource!=null)
+                {
+                    if (waterSource.TotalCapacity-waterSource.TotalFuel>=0.001)
+                    {
+                        waterSource.AddFuel(_generatorScript.Data.FuelFlow * this.Data.WaterConvertEfficiency * frame.DeltaTimeWorld*Data.FossilFuelConvertEfficiency);
+                    }
+                }
+            }
+        }
         
         private IFuelSource GetCraftFuelSource(string fuelType)
         {
@@ -121,7 +155,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             waterSource = GetCraftFuelSource("H2O");
             oxygenSource = GetCraftFuelSource("Oxygen");
-            LH2FuelTank = GetCraftFuelSource("LOX/LH2");
+            hydroLoxSource = GetCraftFuelSource("LOX/LH2");
+            co2Source = GetCraftFuelSource("CO2");
+
+
+            fossilSource = FossilFuelTypeIndex==0?null:FossilFuelTypeIndex==1?GetCraftFuelSource("LOX/RP1"):FossilFuelTypeIndex==2?GetCraftFuelSource("LOX/CH4"):FossilFuelTypeIndex==2?GetCraftFuelSource("Jet"):null;
+
+            
         }
         #region 路边一条,无人在意
         public override void OnModifiersCreated()
@@ -162,5 +202,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             model.Add<TextModel>(new TextModel("Fuel Flow", (Func<string>) (() => Units.GetMassFlowRateString(_generatorScript.Data.FuelFlow * this.Data.WaterConvertEfficiency)), tooltip: "The kilograms of fuel being burnt per second."));
         }
          
+    }
+
+    public enum FossilType
+    {
+        KeroLox,
+        MethaneLox,
+        JetFuel
     }
 }
