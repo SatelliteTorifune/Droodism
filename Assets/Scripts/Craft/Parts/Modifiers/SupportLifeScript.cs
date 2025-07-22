@@ -18,6 +18,7 @@ using ModApi.Flight.GameView;
 using ModApi.Planet;
 using UnityEngine;
 using ModApi.Flight.Sim;
+using ModApi.Flight.UI;
 using ModApi.Math;
 using ModApi.Settings.Core;
 using ModApi.Ui.Inspector;
@@ -1314,6 +1315,30 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     return "<color=purple>N/A</color>";
                 })));
             }
+
+            TextButtonModel textButtonModel1 =
+                new TextButtonModel("Plant Flag", (Action<TextButtonModel>)(b => this.PlantFlagClick()));
+            groupModel.Add<TextButtonModel>(textButtonModel1);
         }   
+        private void PlantFlagClick()
+        {
+            ICraftScript craftScript = this.PartScript.CraftScript;
+            IFlightSceneUI ui = ModApi.Common.Game.Instance.FlightScene.FlightSceneUI;
+            if (!(craftScript.Data.Assembly.Parts.Count == 1 &&craftScript.RootPart.Data.PartType.Name.Contains("Eva")))
+            {
+                ui.ShowMessage("Can Not Plant Flag,Not in Eva",false,10);
+            }
+            if (craftScript.FlightData.Grounded==false)
+            {
+                ui.ShowMessage("Can Not Plant Flag,Not Grounded",false,10);
+                return;
+            }
+            if (craftScript.FlightData.SurfaceVelocityMagnitude>=1)
+            {
+                ui.ShowMessage("Can Not Plant Flag,Velocity is too high",false,10);
+                return;
+            }
+            Mod.Inctance.SpawnFlag();
+        }
     }
 }

@@ -124,7 +124,7 @@ namespace Assets.Scripts
                 new Vector3d(0.0, 0.0, 3000.0),
                 0,
                 0.2);
-            var flag = ((FlightSceneScript)Game.Instance.FlightScene).SpawnCraft($"Flag at{Game.Instance.FlightScene.CraftNode.Parent.Name},{(ConvertPlanetPositionToLatLongAgl(position).x)} latitude,{(ConvertPlanetPositionToLatLongAgl(position).y)}longitude", craftData, location, xml);
+            var flag = ((FlightSceneScript)Game.Instance.FlightScene).SpawnCraft($"Flag at {Game.Instance.FlightScene.CraftNode.Parent.Name},{(ConvertPlanetPositionToLatLongAgl(position).x)} ,{(ConvertPlanetPositionToLatLongAgl(position).y)}", craftData, location, xml);
             flag.AllowPlayerControl = false;
             Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Planted Flag at <color=green> {Game.Instance.FlightScene.CraftNode.Parent.Name} </color>'s surface,at {(ConvertPlanetPositionToLatLongAgl(position).x)}° , {(ConvertPlanetPositionToLatLongAgl(position).y)}° ",true,120f);
         }

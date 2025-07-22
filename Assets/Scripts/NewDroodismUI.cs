@@ -5,17 +5,17 @@ using UnityEngine;
 using System.Collections.Generic;
 using Assets.Scripts.Craft.Fuel;
 using Assets.Scripts.Craft.Parts.Modifiers;
+using ModApi.Craft;
 using ModApi.Craft.Parts;
 using ModApi.Craft.Propulsion;
+using ModApi.Flight.UI;
 
 namespace Assets.Scripts
 {
     public class NewDroodismUI:MonoBehaviour
     {
         private XmlLayoutController controller;
-        private XmlElement mainPanel;
-        private XmlElement FuelPercentageItemTemplate;
-        private XmlElement fuelPercentageList;
+        private XmlElement mainPanel,FuelPercentageItemTemplate,fuelPercentageList;
         private List<XmlElement> fuelXMLItems = new List<XmlElement>();
         
         public bool mainPanelVisible = false;
@@ -46,6 +46,7 @@ namespace Assets.Scripts
         public void OnTogglePanelState() 
         {
             mainPanelVisible = !mainPanelVisible;
+            
         }
        
         public void OnLayoutRebuilt(IXmlLayoutController layoutController)
@@ -172,7 +173,8 @@ namespace Assets.Scripts
             string fuelTypeId = item.GetAttribute("fuel-type-id"); 
             Debug.LogFormat("NewDroodismUI:OnFuelPercentageItemClick:燃料名称{0}", Game.Instance.PropulsionData.GetFuelType(fuelTypeId).Name);
             ShowFuelItemWindow(fuelTypeId);
-            Mod.Inctance.SpawnFlag();
+            //TODO:adding more judgement conditions to spawn flag
+            //Mod.Inctance.SpawnFlag();
             
         }
 
@@ -193,6 +195,9 @@ namespace Assets.Scripts
         {
             Debug.LogFormat("NewDroodismUI:OnFuelItemInspectorToggle:item:{0}", item);
         }
+
+        
+
         #region UI数据更新相关函数
         public void UpdateFuelPercentageItemTemplate()
         {

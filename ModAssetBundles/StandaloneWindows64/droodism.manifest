@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 4242867655
+CRC: 3650583297
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 5735abd94169e170f5600d294d28ffe3
+    Hash: 949de9c19dbd923018c81ac7198cb561
   TypeTreeHash:
     serializedVersion: 2
     Hash: 847790c4082ee91029d8c7419a86a075
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 5735abd94169e170f5600d294d28ffe3
+    Hash: 949de9c19dbd923018c81ac7198cb561
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -54,9 +54,10 @@ SerializeReferenceClassIdentifiers:
 - AssemblyName: XmlLayout
   ClassName: UI.Xml.XmlLayoutResourceEntry
 Assets:
+- Assets/Resources/Craft/Parts/Definitions/WaterTank.xml
 - Assets/Resources/Craft/Parts/Prefabs/WaterTank.prefab
+- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/Content/XML UI/Sprites/White.png
-- Assets/_ModAssets_/Droodism.dll.bytes
 - Assets/Resources/Craft/Parts/Definitions/CarbonDioxideFilter.xml
 - Assets/Resources/Craft/Parts/Definitions/Sodium Peroxide Container.xml
 - Assets/Resources/Craft/Parts/Prefabs/FoodTank.prefab
@@ -64,7 +65,6 @@ Assets:
 - Assets/Resources/Craft/Parts/Prefabs/ElectrolyticDevice.prefab
 - Assets/Resources/Craft/Parts/Definitions/FoodTank.xml
 - Assets/Content/Craft/Parts/RocketEngines/Propulsion.xml
-- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/Content/Craft/Parts/Categories/LifeSupport.asset
 - Assets/Resources/Craft/Parts/Definitions/ElectrolyticDevice.xml
 - Assets/Resources/Craft/Parts/Prefabs/CarbonDioxideFilter.prefab
@@ -72,9 +72,11 @@ Assets:
 - Assets/Content/XML UI/Sprites/DroodsimUIIcon.png
 - Assets/Resources/Craft/Parts/Prefabs/SewageTreatDevice.prefab
 - Assets/Resources/Craft/Parts/Prefabs/Sodium Peroxide Container.prefab
+- Assets/_ModAssets_/Droodism.dll.bytes
 - Assets/Resources/Craft/Parts/Definitions/PhotoBioReactor.xml
+- Assets/Resources/Craft/Parts/Definitions/ResourcesPack.xml
 - Assets/Content/XML UI/UIResourceDatabase.asset
 - Assets/Resources/Craft/Parts/Definitions/SewageTreatDevice.xml
 - Assets/Resources/Craft/Parts/Prefabs/PhotoBioReactor.prefab
-- Assets/Resources/Craft/Parts/Definitions/WaterTank.xml
+- Assets/Resources/Craft/Parts/Prefabs/ResourcesPack.prefab
 Dependencies: []

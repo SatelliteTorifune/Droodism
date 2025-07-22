@@ -29,11 +29,11 @@ MonoBehaviour:
 
     V0.241 UI rebuilding
 
-    <color=green></size=150%>?
+    v0.25
+    new part added
 
 
-    <color=red><size=250%>Require
-    JUNO Harmony</size></color>'
+    <color=red><size=250%>Require JUNO Harmony</size></color>'
   _loadPriority: 400
   _name: Droodism
   _otherAssets:
@@ -48,7 +48,7 @@ MonoBehaviour:
   _steamTitle: 
   _steamVisibility: 0
   _versionMajor: 0
-  _versionMinor: 242
+  _versionMinor: 25
   _partCategories:
   - {fileID: 11400000, guid: 7d2b6f557b8767544a162f30e61d22b6, type: 2}
   _parts:
@@ -56,6 +56,7 @@ MonoBehaviour:
   - {fileID: 4900000, guid: 14776ff5d3403f64eba601b94451442d, type: 3}
   - {fileID: 4900000, guid: 21a224a5845f95b48a100381457d8adc, type: 3}
   - {fileID: 4900000, guid: 8ab442a4620aba345a00dddf639c5d2c, type: 3}
+  - {fileID: 4900000, guid: 69fd3de320f79e14db97198de0f602fc, type: 3}
   - {fileID: 4900000, guid: 94d3c8abb77d8b54291b1cf067f7ddbf, type: 3}
   - {fileID: 4900000, guid: 11a692886d113e149937457d57601c68, type: 3}
   - {fileID: 4900000, guid: 3187f51072da32145ad84924d186c061, type: 3}
