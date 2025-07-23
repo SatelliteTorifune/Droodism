@@ -3,6 +3,8 @@ using Assets.Scripts.Craft;
 using Assets.Scripts.Flight;
 using ModApi.Scenes.Events;
 using HarmonyLib;
+using ModApi.Craft;
+using ModApi.Craft.Parts;
 using ModApi.Flight.Sim;
 using ModApi.Math;
 using ModApi.State;
@@ -48,6 +50,7 @@ namespace Assets.Scripts
             if (ModApi.Common.Game.InDesignerScene)
             {
                 Instance.Designer.CraftLoaded += OnCraftLoaded;
+                Instance.Designer.CraftStructureChanged+=OnCraftStructureChanged;
                 Created += OnPartAdded;
             }
 
@@ -66,6 +69,10 @@ namespace Assets.Scripts
 
         }
 
+        private void OnCraftStructureChanged()
+        {
+            GetDroodCountInDesigner();
+        }
         protected override void OnModInitialized()
         {
             base.OnModInitialized();
@@ -95,7 +102,7 @@ namespace Assets.Scripts
             }
             catch (Exception e)
             {
-                Debug.LogWarningFormat($"订阅有问题{e}");
+                Debug.LogWarningFormat($"订阅有问题,我不知道哪里有问题,但是反正这玩意加个try-catch也能跑{e}");
             }
 
         }
@@ -128,6 +135,8 @@ namespace Assets.Scripts
             flag.AllowPlayerControl = false;
             Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Planted Flag at <color=green> {Game.Instance.FlightScene.CraftNode.Parent.Name} </color>'s surface,at {(ConvertPlanetPositionToLatLongAgl(position).x)}° , {(ConvertPlanetPositionToLatLongAgl(position).y)}° ",true,120f);
         }
+
+        
         public static string GetStopwatchTimeString(double seconds)
         {
             if (!Units.IsFinite(seconds))
@@ -186,6 +195,8 @@ namespace Assets.Scripts
                 return (totalFuel * 1e-3).ToString("0.00") + format[1];
             return totalFuel.ToString("0.00") + format[0];
         }    }
-    
-    
+
+        
+
+
 }

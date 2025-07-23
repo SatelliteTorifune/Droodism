@@ -18,6 +18,7 @@ namespace Assets.Scripts
         /// </summary>
         public void OnCraftLoaded()
         {
+            GetDroodCountInDesigner();
             foreach (PartData part in CheckDrood(Craft))
             {
                 AddLsModifier(part);
@@ -44,7 +45,7 @@ namespace Assets.Scripts
         public void OnPartAdded(object sender,CreatedPartEventArgs e)
         {
             
-            //Debug.LogFormat($"{e.Part.Name},id{e.Part.Id}有{e.Part.Modifiers.Count}个modifier,1:{e.PartType.Name}");
+            //Debug.LogFormat($"{e.Part.PartType.Name},id{e.Part.Id}有{e.Part.Modifiers.Count}个modifier,1:{e.PartType.Name}");
             if (e.Part.Name=="Eva"||e.Part.Name == "Eva-Tourist")
             {
                 AddLsModifier(e.Part);
@@ -56,7 +57,7 @@ namespace Assets.Scripts
                 AddLSGModifier(e.Part);
             }
 
-            if (e.Part.Name.Contains("Command")||e.Part.Name.Contains("Capusle"))
+            if (e.Part.PartType.Name.Contains("Command")||e.Part.PartType.Name.Contains("Capsule"))
             {
                 PatchCommandPod(e.Part);
             }
@@ -150,7 +151,7 @@ namespace Assets.Scripts
             List<PartData> CommandPodParts = new List<PartData>();
             foreach (PartData part in craft.Data.Assembly.Parts)
             {
-                if (part.Name.Contains("Capsule")||part.Name.Contains("Command"))
+                if (part.PartType.Name.Contains("Capsule")||part.PartType.Name.Contains("Command"))
                 {
                     CommandPodParts.Add(part);
                 }

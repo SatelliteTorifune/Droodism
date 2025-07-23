@@ -129,7 +129,7 @@ MonoBehaviour:
     _dragScaleActive: 1
     _dragScaleAngular: 1
     _explosiveness: 0
-    _fuelLine: 0
+    _fuelLine: 1
     _heatShield: 0
     _heatShieldBaseScale: 1
     _heatShieldMass: 0

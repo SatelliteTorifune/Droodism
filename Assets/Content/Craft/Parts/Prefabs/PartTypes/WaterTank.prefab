@@ -129,7 +129,7 @@ MonoBehaviour:
     _dragScaleActive: 1
     _dragScaleAngular: 1
     _explosiveness: 0
-    _fuelLine: 0
+    _fuelLine: 1
     _heatShield: 0
     _heatShieldBaseScale: 1
     _heatShieldMass: 0
@@ -182,8 +182,8 @@ MonoBehaviour:
     _versionLast: 1
     _versionsAllowed: 
     _autoFuelType: 1
-    _capacity: 200
-    _fuel: 200
+    _capacity: 70
+    _fuel: 70
     _fuelType: H2O
     _fuelTypeDescription: 
     _fuelTypeReadOnly: 

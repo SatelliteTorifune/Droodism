@@ -683,8 +683,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         public override void OnCraftLoaded(ICraftScript craftScript, bool movedToNewCraft)
         {
+            if(!Game.InFlightScene)
+                return;
             base.OnCraftLoaded(craftScript, movedToNewCraft);
-            Debug.LogFormat("OnCraftLoaded called for Part ID: {0}, MovedToNewCraft: {1},isRootPart:{2}", PartScript.Data.Id, movedToNewCraft,PartScript.Data.IsRootPart);
             if (!PartScript.Data.IsRootPart)
             {
                 RefreshFuelSource();
@@ -1316,9 +1317,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 })));
             }
 
-            TextButtonModel textButtonModel1 =
-                new TextButtonModel("Plant Flag", (Action<TextButtonModel>)(b => this.PlantFlagClick()));
-            groupModel.Add<TextButtonModel>(textButtonModel1);
+            if (!isTourist)
+            {
+                TextButtonModel textButtonModel1 =
+                    new TextButtonModel("Plant Flag", (Action<TextButtonModel>)(b => this.PlantFlagClick()));
+                groupModel.Add<TextButtonModel>(textButtonModel1);
+            }
+            
         }   
         private void PlantFlagClick()
         {
@@ -1336,6 +1341,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (craftScript.FlightData.SurfaceVelocityMagnitude>=1)
             {
                 ui.ShowMessage("Can Not Plant Flag,Velocity is too high",false,10);
+                return;
+            }
+
+            if (_evaScript.IsInWater)
+            {
+                ui.ShowMessage("Can Not Plant Flag,Drood is in water",false,10);
                 return;
             }
             Mod.Inctance.SpawnFlag();
