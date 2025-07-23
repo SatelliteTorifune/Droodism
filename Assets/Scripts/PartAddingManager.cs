@@ -57,7 +57,7 @@ namespace Assets.Scripts
                 AddLSGModifier(e.Part);
             }
 
-            if (e.Part.PartType.Name.Contains("Command")||e.Part.PartType.Name.Contains("Capsule"))
+            if (e.Part.PartType.Name.Contains("Command")||e.Part.PartType.Name.Contains("Capsule")||e.Part.PartType.Name.Contains("Cockpit1"))
             {
                 PatchCommandPod(e.Part);
             }
@@ -151,7 +151,7 @@ namespace Assets.Scripts
             List<PartData> CommandPodParts = new List<PartData>();
             foreach (PartData part in craft.Data.Assembly.Parts)
             {
-                if (part.PartType.Name.Contains("Capsule")||part.PartType.Name.Contains("Command"))
+                if (part.PartType.Name.Contains("Capsule")||part.PartType.Name.Contains("Command")||part.PartType.Name.Contains("Cockpit1"))
                 {
                     CommandPodParts.Add(part);
                 }

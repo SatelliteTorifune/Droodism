@@ -122,9 +122,9 @@ namespace Assets.Scripts.Craft.Fuel
         //     is null then it will not be used.
         public void CreateFuelSourceForConnectedParts(IEnumerable<PartData> parts, bool removeDisconnectedCrossFeeds, List<CraftFuelSource> fuelSources)
         {
-            
-            //Debug.Log("Modded CreateFuelSourceForConnectedParts called");
-            List<FuelTankData> list = new List<FuelTankData>();
+            try
+            {
+                List<FuelTankData> list = new List<FuelTankData>();
             Dictionary<(int, FuelType), FuelTankScript> dictionary = new Dictionary<(int, FuelType), FuelTankScript>();
             foreach (PartData part in parts)
             {
@@ -210,6 +210,14 @@ namespace Assets.Scripts.Craft.Fuel
             }
 
             SetupCrossFeeds(removeDisconnectedCrossFeeds);
+            }
+            catch (Exception e)
+            {
+                Debug.LogFormat("Error in CreateFuelSourceForConnectedParts: {0}",e);
+            }
+            
+            //Debug.Log("Modded CreateFuelSourceForConnectedParts called");
+            
         }
 
         //

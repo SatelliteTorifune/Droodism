@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Assets.Scripts.Craft.Fuel;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
@@ -9,6 +10,8 @@ using Assets.Scripts.Flight.UI;
 using HarmonyLib;
 using ModApi.Craft;
 using ModApi.Craft.Parts;
+using ModApi.Craft.Propulsion;
+using ModApi.State;
 using ModApi.Ui.Inspector;
 using Rewired.Utils.Attributes;
 using UnityEngine;
@@ -127,7 +130,7 @@ namespace Assets.Scripts
         [HarmonyPatch(typeof(CraftPerformanceAnalysis), "RefreshInspectorPanel", new Type[] { typeof(bool) })]
         public class CraftPerformanceAnalysisPatch
         {
-            // Postfix 补丁，在 RefreshInspectorPanel 方法执行后运行
+            // Postfix 补丁，在 RefreshInspectorPanel 方法执行后运行,添加一个新的info组,哈基j没给我留接口,那我只能harmony启动了
             [HarmonyPostfix]
             public static void Postfix(CraftPerformanceAnalysis __instance, bool immediate)
             {
@@ -140,17 +143,18 @@ namespace Assets.Scripts
                     Debug.LogError("InspectorPanel is null, cannot add TEXT group.");
                     return;
                 }
-                
+
                 var inspectorModel = inspectorPanel.Model;
                 if (inspectorModel == null)
                 {
                     Debug.LogError("InspectorModel is null, cannot add TEXT group.");
                     return;
                 }
-                
+
                 GroupModel textGroup = new GroupModel("<color=green>Life Support Resources Info");
-                
-                textGroup.Add<TextModel>(new TextModel("Drood Count", () =>Scripts.Mod.Inctance.GetDroodCountInDesigner()));
+
+                textGroup.Add<TextModel>(new TextModel("Drood Count",
+                    () => Scripts.Mod.Inctance.GetDroodCountInDesigner()));
                 foreach (var var in fuelTypes)
                 {
                     AddStuff(var);
@@ -159,14 +163,64 @@ namespace Assets.Scripts
                 void AddStuff(String name)
                 {
                     bool isWaste = name.Contains("Waste") || name == "CO2";
-                    textGroup.Add<TextModel>(new TextModel(name+(isWaste?" Capacity":" Amount"), () => GetFuelAmountInDesigner(name,isWaste)));
+                    textGroup.Add<TextModel>(new TextModel(name + (isWaste ? " Capacity" : " Amount"),
+                        () => GetFuelAmountInDesigner(name, isWaste)));
                 }
 
                 // 将新组添加到 InspectorModel
                 inspectorModel.AddGroup(textGroup);
-                Debug.Log("Added new GroupModel 'TEXT' to InspectorModel.");
             }
         }
+
+        // man what can i say
+        //说正儿八经的,原意图是通过harmonyLib增加validation验证种类,但是你游屎山导致我懒得花力气了
+        /*
+        [HarmonyPatch]
+        public class ValidatorPatch
+        {
+            static Type ValidatorType
+            {
+                get
+                {
+                    var type = Game.Instance.GameState.Validator.GetType();
+                    Debug.Log($"Validator Type: {type.FullName}, Assembly: {type.Assembly.GetName().Name}");
+                    return type;
+                }
+            }
+
+            [HarmonyTargetMethod]
+            static MethodInfo TargetMethod()
+            {
+                var method = AccessTools.Method(ValidatorType, "ValidateCraft", new[] { typeof(ICraftScript), typeof(LaunchLocation), typeof(bool) });
+                if (method == null)
+                {
+                    Debug.LogError("ValidateCraft method not found. Available methods:");
+                    var methods = AccessTools.GetDeclaredMethods(ValidatorType)
+                        .Where(m => m.Name == "ValidateCraft");
+                    foreach (var m in methods)
+                    {
+                        Debug.Log($"Method: {m}, Parameters: {string.Join(", ", m.GetParameters().Select(p => p.ParameterType.Name))}");
+                    }
+                    return null;
+                }
+                Debug.Log($"Found ValidateCraft: {method}, Parameters: {string.Join(", ", method.GetParameters().Select(p => p.ParameterType.Name))}");
+                return method;
+            }
+
+            [HarmonyPostfix]
+            public static void Postfix(object __result, ICraftScript craftScript, LaunchLocation launchLocation, bool fix)
+            {
+                foreach (var fuelTypeid in fuelTypes)
+                {
+                    bool isWaste = fuelTypeid.Contains("Waste") || fuelTypeid == "CO2";
+                    FuelValidation.ValidateFuelTotal(__result, craftScript, fuelTypeid,1,isWaste);
+                }
+                Debug.Log("Applied custom fuel total validation for LiquidFuel.");
+            }
+
+            */
+    
+        
         
     }
 }
