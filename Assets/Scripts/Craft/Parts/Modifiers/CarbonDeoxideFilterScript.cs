@@ -114,22 +114,30 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private void UpdateFuelSources()
         {
            batterySource=PartScript.BatteryFuelSource;
-           foreach (var fuelSource in PartScript.CraftScript.FuelSources.FuelSources)
-           {
-               if (fuelSource.FuelType.Id == "CO2")
-               {
-                   co2Source = fuelSource;
-               }
-           }
+           co2Source = GetCraftFuelSource("CO2");
         }
         private void OnCraftFuelSourceChanged(object sender, EventArgs e) => this.UpdateFuelSources();
         public override void OnCraftLoaded(ICraftScript craftScript, bool movedToNewCraft)
         {
             this.OnCraftStructureChanged(craftScript);
+            UpdateFuelSources();
         }
         public override void OnCraftStructureChanged(ICraftScript craftScript)
         {
             UpdateFuelSources();
+        }
+        private IFuelSource GetCraftFuelSource(string fuelType)
+        {
+            var craftSources = PartScript.CraftScript.FuelSources.FuelSources;
+            
+            foreach (var source in craftSources)
+            {
+                if (source.FuelType.Id.Contains(fuelType))
+                {
+                    return source;
+                }
+            }
+            return null;
         }
         #endregion
     }

@@ -686,6 +686,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if(!Game.InFlightScene)
                 return;
             base.OnCraftLoaded(craftScript, movedToNewCraft);
+            RefreshFuelSource();
             if (!PartScript.Data.IsRootPart)
             {
                 RefreshFuelSource();
@@ -846,7 +847,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             LoadFuelTanks();
             RefreshFuelSource();
-            if (ModSettings.Instance.ConsumeResourceWhenUnloaded)
+            if (ModSettings.Instance.ConsumeResourceWhenUnloaded==true)
             {
                 RemoveFuelAmonutInstantly();
                 AddWastedAmountInstantly();
