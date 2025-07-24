@@ -39,10 +39,18 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private float fanSpeed;
         private void ReFreshSources()
         {
-            _waterSource = GetCraftFuelSource("H2O");
-            _oxgenSource = GetCraftFuelSource("Oxygen");
-            _hydrogenSource = GetCraftFuelSource("LH2");
             _batterySource = PartScript.BatteryFuelSource;
+            var patchScript = PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+            if (patchScript == null)
+            {
+                _waterSource=EmptyFuelSource.GetOrCreate(Game.Instance.PropulsionData.GetFuelType("H2O"));
+                _oxgenSource=EmptyFuelSource.GetOrCreate(Game.Instance.PropulsionData.GetFuelType("Oxygen"));
+                _hydrogenSource=EmptyFuelSource.GetOrCreate(Game.Instance.PropulsionData.GetFuelType("LH2"));
+            }
+
+            _waterSource = patchScript.WaterFuelSource;
+            _oxgenSource=patchScript.OxygenFuelSource;
+            _hydrogenSource = GetCraftFuelSource("LH2");
         }
         public void FlightStart(in FlightFrameData frame)
         {

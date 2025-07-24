@@ -199,47 +199,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 isRunning = false;
             }
         }
-       
-        private IFuelSource GetCraftFuelSource(string fuelType)
-        {
-            DroodPosistion.Clear();
-            UpdateDroodPosistion();
-            if (this.PartScript.CraftScript.Data.Assembly.Parts.Count == 1)
-            {
-                return null;
-            }
-            try
-            {
-                var craftSources = PartScript.CraftScript.FuelSources.FuelSources;
-                foreach (var source in craftSources)
-                {
-                    if(source.FuelType.Id.Contains(fuelType)&&DroodPosistion.Contains(source.Position)==false)
-                    {
-                        return source;
-                    }
-                }
-                return null;
-                
-                
-            }
-            catch (Exception e)
-            {
-                Debug.LogErrorFormat("GetCraftFuelSource出问题了{0}", e);
-            }
-            return null;
-
-            void UpdateDroodPosistion()
-            {
-                foreach (var pd in PartScript.CraftScript.Data.Assembly.Parts)
-                {
-                    if (pd.PartType.Name=="Eva"||pd.PartType.Name=="Eva-Tourist")
-                    {
-                        DroodPosistion.Add(pd.Position);
-                    }
-                }
-            }
-            
-        }
+        
 
         /// <summary>
         /// 从零件的modifiers中检索指定燃料类型的本地燃料源。
@@ -499,7 +459,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 try
                 {
-                    CraftRefeshFuelSource();
+                    CraftRefreshFuelSource();
                 }
                 catch (Exception e)
                 {
@@ -513,7 +473,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// 在非EVA模式下刷新燃料源。
         /// Refreshes fuel sources when not in EVA mode.
         /// </summary>
-        private void CraftRefeshFuelSource()
+        private void CraftRefreshFuelSource()
         {
             
             List<(string, double, double)> DataLocal = new List<(string, double, double)>();
@@ -540,7 +500,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                                 }
                                 catch (Exception e)
                                 {
-                                    Debug.LogError($"从 CraftRefeshFuelSource 记录 {fuelType} 出错: {e}");
+                                    Debug.LogError($"从 CraftRefreshFuelSource 记录 {fuelType} 出错: {e}");
                                 }
                             }
                         }
@@ -577,7 +537,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                                 }
                                 catch (Exception e)
                                 {
-                                    Debug.LogError($"从 CraftRefeshFuelSource 记录 {fuelType} 出错: {e}");
+                                    Debug.LogError($"从 CraftRefreshFuelSource 记录 {fuelType} 出错: {e}");
                                 }
                             }
                         }
@@ -604,12 +564,31 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             Debug.LogFormat("调用CraftRefeshFuelSource 开始");
             try
             {
-                _oxygenSource = GetCraftFuelSource("Oxygen");
-                _foodSource = GetCraftFuelSource("Food");
-                _waterSource = GetCraftFuelSource("H2O");
-                _co2Source=GetCraftFuelSource("CO2");
-                _wastedWaterSource=GetCraftFuelSource("Wasted Water");
-                _solidWasteSource=GetCraftFuelSource("Solid Waste");
+                /*
+                ;*/
+                var STCommandPodPatchScript = PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+                if (STCommandPodPatchScript==null)
+                {
+                   _oxygenSource=EmptyFuelSource.GetOrCreate(Game.Instance.PropulsionData.GetFuelType("Oxygen"));
+                   _waterSource=EmptyFuelSource.GetOrCreate(Game.Instance.PropulsionData.GetFuelType("H2O"));
+                   _foodSource=EmptyFuelSource.GetOrCreate(Game.Instance.PropulsionData.GetFuelType("Food"));
+                   _co2Source=EmptyFuelSource.GetOrCreate(Game.Instance.PropulsionData.GetFuelType("CO2"));
+                   _wastedWaterSource=EmptyFuelSource.GetOrCreate(Game.Instance.PropulsionData.GetFuelType("Wasted Water"));
+                   _solidWasteSource = EmptyFuelSource.GetOrCreate(Game.Instance.PropulsionData.GetFuelType("Solid Waste"));
+                }
+
+                if (STCommandPodPatchScript!=null)
+                {
+                    _oxygenSource = STCommandPodPatchScript.OxygenFuelSource;
+                    _foodSource = STCommandPodPatchScript.FoodFuelSource;
+                    _waterSource = STCommandPodPatchScript.WaterFuelSource;
+                    _co2Source = STCommandPodPatchScript.CO2FuelSource;
+                    _wastedWaterSource = STCommandPodPatchScript.WastedWaterFuelSource;
+                    _solidWasteSource = STCommandPodPatchScript.SolidWasteFuelSource;
+                    Debug.LogFormat("SupportLifeScript called CraftRefreshFuelSource,STCommandPodPatchScript found,using patch's IFuelSource");
+                }
+                
+                
                 if (_oxygenSource != null && _foodSource != null && _waterSource != null&&_co2Source!= null&& _wastedWaterSource!= null&& _solidWasteSource != null)
                 {
                     Debug.LogFormat("调用CraftRefeshFuelSource 刷新完成 Oxygen:{0},Food:{1},Water:{2},CO2:{3},WastedWater:{4},SolidWaste:{5}", _oxygenSource.TotalFuel, _foodSource.TotalFuel, _waterSource.TotalFuel, _co2Source.TotalFuel, _wastedWaterSource.TotalFuel, _solidWasteSource.TotalFuel);

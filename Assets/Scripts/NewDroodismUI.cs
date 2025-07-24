@@ -4,6 +4,7 @@ using ModApi.Ui;
 using UnityEngine;
 using System.Collections.Generic;
 using Assets.Scripts.Craft.Fuel;
+using Assets.Scripts.Craft.Parts;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using ModApi.Craft;
 using ModApi.Craft.Parts;
@@ -235,6 +236,29 @@ namespace Assets.Scripts
 
                     break;
                 case "Other":
+                    var patchScript = Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.GetModifier<STCommandPodPatchScript>();
+                    if (patchScript == null)
+                    {
+                        return EmptyFuelSource.GetOrCreate(Game.Instance.PropulsionData.GetFuelType(fuelTypeId));
+                    }
+
+                    switch (fuelTypeId)
+                    {
+                        case "Oxygen":
+                            return patchScript.OxygenFuelSource;
+                        case "H2O":
+                            return patchScript.WaterFuelSource;
+                        case "Food":
+                            return patchScript.FoodFuelSource;
+                        case "CO2":
+                            return patchScript.CO2FuelSource;
+                        case "Wasted Water":
+                            return patchScript.WastedWaterFuelSource;
+                        case "Solid Waste":
+                            return patchScript.SolidWasteFuelSource;
+                    }
+                    return null;
+                    /*
                     FuelSourceGroup fuelSourceGroup = new FuelSourceGroup(1,1,ModApi.Common.Game.Instance.PropulsionData.GetFuelType(fuelTypeId));
                     foreach (var source in ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.FuelSources.FuelSources)
                     {
@@ -244,7 +268,7 @@ namespace Assets.Scripts
                         }
                     }
 
-                    return fuelSourceGroup;
+                    return fuelSourceGroup;*/
                     
             }
             return null;
