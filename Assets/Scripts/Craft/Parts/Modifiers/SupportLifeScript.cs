@@ -473,10 +473,60 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// 在非EVA模式下刷新燃料源。
         /// Refreshes fuel sources when not in EVA mode.
         /// </summary>
+        /// 这个吊毛函数太复杂了我得花点时间说一下这玩意到底原理是什么不然我自己忘了
+        /// 这个函数的目的非常简单,调用的时候如果是Eva状态就把各个source设定为本地modifier,如果不是就用craft的fuelsource
+        /// 但是后面那一坨就出问题了,目前的逻辑是我管你这哪先用craft的,得到null自然就会切换到设置本地modifier那一坨
         private void CraftRefreshFuelSource()
         {
             
             List<(string, double, double)> DataLocal = new List<(string, double, double)>();
+            
+            Debug.LogFormat("调用CraftRefeshFuelSource 开始");
+            try
+            {
+                if (PartScript.CraftScript.ActiveCommandPod.Part.PartScript==PartScript)
+                {
+                    Debug.LogFormat("这个drood是ActiveCommandPod");
+                    _oxygenSource=_waterSource=_foodSource=_co2Source=_wastedWaterSource=_solidWasteSource=null;
+                }
+                //var stCommandPodPatchScript = PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+                var stCommandPodPatchScript = PartScript.CraftScript.ActiveCommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+                if (stCommandPodPatchScript!=null)
+                {
+                    _oxygenSource = stCommandPodPatchScript.OxygenFuelSource;
+                    _foodSource = stCommandPodPatchScript.FoodFuelSource;
+                    _waterSource = stCommandPodPatchScript.WaterFuelSource;
+                    _co2Source = stCommandPodPatchScript.CO2FuelSource;
+                    _wastedWaterSource = stCommandPodPatchScript.WastedWaterFuelSource;
+                    _solidWasteSource = stCommandPodPatchScript.SolidWasteFuelSource;
+                    Debug.LogFormat("SupportLifeScript called CraftRefreshFuelSource,STCommandPodPatchScript found,using patch's IFuelSource");
+                }
+                if (_oxygenSource != null && _foodSource != null && _waterSource != null&&_co2Source!= null&& _wastedWaterSource!= null&& _solidWasteSource != null)
+                {
+                    Debug.LogFormat("调用CraftRefeshFuelSource 刷新完成 Oxygen:{0},Food:{1},Water:{2},CO2:{3},WastedWater:{4},SolidWaste:{5}", _oxygenSource.TotalFuel, _foodSource.TotalFuel, _waterSource.TotalFuel, _co2Source.TotalFuel, _wastedWaterSource.TotalFuel, _solidWasteSource.TotalFuel);
+                    ReFill(_oxygenSource, GetLocalFuelSource("Oxygen"));
+                    ReFill(_foodSource, GetLocalFuelSource("Food"));
+                    ReFill(_waterSource, GetLocalFuelSource("H2O"));
+                    RemoveWaste(_co2Source, GetLocalFuelSource("CO2"));
+                    RemoveWaste(_wastedWaterSource, GetLocalFuelSource("Wasted Water"));
+                    RemoveWaste(_solidWasteSource, GetLocalFuelSource("Solid Waste"));
+                    SaveFuelAmountBuffer();
+                    return;
+                    
+                }
+                HandleFuelSource("Oxygen", Data.DesireOxygenCapacity, Data._oxygenAmountBuffer, ref _oxygenSource);
+                HandleFuelSource("Food", Data.DesireFoodCapacity, Data._foodAmountBuffer, ref _foodSource);
+                HandleFuelSource("H2O", Data.DesireWaterCapacity, Data._waterAmountBuffer, ref _waterSource);
+                HandleFuelSource("CO2", Data.DesireOxygenCapacity*1.1, Data._co2AmountBuffer, ref _co2Source);
+                HandleFuelSource("Wasted Water", Data.DesireWaterCapacity*1.1, Data._wastedWaterAmountBuffer, ref _wastedWaterSource);
+                HandleFuelSource("Solid Waste", Data.DesireFoodCapacity*1.1, Data._solidWasteAmountBuffer, ref _solidWasteSource);
+                SaveFuelAmountBuffer();
+                
+            }
+            catch (Exception e)
+            {
+                Debug.LogErrorFormat("CraftRefeshFuelSource出问题了{0}", e);
+            }
             void HandleFuelSource(string fuelType, double capacity, double bufferAmount, ref IFuelSource fuelSource)
             {
                 try
@@ -561,60 +611,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     Debug.LogError($"处理 {fuelType} FuelSource 出错: {e}");
                 }
             }
-            Debug.LogFormat("调用CraftRefeshFuelSource 开始");
-            try
-            {
-                /*
-                ;*/
-                var STCommandPodPatchScript = PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
-                if (STCommandPodPatchScript==null)
-                {
-                   _oxygenSource=EmptyFuelSource.GetOrCreate(Game.Instance.PropulsionData.GetFuelType("Oxygen"));
-                   _waterSource=EmptyFuelSource.GetOrCreate(Game.Instance.PropulsionData.GetFuelType("H2O"));
-                   _foodSource=EmptyFuelSource.GetOrCreate(Game.Instance.PropulsionData.GetFuelType("Food"));
-                   _co2Source=EmptyFuelSource.GetOrCreate(Game.Instance.PropulsionData.GetFuelType("CO2"));
-                   _wastedWaterSource=EmptyFuelSource.GetOrCreate(Game.Instance.PropulsionData.GetFuelType("Wasted Water"));
-                   _solidWasteSource = EmptyFuelSource.GetOrCreate(Game.Instance.PropulsionData.GetFuelType("Solid Waste"));
-                }
-
-                if (STCommandPodPatchScript!=null)
-                {
-                    _oxygenSource = STCommandPodPatchScript.OxygenFuelSource;
-                    _foodSource = STCommandPodPatchScript.FoodFuelSource;
-                    _waterSource = STCommandPodPatchScript.WaterFuelSource;
-                    _co2Source = STCommandPodPatchScript.CO2FuelSource;
-                    _wastedWaterSource = STCommandPodPatchScript.WastedWaterFuelSource;
-                    _solidWasteSource = STCommandPodPatchScript.SolidWasteFuelSource;
-                    Debug.LogFormat("SupportLifeScript called CraftRefreshFuelSource,STCommandPodPatchScript found,using patch's IFuelSource");
-                }
-                
-                
-                if (_oxygenSource != null && _foodSource != null && _waterSource != null&&_co2Source!= null&& _wastedWaterSource!= null&& _solidWasteSource != null)
-                {
-                    Debug.LogFormat("调用CraftRefeshFuelSource 刷新完成 Oxygen:{0},Food:{1},Water:{2},CO2:{3},WastedWater:{4},SolidWaste:{5}", _oxygenSource.TotalFuel, _foodSource.TotalFuel, _waterSource.TotalFuel, _co2Source.TotalFuel, _wastedWaterSource.TotalFuel, _solidWasteSource.TotalFuel);
-                    ReFill(_oxygenSource, GetLocalFuelSource("Oxygen"));
-                    ReFill(_foodSource, GetLocalFuelSource("Food"));
-                    ReFill(_waterSource, GetLocalFuelSource("H2O"));
-                    RemoveWaste(_co2Source, GetLocalFuelSource("CO2"));
-                    RemoveWaste(_wastedWaterSource, GetLocalFuelSource("Wasted Water"));
-                    RemoveWaste(_solidWasteSource, GetLocalFuelSource("Solid Waste"));
-                    SaveFuelAmountBuffer();
-                    return;
-                    
-                }
-                HandleFuelSource("Oxygen", Data.DesireOxygenCapacity, Data._oxygenAmountBuffer, ref _oxygenSource);
-                HandleFuelSource("Food", Data.DesireFoodCapacity, Data._foodAmountBuffer, ref _foodSource);
-                HandleFuelSource("H2O", Data.DesireWaterCapacity, Data._waterAmountBuffer, ref _waterSource);
-                HandleFuelSource("CO2", Data.DesireOxygenCapacity*1.1, Data._co2AmountBuffer, ref _co2Source);
-                HandleFuelSource("Wasted Water", Data.DesireWaterCapacity*1.1, Data._wastedWaterAmountBuffer, ref _wastedWaterSource);
-                HandleFuelSource("Solid Waste", Data.DesireFoodCapacity*1.1, Data._solidWasteAmountBuffer, ref _solidWasteSource);
-                SaveFuelAmountBuffer();
-                
-            }
-            catch (Exception e)
-            {
-                Debug.LogErrorFormat("CraftRefeshFuelSource出问题了{0}", e);
-            }
             
         }
 
@@ -679,6 +675,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// 出于一种奇异搞笑我也不知道为什么会出现的bug,如果一个Drood在Unload时(比如说保存游戏,快速保存,超出物理距离不再加载)带有FuelTankModifier,那么小蓝人就会处在Eva和在craft内的半死不活的叠加bug状态,所以在Unload时需要移除所有FuelTankModifier并用SupportLifeData 中各个燃料的buffer保存unload时的燃料数量,然后在再次加载的时候读取buffer恢复燃料数量,然后才能添加FuelTankModifier,这个modifier内用于处理游戏内的情况,至于快速保存那些,使用了单独的harmonyPatch对quickSave内的craft的xml进行处理.
         /// </summary>
         /// for some very strange and goofy reason, if a Drood has a FuelTankModifier when it's unloaded(like when you save the game, quick save, or it's out of physical range and not loaded), the phenomenon of the half-dead-and-half-alive bug(the drood itself is still there in the crew compartment, but you can not go EVA ,although you can still switch to the drood) will happen, so I have to remove all FuelTankModifiers and save the fuel amount buffer in SupportLifeData when unloading, then when reloading, it will read the buffer and restore the fuel amount, and then add the FuelTankModifier, this script is used to handle the flight situation, and for the quick save, I used a separate harmonyPatch to handle the craft's xml in the quickSave.
+
+        #region 处理这坨屎用到的东西
          public void LoadFuelTanks()
         {
             AddingTankFlag=true;
@@ -1038,6 +1036,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             
         }
+        #endregion
         #region 无所弔谓
         /// <summary>
         /// 在飞船结构变化时调用，如果在飞行场景中，则刷新燃料源。
@@ -1087,8 +1086,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     }
                     return false;
                 }
-                else
-                    return true;
+                
             }
             return true;
         }

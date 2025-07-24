@@ -215,11 +215,7 @@ namespace Assets.Scripts
 
         private IFuelSource UpdateCraftFuelParameterValue(string fuelTypeId)
         {
-            switch ((ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.Data.Assembly.Parts.Count == 1 &&
-                     ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Data.PartType.Name
-                         .Contains("Eva"))
-                        ? "Eva"
-                        : "Other")
+            switch ((ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.Data.Assembly.Parts.Count == 1 && ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Data.PartType.Name.Contains("Eva")) ? "Eva" : "Other")
             {
                 case "Eva": 
                     foreach (var modifier in ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Modifiers)
@@ -236,28 +232,34 @@ namespace Assets.Scripts
 
                     break;
                 case "Other":
-                    var patchScript = Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.GetModifier<STCommandPodPatchScript>();
-                    if (patchScript == null)
-                    {
-                        return EmptyFuelSource.GetOrCreate(Game.Instance.PropulsionData.GetFuelType(fuelTypeId));
-                    }
 
-                    switch (fuelTypeId)
+                    try
                     {
-                        case "Oxygen":
-                            return patchScript.OxygenFuelSource;
-                        case "H2O":
-                            return patchScript.WaterFuelSource;
-                        case "Food":
-                            return patchScript.FoodFuelSource;
-                        case "CO2":
-                            return patchScript.CO2FuelSource;
-                        case "Wasted Water":
-                            return patchScript.WastedWaterFuelSource;
-                        case "Solid Waste":
-                            return patchScript.SolidWasteFuelSource;
+                        var patchScript =  Game.Instance.FlightScene.CraftNode.CraftScript.ActiveCommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+
+                        switch (fuelTypeId)
+                        {
+                            case "Oxygen":
+                                return patchScript.OxygenFuelSource;
+                            case "H2O":
+                                return patchScript.WaterFuelSource;
+                            case "Food":
+                                return patchScript.FoodFuelSource;
+                            case "CO2":
+                                return patchScript.CO2FuelSource;
+                            case "Wasted Water":
+                                return patchScript.WastedWaterFuelSource;
+                            case "Solid Waste":
+                                return patchScript.SolidWasteFuelSource;
+                        }
+                        return null;
                     }
-                    return null;
+                    catch (Exception e)
+                    {
+                        //我知道这里会发鸡巴癫,but lmao i don't give a fuck about it.
+                    }
+                    break;
+                    
                     /*
                     FuelSourceGroup fuelSourceGroup = new FuelSourceGroup(1,1,ModApi.Common.Game.Instance.PropulsionData.GetFuelType(fuelTypeId));
                     foreach (var source in ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.FuelSources.FuelSources)
