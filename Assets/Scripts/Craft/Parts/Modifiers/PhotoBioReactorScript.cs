@@ -38,7 +38,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             ReFreshSources();
         }
 
-        private float current = 0;
+        //private float current = 0;
         public void FlightUpdate(in FlightFrameData frame)
         {
             float target = this.Data.Part.Activated ? 1f : 0.0f;
@@ -304,24 +304,31 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             
             _battery = PartScript.BatteryFuelSource;
-            
-            var patchScript = PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
-            if (patchScript == null)
+            try
             {
-                _waterSource=EmptyFuelSource.GetOrCreate(Game.Instance.PropulsionData.GetFuelType("H2O"));
-                _oxygenSource=EmptyFuelSource.GetOrCreate(Game.Instance.PropulsionData.GetFuelType("Oxygen"));
-                _co2Source=EmptyFuelSource.GetOrCreate(Game.Instance.PropulsionData.GetFuelType("CO2"));
-                _wastedWaterSource=EmptyFuelSource.GetOrCreate(Game.Instance.PropulsionData.GetFuelType("Wasted Water"));
-                _solidWastedSource=EmptyFuelSource.GetOrCreate(Game.Instance.PropulsionData.GetFuelType("Solid Waste"));
-                _foodSource=EmptyFuelSource.GetOrCreate(Game.Instance.PropulsionData.GetFuelType("Food"));
-            }
+                var patchScript = PartScript?.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+                if (patchScript == null)
+                {
+                    _waterSource=_wastedWaterSource=_battery=_solidWastedSource=_oxygenSource=_co2Source=null;
+                }
 
-            _waterSource = patchScript.WaterFuelSource;
-            _oxygenSource=patchScript.OxygenFuelSource;
-            _co2Source=patchScript.CO2FuelSource;
-            _wastedWaterSource=patchScript.WastedWaterFuelSource;
-            _solidWastedSource=patchScript.SolidWasteFuelSource;
-            _foodSource=patchScript.FoodFuelSource;
+                if (patchScript!=null)
+                {
+                    _waterSource = patchScript.WaterFuelSource;
+                    _oxygenSource=patchScript.OxygenFuelSource;
+                    _co2Source=patchScript.CO2FuelSource;
+                    _wastedWaterSource=patchScript.WastedWaterFuelSource;
+                    _solidWastedSource=patchScript.SolidWasteFuelSource;
+                    _foodSource=patchScript.FoodFuelSource;
+                }
+                
+            }
+            catch (Exception)
+            {
+                _waterSource=_wastedWaterSource=_battery=_solidWastedSource=_oxygenSource=_co2Source=null;
+            }
+            
+            
         }
         
         private IFuelSource GetCraftFuelSource(string fuelType)

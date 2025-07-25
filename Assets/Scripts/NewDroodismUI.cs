@@ -21,7 +21,6 @@ namespace Assets.Scripts
         
         public bool mainPanelVisible = false;
         public bool fuelItemInspectorVisible = false;
-        private bool _notifPanelVisible = false;
         
         public readonly string[] _massTypes = { "g", "kg", "t", "kt" };
         public List<Vector3> DroodPosistion = new List<Vector3>();
@@ -216,7 +215,7 @@ namespace Assets.Scripts
 
         private IFuelSource UpdateCraftFuelParameterValue(string fuelTypeId)
         {
-            switch ((ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.Data.Assembly.Parts.Count == 1 && ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Data.PartType.Name.Contains("Eva")) ? "Eva" : "Other")
+            switch (ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Data.PartType.Name.Contains("Eva") ? "Eva" : "Other")
             {
                 case "Eva": 
                     foreach (var modifier in ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Modifiers)
@@ -255,7 +254,7 @@ namespace Assets.Scripts
                         }
                         return null;
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         //我知道这里会发鸡巴癫,but lmao i don't give a fuck about it.
                     }

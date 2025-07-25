@@ -142,7 +142,7 @@ namespace Assets.Scripts.Craft.Fuel
             
             foreach (FuelTankData item in list)
             {
-                var patch = item?.Part.PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+                var patch = item?.Part.PartScript?.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
                 CraftFuelSource craftFuelSource = null;
                 if (item != null && !item.Script.PartScript.Disconnected)
                 {
@@ -213,7 +213,7 @@ namespace Assets.Scripts.Craft.Fuel
             }
             catch (Exception e)
             {
-                Debug.LogFormat("Error in CreateFuelSourceForConnectedParts: {0}",e);
+                Debug.LogFormat("CreateFuelSourceForConnectedParts歇逼了: {0}",e);
             }
             
             //Debug.Log("Modded CreateFuelSourceForConnectedParts called");

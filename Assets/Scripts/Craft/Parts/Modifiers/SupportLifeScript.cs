@@ -463,21 +463,21 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             Debug.LogFormat("调用CraftRefeshFuelSource 开始");
             try
             {
-                if (PartScript.CraftScript.ActiveCommandPod.Part.PartScript==PartScript&&PartScript.CraftScript.Data.Assembly.Parts.Count==1)
+                if (PartScript.CraftScript.ActiveCommandPod.Part.PartScript==PartScript)
                 {
                     isEva = true;
                     Debug.LogFormat("这个drood是ActiveCommandPod");
                     _oxygenSource=_waterSource=_foodSource=_co2Source=_wastedWaterSource=_solidWasteSource=null;
                 }
 
-                Debug.Log("1");
+                
                 try
                 {
                     if (isEva==false)
                     {
-                        Debug.LogFormat("1.5");
+                       
                         var stCommandPodPatchScript = PartScript.GetModifier<EvaScript>().CrewCompartment?.PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
-                        Debug.Log("2");
+                       
                         if (stCommandPodPatchScript!=null)
                         {
                             _oxygenSource = stCommandPodPatchScript.OxygenFuelSource;
@@ -488,7 +488,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                             _solidWasteSource = stCommandPodPatchScript.SolidWasteFuelSource;
                             Debug.LogFormat("SupportLifeScript called CraftRefreshFuelSource,STCommandPodPatchScript found,using patch's IFuelSource");
                         }
-                        Debug.Log("3");
+                        
                     }
                 }
                 catch (Exception e)
@@ -496,7 +496,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                    Debug.LogFormat("CraftRefreshSource:No Eva part:{0}",e);
                 }
                 
-                Debug.Log("4");
+               
                 if (_oxygenSource != null && _foodSource != null && _waterSource != null&&_co2Source!= null&& _wastedWaterSource!= null&& _solidWasteSource != null)
                 {
                     //Debug.LogFormat("调用CraftRefeshFuelSource 刷新完成 Oxygen:{0},Food:{1},Water:{2},CO2:{3},WastedWater:{4},SolidWaste:{5}", _oxygenSource.TotalFuel, _foodSource.TotalFuel, _waterSource.TotalFuel, _co2Source.TotalFuel, _wastedWaterSource.TotalFuel, _solidWasteSource.TotalFuel);

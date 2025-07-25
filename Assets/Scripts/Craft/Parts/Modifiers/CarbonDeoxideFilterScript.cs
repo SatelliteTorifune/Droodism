@@ -121,8 +121,26 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 		private void UpdateFuelSources()
 		{
 			batterySource = PartScript.BatteryFuelSource;
-			var patchScript = PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
-			co2Source = patchScript == null ? EmptyFuelSource.GetOrCreate( Game.Instance.PropulsionData.GetFuelType( "CO2" ) ) : patchScript.CO2FuelSource;
+			try
+			{
+				var patchScript = PartScript?.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+				if (patchScript == null)
+				{
+					co2Source = null;
+				}
+
+				if (patchScript!= null)
+				{
+					co2Source = patchScript.CO2FuelSource;
+				
+				}
+			}
+			catch (Exception)
+			{
+				co2Source = null;
+			}
+			
+			
 		}
 
 
