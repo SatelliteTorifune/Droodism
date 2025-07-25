@@ -505,7 +505,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 {
                     Debug.LogErrorFormat("RefreshFuelSource调用CraftRefeshFuelSource歇逼了{0}", e);
                 }
-                
             }
         }
         
@@ -515,7 +514,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         private void CraftRefeshFuelSource()
         {
-            
             List<(string, double, double)> DataLocal = new List<(string, double, double)>();
             void HandleFuelSource(string fuelType, double capacity, double bufferAmount, ref IFuelSource fuelSource)
             {

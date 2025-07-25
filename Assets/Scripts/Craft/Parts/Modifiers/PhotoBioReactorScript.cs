@@ -42,7 +42,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public void FlightUpdate(in FlightFrameData frame)
         {
             float target = this.Data.Part.Activated ? 1f : 0.0f;
-            if ((double) Data.CurrentEnabledPercent != (double) target)
+            if (Data.CurrentEnabledPercent !=target)
             {
                 this.Data.CurrentEnabledPercent = Mathf.MoveTowards(this.Data.CurrentEnabledPercent, target, frame.DeltaTime * this.Data.RotationRate);
                 DeployAnimate(Data.CurrentEnabledPercent);
