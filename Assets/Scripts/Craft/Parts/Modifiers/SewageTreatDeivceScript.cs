@@ -30,9 +30,29 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         private void ReCheck()
         {
-            waterSource = GetCraftFuelSource("H2O");
-            wastedWaterSource = GetCraftFuelSource("Wasted Water");
+            
             _battery = PartScript.BatteryFuelSource;
+            try
+            {
+                var patchScript = PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+                if (patchScript == null)
+                {
+                    waterSource = wastedWaterSource = null;
+                
+                }
+
+                if (patchScript!= null)
+                {
+                    waterSource = patchScript.WaterFuelSource;
+                    wastedWaterSource=patchScript.WastedWaterFuelSource;
+                }
+            }
+            catch (Exception)
+            {
+                waterSource = wastedWaterSource = null;
+            }
+            
+           
         }
 
         public void FlightStart(in FlightFrameData frame)
@@ -54,19 +74,20 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             if (_battery == null||waterSource == null||wastedWaterSource == null)
             {
-    
                 return;
             }
-            if (_battery.IsEmpty||wastedWaterSource.IsEmpty||waterSource.TotalCapacity-waterSource.TotalFuel<=0.0000001f)
-                return;
-            else
-            {
-                
-                wastedWaterSource.RemoveFuel( Data.WastedWaterComsumeRate * frame.DeltaTimeWorld*Data.Scale);
-                waterSource.AddFuel(  Data.ConvertEffiency*0.3f*Data.WastedWaterComsumeRate * frame.DeltaTimeWorld*Data.Scale);
-                _battery.RemoveFuel( Data.BatteryComsumeRate * Data.WastedWaterComsumeRate * frame.DeltaTimeWorld*Data.Scale);
 
+            if (_battery.IsEmpty || wastedWaterSource.IsEmpty ||
+                waterSource.TotalCapacity - waterSource.TotalFuel <= 0.0000001f)
+            {
+                return; 
             }
+                
+            
+            wastedWaterSource.RemoveFuel( Data.WastedWaterComsumeRate * frame.DeltaTimeWorld*Data.Scale);
+            waterSource.AddFuel(  Data.ConvertEffiency*0.3f*Data.WastedWaterComsumeRate * frame.DeltaTimeWorld*Data.Scale);
+            _battery.RemoveFuel( Data.BatteryComsumeRate * Data.WastedWaterComsumeRate * frame.DeltaTimeWorld*Data.Scale);
+            
 
 
 

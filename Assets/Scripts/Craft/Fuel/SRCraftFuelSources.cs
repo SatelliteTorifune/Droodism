@@ -6,10 +6,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Linq;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
-using Assets.Scripts.Craft;
 using ModApi.Craft;
 using ModApi.Craft.Parts;
 using ModApi.Craft.Propulsion;
@@ -124,9 +122,9 @@ namespace Assets.Scripts.Craft.Fuel
         //     is null then it will not be used.
         public void CreateFuelSourceForConnectedParts(IEnumerable<PartData> parts, bool removeDisconnectedCrossFeeds, List<CraftFuelSource> fuelSources)
         {
-            
-            //Debug.Log("Modded CreateFuelSourceForConnectedParts called");
-            List<FuelTankData> list = new List<FuelTankData>();
+            try
+            {
+                List<FuelTankData> list = new List<FuelTankData>();
             Dictionary<(int, FuelType), FuelTankScript> dictionary = new Dictionary<(int, FuelType), FuelTankScript>();
             foreach (PartData part in parts)
             {
@@ -144,7 +142,7 @@ namespace Assets.Scripts.Craft.Fuel
             
             foreach (FuelTankData item in list)
             {
-                var patch = item?.Part.PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+                var patch = item?.Part.PartScript?.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
                 CraftFuelSource craftFuelSource = null;
                 if (item != null && !item.Script.PartScript.Disconnected)
                 {
@@ -212,6 +210,14 @@ namespace Assets.Scripts.Craft.Fuel
             }
 
             SetupCrossFeeds(removeDisconnectedCrossFeeds);
+            }
+            catch (Exception e)
+            {
+                Debug.LogFormat("CreateFuelSourceForConnectedParts歇逼了: {0}",e);
+            }
+            
+            //Debug.Log("Modded CreateFuelSourceForConnectedParts called");
+            
         }
 
         //

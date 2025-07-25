@@ -1,21 +1,14 @@
-using System.Diagnostics;
-using System.Collections.Generic;
-using System.Reflection.Emit;
 using System.Xml.Linq;
 using Assets.Scripts.Craft;
-using Assets.Scripts.Craft.Fuel;
-using Assets.Scripts.Craft.Parts;
 using Assets.Scripts.Craft.Parts.Modifiers;
-using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using Assets.Scripts.Flight;
-using ModApi.Craft.Parts;
-using UnityEngine.SceneManagement;
-using ModApi.Design.Events;
 using ModApi.Scenes.Events;
-using ModApi.Craft.Parts.Events;
 using HarmonyLib;
 using ModApi.Craft;
-using ModApi.Ui.Inspector;
+using ModApi.Craft.Parts;
+using ModApi.Flight.Sim;
+using ModApi.Math;
+using ModApi.State;
 using static ModApi.Common.Game;
 using static ModApi.Craft.Parts.PartData;
 using Assembly = System.Reflection.Assembly;
@@ -58,6 +51,7 @@ namespace Assets.Scripts
             if (ModApi.Common.Game.InDesignerScene)
             {
                 Instance.Designer.CraftLoaded += OnCraftLoaded;
+                Instance.Designer.CraftStructureChanged+=OnCraftStructureChanged;
                 Created += OnPartAdded;
             }
 
@@ -67,6 +61,8 @@ namespace Assets.Scripts
                 {
                     UpdateDroodCount();
                     Debug.LogFormat("OnSceneLoaded更新Drood数量");
+                    doShit();
+                    Debug.LogFormat("OnSceneLoaded执行doShit");
                 }
                 catch (Exception e1)
                 {
@@ -76,17 +72,48 @@ namespace Assets.Scripts
 
         }
 
+        private void OnCraftStructureChanged()
+        {
+            GetDroodCountInDesigner();
+        }
         protected override void OnModInitialized()
         {
             base.OnModInitialized();
             var harmony = new Harmony("com.SatelliteTorifune.Droodism");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
             Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
-            Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.FlightView,OnBuildFlightViewInspectorPanel);
+            Game.Instance.SceneManager.SceneTransitionCompleted+=OnSceneTransitionCompleted;
+            //Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.FlightView,OnBuildFlightViewInspectorPanel);
+            DevConsole.DevConsoleService.Instance.RegisterCommand("Fuck",doShit);
             
         }
 
+        public void doShit()
+        {
+            
+            Debug.LogFormat("执行doShit");
+            try
+            {
+                foreach (var pd in Game.Instance.FlightScene.CraftNode.CraftScript.Data.Assembly.Parts)
+                {
+                    if (pd.PartType.Name=="Eva")
+                    {
+                        pd.PartScript.GetModifier<SupportLifeScript>().RefreshFuelSource();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+               Debug.LogFormat("do shit有问题{0}",e);
+            }
+            
+        }
 
+        private void OnSceneTransitionCompleted(object sender, SceneTransitionEventArgs e)
+        {
+            
+            doShit();
+        }
         private void subPlus()
         {
             try
@@ -105,7 +132,7 @@ namespace Assets.Scripts
             }
             catch (Exception e)
             {
-                Debug.LogWarningFormat($"订阅有问题{e}");
+                Debug.LogWarningFormat($"订阅有问题,我不知道哪里有问题,但是反正这玩意加个try-catch也能跑{e}");
             }
 
         }
@@ -117,7 +144,74 @@ namespace Assets.Scripts
             Instance.FlightScene.ActiveCommandPodChanged -= OnCraftChanged;
             Instance.FlightScene.ActiveCommandPodStateChanged -= OnCraftChanged;
         }
+        public void SpawnFlag() 
+        {
+            var templateText = Mod.ResourceLoader.LoadAsset<TextAsset>("Assets/Content/Resources/flag.xml");
+            var craftData = Game.Instance.CraftLoader.LoadCraftImmediate(XDocument.Parse(templateText.text).Root);
+            var xml = craftData.GenerateXml((Transform)null, false, true);
+            Vector3d position = Game.Instance.FlightScene.CraftNode.Position;
+            double latitude = ConvertPlanetPositionToLatLongAgl(position).x;
+            double longitude=ConvertPlanetPositionToLatLongAgl(position).y;
+            var location = new LaunchLocation(
+                "location",
+                LaunchLocationType.SurfaceLockedGround,
+                Game.Instance.FlightScene.CraftNode.Parent.PlanetData.Name,
+                latitude,
+                longitude,
+                new Vector3d(0.0, 0.0, 3000.0),
+                0,
+                0.2);
+            var flag = ((FlightSceneScript)Game.Instance.FlightScene).SpawnCraft($"Flag at {Game.Instance.FlightScene.CraftNode.Parent.Name},{(ConvertPlanetPositionToLatLongAgl(position).x)} ,{(ConvertPlanetPositionToLatLongAgl(position).y)}", craftData, location, xml);
+            flag.AllowPlayerControl = false;
+            Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Planted Flag at <color=green> {Game.Instance.FlightScene.CraftNode.Parent.Name} </color>'s surface,at {(ConvertPlanetPositionToLatLongAgl(position).x)}° , {(ConvertPlanetPositionToLatLongAgl(position).y)}° ",true,120f);
+        }
+
         
+        public static string GetStopwatchTimeString(double seconds)
+        {
+            if (!Units.IsFinite(seconds))
+                return "N/A";
+            string empty = string.Empty;
+            if (seconds > 31536000.0)
+            {
+                long num = (long) (seconds / 31536000.0);
+                seconds -= (double) (num * 31536000L);
+                empty += string.Format("{0:n0}y ", (object) num);
+            }
+            if (seconds > 86400.0)
+            {
+                long num = (long) (seconds / 86400.0);
+                seconds -= (double) (num * 86400L);
+                empty += string.Format("{0:n0}d ", (object) num);
+            }
+            if (seconds > 3600.0)
+            {
+                long num = (long) (seconds / 3600.0);
+                seconds -= (double) (num * 3600L);
+                empty += string.Format("{0:n0}h ", (object) num);
+            }
+            if (seconds > 60.0)
+            {
+                long num = (long) (seconds / 60.0);
+                seconds -= (double) (num * 60L);
+                empty += string.Format("{0:n0}m ", (object) num);
+            }
+            return empty + string.Format("{0:n2}s", (object) seconds);
+        }
+        public Vector3d ConvertPlanetPositionToLatLongAgl(Vector3d position)
+        {
+            if (double.IsNaN(position.x) || double.IsNaN(position.y) || double.IsNaN(position.z))
+                return Vector3d.zero;
+            IPlanetNode parent = Game.Instance.FlightScene.CraftNode.Parent;
+            Vector3d surfaceVector = parent.PlanetVectorToSurfaceVector(position);
+            double latitude;
+            double longitude;
+            parent.GetSurfaceCoordinates(surfaceVector, out latitude, out longitude);
+            double num = parent.GetTerrainHeight(position);
+            if (parent.PlanetData.HasWater && num < (double) parent.PlanetData.SeaLevel)
+                num = (double) parent.PlanetData.SeaLevel;
+            return new Vector3d(latitude * 57.29578, longitude * 57.29578, position.magnitude - (parent.PlanetData.Radius + num));
+        }
         public string FormatFuel(double totalFuel, string[] format)
         {
             // Converts into lowest unit type
@@ -131,4 +225,8 @@ namespace Assets.Scripts
                 return (totalFuel * 1e-3).ToString("0.00") + format[1];
             return totalFuel.ToString("0.00") + format[0];
         }    }
+
+        
+
+
 }

@@ -34,10 +34,30 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         private void ReCheck()
         {
-            waterSource = GetCraftFuelSource("H2O");
-            wastedWaterSource = GetCraftFuelSource("Wasted Water");
-            _co2Source = GetCraftFuelSource("CO2");
-            _oxygenSource = GetCraftFuelSource("Oxygen");
+            try
+            {
+                var patchScript = PartScript?.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+                if (patchScript == null)
+                {
+                    wastedWaterSource=waterSource= _oxygenSource= _co2Source=null;
+                }
+
+                if (patchScript != null)
+                {
+                    waterSource = patchScript.WaterFuelSource;
+                    _oxygenSource=patchScript.OxygenFuelSource;
+                    _co2Source=patchScript.CO2FuelSource;
+                    wastedWaterSource=patchScript.WastedWaterFuelSource;
+                }
+            }
+            catch (Exception)
+            {
+                wastedWaterSource=waterSource= _oxygenSource= _co2Source=null;
+            }
+            
+
+            
+            
             
         }
 
