@@ -1,5 +1,6 @@
 using System.Xml.Linq;
 using Assets.Scripts.Craft;
+using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Flight;
 using ModApi.Scenes.Events;
 using HarmonyLib;
@@ -60,6 +61,8 @@ namespace Assets.Scripts
                 {
                     UpdateDroodCount();
                     Debug.LogFormat("OnSceneLoaded更新Drood数量");
+                    doShit();
+                    Debug.LogFormat("OnSceneLoaded执行doShit");
                 }
                 catch (Exception e1)
                 {
@@ -79,11 +82,38 @@ namespace Assets.Scripts
             var harmony = new Harmony("com.SatelliteTorifune.Droodism");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
             Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
+            Game.Instance.SceneManager.SceneTransitionCompleted+=OnSceneTransitionCompleted;
             //Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.FlightView,OnBuildFlightViewInspectorPanel);
+            DevConsole.DevConsoleService.Instance.RegisterCommand("Fuck",doShit);
             
         }
 
+        public void doShit()
+        {
+            
+            Debug.LogFormat("执行doShit");
+            try
+            {
+                foreach (var pd in Game.Instance.FlightScene.CraftNode.CraftScript.Data.Assembly.Parts)
+                {
+                    if (pd.PartType.Name=="Eva")
+                    {
+                        pd.PartScript.GetModifier<SupportLifeScript>().RefreshFuelSource();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+               Debug.LogFormat("do shit有问题{0}",e);
+            }
+            
+        }
 
+        private void OnSceneTransitionCompleted(object sender, SceneTransitionEventArgs e)
+        {
+            
+            doShit();
+        }
         private void subPlus()
         {
             try

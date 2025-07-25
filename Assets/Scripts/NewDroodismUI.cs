@@ -91,6 +91,7 @@ namespace Assets.Scripts
             
             fuelXMLItems.Add(component);
             Debug.LogFormat("NewDroodismUI:AddFuelListItem:{0}", fuelType);
+            //Mod.Inctance.doShit();
         }
         
         /// <summary>

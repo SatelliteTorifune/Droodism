@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 1747326851
+CRC: 4109854486
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: eff659ab6bd437d5e2561faca2285d25
+    Hash: 44378cb6a1e3f92e748e4787392db5fa
   TypeTreeHash:
     serializedVersion: 2
     Hash: 847790c4082ee91029d8c7419a86a075
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: eff659ab6bd437d5e2561faca2285d25
+    Hash: 44378cb6a1e3f92e748e4787392db5fa
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -56,7 +56,6 @@ SerializeReferenceClassIdentifiers:
 Assets:
 - Assets/Resources/Craft/Parts/Definitions/WaterTank.xml
 - Assets/Resources/Craft/Parts/Prefabs/WaterTank.prefab
-- Assets/_ModAssets_/Droodism.dll.bytes
 - Assets/Content/XML UI/Sprites/White.png
 - Assets/Resources/Craft/Parts/Definitions/CarbonDioxideFilter.xml
 - Assets/Resources/Craft/Parts/Definitions/Sodium Peroxide Container.xml
@@ -67,12 +66,13 @@ Assets:
 - Assets/Content/Craft/Parts/RocketEngines/Propulsion.xml
 - Assets/Content/Craft/Parts/Categories/LifeSupport.asset
 - Assets/Resources/Craft/Parts/Definitions/ElectrolyticDevice.xml
+- Assets/_ModAssets_/Droodism.dll.bytes
 - Assets/Resources/Craft/Parts/Prefabs/CarbonDioxideFilter.prefab
-- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/Content/Prefabs/DroodismUI.prefab
 - Assets/Content/XML UI/Sprites/DroodsimUIIcon.png
 - Assets/Resources/Craft/Parts/Prefabs/SewageTreatDevice.prefab
 - Assets/Resources/Craft/Parts/Prefabs/Sodium Peroxide Container.prefab
+- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/Resources/Craft/Parts/Definitions/PhotoBioReactor.xml
 - Assets/Resources/Craft/Parts/Definitions/ResourcesPack.xml
 - Assets/Content/XML UI/UIResourceDatabase.asset

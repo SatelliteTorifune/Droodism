@@ -52,9 +52,11 @@ namespace Assets.Scripts
         // Method called when the mod is initialized
         private void OnInitialized(IFlightScene flightScene)
         {
+            doShit();
             // Update the drood count when the mod is initialized
             UpdateDroodCount();
             Debug.Log("OnInitialized called UpdateDroodCount");
+            doShit();
         }
 
         // Method called when the craft changes
@@ -100,7 +102,7 @@ namespace Assets.Scripts
                     try
                     {
                         partData.PartScript.GetModifier<SupportLifeScript>().UpdateCurrentPlanet();
-                        partData.PartScript.GetModifier<SupportLifeScript>().RefreshFuelSource();
+                        //partData.PartScript.GetModifier<SupportLifeScript>().RefreshFuelSource();
                     }
                     catch (Exception e)
                     {

@@ -10,7 +10,6 @@ using System.Xml.Linq;
 using Assets.Scripts.Craft.Fuel;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
-using Assets.Scripts.Input;
 using ModApi;
 using ModApi.Flight;
 using ModApi.Flight.Events;
@@ -22,9 +21,11 @@ using ModApi.Flight.UI;
 using ModApi.Math;
 using ModApi.Settings.Core;
 using ModApi.Ui.Inspector;
+using Object = UnityEngine.Object;
 
 //鸡巴的我自己都看不懂我写的是什么鸡巴玩意了你还指望我给你写注释吗?
 //顺便一提如果真有除了我以外的人在github上或者逆向出来了看到了这行字,那么我只能说一句牛逼,你简直是找屎大王,能闻着味道找到我编程以来拉的最大的一坨
+//2025 7 25 我操你妈我受不了了我怎么还在和这坨我最先拉出来的屎山作斗争啊我操
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
@@ -39,7 +40,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// Reference to the EvaScript component,get current part's eva data and other stuff
         /// </summary>
         private EvaScript _evaScript;
-        private CrewCompartmentScript _crewCompartmentScript;
+
+        private CrewCompartmentScript droodCrewCompartmentScript;
         
         private IFuelSource _oxygenSource, _foodSource, _waterSource,_co2Source,_wastedWaterSource,_solidWasteSource;
         
@@ -60,9 +62,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         FlightSceneScript _flightSceneScript;
 
         public double LastUnloadedTime;
-        private List<Vector3> DroodPosistion = new List<Vector3>();
-        
-        
         
         
         /// <summary>
@@ -100,7 +99,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public override void OnInitialLaunch()
         {
-            
+            Debug.LogFormat("OnInitialLaunch");
             isFirstTime = true;
             base.OnInitialLaunch();
             if (this.PartScript.Data.PartType.Name == "Eva-Tourist")
@@ -120,6 +119,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             try
             {
                 RefreshFuelSource();
+                Debug.LogFormat("OnInitialLaunch调用RefreshFuelSource");
             }
             catch (Exception e)
             {
@@ -134,6 +134,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         void IFlightStart.FlightStart(in FlightFrameData frame)
         {
+            Debug.LogFormat("FlightStart");
             Game.Instance.FlightScene.FlightEnded+=OnFlightEnded;
             Game.Instance.FlightScene.CraftNode.ChangedSoI += OnSoiChanged;
             Game.Instance.FlightScene.PlayerChangedSoi += OnPlayerChangedSoi;
@@ -146,36 +147,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 isTourist = true;
             }
             _evaScript = GetComponent<EvaScript>();
-            _crewCompartmentScript = GetComponent<CrewCompartmentScript>();
-            Debug.LogFormat("GET");
+            droodCrewCompartmentScript = GetComponent<CrewCompartmentScript>();
             UpdateCurrentPlanet();
             Game.Instance.FlightScene.CraftNode.ChangedSoI += OnSoiChanged;
-            PartData partData = this.Data.Part;
             LoadFuelTanks();
             
-            try
-            {
-                RefreshFuelSource();
-            }
-            catch (Exception e)
-            {
-                Debug.LogErrorFormat("FlightStart调用RefeshFuelSource出问题了{0}", e);
-            }
-            //_crewCompartmentScript.CrewEnter+=OnCrewEnter;
-            //_crewCompartmentScript.CrewExit+=OnCrewExit;
         }
 
-        private void OnCrewEnter(EvaScript evaScript)
-        {
-            RefreshFuelSource();
-            Debug.Log("OnCrewEnter");
-        }
         
-        private void OnCrewExit(EvaScript evaScript)
-        {
-            RefreshFuelSource();
-            Debug.Log("OnCrewExit");
-        }
         /// <summary>
         /// 实现IFlightUpdate接口，在飞行期间每帧调用。
         /// Implements the IFlightUpdate interface, called every frame during flight.
@@ -478,32 +457,49 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// 但是后面那一坨就出问题了,目前的逻辑是我管你这哪先用craft的,得到null自然就会切换到设置本地modifier那一坨
         private void CraftRefreshFuelSource()
         {
-            
-            List<(string, double, double)> DataLocal = new List<(string, double, double)>();
+            bool isEva = false;
+            List<(string, double, double)>DataLocal = new List<(string, double, double)>();
             
             Debug.LogFormat("调用CraftRefeshFuelSource 开始");
             try
             {
-                if (PartScript.CraftScript.ActiveCommandPod.Part.PartScript==PartScript)
+                if (PartScript.CraftScript.ActiveCommandPod.Part.PartScript==PartScript&&PartScript.CraftScript.Data.Assembly.Parts.Count==1)
                 {
+                    isEva = true;
                     Debug.LogFormat("这个drood是ActiveCommandPod");
                     _oxygenSource=_waterSource=_foodSource=_co2Source=_wastedWaterSource=_solidWasteSource=null;
                 }
-                //var stCommandPodPatchScript = PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
-                var stCommandPodPatchScript = PartScript.CraftScript.ActiveCommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
-                if (stCommandPodPatchScript!=null)
+
+                Debug.Log("1");
+                try
                 {
-                    _oxygenSource = stCommandPodPatchScript.OxygenFuelSource;
-                    _foodSource = stCommandPodPatchScript.FoodFuelSource;
-                    _waterSource = stCommandPodPatchScript.WaterFuelSource;
-                    _co2Source = stCommandPodPatchScript.CO2FuelSource;
-                    _wastedWaterSource = stCommandPodPatchScript.WastedWaterFuelSource;
-                    _solidWasteSource = stCommandPodPatchScript.SolidWasteFuelSource;
-                    Debug.LogFormat("SupportLifeScript called CraftRefreshFuelSource,STCommandPodPatchScript found,using patch's IFuelSource");
+                    if (isEva==false)
+                    {
+                        Debug.LogFormat("1.5");
+                        var stCommandPodPatchScript = PartScript.GetModifier<EvaScript>().CrewCompartment?.PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+                        Debug.Log("2");
+                        if (stCommandPodPatchScript!=null)
+                        {
+                            _oxygenSource = stCommandPodPatchScript.OxygenFuelSource;
+                            _foodSource = stCommandPodPatchScript.FoodFuelSource;
+                            _waterSource = stCommandPodPatchScript.WaterFuelSource;
+                            _co2Source = stCommandPodPatchScript.CO2FuelSource;
+                            _wastedWaterSource = stCommandPodPatchScript.WastedWaterFuelSource;
+                            _solidWasteSource = stCommandPodPatchScript.SolidWasteFuelSource;
+                            Debug.LogFormat("SupportLifeScript called CraftRefreshFuelSource,STCommandPodPatchScript found,using patch's IFuelSource");
+                        }
+                        Debug.Log("3");
+                    }
                 }
+                catch (Exception e)
+                {
+                   Debug.LogFormat("CraftRefreshSource:No Eva part:{0}",e);
+                }
+                
+                Debug.Log("4");
                 if (_oxygenSource != null && _foodSource != null && _waterSource != null&&_co2Source!= null&& _wastedWaterSource!= null&& _solidWasteSource != null)
                 {
-                    Debug.LogFormat("调用CraftRefeshFuelSource 刷新完成 Oxygen:{0},Food:{1},Water:{2},CO2:{3},WastedWater:{4},SolidWaste:{5}", _oxygenSource.TotalFuel, _foodSource.TotalFuel, _waterSource.TotalFuel, _co2Source.TotalFuel, _wastedWaterSource.TotalFuel, _solidWasteSource.TotalFuel);
+                    //Debug.LogFormat("调用CraftRefeshFuelSource 刷新完成 Oxygen:{0},Food:{1},Water:{2},CO2:{3},WastedWater:{4},SolidWaste:{5}", _oxygenSource.TotalFuel, _foodSource.TotalFuel, _waterSource.TotalFuel, _co2Source.TotalFuel, _wastedWaterSource.TotalFuel, _solidWasteSource.TotalFuel);
                     ReFill(_oxygenSource, GetLocalFuelSource("Oxygen"));
                     ReFill(_foodSource, GetLocalFuelSource("Food"));
                     ReFill(_waterSource, GetLocalFuelSource("H2O"));
@@ -521,6 +517,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 HandleFuelSource("Wasted Water", Data.DesireWaterCapacity*1.1, Data._wastedWaterAmountBuffer, ref _wastedWaterSource);
                 HandleFuelSource("Solid Waste", Data.DesireFoodCapacity*1.1, Data._solidWasteAmountBuffer, ref _solidWasteSource);
                 SaveFuelAmountBuffer();
+                Debug.Log("CraftRefreshFuelSource:完成");
                 
             }
             catch (Exception e)
@@ -661,7 +658,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if(!Game.InFlightScene)
                 return;
             base.OnCraftLoaded(craftScript, movedToNewCraft);
-            RefreshFuelSource();
             if (!PartScript.Data.IsRootPart)
             {
                 RefreshFuelSource();
@@ -726,6 +722,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 AddTank(data.Item1, data.Item2, data.Item3);
                 Debug.LogFormat($"添加 {data.Item1} 类型,容量{data.Item2},实际{data.Item3}");
             }
+            // 强制刷新 CraftFuelSources
+            if (Game.InFlightScene && PartScript.CraftScript != null)
+            {
+                RefreshFuelSource();
+                Debug.Log("LoadFuelTank 调用RefreshFuelSource");
+            }
             AddingTankFlag=false;
             Debug.Log("LoadFuelTanks结束,AddingTankFlag=false");
             
@@ -786,12 +788,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
                 PartScript.Modifiers.Add(fuelTankScript);
                 Debug.Log($"Successfully added FuelTank for {fuelType} to Part ID: {PartScript.Data.Id}");
-        
-                // 强制刷新 CraftFuelSources
-                if (Game.InFlightScene && PartScript.CraftScript != null)
-                {
-                    RefreshFuelSource();
-                }
+                
             }
             catch (Exception e)
             {
@@ -823,7 +820,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return;
             }
             LoadFuelTanks();
-            RefreshFuelSource();
             if (ModSettings.Instance.ConsumeResourceWhenUnloaded==true)
             {
                 RemoveFuelAmonutInstantly();
@@ -909,7 +905,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     Data._co2AmountBuffer = _co2Source.TotalFuel;
                     Data._wastedWaterAmountBuffer = _wastedWaterSource.TotalFuel;
                     Data._solidWasteAmountBuffer = _solidWasteSource.TotalFuel;
-                    Debug.LogFormat("缓冲区燃料:食物{0},oxygen{1},water,{2},二氧化碳:{3},WastedWater:{4},SolidWaste:{5}", Data._solidWasteAmountBuffer, Data._foodAmountBuffer, Data._oxygenAmountBuffer, Data._waterAmountBuffer, Data._co2AmountBuffer, Data._wastedWaterAmountBuffer);
+                    //Debug.LogFormat("缓冲区燃料:食物{0},oxygen{1},water,{2},二氧化碳:{3},WastedWater:{4},SolidWaste:{5}", Data._solidWasteAmountBuffer, Data._foodAmountBuffer, Data._oxygenAmountBuffer, Data._waterAmountBuffer, Data._co2AmountBuffer, Data._wastedWaterAmountBuffer);
                 }
                 else
                 {
@@ -1044,10 +1040,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         public override void OnCraftStructureChanged(ICraftScript craftScript)
         {
+            Debug.Log("OnCraftStructureChanged调用RefreshFuelSource();");
             base.OnCraftStructureChanged(craftScript);
             if (Game.InFlightScene)
             {
                 RefreshFuelSource();
+                Debug.Log("OnCraftStructureChanged调用RefreshFuelSource();");
             }
         }
         
@@ -1055,11 +1053,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// 飞船燃料源变化时的事件处理程序，刷新燃料源。
         /// Event handler for when craft fuel sources change, refreshes fuel sources.
         /// </summary>
-        private void OnCraftFuelSourceChanged(object sender, EventArgs e)
-        {
-            RefreshFuelSource();
-            Debug.LogWarningFormat("从OnCraftFuelSourceChanged调用RefreshFuelSource();");
-        } 
+       
 
         /// <summary>
         /// 根据大气条件和行星确定是否使用内部氧气。
