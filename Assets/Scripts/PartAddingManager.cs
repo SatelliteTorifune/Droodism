@@ -102,11 +102,7 @@ namespace Assets.Scripts
                     DroodParts.Add(part);
                 }
             }
-
-            for (int i = 0; i < DroodParts.Count; i++)
-            {
-                Debug.LogFormat("DroodParts的 ID 是{0}", DroodParts[i].Id);
-            }
+            
 
             return DroodParts;
 

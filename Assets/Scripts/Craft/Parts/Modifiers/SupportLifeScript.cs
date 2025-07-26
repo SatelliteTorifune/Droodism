@@ -1040,6 +1040,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         public override void OnCraftStructureChanged(ICraftScript craftScript)
         {
+            if(!Game.InFlightScene)
+                return;
             Debug.Log("OnCraftStructureChanged调用RefreshFuelSource();");
             base.OnCraftStructureChanged(craftScript);
             if (Game.InFlightScene)

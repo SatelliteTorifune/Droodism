@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 1143541854
+CRC: 1867427781
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 4893e0a52a5e9843530dae234c98a7e7
+    Hash: fd0b550156deea1eca37f3185aee4768
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 847790c4082ee91029d8c7419a86a075
+    Hash: aaf94d3e67d24a13f45ef46ababb1fe0
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 4893e0a52a5e9843530dae234c98a7e7
+    Hash: fd0b550156deea1eca37f3185aee4768
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -29,6 +29,8 @@ ClassTypes:
 - Class: 48
   Script: {instanceID: 0}
 - Class: 49
+  Script: {instanceID: 0}
+- Class: 64
   Script: {instanceID: 0}
 - Class: 65
   Script: {instanceID: 0}
@@ -54,12 +56,14 @@ SerializeReferenceClassIdentifiers:
 - AssemblyName: XmlLayout
   ClassName: UI.Xml.XmlLayoutResourceEntry
 Assets:
+- Assets/Resources/Craft/Parts/Prefabs/ResourcesPack.prefab
 - Assets/Resources/Craft/Parts/Definitions/WaterTank.xml
 - Assets/Resources/Craft/Parts/Prefabs/WaterTank.prefab
+- Assets/Resources/Craft/Parts/Prefabs/GravityRing.prefab
+- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/Content/XML UI/Sprites/White.png
 - Assets/Resources/Craft/Parts/Definitions/CarbonDioxideFilter.xml
 - Assets/Resources/Craft/Parts/Definitions/Sodium Peroxide Container.xml
-- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/Resources/Craft/Parts/Prefabs/FoodTank.prefab
 - Assets/Content/Resources/flag.xml
 - Assets/Resources/Craft/Parts/Prefabs/ElectrolyticDevice.prefab
@@ -68,6 +72,7 @@ Assets:
 - Assets/Content/Craft/Parts/Categories/LifeSupport.asset
 - Assets/Resources/Craft/Parts/Definitions/ElectrolyticDevice.xml
 - Assets/Resources/Craft/Parts/Prefabs/CarbonDioxideFilter.prefab
+- Assets/Resources/Craft/Parts/Definitions/GravityRing.xml
 - Assets/Content/Prefabs/DroodismUI.prefab
 - Assets/Content/XML UI/Sprites/DroodsimUIIcon.png
 - Assets/Resources/Craft/Parts/Prefabs/SewageTreatDevice.prefab
@@ -75,8 +80,8 @@ Assets:
 - Assets/Resources/Craft/Parts/Definitions/PhotoBioReactor.xml
 - Assets/Resources/Craft/Parts/Definitions/ResourcesPack.xml
 - Assets/Content/XML UI/UIResourceDatabase.asset
-- Assets/Resources/Craft/Parts/Definitions/SewageTreatDevice.xml
 - Assets/_ModAssets_/Droodism.dll.bytes
+- Assets/Resources/Craft/Parts/Definitions/SewageTreatDevice.xml
 - Assets/Resources/Craft/Parts/Prefabs/PhotoBioReactor.prefab
-- Assets/Resources/Craft/Parts/Prefabs/ResourcesPack.prefab
+- Assets/Content/Craft/Parts/GravityRingIcon.png
 Dependencies: []

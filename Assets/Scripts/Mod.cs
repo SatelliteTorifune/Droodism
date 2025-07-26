@@ -91,7 +91,7 @@ namespace Assets.Scripts
         public void doShit()
         {
             
-            Debug.LogFormat("执行doShit");
+            //Debug.LogFormat("执行doShit");
             try
             {
                 foreach (var pd in Game.Instance.FlightScene.CraftNode.CraftScript.Data.Assembly.Parts)
@@ -102,9 +102,9 @@ namespace Assets.Scripts
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
-               Debug.LogFormat("do shit有问题{0}",e);
+              //TODO 爱鸡巴throw就丢
             }
             
         }
