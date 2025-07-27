@@ -62,8 +62,8 @@ MonoBehaviour:
       _rotationOffsetEuler: {x: 0, y: 0, z: 0}
     _name: GravityRing
     _partCollisionHandling: 0
-    _price: 0
-    _unscaledMass: 0
+    _price: 200000
+    _unscaledMass: 20000
     _usePreferredNodeName: 1
 --- !u!114 &7990908676862513522
 MonoBehaviour:
@@ -114,7 +114,7 @@ MonoBehaviour:
     _version: 1
     _versionLast: 1
     _versionsAllowed: 
-    _autoActivateIfNoStageOrActivationGroup: 1
+    _autoActivateIfNoStageOrActivationGroup: 0
     _buoyancyBaseScale: 1
     _buoyancyUserScale: 1
     _castShadows: 1
@@ -156,7 +156,7 @@ MonoBehaviour:
     _raiseWaterEventsEvenIfNotBuoyant: 0
     _renderQueue: 0
     _stageActivationType: 0
-    _supportsActivation: 0
+    _supportsActivation: 1
     _supportsTransparency: 1
     _thermalMassRatio: 1
     _tutorialId: 
@@ -182,3 +182,10 @@ MonoBehaviour:
     _versionLast: 1
     _versionsAllowed: 
     isReverse: 1
+    positionOffset1: {x: 0, y: 0, z: 0}
+    currentExtentPercent: 0
+    currentRotation: 0
+    extendSpeed: 0
+    deployRotationSpeed: 5
+    temp: 0
+    temp2: 0

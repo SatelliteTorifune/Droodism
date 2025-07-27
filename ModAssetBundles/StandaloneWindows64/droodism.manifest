@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 1867427781
+CRC: 2806205217
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: fd0b550156deea1eca37f3185aee4768
+    Hash: 42ca93a295287973653b391e5c48cf10
   TypeTreeHash:
     serializedVersion: 2
     Hash: aaf94d3e67d24a13f45ef46ababb1fe0
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: fd0b550156deea1eca37f3185aee4768
+    Hash: 42ca93a295287973653b391e5c48cf10
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -60,7 +60,7 @@ Assets:
 - Assets/Resources/Craft/Parts/Definitions/WaterTank.xml
 - Assets/Resources/Craft/Parts/Prefabs/WaterTank.prefab
 - Assets/Resources/Craft/Parts/Prefabs/GravityRing.prefab
-- Assets/_ModAssets_/ModManifest.xml.bytes
+- Assets/_ModAssets_/Droodism.dll.bytes
 - Assets/Content/XML UI/Sprites/White.png
 - Assets/Resources/Craft/Parts/Definitions/CarbonDioxideFilter.xml
 - Assets/Resources/Craft/Parts/Definitions/Sodium Peroxide Container.xml
@@ -69,6 +69,7 @@ Assets:
 - Assets/Resources/Craft/Parts/Prefabs/ElectrolyticDevice.prefab
 - Assets/Resources/Craft/Parts/Definitions/FoodTank.xml
 - Assets/Content/Craft/Parts/RocketEngines/Propulsion.xml
+- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/Content/Craft/Parts/Categories/LifeSupport.asset
 - Assets/Resources/Craft/Parts/Definitions/ElectrolyticDevice.xml
 - Assets/Resources/Craft/Parts/Prefabs/CarbonDioxideFilter.prefab
@@ -80,7 +81,6 @@ Assets:
 - Assets/Resources/Craft/Parts/Definitions/PhotoBioReactor.xml
 - Assets/Resources/Craft/Parts/Definitions/ResourcesPack.xml
 - Assets/Content/XML UI/UIResourceDatabase.asset
-- Assets/_ModAssets_/Droodism.dll.bytes
 - Assets/Resources/Craft/Parts/Definitions/SewageTreatDevice.xml
 - Assets/Resources/Craft/Parts/Prefabs/PhotoBioReactor.prefab
 - Assets/Content/Craft/Parts/GravityRingIcon.png
