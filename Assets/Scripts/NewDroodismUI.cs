@@ -238,7 +238,7 @@ namespace Assets.Scripts
         {
             if ((ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Data.PartType.Name.Contains("Eva")))
                 return;
-            var fuelSouce=UpdateCraftFuelParameterValue(controller.xmlLayout.GetElementById("droodism-fuel-item-inspector").GetElementByInternalId("FuelItemInspectorTitle").GetText());
+            var fuelSouce=getFuelSource(controller.xmlLayout.GetElementById("droodism-fuel-item-inspector").GetElementByInternalId("FuelItemInspectorTitle").GetText());
             string mode = item.GetAttribute("fuel-transfer-mode-id"); 
             switch (mode)
             {
@@ -252,6 +252,28 @@ namespace Assets.Scripts
                     fuelSouce.FuelTransferMode = FuelTransferMode.Drain;
                     break;
                 
+            }
+
+            IFuelSource getFuelSource(string fuelTypeName)
+            {
+                var patchScript =  Game.Instance.FlightScene.CraftNode.CraftScript.ActiveCommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+
+                switch (fuelTypeName)
+                {
+                    case "Oxygen":
+                        return patchScript.OxygenFuelSource;
+                    case "Water":
+                        return patchScript.WaterFuelSource;
+                    case "Food":
+                        return patchScript.FoodFuelSource;
+                    case "Carbon Dioxide":
+                        return patchScript.CO2FuelSource;
+                    case "Wasted Water":
+                        return patchScript.WastedWaterFuelSource;
+                    case "Solid Waste":
+                        return patchScript.SolidWasteFuelSource;
+                }
+                return null;
             }
         }
 #endregion
@@ -342,6 +364,7 @@ namespace Assets.Scripts
 
         }
 
+        
         public void UpdateDroodInfo()
         {
             DroodPosistion.Clear();
