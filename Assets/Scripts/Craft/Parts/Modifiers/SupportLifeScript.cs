@@ -466,18 +466,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 if (PartScript.CraftScript.ActiveCommandPod.Part.PartScript==PartScript)
                 {
                     isEva = true;
-                    Debug.LogFormat("这个drood是ActiveCommandPod");
+                    //Debug.LogFormat("这个drood是ActiveCommandPod");
                     _oxygenSource=_waterSource=_foodSource=_co2Source=_wastedWaterSource=_solidWasteSource=null;
                 }
-
                 
                 try
                 {
                     if (isEva==false)
                     {
-                       
                         var stCommandPodPatchScript = PartScript.GetModifier<EvaScript>().CrewCompartment?.PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
-                       
                         if (stCommandPodPatchScript!=null)
                         {
                             _oxygenSource = stCommandPodPatchScript.OxygenFuelSource;
@@ -486,7 +483,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                             _co2Source = stCommandPodPatchScript.CO2FuelSource;
                             _wastedWaterSource = stCommandPodPatchScript.WastedWaterFuelSource;
                             _solidWasteSource = stCommandPodPatchScript.SolidWasteFuelSource;
-                            Debug.LogFormat("SupportLifeScript called CraftRefreshFuelSource,STCommandPodPatchScript found,using patch's IFuelSource");
+                            //Debug.LogFormat("SupportLifeScript called CraftRefreshFuelSource,STCommandPodPatchScript found,using patch's IFuelSource");
                         }
                         
                     }
@@ -618,17 +615,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         /// <param name="from">源燃料源。Source fuel source.</param>
         /// <param name="to">目标燃料源。Target fuel source.</param>
-        private void ReFill(IFuelSource from, IFuelSource to)
+        private void ReFill(IFuelSource craft, IFuelSource drood)
         {
-            if (from.TotalFuel >= to.TotalCapacity - to.TotalFuel)
+            if (craft.TotalFuel >= drood.TotalCapacity - drood.TotalFuel)
             {
-                from.RemoveFuel(to.TotalCapacity - to.TotalFuel);
-                to.AddFuel(to.TotalCapacity - to.TotalFuel);
+                craft.RemoveFuel(drood.TotalCapacity - drood.TotalFuel);
+                drood.AddFuel(drood.TotalCapacity - drood.TotalFuel);
             }
             else
             {
-                from.RemoveFuel(from.TotalFuel);
-                to.AddFuel(from.TotalFuel);
+                craft.RemoveFuel(craft.TotalFuel);
+                drood.AddFuel(craft.TotalFuel);
             }
         }
         
@@ -638,13 +635,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 Craft.AddFuel(Eva.TotalFuel);
                 Eva.RemoveFuel(Eva.TotalFuel);
-                //Debug.LogFormat("RemoveWaste 成功:{0}实际{1}",Eva.TotalFuel,Craft.TotalFuel);
+                Debug.LogFormat($"Remove{Craft.FuelType.Name} 成功:{0}实际{1}",Eva.TotalFuel,Craft.TotalFuel);
             }
             else
             {
                 Eva.RemoveFuel(Craft.TotalCapacity - Craft.TotalFuel);
                 Craft.AddFuel(Craft.TotalCapacity - Craft.TotalFuel);
-                //Debug.LogFormat("RemoveWaste 满了成功:{0}实际{1}", Eva.TotalFuel, Craft.TotalFuel);
+                Debug.LogWarningFormat($"Remove{Craft.FuelType.Name} 满了成功:{0}实际{1}", Eva.TotalFuel, Craft.TotalFuel);
             }
         }
 

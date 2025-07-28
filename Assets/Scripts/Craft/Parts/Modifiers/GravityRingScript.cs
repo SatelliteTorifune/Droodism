@@ -24,12 +24,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private string partState;
         
         public bool isDeployed=false;
-        public bool isDeploying = false;
         
-
         public void FlightUpdate(in FlightFrameData frame)
         {
-            RotatingBase(isDeployed&&PartScript.Data.Activated,frame);
+            RotatingBase(isDeployed&&PartScript.Data.Activated);
             if (PartScript.Data.Activated)
             {
                 Deploy(frame);
@@ -53,20 +51,22 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 else
                 {
                     isDeployed = false;
-                }
-                
-                if (Data.CurrentExtentPercent!=targetExtent)
-                {
-                    this.Data.CurrentExtentPercent = Mathf.MoveTowards(Data.CurrentExtentPercent, targetExtent, frame.DeltaTime * this.Data.ExtendSpeed);
-                    ExtentPart(Data.CurrentExtentPercent);
-                }
 
-                if (Data.CurrentExtentPercent != targetExtent || Data.CurrentRotation == targetRotation)
-                    return;
-                Data.CurrentRotation=Mathf.MoveTowards(Data.CurrentRotation, targetRotation, frame.DeltaTime * this.Data.DeployRotationSpeed);
-                RotateCompartments(Data.CurrentRotation);
-                
-               
+
+                    if (Data.CurrentExtentPercent != targetExtent)
+                    {
+                        this.Data.CurrentExtentPercent = Mathf.MoveTowards(Data.CurrentExtentPercent, targetExtent,
+                            frame.DeltaTime * this.Data.ExtendSpeed);
+                        ExtentPart(Data.CurrentExtentPercent);
+                    }
+
+                    if (Data.CurrentExtentPercent != targetExtent || Data.CurrentRotation == targetRotation)
+                        return;
+                    Data.CurrentRotation = Mathf.MoveTowards(Data.CurrentRotation, targetRotation,
+                        frame.DeltaTime * this.Data.DeployRotationSpeed);
+                    RotateCompartments(Data.CurrentRotation);
+
+                }
 
             }
 
@@ -111,22 +111,24 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         #region Animation Methods
 
-        private void RotatingBase( bool active ,in FlightFrameData frame)
+        private void RotatingBase( bool active)
         {
             if ( _rotateBase == null )
             {
                 Debug.LogFormat( "_rotateBase is null" );
                 return;
             }
-            float b = 0.0f;
-            if ( active )
-                b = 0.25f + 0.5f;
-            Data.RotationSpeed = Mathf.Lerp( this.Data.RotationSpeed, b, Time.deltaTime * 0.4f );
-            if ( (double) this.Data.RotationSpeed > 0.0 )
-            {
-                float yAngle = (float) (-(double) this.Data.RotationSpeed * 360.0 * 3.0) * Time.deltaTime;
-                _rotateBase.Rotate( 0.0f, yAngle*(Data.IsReverse?-1:1), 0.0f );
-            }
+            
+           float targetSpeed = active ?0.1f : 0.0f;
+           Data.RotationSpeed = Mathf.Lerp(Data.RotationSpeed, targetSpeed, Time.deltaTime * 0.4f);
+
+           if (Mathf.Abs(Data.RotationSpeed) > 0.01f)
+           {
+               float yAngle = -(Data.RotationSpeed * 360.0f * 3.0f) * Time.deltaTime;
+               _rotateBase.Rotate(0.0f, yAngle * (Data.IsReverse ? -1 : 1), 0.0f); 
+           }
+                   
+               
         }
         private void ExtentPart(float target)
         {
@@ -155,11 +157,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             _ringC.localRotation = Quaternion.Euler(0, 0, angle);
             _ringD.localRotation = Quaternion.Euler(0, 0, angle);
         }
-
-        public void UndeployAnimated()
-        {
-            
-        }
+        
 
         #endregion
 

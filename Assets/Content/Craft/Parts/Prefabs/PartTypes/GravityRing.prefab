@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7990908676862513522}
   - component: {fileID: 5537895469188553751}
   - component: {fileID: 8952786089990751662}
+  - component: {fileID: 6081676036464901381}
   m_Layer: 0
   m_Name: GravityRing
   m_TagString: Untagged
@@ -60,7 +61,7 @@ MonoBehaviour:
     _mirrorConfig:
       _hasRotationOffset: 0
       _rotationOffsetEuler: {x: 0, y: 0, z: 0}
-    _name: GravityRing
+    _name: Gravity Ring
     _partCollisionHandling: 0
     _price: 200000
     _unscaledMass: 20000
@@ -181,11 +182,39 @@ MonoBehaviour:
     _version: 1
     _versionLast: 1
     _versionsAllowed: 
-    isReverse: 1
-    positionOffset1: {x: 0, y: 0, z: 0}
+    IsReverse: 0
     currentExtentPercent: 0
-    currentRotation: 0
-    extendSpeed: 0
+    CurrentRotation: 90
+    ExtendSpeed: 0.2
     deployRotationSpeed: 5
-    temp: 0
-    temp2: 0
+    rotationSpeed: 0.5
+--- !u!114 &6081676036464901381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6122200776467757557}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1264219031, guid: 55a7c5278766598448d9083b0de0861d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Data:
+    _id: 
+    _inputId: 
+    _inspectorEnabled: 1
+    _partPropertiesEnabled: 1
+    _staticPriceAndMass: 0
+    _version: 1
+    _versionLast: 1
+    _versionsAllowed: 
+    _capacity: 10
+    _capacityLabel: 
+    _commandPodEnabledInCompartment: 0
+    _crewExitPosition: {x: 0, y: 0, z: 0}
+    _crewExitRotation: {x: 0, y: 0, z: 0}
+    _maxPressure: -1
+    _minPressure: -1
+    _visibleInCompartment: 0
+    _volumePerIndividual: 3

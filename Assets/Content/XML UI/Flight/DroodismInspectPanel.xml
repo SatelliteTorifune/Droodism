@@ -39,6 +39,7 @@
                 </Panel>
             </Panel>
             <!--FuelItemInspector-->
+            <!--在这里设置fuelTransfer-->
             <Panel id="droodism-fuel-item-inspector" class="flight-panel draggable" width="400" height="300" rectAlignment="LowerRight" offsetXY="-150 150" border="border" active="true">
                 <Panel class="inspector-header translucent-panel" height="30" rectAlignment="UpperCenter">
                     <TextMeshPro internalId="FuelItemInspectorTitle" class="inspector-title" text="TODO" margin="5 0 50 0" />

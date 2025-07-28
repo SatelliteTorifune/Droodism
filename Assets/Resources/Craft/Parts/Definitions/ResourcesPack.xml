@@ -8,7 +8,7 @@
       <FuelTank autoFuelType="true" capacity="0.5" fuel="0.5" fuelType="Food" priority="0" subPriority="0" utilization="-1" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
       <FuelTank autoFuelType="true" capacity="300" fuel="0" fuelType="CO2" priority="0" subPriority="0" utilization="-1" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
       <FuelTank autoFuelType="true" capacity="1.25" fuel="0" fuelType="Wasted Water" priority="0" subPriority="0" utilization="-1" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
-      <FuelTank autoFuelType="true" capacity="0.008" fuel="0" fuelType="Solid Waste" priority="0" subPriority="0" utilization="-1" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
+      <FuelTank autoFuelType="true" capacity="0.8" fuel="0" fuelType="Solid Waste" priority="0" subPriority="0" utilization="-1" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
     </Modifiers>
     <AttachPoints>
       <AttachPoint name="AttachPoint1" displayName="Bottom" position="0,-0.528,0" rotation="90,0,0" positionOffset="0,0,0" rotationOffset="0,0,0" allowRotation="true" allowInvertedConnection="false" canReceive="true" canSeek="true" ignoreSurfaces="false" radius="0.5" />

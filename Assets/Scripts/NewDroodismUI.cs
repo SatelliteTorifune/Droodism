@@ -197,6 +197,14 @@ namespace Assets.Scripts
             Debug.LogFormat("NewDroodismUI:OnFuelItemInspectorToggle:item:{0}", item);
         }
 
+        private void SetFuelTransferModeToNone(IFuelSource fuelSource)
+        {
+            if ((ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Data.PartType.Name.Contains("Eva")))
+                return;
+            fuelSource.FuelTransferMode=FuelTransferMode.None;
+        }
+        
+
         
 
         #region UI数据更新相关函数

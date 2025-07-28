@@ -339,7 +339,7 @@ MonoBehaviour:
     _versionLast: 1
     _versionsAllowed: 
     _autoFuelType: 1
-    _capacity: 0.008
+    _capacity: 0.8
     _fuel: 0
     _fuelType: Solid Waste
     _fuelTypeDescription: 

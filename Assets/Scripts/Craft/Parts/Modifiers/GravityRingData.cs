@@ -28,8 +28,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public float ExtendSpeed = 0.2f;
         [SerializeField] [DesignerPropertySlider(1f, 30f,30, Label = "Deploy Rotation Speed")]
         private float deployRotationSpeed = 15f;
-        [SerializeField] [DesignerPropertySlider(0.1f, 2f,20, Label = "Main Rotation Speed")]
-        private float rotationSpeed = 1f;
+       
+        public float RotationSpeed = 0f;
+        
+        [PartModifierProperty]
+        public float temp1 = 0f;
+        [PartModifierProperty]
+        public float temp2 = 0f;
         
         
         public float DeployRotationSpeed
@@ -49,11 +54,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             get => positionOffset1;
         }
 
-        public float RotationSpeed
-        {
-            get => rotationSpeed*0.5f;
-            set => rotationSpeed = value;
-        }
+        
         
     }
 }
