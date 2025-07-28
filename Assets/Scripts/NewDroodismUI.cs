@@ -16,8 +16,9 @@ namespace Assets.Scripts
     public class NewDroodismUI:MonoBehaviour
     {
         private XmlLayoutController controller;
-        private XmlElement mainPanel,FuelPercentageItemTemplate,fuelPercentageList;
-        private List<XmlElement> fuelXMLItems = new List<XmlElement>();
+        private XmlElement mainPanel,FuelPercentageItemTemplate,fuelPercentageList,FuelTransferItemList,FuelTransferItemModeTemplet;
+        private List<XmlElement> fuelPercentXMLItems = new List<XmlElement>();
+        private List<XmlElement> fuelTransferXMLItems = new List<XmlElement>();
         
         public bool mainPanelVisible = false;
         public bool fuelItemInspectorVisible = false;
@@ -55,20 +56,39 @@ namespace Assets.Scripts
             mainPanel = controller.xmlLayout.GetElementById("droodism-inspect-panel");
             FuelPercentageItemTemplate = controller.xmlLayout.GetElementById("fuel-percentage-item-template");
             fuelPercentageList = controller.xmlLayout.GetElementById("FuelPercentageList");
+            FuelTransferItemModeTemplet = controller.xmlLayout.GetElementById("droodism-fuel-transfer-mode-template");
+            FuelTransferItemList=controller.xmlLayout.GetElementById("FuelTransferPercentageList");
             InitializeFuelItems();
+            InitializeFuelTransferMode();
+           
+           
         }
+
+        
         private void InitializeFuelItems()
         {
             // 清除现有项
             foreach (var item in new List<XmlElement>(fuelPercentageList.childElements))
                 fuelPercentageList.RemoveChildElement(item, true);
-            fuelXMLItems.Clear();
+            fuelPercentXMLItems.Clear();
             
             // 为每种燃料类型创建UI项
             foreach (var fuelType in fuelTypeIDList)
             {
                 AddFuelListItem(fuelType);
             }
+        }
+        
+        private void InitializeFuelTransferMode()
+        {
+            foreach (var item in new List<XmlElement>(FuelTransferItemList.childElements))
+            {
+                FuelTransferItemList.RemoveChildElement(item, true);
+            }
+            fuelTransferXMLItems.Clear();
+            AddFuelTransferModeItem(FuelTransferMode.None);
+            AddFuelTransferModeItem(FuelTransferMode.Fill);
+            AddFuelTransferModeItem(FuelTransferMode.Drain);
         }
         private void AddFuelListItem(string fuelType)
         {
@@ -88,11 +108,31 @@ namespace Assets.Scripts
             // 设置初始文本
             component.GetElementByInternalId("FuelTypeName").SetText(Game.Instance.PropulsionData.GetFuelType(fuelType).Name);
             
-            fuelXMLItems.Add(component);
+            fuelPercentXMLItems.Add(component);
             Debug.LogFormat("NewDroodismUI:AddFuelListItem:{0}", fuelType);
             //Mod.Inctance.doShit();
         }
-        
+        private void AddFuelTransferModeItem(FuelTransferMode mode)
+        {
+            // 克隆模板
+            XmlElement listItem = Instantiate(FuelTransferItemModeTemplet);
+            XmlElement component = listItem.GetComponent<XmlElement>();
+            // 初始化并添加到列表
+            component.Initialise(FuelTransferItemList.xmlLayoutInstance, 
+                (RectTransform)listItem.transform, 
+                FuelTransferItemModeTemplet.tagHandler);
+            FuelTransferItemList.AddChildElement(component);
+            component.SetActive(true);
+            component.SetAttribute("fuel-transfer-mode-id", mode.ToString());
+            component.ApplyAttributes();
+            
+            // 设置初始文本
+            component.GetElementByInternalId("FuelTransferTypeName").SetText(mode.ToString());
+            
+            fuelPercentXMLItems.Add(component);
+            Debug.LogFormat("NewDroodismUI:AddFuelTransferListItem:{0}", mode.ToString());
+            //Mod.Inctance.doShit();
+        }
         /// <summary>
         /// 更新UpdateFuelTemplate项目用的,属于是我拉的第二坨屎山,纯纯恶臭,我也不知道为什么要这么写,本来是为了解决性能问题的,但是这函数在Upddate()里面调用,而且还有贼鸡巴多的别的函数和foreach调用,你说这能要是能优化性能我给你嗦几把.
         /// </summary>
@@ -169,40 +209,57 @@ namespace Assets.Scripts
             controller.xmlLayout.GetElementById("droodism-fuel-item-inspector").SetActive(state && fuelItemInspectorVisible);
         }
 
+        #region transfer相关
+        
+        //打开设置transferMode的窗口函数
+        //你点一下就能开属于是
         public void OnFuelPercentageItemClick(XmlElement item)
         {
+            //InitializeFuelTransferMode();
             string fuelTypeId = item.GetAttribute("fuel-type-id"); 
-            Debug.LogFormat("NewDroodismUI:OnFuelPercentageItemClick:燃料名称{0}", Game.Instance.PropulsionData.GetFuelType(fuelTypeId).Name);
             ShowFuelItemWindow(fuelTypeId);
-            //TODO:adding more judgement conditions to spawn flag
-            //Mod.Inctance.SpawnFlag();
-            
         }
 
         private void ShowFuelItemWindow(string fuelTypeId)
         {
-            fuelItemInspectorVisible = true;
-            FuelType currentFuelType=Game.Instance.PropulsionData.GetFuelType(fuelTypeId);
+            fuelItemInspectorVisible = !fuelItemInspectorVisible;
             XmlElement fuelItemWindow = controller.xmlLayout.GetElementById("droodism-fuel-item-inspector");
-            fuelItemWindow.GetElementByInternalId("FuelItemInspectorTitle").SetText(Game.Instance.PropulsionData.GetFuelType(fuelTypeId).Name+" Inspcector Window");
-            
+            fuelItemWindow.GetElementByInternalId("FuelItemInspectorTitle").SetText(Game.Instance.PropulsionData.GetFuelType(fuelTypeId).Name);
         }
+        
+        
+        
         public void CloseShowFuelItemWindow()
         {
             fuelItemInspectorVisible = false;
         }
 
+        private void OnFuelPercentageModeClick(XmlElement item)
+        {
+            if ((ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Data.PartType.Name.Contains("Eva")))
+                return;
+            var fuelSouce=UpdateCraftFuelParameterValue(controller.xmlLayout.GetElementById("droodism-fuel-item-inspector").GetElementByInternalId("FuelItemInspectorTitle").GetText());
+            string mode = item.GetAttribute("fuel-transfer-mode-id"); 
+            switch (mode)
+            {
+                case "None":
+                    fuelSouce.FuelTransferMode = FuelTransferMode.None;
+                    break;
+                case "Fill":
+                    fuelSouce.FuelTransferMode = FuelTransferMode.Fill;
+                    break;
+                case "Drain":
+                    fuelSouce.FuelTransferMode = FuelTransferMode.Drain;
+                    break;
+                
+            }
+        }
+#endregion
         private void OnFuelItemInspectorToggle(XmlElement item)
         {
             Debug.LogFormat("NewDroodismUI:OnFuelItemInspectorToggle:item:{0}", item);
         }
-
-        private void SetFuelTransferModeToNone(IFuelSource fuelSource)
-        {
-            if ((ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Data.PartType.Name.Contains("Eva")))
-                return;
-            fuelSource.FuelTransferMode=FuelTransferMode.None;
-        }
+        
         
 
         
@@ -210,13 +267,13 @@ namespace Assets.Scripts
         #region UI数据更新相关函数
         public void UpdateFuelPercentageItemTemplate()
         {
-            if (fuelXMLItems.Count == 0) return;
+            if (fuelPercentXMLItems.Count == 0) return;
             for (int i = 0; i < fuelTypeIDList.Count; i++)
             {
                 var source = UpdateCraftFuelParameterValue(fuelTypeIDList[i]);
                 if (source!= null)
                 {
-                    UpdateFuelTemplateItem(fuelXMLItems[i],source);
+                    UpdateFuelTemplateItem(fuelPercentXMLItems[i],source);
                 }
             } 
         }
@@ -314,6 +371,9 @@ namespace Assets.Scripts
             }
         }
 
+        /// <summary>
+        /// 暂时没有用,设想了一下做Resource Consumption when unloaded太吃屎了
+        /// </summary>
         private void UpdateFuelConsumption()
         {
             oxygenRate=h2oRate=foodRate=co2Rate=wastedWaterRate=solidWasteRate=0;

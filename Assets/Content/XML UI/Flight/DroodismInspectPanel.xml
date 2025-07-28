@@ -8,7 +8,7 @@
                     <TextMeshPro class="inspector-title" text="Life Support Resources" margin="5 0 50 0" />
                     <Image class="inspector-panel-pin" width="24" height="24" rectAlignment="MiddleRight" sprite="Ui/Sprites/Common/IconCloseFlyout" onClick="OnTogglePanelState" hoverClass="inspector-panel-pin-hover"/>
                 </Panel>
-                <Panel width="100%" height="370" rectAlignment="LowerCenter">
+                <Panel width="100%" height="400" rectAlignment="LowerCenter">
                     <VerticalScrollView class="no-image">
                         <VerticalLayout id="FuelPercentageList" class="no-image" contentSizeFitter="vertical" padding="4" spacing="4" childForceExpandHeight="false">
                         </VerticalLayout>
@@ -44,6 +44,15 @@
                 <Panel class="inspector-header translucent-panel" height="30" rectAlignment="UpperCenter">
                     <TextMeshPro internalId="FuelItemInspectorTitle" class="inspector-title" text="TODO" margin="5 0 50 0" />
                     <Image class="inspector-panel-pin" width="24" height="24" offsetXY="0 0" sprite="Ui/Sprites/Common/IconCloseFlyout" rectAlignment="MiddleRight" onClick="CloseShowFuelItemWindow(this)" hoverClass="inspector-panel-pin-hover"/>
+                </Panel>
+                <Panel width="100%" height="250" rectAlignment="LowerCenter">
+                    <VerticalScrollView class="no-image">
+                        <VerticalLayout id="FuelTransferPercentageList" class="no-image" contentSizeFitter="vertical" padding="4" spacing="4" childForceExpandHeight="false">
+                        </VerticalLayout>
+                    </VerticalScrollView>
+                </Panel>
+                <Panel id="droodism-fuel-transfer-mode-template" class="audio-btn-click" color="#2e353e7F" preferredHeight="25" active="false" onClick="OnFuelPercentageModeClick(this)">
+                    <TextMeshPro internalId="FuelTransferTypeName" class="label column-left" offsetXY="4 0" fontSize="15" text="FuelTransferTypeNameTemp"/>
                 </Panel>
             </Panel>
         </RectTransform>
