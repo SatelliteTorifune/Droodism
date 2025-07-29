@@ -21,19 +21,18 @@ namespace Assets.Scripts
 {
     public partial class Mod : ModApi.Mods.GameMod
     {
-        private DroodismUIManager droodismUIManagerInstance { get; set; }
-
         [HarmonyPatch(typeof(EvaScript), nameof(EvaScript.OnModifiersCreated))]
         public static class EvaScriptPatch
         {
             /// <summary>
             /// 在 OnModifiersCreated 方法执行后运行的后置补丁。
             /// Postfix patch to run after the OnModifiersCreated method.
+            /// 老实说我不知道这玩意也没有啥用,因为我反编译看到的Eva Script好像自己定义好了东西
             /// </summary>
             /// <param name="__instance">EvaScript 实例。The EvaScript instance.</param>
             public static void Postfix(EvaScript __instance)
             {
-                // 仅在飞行场景中执行修补
+                
                 // Only execute the patch in the flight scene
                 if (!Game.InFlightScene)
                 {
@@ -42,15 +41,9 @@ namespace Assets.Scripts
 
                 try
                 {
-                    // 获取零件上所有的 FuelTankScript 组件
-                    // Get all FuelTankScript components on the part
                     var fuelTanks = ((Component)__instance).GetComponents<FuelTankScript>();
-
-                    // 查找燃料类型为 "JetPack" 的 FuelTankScript
-                    // Find the FuelTankScript with fuel type "JetPack"
                     var jetPackFuelTank = Enumerable.FirstOrDefault(fuelTanks, tank => tank.FuelType?.Id == "Jetpack");
-
-                    // 使用反射设置 _fuelTank 字段的值
+                    
                     // Use reflection to set the value of the _fuelTank field
                     var fuelTankField = AccessTools.Field(typeof(EvaScript), "_fuelTank");
                     if (fuelTankField != null)
@@ -78,6 +71,10 @@ namespace Assets.Scripts
             }
         }
 
+        
+        /// <summary>
+        /// 重要!!核心组件之一,仿照Mono/jet/battery,使用添加的patch modifier(STCommandPodPatch)中的六个IFuelSource接口,然后用这个patch调用SRCraftFuelSources中的方设置FuelSource
+        /// </summary>
         [HarmonyPatch(typeof(CraftFuelSources), "Rebuild")]
         class RebuildPatch
         {
@@ -97,6 +94,7 @@ namespace Assets.Scripts
             }
         }
 
+        //byd jundroo给的教程有问题,本来是用另一个函数的,但是只能用harmony
         [HarmonyPatch(typeof(NavPanelController), "LayoutRebuilt")]
         class LayoutRebuiltPatch
         {
@@ -106,7 +104,6 @@ namespace Assets.Scripts
                 {
                     __instance.xmlLayout.GetElementById(DroodismUIManager.droodismBottomId)
                         .AddOnClickEvent(DroodismUIManager.Instance.OnToggleDroodismInspectorPanelState, true);
-
                 }
                 catch (Exception e)
                 {
@@ -116,17 +113,7 @@ namespace Assets.Scripts
                 return true;
             }
         }
-
-        [HarmonyPatch(typeof(CraftPerformanceAnalysis), "CreateCraftDetailsGroup")]
-        class CreateCraftDetailsGroupPatch
-        {
-            static bool Prefix(CraftPerformanceAnalysis __instance)
-            {
-                Debug.Log("CreateCraftDetailsGroupPatch");
-                return true;
-            }
-        }
-
+        
         [HarmonyPatch(typeof(CraftPerformanceAnalysis), "RefreshInspectorPanel", new Type[] { typeof(bool) })]
         public class CraftPerformanceAnalysisPatch
         {
@@ -171,56 +158,5 @@ namespace Assets.Scripts
                 inspectorModel.AddGroup(textGroup);
             }
         }
-
-        // man what can i say
-        //说正儿八经的,原意图是通过harmonyLib增加validation验证种类,但是你游屎山导致我懒得花力气了
-        /*
-        [HarmonyPatch]
-        public class ValidatorPatch
-        {
-            static Type ValidatorType
-            {
-                get
-                {
-                    var type = Game.Instance.GameState.Validator.GetType();
-                    Debug.Log($"Validator Type: {type.FullName}, Assembly: {type.Assembly.GetName().Name}");
-                    return type;
-                }
-            }
-
-            [HarmonyTargetMethod]
-            static MethodInfo TargetMethod()
-            {
-                var method = AccessTools.Method(ValidatorType, "ValidateCraft", new[] { typeof(ICraftScript), typeof(LaunchLocation), typeof(bool) });
-                if (method == null)
-                {
-                    Debug.LogError("ValidateCraft method not found. Available methods:");
-                    var methods = AccessTools.GetDeclaredMethods(ValidatorType)
-                        .Where(m => m.Name == "ValidateCraft");
-                    foreach (var m in methods)
-                    {
-                        Debug.Log($"Method: {m}, Parameters: {string.Join(", ", m.GetParameters().Select(p => p.ParameterType.Name))}");
-                    }
-                    return null;
-                }
-                Debug.Log($"Found ValidateCraft: {method}, Parameters: {string.Join(", ", method.GetParameters().Select(p => p.ParameterType.Name))}");
-                return method;
-            }
-
-            [HarmonyPostfix]
-            public static void Postfix(object __result, ICraftScript craftScript, LaunchLocation launchLocation, bool fix)
-            {
-                foreach (var fuelTypeid in fuelTypes)
-                {
-                    bool isWaste = fuelTypeid.Contains("Waste") || fuelTypeid == "CO2";
-                    FuelValidation.ValidateFuelTotal(__result, craftScript, fuelTypeid,1,isWaste);
-                }
-                Debug.Log("Applied custom fuel total validation for LiquidFuel.");
-            }
-
-            */
-    
-        
-        
     }
 }

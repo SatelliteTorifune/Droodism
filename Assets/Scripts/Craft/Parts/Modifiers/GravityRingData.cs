@@ -17,11 +17,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         [SerializeField] [DesignerPropertyToggleButton(Label = "Reverse the Rotation Direction")]
         public bool IsReverse = false;
         private Vector3 positionOffset1 = Vector3.zero;
-        [SerializeField]
-        [PartModifierProperty]
         private float currentExtentPercent = 0;
-        [SerializeField]
-        [PartModifierProperty]
         public float CurrentRotation = 90f;
         [SerializeField]
         [DesignerPropertySlider(0.1f, 1f,10, Label = "Extend Speed")]
@@ -30,12 +26,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private float deployRotationSpeed = 15f;
        
         public float RotationSpeed = 0f;
-        
-        [PartModifierProperty]
-        public float temp1 = 0f;
-        [PartModifierProperty]
-        public float temp2 = 0f;
-        
         
         public float DeployRotationSpeed
         {

@@ -24,13 +24,8 @@ namespace Assets.Scripts
         public bool fuelItemInspectorVisible = false;
         
         public readonly string[] _massTypes = { "g", "kg", "t", "kt" };
-        public List<Vector3> DroodPosistion = new List<Vector3>();
         public int DroodCountTotal, AstronautCount;
         public int TouristCount;
-        
-        
-      
-
         private IReadOnlyList<string> fuelTypeIDList = new List<string>() {  "Oxygen","H2O","Food","CO2","Wasted Water","Solid Waste"};
         private double oxygenRate, h2oRate, foodRate, co2Rate, wastedWaterRate, solidWasteRate;
         private double photoBioReactorGrowRate;
@@ -44,6 +39,8 @@ namespace Assets.Scripts
             {"Solid Waste", (0, 0) }
         };
         
+        
+        //哎哟我操这坨屎真的是你妈两个臭比的,你说这能要是能优化性能我给你嗦几把,我真的不想看这个破玩意,屎山代码看的我太头大了
         public void OnTogglePanelState() 
         {
             mainPanelVisible = !mainPanelVisible;
@@ -60,8 +57,6 @@ namespace Assets.Scripts
             FuelTransferItemList=controller.xmlLayout.GetElementById("FuelTransferPercentageList");
             InitializeFuelItems();
             InitializeFuelTransferMode();
-           
-           
         }
 
         
@@ -281,18 +276,13 @@ namespace Assets.Scripts
         {
             Debug.LogFormat("NewDroodismUI:OnFuelItemInspectorToggle:item:{0}", item);
         }
-        
-        
-
-        
-
         #region UI数据更新相关函数
         public void UpdateFuelPercentageItemTemplate()
         {
             if (fuelPercentXMLItems.Count == 0) return;
             for (int i = 0; i < fuelTypeIDList.Count; i++)
             {
-                var source = UpdateCraftFuelParameterValue(fuelTypeIDList[i]);
+                var source = GetIFuelSourceByID(fuelTypeIDList[i]);
                 if (source!= null)
                 {
                     UpdateFuelTemplateItem(fuelPercentXMLItems[i],source);
@@ -300,7 +290,7 @@ namespace Assets.Scripts
             } 
         }
 
-        private IFuelSource UpdateCraftFuelParameterValue(string fuelTypeId)
+        private IFuelSource GetIFuelSourceByID(string fuelTypeId)
         {
             switch (ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Data.PartType.Name.Contains("Eva") ? "Eva" : "Other")
             {
@@ -347,17 +337,7 @@ namespace Assets.Scripts
                     }
                     break;
                     
-                    /*
-                    FuelSourceGroup fuelSourceGroup = new FuelSourceGroup(1,1,ModApi.Common.Game.Instance.PropulsionData.GetFuelType(fuelTypeId));
-                    foreach (var source in ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.FuelSources.FuelSources)
-                    {
-                        if (source.FuelType.Id == fuelTypeId&&source.IsDestroyed==false&&DroodPosistion.Contains(source.Position)==false)
-                        {
-                            fuelSourceGroup.AddFuelSource(source);
-                        }
-                    }
-
-                    return fuelSourceGroup;*/
+                
                     
             }
             return null;
@@ -367,7 +347,6 @@ namespace Assets.Scripts
         
         public void UpdateDroodInfo()
         {
-            DroodPosistion.Clear();
             DroodCountTotal = AstronautCount = TouristCount = 0;
             UpdateDroodCount();
             
@@ -380,14 +359,13 @@ namespace Assets.Scripts
                     {
                         DroodCountTotal++;
                         AstronautCount++;
-                        DroodPosistion.Add(pd.Position);
+                      
                     }
 
                     if (pd.PartType.Name=="Eva-Tourist")
                     {
                         DroodCountTotal++;
                         AstronautCount++;
-                        DroodPosistion.Add(pd.Position);
                     }
 
                 }
@@ -459,7 +437,7 @@ namespace Assets.Scripts
                             h2oRate -= data.WaterConsumptionRate;
                             solidWasteRate-=data.SolidWasteConsumptionRate;
                             oxygenRate+=data.OxygenGenerationRate;
-                            photoBioReactorGrowRate =pd.PartScript.GetModifier<PhotoBioReactorScript>()._rechargePointingEfficiency*data.GrowSpeed * data.Efficiency * (UpdateCraftFuelParameterValue("Solid Waste").IsEmpty ? 1 : data.BoosteScale);
+                            photoBioReactorGrowRate =pd.PartScript.GetModifier<PhotoBioReactorScript>()._rechargePointingEfficiency*data.GrowSpeed * data.Efficiency * (GetIFuelSourceByID("Solid Waste").IsEmpty ? 1 : data.BoosteScale);
                         }
                         else
                         {
@@ -468,7 +446,7 @@ namespace Assets.Scripts
                             h2oRate -= data.WaterConsumptionRate;
                             solidWasteRate-=data.SolidWasteConsumptionRate;
                             oxygenRate+=data.OxygenGenerationRate;
-                            photoBioReactorGrowRate =data.GrowSpeed * data.Efficiency * (UpdateCraftFuelParameterValue("Solid Waste").IsEmpty ? 1 : data.BoosteScale);
+                            photoBioReactorGrowRate =data.GrowSpeed * data.Efficiency * (GetIFuelSourceByID("Solid Waste").IsEmpty ? 1 : data.BoosteScale);
                         }
                     }
                     else
@@ -480,7 +458,7 @@ namespace Assets.Scripts
                             h2oRate -= data.WaterConsumptionRate;
                             solidWasteRate-=data.SolidWasteConsumptionRate;
                             oxygenRate+=data.OxygenGenerationRate;
-                            photoBioReactorGrowRate =data.GrowSpeed * data.Efficiency * (UpdateCraftFuelParameterValue("Solid Waste").IsEmpty ? 1 : data.BoosteScale);
+                            photoBioReactorGrowRate =data.GrowSpeed * data.Efficiency * (GetIFuelSourceByID("Solid Waste").IsEmpty ? 1 : data.BoosteScale);
                         }
                     }
                 }

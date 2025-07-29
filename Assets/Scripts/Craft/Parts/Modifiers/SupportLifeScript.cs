@@ -87,7 +87,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         void IDesignerStart.DesignerStart(in DesignerFrameData frame)
         {
             base.OnInitialized();
-            
         }
         
         /// <summary>
@@ -112,8 +111,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             Data._co2AmountBuffer=0;
             Data._wastedWaterAmountBuffer=0;
             Data._solidWasteAmountBuffer=0;
-            
-            
             UpdateCurrentPlanet();
             
             try
@@ -459,8 +456,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             bool isEva = false;
             List<(string, double, double)>DataLocal = new List<(string, double, double)>();
-            
-            Debug.LogFormat("调用CraftRefeshFuelSource 开始");
+            //Debug.LogFormat("调用CraftRefeshFuelSource 开始");
             try
             {
                 if (PartScript.CraftScript.ActiveCommandPod.Part.PartScript==PartScript)
@@ -514,7 +510,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 HandleFuelSource("Wasted Water", Data.DesireWaterCapacity*1.1, Data._wastedWaterAmountBuffer, ref _wastedWaterSource);
                 HandleFuelSource("Solid Waste", Data.DesireFoodCapacity*1.1, Data._solidWasteAmountBuffer, ref _solidWasteSource);
                 SaveFuelAmountBuffer();
-                Debug.Log("CraftRefreshFuelSource:完成");
+                //Debug.Log("CraftRefreshFuelSource:完成");
                 
             }
             catch (Exception e)
@@ -532,7 +528,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                             fuelSource = GetLocalFuelSource(fuelType);
                             if (fuelSource != null)
                             {
-                                Debug.Log($"设置为本地 {fuelType}");
+                                //Debug.Log($"设置为本地 {fuelType}");
                             }
                             else
                             {
@@ -569,7 +565,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                             fuelSource = GetLocalFuelSource(fuelType);
                             if (fuelSource != null)
                             {
-                                Debug.Log($"设置为本地 {fuelType}");
+                                //Debug.Log($"设置为本地 {fuelType}");
                             }
                             else
                             {
@@ -658,7 +654,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (!PartScript.Data.IsRootPart)
             {
                 RefreshFuelSource();
-                Debug.LogFormat("OnCraftLoaded 调用RefreshFuelSource");
+                //Debug.LogFormat("OnCraftLoaded 调用RefreshFuelSource");
 
             }
             

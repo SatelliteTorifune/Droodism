@@ -83,23 +83,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             if (_waterSource != null && _oxgenSource != null && _batterySource != null)
             {
-                double waterToRemove=Data.WaterComsuptionRate*frame.DeltaTimeWorld;
-                double oxygenToAdd=Data.OxygenGenerationRate*frame.DeltaTimeWorld;
-                double batteryToRemove=Data.PowerConsumptionRate*frame.DeltaTimeWorld;
+               
                 if (!_batterySource.IsEmpty&&!_waterSource.IsEmpty&&_oxgenSource.TotalCapacity-_oxgenSource.TotalFuel>0.000001)
                 {
-                    _waterSource.RemoveFuel(waterToRemove);
-                    _batterySource.RemoveFuel(batteryToRemove);
-                    _oxgenSource.AddFuel(oxygenToAdd);
+                    _waterSource.RemoveFuel(Data.WaterComsuptionRate*frame.DeltaTimeWorld);
+                    _batterySource.RemoveFuel(Data.OxygenGenerationRate*frame.DeltaTimeWorld);
+                    _oxgenSource.AddFuel(Data.PowerConsumptionRate*frame.DeltaTimeWorld);
                     if (_hydrogenSource!= null&& _hydrogenSource.TotalCapacity-_hydrogenSource.TotalFuel>0.000001)
                     {
-                        double hydroToRemove=Data.HydrogenGenerationRate*frame.DeltaTimeWorld;
-                        _hydrogenSource.AddFuel(hydroToRemove);
+                        _hydrogenSource.AddFuel(Data.HydrogenGenerationRate*frame.DeltaTimeWorld);
                     }
                 }
-                
-                
-
             }
         }
         #region 路边一条

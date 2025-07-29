@@ -81,7 +81,7 @@ MonoBehaviour:
   Data:
     _activationGroup: 0
     _category: {fileID: 11400000, guid: 7d2b6f557b8767544a162f30e61d22b6, type: 2}
-    _description: "\u5403\u5C4E\u9886\u57DF\u5927\u795E?!"
+    _description: A gravity ring could hole 10 crew
     _displayOrder: 0
     _iconPath: Assets/Content/Craft/Parts/GravityRingIcon.png
     _iconType: 2
@@ -183,11 +183,10 @@ MonoBehaviour:
     _versionLast: 1
     _versionsAllowed: 
     IsReverse: 0
-    currentExtentPercent: 0
     CurrentRotation: 90
     ExtendSpeed: 0.2
     deployRotationSpeed: 5
-    rotationSpeed: 0.5
+    RotationSpeed: 0
 --- !u!114 &6081676036464901381
 MonoBehaviour:
   m_ObjectHideFlags: 0

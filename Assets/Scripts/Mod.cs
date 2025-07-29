@@ -46,9 +46,8 @@ namespace Assets.Scripts
         public void OnSceneLoaded(object sender, SceneEventArgs e)
         {
             subPlus();
-            Debug.LogFormat($"SceneLoaded事件触发{e.Scene}");
 
-            if (ModApi.Common.Game.InDesignerScene)
+            if (InDesignerScene)
             {
                 Instance.Designer.CraftLoaded += OnCraftLoaded;
                 Instance.Designer.CraftStructureChanged+=OnCraftStructureChanged;
@@ -84,7 +83,7 @@ namespace Assets.Scripts
             Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
             Game.Instance.SceneManager.SceneTransitionCompleted+=OnSceneTransitionCompleted;
             //Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.FlightView,OnBuildFlightViewInspectorPanel);
-            DevConsole.DevConsoleService.Instance.RegisterCommand("Fuck",doShit);
+            DevConsole.DevConsoleService.Instance.RegisterCommand("RefreshFuelSource",doShit);
             
         }
 
@@ -111,7 +110,6 @@ namespace Assets.Scripts
 
         private void OnSceneTransitionCompleted(object sender, SceneTransitionEventArgs e)
         {
-            
             doShit();
         }
         private void subPlus()
@@ -136,6 +134,7 @@ namespace Assets.Scripts
             }
 
         }
+        //这个函数懒得调用
         private void subMinus()
         {
             Instance.FlightScene.Initialized -= OnInitialized;
@@ -167,6 +166,21 @@ namespace Assets.Scripts
         }
 
         
+        
+        public Vector3d ConvertPlanetPositionToLatLongAgl(Vector3d position)
+        {
+            if (double.IsNaN(position.x) || double.IsNaN(position.y) || double.IsNaN(position.z))
+                return Vector3d.zero;
+            IPlanetNode parent = Game.Instance.FlightScene.CraftNode.Parent;
+            Vector3d surfaceVector = parent.PlanetVectorToSurfaceVector(position);
+            double latitude;
+            double longitude;
+            parent.GetSurfaceCoordinates(surfaceVector, out latitude, out longitude);
+            double num = parent.GetTerrainHeight(position);
+            if (parent.PlanetData.HasWater && num < (double) parent.PlanetData.SeaLevel)
+                num = (double) parent.PlanetData.SeaLevel;
+            return new Vector3d(latitude * 57.29578, longitude * 57.29578, position.magnitude - (parent.PlanetData.Radius + num));
+        }
         public static string GetStopwatchTimeString(double seconds)
         {
             if (!Units.IsFinite(seconds))
@@ -197,20 +211,6 @@ namespace Assets.Scripts
                 empty += string.Format("{0:n0}m ", (object) num);
             }
             return empty + string.Format("{0:n2}s", (object) seconds);
-        }
-        public Vector3d ConvertPlanetPositionToLatLongAgl(Vector3d position)
-        {
-            if (double.IsNaN(position.x) || double.IsNaN(position.y) || double.IsNaN(position.z))
-                return Vector3d.zero;
-            IPlanetNode parent = Game.Instance.FlightScene.CraftNode.Parent;
-            Vector3d surfaceVector = parent.PlanetVectorToSurfaceVector(position);
-            double latitude;
-            double longitude;
-            parent.GetSurfaceCoordinates(surfaceVector, out latitude, out longitude);
-            double num = parent.GetTerrainHeight(position);
-            if (parent.PlanetData.HasWater && num < (double) parent.PlanetData.SeaLevel)
-                num = (double) parent.PlanetData.SeaLevel;
-            return new Vector3d(latitude * 57.29578, longitude * 57.29578, position.magnitude - (parent.PlanetData.Radius + num));
         }
         public string FormatFuel(double totalFuel, string[] format)
         {
