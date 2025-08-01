@@ -404,6 +404,8 @@ namespace Assets.Scripts
                         }
                         
                     }
+                    //TODO 添加Kerolox/Jet 二氧化碳
+                    //TODO 添加液氧甲烷 的水和二氧化碳
                 }
 
                 if (pd.PartType.Name=="ElectrolyticDevice")
@@ -428,7 +430,7 @@ namespace Assets.Scripts
                 {
                     
                     var data = pd.PartScript.GetModifier<PhotoBioReactorScript>().Data;
-                    if (data.UseEletricityWhenFold == true) 
+                    if (pd.PartScript.GetModifier<PhotoBioReactorScript>().usingArtificialLight) 
                     {
                         if (pd.Activated)
                         {

@@ -1,6 +1,7 @@
 using ModApi.Craft;
 using ModApi.Design;
 using ModApi.GameLoop;
+using ModApi.Math;
 using ModApi.Ui.Inspector;
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
@@ -161,9 +162,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             var WastedWaterProgressBarModel = new ProgressBarModel("Generation Progress", () =>
                 (float)(oxygenGeneratedAmount/Data.MaxOxygenGenerateAmount));
+            var percentageModel = new TextModel("Generation Percentage", () => Units.GetPercentageString(oxygenGeneratedAmount/Data.MaxOxygenGenerateAmount));
             var statesIndicatorModel = new TextModel("Current State", () => isUsedUp ? "<color=red>This Container is used up</color>" : isActive&&!isUsedUp ? "<color=green>Working</color>" : "<color=yellow>Idle</color>");
             model.Add(statesIndicatorModel);
             model.Add(WastedWaterProgressBarModel);
+            model.Add(percentageModel);
+            
         }
         
     }
