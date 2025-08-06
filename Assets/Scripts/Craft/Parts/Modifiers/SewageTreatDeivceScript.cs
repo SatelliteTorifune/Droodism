@@ -5,32 +5,14 @@ using ModApi.GameLoop;
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using ModApi.Craft.Parts;
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
-
     public class SewageTreatDeivceScript : PartModifierScript<SewageTreatDeivceData>,IFlightStart, IDesignerStart,IFlightUpdate
     {
         private IFuelSource waterSource, wastedWaterSource, _battery;
-        private IFuelSource GetCraftFuelSource(string fuelType)
-        {
-            var craftSources = PartScript.CraftScript.FuelSources.FuelSources;
-            
-            foreach (var source in craftSources)
-            {
-                if (source.FuelType.Id.Contains(fuelType))
-                {
-                    return source;
-                }
-            }
-            return null;
-        }
         private void ReCheck()
         {
-            
             _battery = PartScript.BatteryFuelSource;
             try
             {
@@ -38,9 +20,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 if (patchScript == null)
                 {
                     waterSource = wastedWaterSource = null;
-                
                 }
-
                 if (patchScript!= null)
                 {
                     waterSource = patchScript.WaterFuelSource;
@@ -51,10 +31,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 waterSource = wastedWaterSource = null;
             }
-            
-           
         }
-
         public void FlightStart(in FlightFrameData frame)
         {
             ReCheck();
@@ -66,8 +43,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (!PartScript.Data.Activated)
                 return;
             WorkingLogic(frame);
-            
-            
         }
 
         private void WorkingLogic(in FlightFrameData frame)
@@ -76,23 +51,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 return;
             }
-
             if (_battery.IsEmpty || wastedWaterSource.IsEmpty ||
                 waterSource.TotalCapacity - waterSource.TotalFuel <= 0.0000001f)
             {
                 return; 
             }
-                
-            
             wastedWaterSource.RemoveFuel( Data.WastedWaterComsumeRate * frame.DeltaTimeWorld*Data.Scale);
             waterSource.AddFuel(  Data.ConvertEffiency*0.3f*Data.WastedWaterComsumeRate * frame.DeltaTimeWorld*Data.Scale);
             _battery.RemoveFuel( Data.BatteryComsumeRate * Data.WastedWaterComsumeRate * frame.DeltaTimeWorld*Data.Scale);
-            
-
-
-
         }
-
         #region 路边一条
         public void DesignerStart(in DesignerFrameData frame)
         {
@@ -140,13 +107,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 attachPointScript.AttachPoint.Scale = 0.8f * this.Data.Scale;
             }
             transform.localScale= Vector3.one*this.Data.Scale;
-
         }
-
-       
-        
-        
-
-        
     }
 }

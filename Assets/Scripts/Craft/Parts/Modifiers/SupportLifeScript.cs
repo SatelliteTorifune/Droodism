@@ -61,7 +61,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         FlightSceneScript _flightSceneScript;
 
-        public double LastUnloadedTime;
+        public long LastUnloadedTime;
         
         
         /// <summary>
@@ -123,7 +123,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 Debug.LogErrorFormat("OnInitialLaunch调用RefreshFuelSource出问题了{0}", e);
             }
 
-            LastUnloadedTime = Game.Instance.FlightScene.FlightState.Time;
+            LastUnloadedTime = (long)FlightSceneScript.Instance.FlightState.Time;
         }
         /// <summary>
         /// 实现IFlightStart接口，在飞行场景开始时调用。
@@ -194,7 +194,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     {
                         source.GetData().InspectorEnabled = false;
                         FuelTankScript fts = source as FuelTankScript;
-                        if (fts.FuelType.Id.Contains(fuelType))
+                        if (fts == null)
+                        {
+                            return null;
+                        }
+                        if (fts.FuelType.Id==fuelType)
                         {
                             return fts;
                         }
@@ -807,7 +811,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         public void OnPhysicsEnabled(ICraftNode craftNode, PhysicsChangeReason reason)
         {
-            Debug.LogFormat("OnPhysicsEnabled{0}",reason);
+            //Debug.LogFormat("OnPhysicsEnabled{0}",reason);
             if (reason == PhysicsChangeReason.Warp||reason == PhysicsChangeReason.LoadedIntoGameView)
             {
                 return;
@@ -822,13 +826,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         public void OnPhysicsDisabled(ICraftNode craftNode, PhysicsChangeReason reason)
         {
-            Debug.LogFormat("OnPhysicsDisabled 原因:{0}",reason);
+            //Debug.LogFormat("OnPhysicsDisabled 原因:{0}",reason);
             if (reason == PhysicsChangeReason.Warp||reason== PhysicsChangeReason.UnloadedFromGameView)
             {
                 return;
             }
             OnCraftUnloaded();
-            Debug.LogFormat("OnPhysicsDisabled调用OnCraftUnloaded");
+            //Debug.LogFormat("OnPhysicsDisabled调用OnCraftUnloaded");
         }
         public static XElement RemoveFuelTankXML(XElement partElement)
         {
@@ -872,10 +876,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             Debug.LogFormat("{0} 调用OnCraftUnloaded",PartScript.Data.Id);
             try
             {
-                LastUnloadedTime = Game.Instance.FlightScene.FlightState.Time;
+                LastUnloadedTime = (long)FlightSceneScript.Instance.FlightState.Time;
                 SaveFuelAmountBuffer();
-                this.PartScript.Data.LoadXML(
-                RemoveFuelTankXML(this.PartScript.Data.GenerateXml(this.PartScript.CraftScript.Transform,false)),15);
+                PartScript.Data.LoadXML(RemoveFuelTankXML(this.PartScript.Data.GenerateXml(this.PartScript.CraftScript.Transform,false)),15);
                 
             }
             catch (Exception e)
@@ -960,7 +963,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
                 else
                 {
-                    this._oxygenSource.RemoveFuel(Data.OxygenComsumeRate*(time/xishu));
+                    this._oxygenSource.RemoveFuel(Data.OxygenComsumeRate*(time/xishu)*0.001);
                 }
             }
             
@@ -995,7 +998,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 this._wastedWaterSource.AddFuel(
                     0.9 * Data.WaterComsumeRate * Data.evaConsumeEfficiency * (time / xishu));
-                Debug.LogFormat("调用AddWastedAmountInstantly,理论:{0}",Data.WaterComsumeRate*Data.evaConsumeEfficiency*(time/xishu)*1.1);
+                Debug.LogFormat("调用AddWastedAmountInstantly,理论:{0}",Data.WaterComsumeRate*Data.evaConsumeEfficiency*(time/xishu)*0.001);
             }
             if (Data.FoodComsumeRate*Data.evaConsumeEfficiency*1.1*(time/xishu) >= this._solidWasteSource.TotalCapacity-_solidWasteSource.TotalFuel)
             {
@@ -1004,7 +1007,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             else
             {
-                this._solidWasteSource.AddFuel(Data.FoodComsumeRate*Data.evaConsumeEfficiency*(time/xishu)*1.1*0.06);
+                this._solidWasteSource.AddFuel(Data.FoodComsumeRate*Data.evaConsumeEfficiency*(time/xishu)*1.1*0.00006);
                 Debug.LogFormat("调用AddWastedAmountInstantly,理论:{0}",Data.FoodComsumeRate*Data.evaConsumeEfficiency*(time/xishu)*1.1*0.06);
             }
 

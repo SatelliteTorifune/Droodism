@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 381866365
+CRC: 3686828191
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 3b2e594adf0ec34afc861e438ea1beeb
+    Hash: a36613aabee53300a916a1f9bc614ac3
   TypeTreeHash:
     serializedVersion: 2
-    Hash: b2762616d2813db0079e609b660bbe58
+    Hash: aaf94d3e67d24a13f45ef46ababb1fe0
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 3b2e594adf0ec34afc861e438ea1beeb
+    Hash: a36613aabee53300a916a1f9bc614ac3
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -37,6 +37,8 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 212942404, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
 - Class: 114
+  Script: {fileID: 11500000, guid: 21d232c8cc85f2143ac45bab630e8754, type: 3}
+- Class: 114
   Script: {fileID: 462600611, guid: a67a49df4508efd41b25d5ea1d54bed1, type: 3}
 - Class: 114
   Script: {fileID: 2121057919, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
@@ -44,8 +46,6 @@ ClassTypes:
   Script: {fileID: -468989955, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
 - Class: 114
   Script: {fileID: 264738313, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: 21d232c8cc85f2143ac45bab630e8754, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 134
@@ -63,8 +63,8 @@ Assets:
 - Assets/Content/XML UI/Sprites/White.png
 - Assets/Resources/Craft/Parts/Definitions/CarbonDioxideFilter.xml
 - Assets/Resources/Craft/Parts/Definitions/Sodium Peroxide Container.xml
-- Assets/Resources/Craft/Parts/Prefabs/FoodTank.prefab
 - Assets/_ModAssets_/Droodism.dll.bytes
+- Assets/Resources/Craft/Parts/Prefabs/FoodTank.prefab
 - Assets/Content/Resources/flag.xml
 - Assets/Resources/Craft/Parts/Prefabs/ElectrolyticDevice.prefab
 - Assets/Resources/Craft/Parts/Definitions/FoodTank.xml
@@ -79,9 +79,9 @@ Assets:
 - Assets/Resources/Craft/Parts/Prefabs/Sodium Peroxide Container.prefab
 - Assets/Resources/Craft/Parts/Definitions/PhotoBioReactor.xml
 - Assets/Resources/Craft/Parts/Definitions/ResourcesPack.xml
-- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/Content/XML UI/UIResourceDatabase.asset
 - Assets/Resources/Craft/Parts/Definitions/SewageTreatDevice.xml
+- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/Resources/Craft/Parts/Prefabs/PhotoBioReactor.prefab
 - Assets/Content/Craft/Parts/GravityRingIcon.png
 Dependencies: []

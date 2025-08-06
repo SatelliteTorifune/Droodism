@@ -118,9 +118,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 Debug.LogFormat( "_rotateBase is null" );
                 return;
             }
-            
-           float targetSpeed = active ?0.1f : 0.0f;
-           Data.RotationSpeed = Mathf.Lerp(Data.RotationSpeed, targetSpeed, Time.deltaTime * 0.4f);
+           Data.RotationSpeed = Mathf.Lerp(Data.RotationSpeed, active ?0.1f : 0.0f, Time.deltaTime * 0.4f);
 
            if (Mathf.Abs(Data.RotationSpeed) > 0.01f)
            {

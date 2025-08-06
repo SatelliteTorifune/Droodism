@@ -26,7 +26,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             foreach (var source in craftSources)
             {
-                if (source.FuelType.Id.Contains(fuelType))
+                if (source.FuelType.Id==fuelType)
                 {
                     return source;
                 }

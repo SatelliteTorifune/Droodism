@@ -23,7 +23,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             foreach (var source in craftSources)
             {
-                if (source.FuelType.Id.Contains(fuelType))
+                if (source.FuelType.Id==fuelType)
                 {
                     return source;
                 }
@@ -175,7 +175,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 float zAngle = (float) (-(double) this.fanSpeed * 360.0 * 3.0) * Time.deltaTime;
                 fanTransform.Rotate(0.0f, 0.0f, zAngle);
             }
-            
         }
     }
     
