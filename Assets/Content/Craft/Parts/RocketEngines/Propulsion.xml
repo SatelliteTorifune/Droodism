@@ -1,7 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Propulsion xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\..\..\ModTools\Parts\Propulsion.xsd">
   <Fuels>
-    <Fuel id="Oxygen" name="Oxygen" gamma="0" density="0.001429" molecularWeight="32" combustionTemperature="0" price="20" explosivePower="0" description="Drood breathe this.">
+    <Fuel id="Oxygen" name="Oxygen" gamma="0" density="0.001429" molecularWeight="32" combustionTemperature="0" price="20" explosivePower="0" description="Low pressure oxygen Drood could breathe directly">
+      <Visual exhaustColor="#00000000" exhaustColorTip="#00000000" exhaustColorShock="#00000000" exhaustColorFlame="#00000000" exhaustColorSoot="#00000000" exhaustColorSmoke="#ffffff00" globalIntensity ="0" shockIntensity="-20" rimShade="0" />
+    </Fuel>
+    <Fuel id="HPOxygen" name="High Pressure Oxygen" gamma="0" density="0.263" molecularWeight="32" combustionTemperature="0" price="80" explosivePower="0" description="High Pressure Oxygen with larger density ,need to be depressurized for breathing">
       <Visual exhaustColor="#00000000" exhaustColorTip="#00000000" exhaustColorShock="#00000000" exhaustColorFlame="#00000000" exhaustColorSoot="#00000000" exhaustColorSmoke="#ffffff00" globalIntensity ="0" shockIntensity="-20" rimShade="0" />
     </Fuel>
     <Fuel id="Food" name="Food" gamma="0" density="1.5" molecularWeight="128" combustionTemperature="0" price="25" explosivePower="0" description="The heavy compressed food Drood eat ">
