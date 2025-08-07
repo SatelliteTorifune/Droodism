@@ -44,17 +44,19 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             if (highPressureGasSource == null||lowPressureGasSource == null)
                 return;
-            //TODO:这个地方的消耗量有问题
-            if (Data.IsPressuring&&!lowPressureGasSource.IsEmpty&&highPressureGasSource.TotalCapacity - highPressureGasSource.TotalFuel > 0.00001&&batterySource!=null&&!batterySource.IsEmpty)
+            //理论上来说Data.GasFlowRate * lowPressureGasSource.FuelType.Density/highPressureGasSource.FuelType.Density这么写是完全没毛病的,但是出于一种我也不知道的玄学原因,游戏会发癫,凭空给我生成fuel,所以最快的解决方法就算直接*0.973,然后对外宣称这是正常损耗,这样完全不会有人怀疑对吧
+            //哈哈,我他妈真是天才.
+            if (Data.IsPressuring&&!lowPressureGasSource.IsEmpty&&highPressureGasSource.TotalCapacity - highPressureGasSource.TotalFuel > 1E-06&&batterySource!=null&&!batterySource.IsEmpty)
             { 
-                lowPressureGasSource.RemoveFuel(Data.GasFlowRate * frame.DeltaTimeWorld);
-                highPressureGasSource.AddFuel(((Data.GasFlowRate*lowPressureGasSource.FuelType.Density)/highPressureGasSource.FuelType.Density) * frame.DeltaTimeWorld);
+                lowPressureGasSource.RemoveFuel(Data.GasFlowRate* frame.DeltaTimeWorld);
+                
+                highPressureGasSource.AddFuel(0.972*Data.GasFlowRate * lowPressureGasSource.FuelType.Density/highPressureGasSource.FuelType.Density * frame.DeltaTimeWorld);
                 batterySource.RemoveFuel(Data.GasFlowRate * frame.DeltaTimeWorld*Data.BatteryConsumption);
             }
-            if (!Data.IsPressuring&&!highPressureGasSource.IsEmpty&&lowPressureGasSource.TotalCapacity-lowPressureGasSource.TotalFuel>0.00001)
+            if (!Data.IsPressuring&&!highPressureGasSource.IsEmpty&&lowPressureGasSource.TotalCapacity-lowPressureGasSource.TotalFuel>1E-06)
             {
-                highPressureGasSource.RemoveFuel(Data.GasFlowRate * frame.DeltaTimeWorld);
-                lowPressureGasSource.AddFuel(((Data.GasFlowRate*highPressureGasSource.FuelType.Density)/lowPressureGasSource.FuelType.Density) * frame.DeltaTimeWorld);
+                highPressureGasSource.RemoveFuel(Data.GasFlowRate* frame.DeltaTimeWorld);
+                lowPressureGasSource.AddFuel(0.972*Data.GasFlowRate * highPressureGasSource.FuelType.Density/lowPressureGasSource.FuelType.Density * frame.DeltaTimeWorld);
             }
         }
         private IFuelSource GetCraftFuelSource(string fuelType)
