@@ -42,18 +42,19 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private void WorkingLogic(in FlightFrameData frame)
         {
-            if (highPressureGasSource == null&&lowPressureGasSource == null)
+            if (highPressureGasSource == null||lowPressureGasSource == null)
                 return;
-            if (Data.IsPressuring&&!lowPressureGasSource.IsEmpty && highPressureGasSource.TotalCapacity - highPressureGasSource.TotalFuel > 0.00001&&batterySource!=null&&!batterySource.IsEmpty)
+            //TODO:这个地方的消耗量有问题
+            if (Data.IsPressuring&&!lowPressureGasSource.IsEmpty&&highPressureGasSource.TotalCapacity - highPressureGasSource.TotalFuel > 0.00001&&batterySource!=null&&!batterySource.IsEmpty)
             { 
                 lowPressureGasSource.RemoveFuel(Data.GasFlowRate * frame.DeltaTimeWorld);
-                highPressureGasSource.AddFuel(((Data.GasFlowRate*lowPressureGasSource.FuelType.Density)/highPressureGasSource.FuelType.Density) * frame.DeltaTimeWorld*(1-(highPressureGasSource.TotalFuel/highPressureGasSource.TotalCapacity)));
+                highPressureGasSource.AddFuel(((Data.GasFlowRate*lowPressureGasSource.FuelType.Density)/highPressureGasSource.FuelType.Density) * frame.DeltaTimeWorld);
                 batterySource.RemoveFuel(Data.GasFlowRate * frame.DeltaTimeWorld*Data.BatteryConsumption);
             }
             if (!Data.IsPressuring&&!highPressureGasSource.IsEmpty&&lowPressureGasSource.TotalCapacity-lowPressureGasSource.TotalFuel>0.00001)
             {
                 highPressureGasSource.RemoveFuel(Data.GasFlowRate * frame.DeltaTimeWorld);
-                lowPressureGasSource.AddFuel(((Data.GasFlowRate*highPressureGasSource.FuelType.Density)/lowPressureGasSource.FuelType.Density) * frame.DeltaTimeWorld*(1-(lowPressureGasSource.TotalFuel/lowPressureGasSource.TotalCapacity)));
+                lowPressureGasSource.AddFuel(((Data.GasFlowRate*highPressureGasSource.FuelType.Density)/lowPressureGasSource.FuelType.Density) * frame.DeltaTimeWorld);
             }
         }
         private IFuelSource GetCraftFuelSource(string fuelType)
@@ -72,6 +73,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public void RefreshFuelSources()
         {
+            batterySource = PartScript.BatteryFuelSource;
             if (isOxygen)
             {
                 highPressureGasSource = GetCraftFuelSource("HPOxygen");

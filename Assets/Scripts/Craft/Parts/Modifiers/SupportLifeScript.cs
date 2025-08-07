@@ -490,7 +490,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
                 catch (Exception e)
                 {
-                   //Debug.LogFormat("CraftRefreshSource:No Eva part:{0}",e);
+                   Debug.LogFormat("CraftRefreshSource:No Eva part:{0}",e);
                 }
                 
                
@@ -519,7 +519,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             catch (Exception e)
             {
-                //Debug.LogErrorFormat("CraftRefeshFuelSource出问题了{0}", e);
+                Debug.LogErrorFormat("CraftRefreshFuelSource出问题了{0}", e);
             }
             void HandleFuelSource(string fuelType, double capacity, double bufferAmount, ref IFuelSource fuelSource)
             {
