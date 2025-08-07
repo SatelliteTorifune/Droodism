@@ -1,3 +1,5 @@
+using System.Windows.Forms;
+
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
     using System;
@@ -14,5 +16,28 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     [PartModifierTypeId("GasDealer")]
     public class GasDealerData : PartModifierData<GasDealerScript>
     {
+        [SerializeField] [DesignerPropertySlider( 0.1f, 1f, 10,Label="Gas Flow Rate",Tooltip="Determines the rate which High Pressure gas is released/compressed by the part.")]
+        private float gasFlowRate = 1f;
+
+        public float GasFlowRate
+        {
+            get => this.gasFlowRate*2.5f;
+        }
+        [SerializeField][PartModifierProperty]
+        private bool isPressuring = false;
+
+        [SerializeField] [PartModifierProperty]
+        private float batteryConsumption = 1;
+
+        public float BatteryConsumption
+        {
+            get => this.batteryConsumption*11.45141919810f;
+        }
+
+        public bool IsPressuring
+        {
+            get => this.isPressuring;
+            set => this.isPressuring = value;
+        }
     }
 }

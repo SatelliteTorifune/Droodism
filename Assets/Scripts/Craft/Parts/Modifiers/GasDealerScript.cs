@@ -1,5 +1,6 @@
 using ModApi.Craft;
 using ModApi.GameLoop;
+using ModApi.Ui.Inspector;
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
@@ -17,9 +18,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         IFlightUpdate
 
     {
-        private IFuelSource HPOygenSource;
-        private IFuelSource LPOygenSource;
-        public bool IsPressuring { get; set; }
+        private IFuelSource highPressureGasSource;
+        private IFuelSource lowPressureGasSource;
+        private IFuelSource batterySource;
+        public bool isOxygen = true;
+
         void IDesignerStart.DesignerStart(in DesignerFrameData frame)
         {
             base.OnInitialized();
@@ -39,26 +42,29 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private void WorkingLogic(in FlightFrameData frame)
         {
-            if (HPOygenSource == null&&LPOygenSource == null)
+            if (highPressureGasSource == null&&lowPressureGasSource == null)
                 return;
-            if (IsPressuring)
+            if (Data.IsPressuring&&!lowPressureGasSource.IsEmpty && highPressureGasSource.TotalCapacity - highPressureGasSource.TotalFuel > 0.00001&&batterySource!=null&&!batterySource.IsEmpty)
+            { 
+                lowPressureGasSource.RemoveFuel(Data.GasFlowRate * frame.DeltaTimeWorld);
+                highPressureGasSource.AddFuel(((Data.GasFlowRate*lowPressureGasSource.FuelType.Density)/highPressureGasSource.FuelType.Density) * frame.DeltaTimeWorld*(1-(highPressureGasSource.TotalFuel/highPressureGasSource.TotalCapacity)));
+                batterySource.RemoveFuel(Data.GasFlowRate * frame.DeltaTimeWorld*Data.BatteryConsumption);
+            }
+            if (!Data.IsPressuring&&!highPressureGasSource.IsEmpty&&lowPressureGasSource.TotalCapacity-lowPressureGasSource.TotalFuel>0.00001)
             {
-                
+                highPressureGasSource.RemoveFuel(Data.GasFlowRate * frame.DeltaTimeWorld);
+                lowPressureGasSource.AddFuel(((Data.GasFlowRate*highPressureGasSource.FuelType.Density)/lowPressureGasSource.FuelType.Density) * frame.DeltaTimeWorld*(1-(lowPressureGasSource.TotalFuel/lowPressureGasSource.TotalCapacity)));
             }
         }
         private IFuelSource GetCraftFuelSource(string fuelType)
         {
-            var craftSources = PartScript.CraftScript.FuelSources.FuelSources;
-
-
-            foreach (var source in craftSources)
+            foreach (var source in PartScript.CraftScript.FuelSources.FuelSources)
             {
                 if (source.FuelType.Id== fuelType)
                 {
                     return source;
                 }
             }
-
             return null;
         }
         
@@ -66,25 +72,51 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public void RefreshFuelSources()
         {
-            HPOygenSource= GetCraftFuelSource("HPOxygen");
-            try
+            if (isOxygen)
             {
-                var patchScript = PartScript?.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
-                if (patchScript == null)
+                highPressureGasSource = GetCraftFuelSource("HPOxygen");
+                try
                 {
-                    LPOygenSource=null;
-                }
+                    var patchScript = PartScript?.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+                    if (patchScript == null)
+                    {
+                        lowPressureGasSource = null;
+                    }
 
-                if (patchScript!=null)
-                {
-                    LPOygenSource=patchScript.OxygenFuelSource;
-                   
+                    if (patchScript != null)
+                    {
+                        lowPressureGasSource = patchScript.OxygenFuelSource;
+
+                    }
+
                 }
-                
+                catch (Exception)
+                {
+                    lowPressureGasSource = null;
+                }
             }
-            catch (Exception)
+            if (!isOxygen)
             {
-                LPOygenSource=null;
+                highPressureGasSource = GetCraftFuelSource("HPCO2");
+                try
+                {
+                    var patchScript = PartScript?.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+                    if (patchScript == null)
+                    {
+                        lowPressureGasSource = null;
+                    }
+
+                    if (patchScript != null)
+                    {
+                        lowPressureGasSource = patchScript.CO2FuelSource;
+
+                    }
+
+                }
+                catch (Exception)
+                {
+                    lowPressureGasSource = null;
+                }
             }
         }
         public override void OnCraftStructureChanged(ICraftScript craftScript)
@@ -94,5 +126,18 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         
         #endregion
+
+        public override void OnGenerateInspectorModel(PartInspectorModel model)
+        {
+            base.OnGenerateInspectorModel(model);
+            var changeMode=new ToggleModel("Switch to Oxygen Fuel Type", () => isOxygen, (Action<bool>) (b=>
+            {
+                isOxygen = b;
+                RefreshFuelSources();
+            }),"Determines this part is in dealing with Carbon dioxide or Oxygen");
+            model.Add(changeMode);
+        }
+        
+        
     }
 }

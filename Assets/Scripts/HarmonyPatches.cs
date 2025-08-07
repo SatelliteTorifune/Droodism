@@ -15,6 +15,7 @@ using ModApi.State;
 using ModApi.Ui.Inspector;
 using Rewired.Utils.Attributes;
 using UnityEngine;
+using AccessTools = HarmonyLib.AccessTools;
 using String = System.String;
 
 namespace Assets.Scripts
@@ -147,11 +148,32 @@ namespace Assets.Scripts
                     AddStuff(var);
                 }
 
-                void AddStuff(String name)
+                void AddStuff(String fuelType)
                 {
-                    bool isWaste = name.Contains("Waste") || name == "CO2";
+                    bool isWaste = fuelType.Contains("Waste") || fuelType == "CO2"||fuelType=="HPCO2";
+                    string name = "";
+                    switch (fuelType)
+                    {
+                        case "H2O":
+                            name="Water";
+                            break;
+                        case "CO2":
+                            name = "Carbon Dioxide";
+                            break;
+                        case "HPCO2":
+                            name = "High Pressure Carbon Dioxide";
+                            break;
+                        case "HPOxygen":
+                            name = "High Pressure Oxygen";
+                            break;
+                        
+                        default:
+                            name = fuelType;
+                            break;
+                    
+                    }
                     textGroup.Add<TextModel>(new TextModel(name + (isWaste ? " Capacity" : " Amount"),
-                        () => GetFuelAmountInDesigner(name, isWaste)));
+                        () => GetFuelAmountInDesigner(fuelType, isWaste)));
                 }
 
                 // 将新组添加到 InspectorModel

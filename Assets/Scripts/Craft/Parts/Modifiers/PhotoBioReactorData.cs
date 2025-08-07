@@ -105,12 +105,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public float Co2ConsumptionRate
         {
-            get=>this._co2ConsumptionRate*0.0028f;
+            get=>this._co2ConsumptionRate*0.0048f;
         }
 
         public float OxygenGenerationRate
         {
-            get=>this._oxygenGenerationRate*0.003f;
+            get=>this._oxygenGenerationRate*0.008f;
         }
         public float WaterConsumptionRate
         {
