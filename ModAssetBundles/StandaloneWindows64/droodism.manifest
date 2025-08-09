@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 2586871760
+CRC: 2421632318
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 1464d4909ddfffaea18cc2f82d3361de
+    Hash: 537430440edcfdc66697241f83224a8d
   TypeTreeHash:
     serializedVersion: 2
-    Hash: aaf94d3e67d24a13f45ef46ababb1fe0
+    Hash: f3b0926257c57e3ca7f4ea21cf51fad4
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 1464d4909ddfffaea18cc2f82d3361de
+    Hash: 537430440edcfdc66697241f83224a8d
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -50,6 +50,10 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 134
   Script: {instanceID: 0}
+- Class: 198
+  Script: {instanceID: 0}
+- Class: 199
+  Script: {instanceID: 0}
 - Class: 213
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers:
@@ -60,14 +64,16 @@ Assets:
 - Assets/Resources/Craft/Parts/Definitions/WaterTank.xml
 - Assets/Resources/Craft/Parts/Prefabs/WaterTank.prefab
 - Assets/Resources/Craft/Parts/Prefabs/GravityRing.prefab
-- Assets/_ModAssets_/ModManifest.xml.bytes
+- Assets/Content/Craft/Parts/GasDepressure.png
 - Assets/Content/XML UI/Sprites/White.png
 - Assets/Resources/Craft/Parts/Definitions/CarbonDioxideFilter.xml
-- Assets/Resources/Craft/Parts/Definitions/Sodium Peroxide Container.xml
+- Assets/Resources/Craft/Parts/Definitions/GasDepressurizeDevice.xml
 - Assets/Resources/Craft/Parts/Prefabs/FoodTank.prefab
 - Assets/Content/Resources/flag.xml
 - Assets/Resources/Craft/Parts/Prefabs/ElectrolyticDevice.prefab
+- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/Resources/Craft/Parts/Definitions/FoodTank.xml
+- Assets/Resources/Craft/Parts/Definitions/Sodium Peroxide Container.xml
 - Assets/Content/Craft/Parts/RocketEngines/Propulsion.xml
 - Assets/Content/Craft/Parts/Categories/LifeSupport.asset
 - Assets/Resources/Craft/Parts/Definitions/ElectrolyticDevice.xml
@@ -75,12 +81,13 @@ Assets:
 - Assets/Resources/Craft/Parts/Definitions/GravityRing.xml
 - Assets/Content/Prefabs/DroodismUI.prefab
 - Assets/Content/XML UI/Sprites/DroodsimUIIcon.png
-- Assets/_ModAssets_/Droodism.dll.bytes
 - Assets/Resources/Craft/Parts/Prefabs/SewageTreatDevice.prefab
 - Assets/Resources/Craft/Parts/Prefabs/Sodium Peroxide Container.prefab
 - Assets/Resources/Craft/Parts/Definitions/PhotoBioReactor.xml
 - Assets/Resources/Craft/Parts/Definitions/ResourcesPack.xml
 - Assets/Content/XML UI/UIResourceDatabase.asset
+- Assets/Resources/Craft/Parts/Prefabs/GasDepressurizeDevice.prefab
+- Assets/_ModAssets_/Droodism.dll.bytes
 - Assets/Resources/Craft/Parts/Definitions/SewageTreatDevice.xml
 - Assets/Resources/Craft/Parts/Prefabs/PhotoBioReactor.prefab
 - Assets/Content/Craft/Parts/GravityRingIcon.png

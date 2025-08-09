@@ -37,7 +37,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public bool IsPressuring
         {
             get => this.isPressuring;
-            set => this.isPressuring = value;
         }
     }
 }

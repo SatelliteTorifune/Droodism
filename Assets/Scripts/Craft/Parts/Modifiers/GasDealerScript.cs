@@ -1,3 +1,6 @@
+using Assets.Packages.DevConsole.Commands.Arguments;
+using ModApi;
+using ModApi.Audio;
 using ModApi.Craft;
 using ModApi.GameLoop;
 using ModApi.Ui.Inspector;
@@ -18,9 +21,18 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         IFlightUpdate
 
     {
+        private ParticleSystem _particleSystem;
+        private ParticleSystem.EmissionModule _particleSystemEmission;
+        private ParticleSystem.MainModule _particleSystemMain;
+        private ISingleSound _sound;
+        
+        private Transform _particalSystemTransform;
+        
         private IFuelSource highPressureGasSource;
         private IFuelSource lowPressureGasSource;
         private IFuelSource batterySource;
+        private bool emergencyGasDepressurization=false;
+        private bool isFunctional=true;
         public bool isOxygen = true;
 
         void IDesignerStart.DesignerStart(in DesignerFrameData frame)
@@ -31,13 +43,45 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public void FlightStart(in FlightFrameData frame)
         {
             RefreshFuelSources();
+            if (!Data.IsPressuring)
+            {
+                UpdateComponents();
+            }
+            //TODO:Adding Sound Effects
+            /*
+            this._sound = Assets.Scripts.Game.Instance.FlightScene.SingleSoundManager.GetSingleSound("Audio/Sounds/RCSNozzle");
+            this._sound.MaxVolume = 0.04f;*/
         }
 
         public void FlightUpdate(in FlightFrameData frame)
         {
-            if (!PartScript.Data.Activated)
+           
+            if (!isFunctional)
                 return;
+            if (!PartScript.Data.Activated)
+            {
+                if (emergencyGasDepressurization)
+                {
+                    EmergencyDepressurization(frame);
+                    return;
+                }
+                else
+                {
+                    //_particleSystemEmission.enabled = false;
+                }
+                return;
+            }
+            if (emergencyGasDepressurization)
+            {
+                EmergencyDepressurization(frame);
+                return;
+            }
+            if(!emergencyGasDepressurization)
+            {
+                //this._particleSystemEmission.enabled = false;
+            }
             WorkingLogic(frame);
+            
         }
 
         private void WorkingLogic(in FlightFrameData frame)
@@ -53,7 +97,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 highPressureGasSource.AddFuel(0.972*Data.GasFlowRate * lowPressureGasSource.FuelType.Density/highPressureGasSource.FuelType.Density * frame.DeltaTimeWorld);
                 batterySource.RemoveFuel(Data.GasFlowRate * frame.DeltaTimeWorld*Data.BatteryConsumption);
             }
-            if (!Data.IsPressuring&&!highPressureGasSource.IsEmpty&&lowPressureGasSource.TotalCapacity-lowPressureGasSource.TotalFuel>1E-06)
+            if (!Data.IsPressuring&&!highPressureGasSource.IsEmpty&&lowPressureGasSource.TotalCapacity-lowPressureGasSource.TotalFuel>1E-06&&emergencyGasDepressurization==false)
             {
                 highPressureGasSource.RemoveFuel(Data.GasFlowRate* frame.DeltaTimeWorld);
                 lowPressureGasSource.AddFuel(0.972*Data.GasFlowRate * highPressureGasSource.FuelType.Density/lowPressureGasSource.FuelType.Density * frame.DeltaTimeWorld);
@@ -70,9 +114,49 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             return null;
         }
+
+        private void EmergencyDepressurization(in FlightFrameData frame)
+        {
+            if (lowPressureGasSource.IsEmpty&&highPressureGasSource.IsEmpty)
+            {
+                isFunctional = false;
+                this._particleSystem.Stop();
+                return;
+            }
+
+            if (_particleSystem!=null)
+            {
+                this._particleSystemMain.startColor = (ParticleSystem.MinMaxGradient) new Color(1f, 1f, 1f, (float)Math.Max(0.4, 10* highPressureGasSource.TotalFuel / highPressureGasSource.TotalCapacity));
+                //this._particleSystemEmission.enabled = true;
+                if (!this._particleSystem.isPlaying)
+                    this._particleSystem.Play();
+            }
+            
+            if (!highPressureGasSource.IsEmpty)
+            {
+                highPressureGasSource.RemoveFuel(Data.GasFlowRate * 60*Math.Max(0.1, 2* highPressureGasSource.TotalFuel / highPressureGasSource.TotalCapacity) * frame.DeltaTimeWorld);
+            }
+
+            if (!lowPressureGasSource.IsEmpty)
+            {
+                lowPressureGasSource.RemoveFuel(Data.GasFlowRate * 40 *Math.Max(0.1, 2* lowPressureGasSource.TotalFuel / lowPressureGasSource.TotalCapacity)* frame.DeltaTimeWorld);
+            }
+
+            
+
+        }
         
         #region 路边一条
 
+        public void ToggleParticles(bool active)
+        {
+            if ((UnityEngine.Object) this._particleSystem == (UnityEngine.Object) null)
+                this._particleSystem = this.GetComponentInChildren<ParticleSystem>();
+            if (active)
+                this._particleSystem.Play();
+            else
+                this._particleSystem.Stop();
+        }
         public void RefreshFuelSources()
         {
             batterySource = PartScript.BatteryFuelSource;
@@ -130,7 +214,37 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         
         #endregion
-
+        private void UpdateComponents()
+        {
+            string[]	strArray	= "Device/ParticleSystem".Split( '/', StringSplitOptions.None );
+            Transform	subPart		= this.transform;
+            foreach ( string n in strArray )
+                subPart = subPart.Find( n ) ?? subPart;
+            if ( subPart.name == strArray[strArray.Length - 1] )
+                this.SetSubPart( subPart );
+            else
+                this.SetSubPart( Utilities.FindFirstGameObjectMyselfOrChildren( "Device/ParticleSystem", this.gameObject ) ?.transform );
+            if (_particalSystemTransform!= null)
+            {
+                Debug.Log("Particle System Found");
+            }
+            _particleSystem = _particalSystemTransform.GetComponent<ParticleSystem>();
+            try
+            {
+                this._particleSystemEmission = this._particleSystem.emission;
+            }
+            catch (Exception e)
+            {
+                Debug.LogFormat("我操你妈,你听到了吗,我操你妈");
+            }
+            
+            this._particleSystemMain = this._particleSystem.main;
+        }
+        public void SetSubPart( Transform subPart )
+        {
+            this._particalSystemTransform = subPart;
+        }
+        
         public override void OnGenerateInspectorModel(PartInspectorModel model)
         {
             base.OnGenerateInspectorModel(model);
@@ -139,9 +253,41 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 isOxygen = b;
                 RefreshFuelSources();
             }),"Determines this part is in dealing with Carbon dioxide or Oxygen");
-            model.Add(changeMode);
+            var engaging = new LabelButtonModel("<color=yellow>Emergency Depressurization", b =>
+            {
+                if (isFunctional)
+                {
+                    emergencyGasDepressurization = true;
+                    changeMode.Visible = false;
+                    string msg = isOxygen
+                        ? "<color=yellow>Emergency Depressurization Sequence Initiated<br>All Oxygen in the High Pressure Gas Tank and Low Pressure Gas Tank is releasing</color>.<br>This action is <color=red><size=110%>irreversible</size></color>"
+                        : "<color=yellow>Emergency Depressurization Sequence Initiated<br>All Carbon Dioxide in the High Pressure Gas Tank and Low Pressure Gas Tank is releasing</color>.<br>This action is <color=red><size=110%>irreversible</size></color>";
+                    Game.Instance.FlightScene.FlightSceneUI.ShowMessage(msg,false,10);
+                }
+
+                if (!isFunctional)
+                {
+                    Game.Instance.FlightScene.FlightSceneUI.ShowMessage("<color=red>This part is malfunctioning and cannot be used.</color>",false,10);
+                }
+                
+            });
+            engaging.ButtonLabel ="<color=yellow>Engage";
+            engaging.Tooltip="Release All Gas in the High Pressure Gas Tank and Low Pressure Gas Tank,this action is <color=red><size=110%>irreversible</size></color> and will disable all other functions of this part. use it with caution.";
+            if (!emergencyGasDepressurization)
+            {
+                
+                model.Add(changeMode);
+            }
+            if (!Data.IsPressuring)
+            {
+                if (!isFunctional)
+                {
+                    engaging.Label = "<color=red>Malfunction</color>";
+                    engaging.ButtonLabel = "";
+                    engaging.Tooltip = "<color=red>Emergency Depressurization Sequence had been completed, this part is malfunctioning and cannot be used.";
+                }
+                model.Add(engaging);
+            }
         }
-        
-        
     }
 }
