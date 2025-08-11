@@ -43,9 +43,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private float _wastedWaterGenerationRate = 1f;
         [SerializeField] [PartModifierProperty(true, false)]
         private float _boosteScale = 1.5f;
-
-        [SerializeField] [DesignerPropertyToggleButton(Label = "Active When Fold")]
-        private bool useEletricityWhenFold;
+        
         private Vector3 _positionOffset1 = new Vector3(0f, 0f, 0.65f);
         public SubPartRotatorData.AngleLerpType AngleLerp => SubPartRotatorData.AngleLerpType.Euler;
         public SubPartRotatorData.AngleLerpType AngleLerp2 => SubPartRotatorData.AngleLerpType.Quaternion;
@@ -82,7 +80,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public float RotationRate => this._rotationRate * this._rotationSpeed;
         public float FoodGeneratedScale
         {
-            get=>this._foodGeneratedScale*0.5f;
+            get=>this._foodGeneratedScale*10f;
         }
 
         public float Efficiency
@@ -92,7 +90,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public float GrowProgressTotal
         {
-            get=>this._growProgressTotal*40000f;
+            get=>this._growProgressTotal*4000f;
         }
 
         public float GrowSpeed
@@ -107,16 +105,16 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public float Co2ConsumptionRate
         {
-            get=>this._co2ConsumptionRate*0.0028f;
+            get=>this._co2ConsumptionRate*0.0048f;
         }
 
         public float OxygenGenerationRate
         {
-            get=>this._oxygenGenerationRate*0.003f;
+            get=>this._oxygenGenerationRate*0.008f;
         }
         public float WaterConsumptionRate
         {
-            get=>this._waterConsumptionRate*0.011f;
+            get=>this._waterConsumptionRate*0.0011f;
         }
 
         public float PowerConsumptionRate
@@ -126,7 +124,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public float WastedWaterGenerationRate
         {
-            get=>this._wastedWaterGenerationRate*0.002f;
+            get=>this._wastedWaterGenerationRate*0.0002f;
         }
         public float SolidWasteConsumptionRate
         {
@@ -136,11 +134,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             get=>this._boosteScale*1f;
         }
-
-        public bool UseEletricityWhenFold
-        {
-            get=>this.useEletricityWhenFold;
-        }
+        
         public string SubPartPath = "DeviceBase/MainPipe";
     }
 }

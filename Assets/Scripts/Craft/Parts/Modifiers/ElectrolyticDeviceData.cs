@@ -10,10 +10,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     [PartModifierTypeId("ElectrolyticDevice")]
     public class ElectrolyticDeviceData : PartModifierData<ElectrolyticDeviceScript>
     {
-     
-        [SerializeField]
-        [PartModifierProperty(true, false)]
-        private double _baseMass = 100f;
+        
         [SerializeField]
         [PartModifierProperty(true, false)]
         private double waterComsuptionRate = 1;

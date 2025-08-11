@@ -28,7 +28,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private Transform _offset;
         private Vector3 _offsetPositionInverse;
         private string deviceStatus = "";
-
+        public bool usingArtificialLight = false;
         private float growProgress;
         public void FlightStart(in FlightFrameData frame)
         {
@@ -42,7 +42,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public void FlightUpdate(in FlightFrameData frame)
         {
             float target = this.Data.Part.Activated ? 1f : 0.0f;
-            if ((double) Data.CurrentEnabledPercent != (double) target)
+            if (Data.CurrentEnabledPercent != target)
             {
                 this.Data.CurrentEnabledPercent = Mathf.MoveTowards(this.Data.CurrentEnabledPercent, target, frame.DeltaTime * this.Data.RotationRate);
                 DeployAnimate(Data.CurrentEnabledPercent);
@@ -50,18 +50,120 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             if (Data.Part.Activated&&Data.CurrentEnabledPercent>=0.99f)
             {
-                WorkingLogicUsingSolar(frame);
+                WorkingLogic(frame);
+            }
+            else
+            {
+                deviceStatus = "<color=yellow>Device is Offline</color>";
             }
             
-            if (Data.Part.Activated==false&&Data.CurrentEnabledPercent<=0.1f)
+        }
+
+        private void WorkingLogic(in FlightFrameData frame)
+        {
+            if(_co2Source==null||_waterSource==null||_battery==null||_oxygenSource==null||_wastedWaterSource==null)
             {
-               WorkingLogicUseArtificialLight(frame);
+                return; 
             }
+
+            this._rechargeRate = 0.0f;
+            this._rechargePointingEfficiency = 0.0f;
+            if (!_co2Source.IsEmpty && !_waterSource.IsEmpty && !_battery.IsEmpty &&_wastedWaterSource.TotalCapacity - _wastedWaterSource.TotalFuel >= 0.00001f)
+            {
+                if (usingArtificialLight)
+                {
+                    deviceStatus = "<color=green>Using Artificial Light,Generating Food</color>";
+                    isBoosted = false;
+                    _co2Source.RemoveFuel(Data.Co2ConsumptionRate * frame.DeltaTimeWorld);
+                    _waterSource.RemoveFuel(Data.WaterConsumptionRate * frame.DeltaTimeWorld);
+                    _battery.RemoveFuel(Data.PowerConsumptionRate * frame.DeltaTimeWorld);
+                    _wastedWaterSource.AddFuel(Data.WastedWaterGenerationRate * frame.DeltaTimeWorld);
+                    if (_oxygenSource.TotalCapacity - _oxygenSource.TotalFuel >= 0.00001f)
+                    {
+                        _oxygenSource.AddFuel(Data.OxygenGenerationRate * frame.DeltaTimeWorld);
+                    }
+
+                    if (_solidWastedSource != null&&!_solidWastedSource.IsEmpty)
+                    {
+                        _solidWastedSource.RemoveFuel(Data.SolidWasteConsumptionRate * frame.DeltaTimeWorld);
+                        isBoosted = true;
+                    }
+                    growProgress += Math.Abs((float)frame.DeltaTimeWorld*Data.GrowSpeed*Data.Efficiency*(isBoosted?Data.BoosteScale:1.0f));
+                }
+
+                if (!usingArtificialLight)
+                {
+                    ICraftFlightData flightData = this.PartScript.CraftScript.FlightData;
+                    this._efficiency = this.Data.Efficiency;
+                    this._rechargeRate = (float) flightData.SolarRadiationIntensity * this._efficiency * this._area;
+                    if ((double) this._rechargeRate > 0.0)
+                    {
+                        this._rechargePointingEfficiency = Mathf.Max(0.0f, Vector3.Dot(_panel.up, -flightData.SolarRadiationFrameDirection));
+                        this._rechargeRate *= this._rechargePointingEfficiency;
+                    }
+                    else
+                        this._rechargePointingEfficiency = 0.0f;
+                    if(_rechargePointingEfficiency<=0.001f)
+                    {
+                        if (growProgress>=0)
+                        {
+                            growProgress -= Data.DecaySpeed;
+                        }
+                        deviceStatus = "<color=red>Unable to generate food:Unable to get solar radiation</color>";
+                        return;
+                    }
+                    deviceStatus = "<color=green>Using Solar Light,Generating Food</color>";
+                    isBoosted = false;
+                    _co2Source.RemoveFuel(Data.Co2ConsumptionRate*_rechargePointingEfficiency * frame.DeltaTimeWorld);
+                    _waterSource.RemoveFuel(Data.WaterConsumptionRate*_rechargePointingEfficiency* frame.DeltaTimeWorld);
+                    _wastedWaterSource.AddFuel(Data.WastedWaterGenerationRate*_rechargePointingEfficiency * frame.DeltaTimeWorld);
+                    if (_oxygenSource.TotalCapacity - _oxygenSource.TotalFuel >= 0.00001f)
+                    {
+                        _oxygenSource.AddFuel(Data.OxygenGenerationRate*_rechargePointingEfficiency * frame.DeltaTimeWorld);
+                    }
+
+                    if (_solidWastedSource != null&&!_solidWastedSource.IsEmpty)
+                    {
+                        _solidWastedSource.RemoveFuel(Data.SolidWasteConsumptionRate*_rechargePointingEfficiency * frame.DeltaTimeWorld);
+                        isBoosted = true;
+                    }
+                    growProgress += Math.Abs((float)frame.DeltaTimeWorld*Data.GrowSpeed*_rechargePointingEfficiency*Data.Efficiency*(isBoosted?Data.BoosteScale:1.0f));
+                    
+                }
+            }
+            if (_co2Source.IsEmpty || _waterSource.IsEmpty||_battery.IsEmpty)
+            {
+                if (growProgress>=0)
+                {
+                    growProgress -= Data.DecaySpeed;
+                }
+                deviceStatus = "<color=red>Unable to generate food:Lack of Resources</color>";
+                return;
+            }
+            
+            if (_wastedWaterSource.TotalCapacity - _wastedWaterSource.TotalFuel <= 0.00001f)
+            {
+                if (growProgress>=0)
+                {
+                    growProgress -= Data.DecaySpeed;
+                }
+                deviceStatus = "<color=red>Unable to generate food:Wasted Water is full</color>";
+                return;
+            }
+            
+            if (growProgress >= Data.GrowProgressTotal)
+            {
+                growProgress = 0;
+                OnProgressBarFull();
+            }
+            
+            
+            
         }
 
         private void WorkingLogicUseArtificialLight(in FlightFrameData frame)
         {
-            if (Data.UseEletricityWhenFold==false)
+            if (usingArtificialLight==false)
             {
                 deviceStatus = "<color=yellow>Device is Offline</color>";
                 return;
@@ -95,14 +197,20 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             if (_co2Source.IsEmpty || _waterSource.IsEmpty||_battery.IsEmpty)
             {
-                growProgress -= Data.DecaySpeed;
+                if (growProgress>=0)
+                {
+                    growProgress -= Data.DecaySpeed;
+                }
                 deviceStatus = "<color=red>Unable to generate food:Lack of Resources</color>";
                 return;
             }
             
             if (_wastedWaterSource.TotalCapacity - _wastedWaterSource.TotalFuel <= 0.00001f)
             {
-                growProgress -= Data.DecaySpeed;
+                if (growProgress>=0)
+                {
+                    growProgress -= Data.DecaySpeed;
+                }
                 deviceStatus = "<color=red>Unable to generate food:Wasted Water is full</color>";
                 return;
             }
@@ -154,21 +262,30 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
             if(_rechargePointingEfficiency<=0.001f)
             {
-                growProgress -= Data.DecaySpeed;
+                if (growProgress>=0)
+                {
+                    growProgress -= Data.DecaySpeed;
+                }
                 deviceStatus = "<color=red>Unable to generate food:Unable to get solar radiation</color>";
                 return;
             }
 
             if (_co2Source.IsEmpty || _waterSource.IsEmpty)
             {
-                growProgress -= Data.DecaySpeed;
+                if (growProgress>=0)
+                {
+                    growProgress -= Data.DecaySpeed;
+                }
                 deviceStatus = "<color=red>Unable to generate food:Lack of Resources</color>";
                 return;
             }
 
             if (_wastedWaterSource.TotalCapacity - _wastedWaterSource.TotalFuel <= 0.00001f)
             {
-                growProgress -= Data.DecaySpeed;
+                if (growProgress>=0)
+                {
+                    growProgress -= Data.DecaySpeed;
+                }
                 deviceStatus = "<color=red>Unable to generate food:Wasted Water is full</color>";
                 return;
             }
@@ -331,19 +448,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
         }
         
-        private IFuelSource GetCraftFuelSource(string fuelType)
-        {
-            var craftSources = PartScript.CraftScript.FuelSources.FuelSources;
-            
-            foreach (var source in craftSources)
-            {
-                if (source.FuelType.Id.Contains(fuelType))
-                {
-                    return source;
-                }
-            }
-            return null;
-        }
 
         private void UpdateScale()
         {
@@ -353,12 +457,22 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public override void OnGenerateInspectorModel(PartInspectorModel model)
         {
             base.OnGenerateInspectorModel(model);
-            model.Add<TextModel>(new TextModel("Pointing Efficiency", (Func<string>) (() => Units.GetPercentageString(this._rechargePointingEfficiency))));
+            var pointingEfficiencyModel = new TextModel("Pointing Efficiency", (Func<string>) (() => Units.GetPercentageString(this._rechargePointingEfficiency)));
+            var GrowProgressPercentModel = new TextModel("Food Generation Percentage", (Func<string>) (() => Units.GetPercentageString(growProgress/Data.GrowProgressTotal)));
             var GrowProgressBarModel = new ProgressBarModel("Food Generation Progress", () =>
                 (float)(growProgress/Data.GrowProgressTotal));
             var statues=new TextModel("Status",()=> deviceStatus);
+            var toggleArtificialLight = new ToggleModel("Use Artificial Light", () => usingArtificialLight, (Action<bool>) (b=>
+            {
+                usingArtificialLight = b;
+                pointingEfficiencyModel.Visible = !b;
+
+            }),"Using Electronic Artificial Light to Working");
+            model.Add(pointingEfficiencyModel);
             model.Add(GrowProgressBarModel);
+            model.Add(GrowProgressPercentModel);
             model.Add(statues);
+            model.Add(toggleArtificialLight);
         }
     }
     

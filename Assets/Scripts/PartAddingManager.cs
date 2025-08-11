@@ -16,7 +16,7 @@ namespace Assets.Scripts
         /// 在加载Craft时使用"CheckDrood"方法遍历所有modifier得到零件并添加SupportLife的modifier
         /// When load a craft get all Craft's modifier using "CheckDrood" method and adding a "SupportLife"modifie to the part
         /// </summary>
-        public void OnCraftLoaded()
+        private void OnCraftLoaded()
         {
             GetDroodCountInDesigner();
             foreach (PartData part in CheckDrood(Craft))
@@ -42,7 +42,7 @@ namespace Assets.Scripts
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void OnPartAdded(object sender,CreatedPartEventArgs e)
+        private void OnPartAdded(object sender,CreatedPartEventArgs e)
         {
             
             //Debug.LogFormat($"{e.Part.PartType.Name},id{e.Part.Id}有{e.Part.Modifiers.Count}个modifier,1:{e.PartType.Name}");
@@ -69,7 +69,7 @@ namespace Assets.Scripts
         /// CheckDrood Method receives CraftScript as a parameter,checks all modifier inside the craft,returns with a list (which type is PartData) of Parts with Eva Modifier
         /// </summary>
         /// <param name="craft"></param>
-        public List<PartData> CheckDrood(CraftScript craft)
+        private List<PartData> CheckDrood(CraftScript craft)
         {
             List<PartData> DroodParts = new List<PartData>();
             var parts = craft.Data.Assembly.Parts;
@@ -102,12 +102,6 @@ namespace Assets.Scripts
                     DroodParts.Add(part);
                 }
             }
-
-            for (int i = 0; i < DroodParts.Count; i++)
-            {
-                Debug.LogFormat("DroodParts的 ID 是{0}", DroodParts[i].Id);
-            }
-
             return DroodParts;
 
         }
@@ -117,7 +111,7 @@ namespace Assets.Scripts
         /// AddLSModifier Method receive ParaData as a parameter,adding this part with SupportLife and FuelTank Modifier
         /// </summary>
         /// <param name="part"></param>
-        public static void AddLsModifier(PartData part)
+        private static void AddLsModifier(PartData part)
         {
             if (!(part != null))
                 return;
@@ -131,7 +125,7 @@ namespace Assets.Scripts
             
         }
         
-        public List<PartData> CheckGenerator(CraftScript craft)
+        private List<PartData> CheckGenerator(CraftScript craft)
         {
             List<PartData> GeneratorParts = new List<PartData>();
             foreach (PartData part in craft.Data.Assembly.Parts)
@@ -140,13 +134,10 @@ namespace Assets.Scripts
                 {
                     GeneratorParts.Add(part);
                 }
-                
             }
-
             return GeneratorParts;
-
         }
-        public List<PartData> CheckCommandPod(CraftScript craft)
+        private List<PartData> CheckCommandPod(CraftScript craft)
         {
             List<PartData> CommandPodParts = new List<PartData>();
             foreach (PartData part in craft.Data.Assembly.Parts)
@@ -155,13 +146,9 @@ namespace Assets.Scripts
                 {
                     CommandPodParts.Add(part);
                 }
-                
-            }
-
-            return CommandPodParts;
-
+            } return CommandPodParts;
         }
-        public static void AddLSGModifier(PartData part)
+        private static void AddLSGModifier(PartData part)
         {
             if (part==null)
                 return;
@@ -174,7 +161,7 @@ namespace Assets.Scripts
             }
         }
         
-        public  void PatchCommandPod(PartData part)
+        private  void PatchCommandPod(PartData part)
         {
             if (part==null)
                 return;
@@ -186,7 +173,5 @@ namespace Assets.Scripts
                 targetScript.InspectorEnabled = false;
             }
         }
-
-        
     }
 }

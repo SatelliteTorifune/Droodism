@@ -10,16 +10,7 @@ namespace Assets.Scripts
     public partial class Mod:GameMod
     {
         public static readonly string[] _massTypes = { "g", "kg", "t", "kt" };
-        private Dictionary<string, (double Current, double Previous)> FuelMap = new Dictionary<string, (double, double)>
-        {
-            { "Oxygen", (0, 0) },
-            { "H2O", (0, 0) },
-            {"Food", (0, 0) },
-            {"CO2", (0, 0) },
-            {"Wasted Water", (0, 0) },
-            {"Solid Waste", (0, 0) }
-        };
-        private static List<string> fuelTypes = new List<string> { "Oxygen", "H2O", "Food", "CO2", "Wasted Water", "Solid Waste" };
+        private static List<string> fuelTypes = new List<string> { "Oxygen", "H2O", "Food", "CO2", "Wasted Water", "Solid Waste","HPOxygen","HPCO2"};
 
         private static string GetFuelAmountInDesigner(string fuelId,bool isWaste)
         {
@@ -31,7 +22,6 @@ namespace Assets.Scripts
                 }
             }
             return "NaN";
-
         }
         private string GetDroodCountInDesigner()
         {

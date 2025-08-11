@@ -34,12 +34,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private float waterDamageScale=1f;
         
         [SerializeField] 
-        [DesignerPropertySlider(0.1f, 3f, 30, Label = "<color=green>Oxygen</color> Carry Amount(days)", Tooltip = "Define How much <color=green>Oxygen</color> Drood himself/herself will carry when Eva.")]
-        private float desireOxygenCapacity = 0.1f;
-        [SerializeField] [DesignerPropertySlider(0.1f, 3f, 30, Label = "<color=yellow>Food</color> Carry Amount(days)", Tooltip = "Define How much <color=yellow>Food</color> Drood himself/herself will carry when Eva.")]
-        private float desireFoodCapacity = 0.1f;
-        [SerializeField] [DesignerPropertySlider(0.1f, 3f, 30, Label = "<color=red>Water</color> Carry Amount(days)", Tooltip = "Define How much<color=red> Drink Water</color> Drood himself/herself will carry when Eva.")]
-        private float desireWaterCapacity = 0.1f;
+        [DesignerPropertySlider(0.1f, 3f, 30, Label = "<color=green>Oxygen</color> Carry Amount(days)", Tooltip = "How much <color=green>Oxygen</color> Drood himself/herself will carry when Eva.")]
+        private float desireOxygenCapacity = 0.2f;
+        [SerializeField] [DesignerPropertySlider(0.1f, 3f, 30, Label = "<color=yellow>Food</color> Carry Amount(days)", Tooltip = "How much <color=yellow>Food</color> Drood himself/herself will carry when Eva.")]
+        private float desireFoodCapacity = 0.2f;
+        [SerializeField] [DesignerPropertySlider(0.1f, 3f, 30, Label = "<color=red>Water</color> Carry Amount(days)", Tooltip = "How much<color=red> Drink Water</color> Drood himself/herself will carry when Eva.")]
+        private float desireWaterCapacity = 0.2f;
         
         public double _oxygenAmountBuffer=1f;
         public double _foodAmountBuffer=1f;
@@ -47,18 +47,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public double _co2AmountBuffer=1f;
         public double _wastedWaterAmountBuffer=1f;
         public double _solidWasteAmountBuffer=1f;
-        [SerializeField][PartModifierProperty(true, false)]
         public double evaConsumeEfficiency=0.3f;
-        
-        private int _fuelSourceAttachPoint;
-        public int FuelSourceAttachPoint
-        {
-            get=>_fuelSourceAttachPoint;
-            set=>_fuelSourceAttachPoint=value;
-
-        }
-        private FuelTankScript _fuelTank;
-        
         
         public float OxygenComsumeRate
         {
@@ -67,8 +56,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         public float FoodComsumeRate
         {
-            get
-                =>this.IsLegal(_foodComsumeRate)*0.0000058f;
+            get=>this.IsLegal(_foodComsumeRate)*0.0000058f;
             set=>this._foodComsumeRate = value;
         }
 
@@ -116,24 +104,5 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             return value>0?value:1;
         }
-
-        
-        
-        
-        protected override void OnDesignerInitialization(IDesignerPartPropertiesModifierInterface d)
-        {
-            base.OnDesignerInitialization(d);
-            
-            
-        }
-        
-        protected override void OnInitialized()
-        {
-            base.OnInitialized();
-        }
-        
-        
     }
-    
-    
 }

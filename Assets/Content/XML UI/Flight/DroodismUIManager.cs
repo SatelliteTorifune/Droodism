@@ -18,16 +18,12 @@ using Game = ModApi.Common.Game;
 
 namespace Assets.Scripts
 {
-
-
     public class DroodismUIManager : MonoBehaviour
     {
 
         public const string droodismBottomId = "toggle-droodism-ui-bottom";
         public NewDroodismUI newDroodismUIIntance;
-
         public static DroodismUIManager Instance;
-
         private void Awake()
         {
             Instance = this;
@@ -59,14 +55,13 @@ namespace Assets.Scripts
             {
                 newDroodismUIIntance.UpdateFuelPercentageItemTemplate();
             }
-           
         }
 
         public NewDroodismUI GetDroodismUI()
         {
             return newDroodismUIIntance;
         }
-        public void OnSceneLoaded(object sender, SceneEventArgs e)
+        private void OnSceneLoaded(object sender, SceneEventArgs e)
         {
             if (e.Scene == "Flight")
             {
@@ -98,7 +93,7 @@ namespace Assets.Scripts
                         new XAttribute("sprite", "Droodism/Sprites/DroodsimUIIcon"))));
         }
 
-        public void OnCraftChanged(ICraftNode craftNode)
+        private void OnCraftChanged(ICraftNode craftNode)
         {
             newDroodismUIIntance.UpdateDroodInfo();
             craftNode.CraftNodeMerged+=OnCraftMerged;
