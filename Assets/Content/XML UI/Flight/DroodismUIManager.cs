@@ -42,7 +42,7 @@ namespace Assets.Scripts
             {
                 return;
             }
-            UpdateDroodismUIPanel();
+            //UpdateDroodismUIPanel();
         }
         private void UpdateDroodismUIPanel() 
         {
