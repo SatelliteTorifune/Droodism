@@ -182,5 +182,4 @@ MonoBehaviour:
     _versionLast: 1
     _versionsAllowed: 
     gasFlowRate: 1
-    isPressuring: 0
     batteryConsumption: 1

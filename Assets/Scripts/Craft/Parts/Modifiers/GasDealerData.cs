@@ -23,8 +23,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             get => this.gasFlowRate*2.5f;
         }
-        [SerializeField][PartModifierProperty]
-        private bool isPressuring = false;
 
         [SerializeField] [PartModifierProperty]
         private float batteryConsumption = 1;
@@ -33,10 +31,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             get => this.batteryConsumption*11.45141919810f;
         }
-
-        public bool IsPressuring
-        {
-            get => this.isPressuring;
-        }
+        
     }
 }
