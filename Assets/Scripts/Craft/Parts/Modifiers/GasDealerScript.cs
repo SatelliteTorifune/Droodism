@@ -34,16 +34,19 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private bool emergencyGasDepressurization=false;
         private bool isFunctional=true;
         public bool isOxygen = true;
+        public bool isPressuring { get;private set; }  
 
         void IDesignerStart.DesignerStart(in DesignerFrameData frame)
         {
             base.OnInitialized();
+            UpdatePartType();
         }
 
         public void FlightStart(in FlightFrameData frame)
         {
+            UpdatePartType();
             RefreshFuelSources();
-            if (!Data.IsPressuring)
+            if (!isPressuring)
             {
                 UpdateComponents();
             }
@@ -65,20 +68,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     EmergencyDepressurization(frame);
                     return;
                 }
-                else
-                {
-                    //_particleSystemEmission.enabled = false;
-                }
                 return;
             }
             if (emergencyGasDepressurization)
             {
                 EmergencyDepressurization(frame);
                 return;
-            }
-            if(!emergencyGasDepressurization)
-            {
-                //this._particleSystemEmission.enabled = false;
             }
             WorkingLogic(frame);
             
@@ -90,14 +85,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return;
             //理论上来说Data.GasFlowRate * lowPressureGasSource.FuelType.Density/highPressureGasSource.FuelType.Density这么写是完全没毛病的,但是出于一种我也不知道的玄学原因,游戏会发癫,凭空给我生成fuel,所以最快的解决方法就算直接*0.973,然后对外宣称这是正常损耗,这样完全不会有人怀疑对吧
             //哈哈,我他妈真是天才.
-            if (Data.IsPressuring&&!lowPressureGasSource.IsEmpty&&highPressureGasSource.TotalCapacity - highPressureGasSource.TotalFuel > 1E-06&&batterySource!=null&&!batterySource.IsEmpty)
+            if (isPressuring&&!lowPressureGasSource.IsEmpty&&highPressureGasSource.TotalCapacity - highPressureGasSource.TotalFuel > 1E-06&&batterySource!=null&&!batterySource.IsEmpty)
             { 
                 lowPressureGasSource.RemoveFuel(Data.GasFlowRate* frame.DeltaTimeWorld);
                 
                 highPressureGasSource.AddFuel(0.972*Data.GasFlowRate * lowPressureGasSource.FuelType.Density/highPressureGasSource.FuelType.Density * frame.DeltaTimeWorld);
                 batterySource.RemoveFuel(Data.GasFlowRate * frame.DeltaTimeWorld*Data.BatteryConsumption);
             }
-            if (!Data.IsPressuring&&!highPressureGasSource.IsEmpty&&lowPressureGasSource.TotalCapacity-lowPressureGasSource.TotalFuel>1E-06&&emergencyGasDepressurization==false)
+            if (!isPressuring&&!highPressureGasSource.IsEmpty&&lowPressureGasSource.TotalCapacity-lowPressureGasSource.TotalFuel>1E-06&&emergencyGasDepressurization==false)
             {
                 highPressureGasSource.RemoveFuel(Data.GasFlowRate* frame.DeltaTimeWorld);
                 lowPressureGasSource.AddFuel(0.972*Data.GasFlowRate * highPressureGasSource.FuelType.Density/lowPressureGasSource.FuelType.Density * frame.DeltaTimeWorld);
@@ -120,6 +115,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (lowPressureGasSource.IsEmpty&&highPressureGasSource.IsEmpty)
             {
                 isFunctional = false;
+                
                 this._particleSystem.Stop();
                 return;
             }
@@ -127,6 +123,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (_particleSystem!=null)
             {
                 this._particleSystemMain.startColor = (ParticleSystem.MinMaxGradient) new Color(1f, 1f, 1f, (float)Math.Max(0.4, 10* highPressureGasSource.TotalFuel / highPressureGasSource.TotalCapacity));
+                
+                this._particleSystemMain.gravitySource = 0;
+                this._particleSystemMain.gravityModifierMultiplier = 0.01f;
                 //this._particleSystemEmission.enabled = true;
                 if (!this._particleSystem.isPlaying)
                     this._particleSystem.Play();
@@ -148,6 +147,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         #region 路边一条
 
+
+        private void UpdatePartType()
+        {
+            isPressuring = Data.Part.PartType.Id != "GasDepressurizeDevice";
+        }
         public void ToggleParticles(bool active)
         {
             if ((UnityEngine.Object) this._particleSystem == (UnityEngine.Object) null)
@@ -229,15 +233,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 Debug.Log("Particle System Found");
             }
             _particleSystem = _particalSystemTransform.GetComponent<ParticleSystem>();
-            try
-            {
-                this._particleSystemEmission = this._particleSystem.emission;
-            }
-            catch (Exception e)
-            {
-                Debug.LogFormat("我操你妈,你听到了吗,我操你妈");
-            }
-            
+            this._particleSystemEmission = this._particleSystem.emission;
             this._particleSystemMain = this._particleSystem.main;
         }
         public void SetSubPart( Transform subPart )
@@ -278,7 +274,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 
                 model.Add(changeMode);
             }
-            if (!Data.IsPressuring)
+            if (!isPressuring)
             {
                 if (!isFunctional)
                 {
