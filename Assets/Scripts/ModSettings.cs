@@ -36,6 +36,7 @@ namespace Assets.Scripts
         ///// </value>
         //public NumericSetting<float> TestSetting1 { get; private set; }
         public BoolSetting ConsumeResourceWhenUnloaded { get; set; }
+        public BoolSetting UseLegacyUI { get; set; }
 
         /// <summary>
         /// Initializes the settings in the category.
@@ -44,6 +45,9 @@ namespace Assets.Scripts
         {
             ConsumeResourceWhenUnloaded=CreateBool("Drood Consume Resource When Unloaded")
                 .SetDescription("Drood will still Consume Resource Even the Craft is Unloaded.<br>known bug the time calculate went a <size=125%><color=red>LITTLE BIT</color></size> wrong way")
+                .SetDefault(false);
+            UseLegacyUI=CreateBool("Use Legacy UI")
+                .SetDescription("Game will use the old UI")
                 .SetDefault(false);
         }
     }
