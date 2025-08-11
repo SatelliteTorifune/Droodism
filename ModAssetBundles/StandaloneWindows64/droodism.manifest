@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 2421632318
+CRC: 668360330
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 537430440edcfdc66697241f83224a8d
+    Hash: cb5e7fd329c742741172e571c0162566
   TypeTreeHash:
     serializedVersion: 2
-    Hash: f3b0926257c57e3ca7f4ea21cf51fad4
+    Hash: eb04544188a2d25efa4afd9b3b22881c
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 537430440edcfdc66697241f83224a8d
+    Hash: cb5e7fd329c742741172e571c0162566
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -34,10 +34,12 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 65
   Script: {instanceID: 0}
+- Class: 90
+  Script: {instanceID: 0}
+- Class: 95
+  Script: {instanceID: 0}
 - Class: 114
   Script: {fileID: 212942404, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: 21d232c8cc85f2143ac45bab630e8754, type: 3}
 - Class: 114
   Script: {fileID: 462600611, guid: a67a49df4508efd41b25d5ea1d54bed1, type: 3}
 - Class: 114
@@ -46,6 +48,8 @@ ClassTypes:
   Script: {fileID: -468989955, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
 - Class: 114
   Script: {fileID: 264738313, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 21d232c8cc85f2143ac45bab630e8754, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 134
@@ -68,10 +72,10 @@ Assets:
 - Assets/Content/XML UI/Sprites/White.png
 - Assets/Resources/Craft/Parts/Definitions/CarbonDioxideFilter.xml
 - Assets/Resources/Craft/Parts/Definitions/GasDepressurizeDevice.xml
+- Assets/Resources/Craft/Parts/Definitions/GasPressurizeDevice.xml
 - Assets/Resources/Craft/Parts/Prefabs/FoodTank.prefab
 - Assets/Content/Resources/flag.xml
 - Assets/Resources/Craft/Parts/Prefabs/ElectrolyticDevice.prefab
-- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/Resources/Craft/Parts/Definitions/FoodTank.xml
 - Assets/Resources/Craft/Parts/Definitions/Sodium Peroxide Container.xml
 - Assets/Content/Craft/Parts/RocketEngines/Propulsion.xml
@@ -82,10 +86,12 @@ Assets:
 - Assets/Content/Prefabs/DroodismUI.prefab
 - Assets/Content/XML UI/Sprites/DroodsimUIIcon.png
 - Assets/Resources/Craft/Parts/Prefabs/SewageTreatDevice.prefab
+- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/Resources/Craft/Parts/Prefabs/Sodium Peroxide Container.prefab
 - Assets/Resources/Craft/Parts/Definitions/PhotoBioReactor.xml
 - Assets/Resources/Craft/Parts/Definitions/ResourcesPack.xml
 - Assets/Content/XML UI/UIResourceDatabase.asset
+- Assets/Resources/Craft/Parts/Prefabs/GasPressurizeDevice.prefab
 - Assets/Resources/Craft/Parts/Prefabs/GasDepressurizeDevice.prefab
 - Assets/_ModAssets_/Droodism.dll.bytes
 - Assets/Resources/Craft/Parts/Definitions/SewageTreatDevice.xml
