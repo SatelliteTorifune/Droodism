@@ -156,7 +156,6 @@ GameObject:
   - component: {fileID: 2821777691462622971}
   - component: {fileID: 938669178558176412}
   - component: {fileID: 7307052897147314228}
-  - component: {fileID: 8816923568322828078}
   m_Layer: 0
   m_Name: co2FilterFan (1)
   m_TagString: Untagged
@@ -230,25 +229,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &8816923568322828078
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2055608883503646745}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 212942404, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _excludeFromDragModel: 0
-  _excludeFromMeshCombine: 0
-  _excludeFromPartMaterials: 1
-  _renderQueue: 0
-  _usesAlphaOverride: 0
-  _usesEmissiveOverride: 0
-  _isDepthMask: 0
 --- !u!1 &3736442708748017570
 GameObject:
   m_ObjectHideFlags: 0
@@ -413,7 +393,6 @@ GameObject:
   - component: {fileID: 4711286319596684434}
   - component: {fileID: 8840162875708170737}
   - component: {fileID: 1499572436370737264}
-  - component: {fileID: 2193974118682674176}
   m_Layer: 0
   m_Name: co2FilterFan
   m_TagString: Untagged
@@ -487,25 +466,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &2193974118682674176
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5494834662114131494}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 212942404, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _excludeFromDragModel: 0
-  _excludeFromMeshCombine: 0
-  _excludeFromPartMaterials: 1
-  _renderQueue: 0
-  _usesAlphaOverride: 0
-  _usesEmissiveOverride: 0
-  _isDepthMask: 0
 --- !u!1 &6824379592451311995
 GameObject:
   m_ObjectHideFlags: 0

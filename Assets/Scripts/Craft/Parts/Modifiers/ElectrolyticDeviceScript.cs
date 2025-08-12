@@ -31,8 +31,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             return null;
         }
         
-        private Transform fanTransform;
-        private Transform fanTransform2;
+        private Transform fanTransformBase;
+        private Transform fan1, fan2;
         private Transform _offset;
         private Vector3 _offsetPositionInverse;
 
@@ -137,14 +137,16 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private void UpdateComponents()
         {
-            string[] strArray = this.Data.SubPartPath.Split('/', StringSplitOptions.None);
+            string[] strArray = "Device/DeviceFan".Split('/', StringSplitOptions.None);
             Transform subPart = this.transform;
             foreach (string n in strArray)
                 subPart = subPart.Find(n) ?? subPart;
             if (subPart.name == strArray[strArray.Length - 1])
                 this.SetSubPart(subPart);
             else
-                this.SetSubPart(Utilities.FindFirstGameObjectMyselfOrChildren(this.Data.SubPartPath, this.gameObject)?.transform);
+                this.SetSubPart(Utilities.FindFirstGameObjectMyselfOrChildren("Device/DeviceFan", this.gameObject)?.transform);
+            fan1 = fanTransformBase.Find("fan1");
+            fan2 = fanTransformBase.Find("fan2");
         }
         
         public void SetSubPart(Transform subPart)
@@ -154,13 +156,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 UnityEngine.Object.Destroy((UnityEngine.Object) this._offset.gameObject);
                 this._offset = (Transform) null;
             }
-            this.fanTransform = subPart;
-            if (!((UnityEngine.Object) this.fanTransform != (UnityEngine.Object) null) || (double) this.Data.PositionOffset.magnitude <= 0.0)
+            this.fanTransformBase = subPart;
+            if (!((UnityEngine.Object) this.fanTransformBase != (UnityEngine.Object) null) || (double) this.Data.PositionOffset.magnitude <= 0.0)
                 return;
             this._offset = new GameObject("SubPartRotatorOffset").transform;
-            this._offset.SetParent(this.fanTransform.parent, false);
-            this._offset.position = this.fanTransform.TransformPoint(this.Data.PositionOffset);
-            this._offsetPositionInverse = this._offset.InverseTransformPoint(this.fanTransform.position);
+            this._offset.SetParent(this.fanTransformBase.parent, false);
+            this._offset.position = this.fanTransformBase.TransformPoint(this.Data.PositionOffset);
+            this._offsetPositionInverse = this._offset.InverseTransformPoint(this.fanTransformBase.position);
         }
         
         public void AnimateComponents(bool active)
@@ -173,7 +175,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if ((double) this.fanSpeed > 0.0)
             {
                 float zAngle = (float) (-(double) this.fanSpeed * 360.0 * 3.0) * Time.deltaTime;
-                fanTransform.Rotate(0.0f, 0.0f, zAngle);
+                fan1.Rotate(0.0f, 0.0f, zAngle);
+                fan2.Rotate(0.0f, 0.0f, -zAngle);
             }
         }
     }

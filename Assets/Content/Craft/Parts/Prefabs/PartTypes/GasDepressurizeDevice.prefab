@@ -80,7 +80,9 @@ MonoBehaviour:
   Data:
     _activationGroup: 0
     _category: {fileID: 11400000, guid: 7d2b6f557b8767544a162f30e61d22b6, type: 2}
-    _description: 
+    _description: 'Used to Depressurize high pressure gas to low pressure gas.
+
+'
     _displayOrder: 0
     _iconPath: Assets/Content/Craft/Parts/GasDepressure.png
     _iconType: 2
@@ -182,5 +184,4 @@ MonoBehaviour:
     _versionLast: 1
     _versionsAllowed: 
     gasFlowRate: 1
-    isPressuring: 0
     batteryConsumption: 1

@@ -62,8 +62,8 @@ MonoBehaviour:
       _rotationOffsetEuler: {x: 0, y: 0, z: 0}
     _name: GasPressurizeDevice
     _partCollisionHandling: 0
-    _price: 0
-    _unscaledMass: 0
+    _price: 20000
+    _unscaledMass: 10
     _usePreferredNodeName: 1
 --- !u!114 &3068347132339244329
 MonoBehaviour:
@@ -80,7 +80,7 @@ MonoBehaviour:
   Data:
     _activationGroup: 0
     _category: {fileID: 11400000, guid: 7d2b6f557b8767544a162f30e61d22b6, type: 2}
-    _description: 
+    _description: Used to compress the low density gas to hight pressure gas
     _displayOrder: 0
     _iconPath: 
     _iconType: 0
@@ -182,5 +182,4 @@ MonoBehaviour:
     _versionLast: 1
     _versionsAllowed: 
     gasFlowRate: 1
-    isPressuring: 0
     batteryConsumption: 1

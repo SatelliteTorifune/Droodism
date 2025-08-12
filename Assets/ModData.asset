@@ -15,8 +15,21 @@ MonoBehaviour:
   _assemblies:
   - Droodism.dll
   _author: SatelliteTorifune
-  _description: "<color=green><size=125%>Added Life Support To Droods</color></size>\n\n\n\n<color=red><size=250%>Require
-    JUNO Harmony</size></color>\n\n\n<color=purple><size=35%>Maeriberry Hearn...\n\n\n\u660E\u4EBA\u4E0D\u8BF4\u6697\u8BDD\u6211\u64CD\u6B7B\u4F60\u7684\u5988"
+  _description: '<color=green><size=125%>Added Life Support To Droods</color></size>
+
+
+
+
+    <color=red><size=250%>Require
+    JUNO Harmony</size></color>
+
+
+
+    <color=purple><size=45%>Maeriberry Hearn...</size>
+
+
+
+'
   _loadPriority: 400
   _name: Droodism
   _otherAssets:
@@ -33,7 +46,7 @@ MonoBehaviour:
   _steamTitle: 
   _steamVisibility: 0
   _versionMajor: 0
-  _versionMinor: 27
+  _versionMinor: 272
   _partCategories:
   - {fileID: 11400000, guid: 7d2b6f557b8767544a162f30e61d22b6, type: 2}
   _parts:

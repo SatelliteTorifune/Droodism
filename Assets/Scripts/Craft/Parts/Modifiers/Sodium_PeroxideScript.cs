@@ -16,7 +16,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
     public class Sodium_PeroxideScript : PartModifierScript<Sodium_PeroxideData>,IFlightStart, IDesignerStart,IFlightUpdate
     {
-        private IFuelSource waterSource, wastedWaterSource, _co2Source, _oxygenSource;
+        private IFuelSource  wastedWaterSource, _co2Source, _oxygenSource;
         private float oxygenGeneratedAmount = 0;
         private bool isUsedUp,isActive;
         private SubPartRotatorScript _rotatorScript;
@@ -40,12 +40,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 var patchScript = PartScript?.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
                 if (patchScript == null)
                 {
-                    wastedWaterSource=waterSource= _oxygenSource= _co2Source=null;
+                    wastedWaterSource= _oxygenSource= _co2Source=null;
                 }
 
                 if (patchScript != null)
                 {
-                    waterSource = patchScript.WaterFuelSource;
                     _oxygenSource=patchScript.OxygenFuelSource;
                     _co2Source=patchScript.CO2FuelSource;
                     wastedWaterSource=patchScript.WastedWaterFuelSource;
@@ -53,7 +52,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             catch (Exception)
             {
-                wastedWaterSource=waterSource= _oxygenSource= _co2Source=null;
+                wastedWaterSource= _oxygenSource= _co2Source=null;
             }
             
 
@@ -109,8 +108,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 {
                     if (_co2Source != null&&!_co2Source.IsEmpty)
                     {
-                        double num1 = Data.Co2ComsumeRate * frame.DeltaTimeWorld * Data.co2LevelInfluence *
-                                      (_co2Source.TotalFuel / _co2Source.TotalCapacity);
+                        double num1 = Data.Co2ComsumeRate * frame.DeltaTimeWorld * Data.co2LevelInfluence *Math.Max(0.02, (_co2Source.TotalFuel / _co2Source.TotalCapacity));
                         _co2Source.RemoveFuel(num1);
                         _oxygenSource.AddFuel(num1*this.Data.oxygenGeneratorScale);
                         oxygenGeneratedAmount += (float)num1;
