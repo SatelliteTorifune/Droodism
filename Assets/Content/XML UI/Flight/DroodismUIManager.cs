@@ -206,6 +206,7 @@ namespace Assets.Scripts
                 ModApi.Common.Game.Instance.FlightScene.CraftChanged+=OnCraftChanged;
                 ModApi.Common.Game.Instance.FlightScene.CraftStructureChanged += OnCraftStructureChanged;
                 ModApi.Common.Game.Instance.FlightScene.Initialized+=OnSceneInitialized;
+                ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.ActiveCommandPodChanged+=OnActiveCommandPodChanged;
                 Game.Instance.FlightScene.FlightEnded+=FlightSceneEnded;
 
             }
@@ -216,6 +217,12 @@ namespace Assets.Scripts
             Game.Instance.FlightScene.CraftChanged -= OnCraftChanged;
             Game.Instance.FlightScene.Initialized -= OnSceneInitialized;
             Game.Instance.FlightScene.FlightEnded -= FlightSceneEnded;
+            ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.ActiveCommandPodChanged-=OnActiveCommandPodChanged;
+        }
+
+        private void OnActiveCommandPodChanged(ICraftScript a, ICommandPod b, ICommandPod c)
+        {
+            
         }
         private void OnCraftChanged(ICraftNode craftNode)
         {
@@ -309,6 +316,8 @@ namespace Assets.Scripts
         IFuelSource fuelSource = GetIFuelSourceByID(fuelTypeId);
         bool isWasted = fuelTypeId.Contains("Wasted") || fuelTypeId == "CO2";
 
+        groupModel.Add(new TextModel("", () => ""));
+        groupModel.Add(new TextModel("", () => ""));
         // 添加燃料名称和数据（燃料量、消耗率、剩余时间）
         groupModel.Add(new TextModel(
             ModApi.Common.Game.Instance.PropulsionData.GetFuelType(fuelTypeId).Name,
@@ -420,7 +429,6 @@ namespace Assets.Scripts
         {
             DroodCountTotal = AstronautCount = TouristCount = 0;
             UpdateDroodCount();
-            UpdateFuelTransferMode();
             void UpdateDroodCount()
             {
                 foreach (var pd in ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.Data.Assembly.Parts)
@@ -441,12 +449,7 @@ namespace Assets.Scripts
                 }
             }
 
-            void UpdateFuelTransferMode()
-            {
-                inspectorPanel=null;
-                CreateInspectorPanel();
-
-            }
+            
         }
         
 
