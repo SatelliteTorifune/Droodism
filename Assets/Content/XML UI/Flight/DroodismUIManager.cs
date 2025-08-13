@@ -141,7 +141,7 @@ namespace Assets.Scripts
                 FuelAmountPercentageStr =FuelAmountPercentagestr, 
                 FuelConsumptionStr = "<color=#"+color+$">{fuelConsumptionStr}</color>",
                 TimeLeft = timeLeft,
-                FuelPercentage = (float)fuelPercentage
+                FuelPercentage = (float)fuelPercentage,
             };
             if (FuelMap.ContainsKey(fuelTypeId))
             {
@@ -269,6 +269,7 @@ namespace Assets.Scripts
         }
         
 
+        private Dictionary<string, IconButtonRowModel> FuelButtonRows = new Dictionary<string, IconButtonRowModel>();
         public void CreateInspectorPanel()
         {
             //大家好啊,我是分割线
@@ -284,6 +285,13 @@ namespace Assets.Scripts
             {
                 addFuelTypeTemplateItem(fuelTypeId);
             }
+
+            groupModel.Add(new TextButtonModel("Resources Fill,Waste Drain", b => setAllReciveMode()));
+            groupModel.Add(new TextButtonModel("Resources Drain,Waste Fill", b => setAllSendMode()));
+            groupModel.Add(new TextButtonModel("Reset All Transfer Mode", b => resetAllReciveMode()));
+            groupModel.Add(new TextButtonModel("Toggle", b => questionMark()));
+            groupModel.Add(new TextModel("", () => ""));
+            
             inspectorModel.AddGroup(groupModel);
             //大家好啊,我是分割线
             inspectorPanel = Game.Instance.UserInterface.CreateInspectorPanel(inspectorModel, new InspectorPanelCreationInfo()
@@ -308,29 +316,30 @@ namespace Assets.Scripts
                     () =>$"{FuelUIDataMap[fuelTypeId].FuelAmountPercentageStr}",
                     () => FuelUIDataMap.ContainsKey(fuelTypeId) ? FuelUIDataMap[fuelTypeId].FuelPercentage : 0f));
                 groupModel.Add(new TextModel("",()=>FuelUIDataMap[fuelTypeId].FuelConsumptionStr));
-                
+                //FuelTransferMode设置按钮
                     IconButtonRowModel iconButtonRowModel = new IconButtonRowModel();
                     IconButtonModel fuelTransferButtonNone = new IconButtonModel(
                         "Ui/Sprites/Flight/IconFuelTransferNone",
                         (Action<IconButtonModel>)(x =>
-                            fuelSource.FuelTransferMode = FuelTransferMode.None),
+                            SetFuelTransferMode(FuelTransferMode.None,fuelSource.FuelType.Id)),
                         "Disable fuel transfer.");
                     IconButtonModel fuelTransferButtonFill = new IconButtonModel(
                         "Ui/Sprites/Flight/IconFuelTransferFill",
                         (Action<IconButtonModel>)(x =>
-                            fuelSource.FuelTransferMode = FuelTransferMode.Fill),
+                            SetFuelTransferMode(FuelTransferMode.Fill,fuelSource.FuelType.Id)),
                         "Fills the tank during fuel transfer. Requires at least one other tank to be set to Drain.");
                     IconButtonModel fuelTransferButtonDrain = new IconButtonModel(
                         "Ui/Sprites/Flight/IconFuelTransferDrain",
                         (Action<IconButtonModel>)(x =>
-                            fuelSource.FuelTransferMode = FuelTransferMode.Drain),
+                            SetFuelTransferMode(FuelTransferMode.Drain,fuelSource.FuelType.Id)),
                         "Drains this tank during fuel transfer. Requires at least one other tank to be set to Fill.");
                     iconButtonRowModel.Add(fuelTransferButtonFill);
                     iconButtonRowModel.Add(fuelTransferButtonNone);
                     iconButtonRowModel.Add(fuelTransferButtonDrain);
+                    
                     iconButtonRowModel.UpdateAction = (Action<ItemModel>)(m =>
                     {
-                        FuelTransferMode fuelTransferMode = fuelSource.FuelTransferMode;
+                        FuelTransferMode fuelTransferMode =fuelSource.FuelTransferMode;
                         fuelTransferButtonNone.Style = fuelTransferMode == FuelTransferMode.None
                             ? ButtonModel.ButtonStyle.Primary
                             : ButtonModel.ButtonStyle.Default;
@@ -341,13 +350,65 @@ namespace Assets.Scripts
                             ? ButtonModel.ButtonStyle.Warning
                             : ButtonModel.ButtonStyle.Default;
                     });
+                    
 
                     groupModel.Add<IconButtonRowModel>(iconButtonRowModel);
-                    groupModel.Add(new TextModel("", () => ""));
+                    
+                    
+            }
+            void SetFuelTransferMode(FuelTransferMode fuelTransferMode,string fuelTypeId)
+            {
+                if (ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Data.PartType.Name.Contains("Eva"))
+                {
+                    return;
+                }
+                GetIFuelSourceByID(fuelTypeId).FuelTransferMode = fuelTransferMode;
+            }
+
+            void setAllReciveMode()
+            {
+                SetFuelTransferMode(FuelTransferMode.Fill,"Oxygen");
+                SetFuelTransferMode(FuelTransferMode.Fill,"H2O");
+                SetFuelTransferMode(FuelTransferMode.Fill,"Food");
+                SetFuelTransferMode(FuelTransferMode.Drain,"CO2");
+                SetFuelTransferMode(FuelTransferMode.Drain,"Wasted Water");
+                SetFuelTransferMode(FuelTransferMode.Drain,"Solid Waste");
+            }
+
+            void setAllSendMode()
+            {
+                SetFuelTransferMode(FuelTransferMode.Drain,"Oxygen");
+                SetFuelTransferMode(FuelTransferMode.Drain,"H2O");
+                SetFuelTransferMode(FuelTransferMode.Drain,"Food");
+                SetFuelTransferMode(FuelTransferMode.Fill,"CO2");
+                SetFuelTransferMode(FuelTransferMode.Fill,"Wasted Water");
+                SetFuelTransferMode(FuelTransferMode.Fill,"Solid Waste");
+            }
+
+            void resetAllReciveMode()
+            {
+                SetFuelTransferMode(FuelTransferMode.None,"Oxygen");
+                SetFuelTransferMode(FuelTransferMode.None,"H2O");
+                SetFuelTransferMode(FuelTransferMode.None,"Food");
+                SetFuelTransferMode(FuelTransferMode.None,"CO2");
+                SetFuelTransferMode(FuelTransferMode.None,"Wasted Water");
+                SetFuelTransferMode(FuelTransferMode.None,"Solid Waste");
+            
+            }
+
+            void questionMark()
+            {
+                foreach (var modelItem in groupModel.Items)
+                {
+                    
+                    Debug.Log(modelItem.Tooltip);
+                }
             }
         }
-            
-                  
+
+        
+
+
 
         #region 数据更新处理
 
@@ -355,6 +416,7 @@ namespace Assets.Scripts
         {
             DroodCountTotal = AstronautCount = TouristCount = 0;
             UpdateDroodCount();
+            UpdateFuelTransferMode();
             void UpdateDroodCount()
             {
                 foreach (var pd in ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.Data.Assembly.Parts)
@@ -374,7 +436,13 @@ namespace Assets.Scripts
 
                 }
             }
-            
+
+            void UpdateFuelTransferMode()
+            {
+                inspectorPanel=null;
+                CreateInspectorPanel();
+
+            }
         }
         
 
