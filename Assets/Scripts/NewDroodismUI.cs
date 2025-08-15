@@ -104,7 +104,7 @@ namespace Assets.Scripts
             component.GetElementByInternalId("FuelTypeName").SetText(Game.Instance.PropulsionData.GetFuelType(fuelType).Name);
             
             fuelPercentXMLItems.Add(component);
-            Debug.LogFormat("NewDroodismUI:AddFuelListItem:{0}", fuelType);
+            //Debug.LogFormat("NewDroodismUI:AddFuelListItem:{0}", fuelType);
             //Mod.Inctance.doShit();
         }
         private void AddFuelTransferModeItem(FuelTransferMode mode)

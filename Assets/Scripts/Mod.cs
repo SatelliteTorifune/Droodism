@@ -43,6 +43,15 @@ namespace Assets.Scripts
         public static Mod Inctance { get; } = GetModInstance<Mod>();
         private CraftScript Craft => Instance.Designer.CraftScript as CraftScript;
 
+        public override void OnModLoaded()
+        {
+            base.OnModLoaded();
+            GameObject DroodismUI=new GameObject("DroodismUI");
+            DroodismUI.AddComponent<DroodismUIManager>();
+            GameObject.DontDestroyOnLoad(DroodismUI);
+            DroodismUI.SetActive(true);
+        }
+
         public void OnSceneLoaded(object sender, SceneEventArgs e)
         {
             subPlus();
