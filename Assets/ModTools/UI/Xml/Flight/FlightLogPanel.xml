@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XmlLayout xmlns="http://www.w3schools.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\XmlLayout.xsd">
+  <Include path="Ui/Xml/Flight/FlightStyles.xml" />
+  <Defaults>
+    <TextMeshPro class="inspector-title" font="Ui/Fonts/Pirulen/pirulen rg SDF" color="LabelText" fontSize="12" preferredHeight="30" enableAutoSizing="true" fontSizeMax="14" fontSizeMin="8" alignment="Left" />
+    <Image class="inspector-panel-pin" color="LabelText" opacity="0.5" />
+    <Image class="inspector-panel-pin-selected" color="Primary" opacity="1.0" />
+    <Image class="inspector-panel-pin-hover" color="PrimaryHover" opacity="0.75" />
+    <Panel class="inspector-header" color="Button" translucency="0.15" raycastTarget="true" hoverClass="inspector-header-hover" />
+    <Panel class="inspector-header-hover" raycastTarget="true" translucency="0.10" color="ButtonHover" />
+    <Image class="log-entry" hoverClass="log-entry-hover" pressClass="log-entry-pressed" opacity="0" color="Black" />
+    <Image class="log-entry-hover" opacity="0.15" />
+    <Image class="log-entry-pressed" opacity="0.25" />
+  </Defaults>
+  <VerticalLayout id="flight-log-panel" class="translucent-panel-dark border draggable inspector-panel" translucency="0.15" padding="0 0 0 5" contentSizeFitter="vertical" childAlignment="LowerCenter" pivot="1 1" width="600" height="100" childForceExpandHeight="false" anchoredPosition="-300 300" anchorMin="1 0" anchorMax="1 0">
+    <!-- Header -->
+    <Panel class="inspector-header" color="DarkPanel" translucency="0" preferredHeight="30" onClick="OnMainHeaderClicked(this);">
+      <TextMeshPro internalId="title-text" class="inspector-title" text="Flight Log" margin="5 0 50 0" alignment="Left" />
+      <Image internalId="pin-button" class="inspector-panel-pin" width="28" height="28" offsetXY="-20 0" sprite="Ui/Sprites/Panel-Pin" rectAlignment="MiddleRight" onClick="OnPinClicked(this);" hoverClass="inspector-panel-pin-hover" />
+      <Image internalId="close-button" class="inspector-panel-pin" width="24" height="24" offsetXY="0 0" sprite="Ui/Sprites/Common/IconCloseFlyout" rectAlignment="MiddleRight" onClick="OnCloseClicked(this);" hoverClass="inspector-panel-pin-hover" />
+    </Panel>
+    <!-- Log Scrollview Panel -->
+    <VerticalScrollView class="no-image" internalId="scroll-view-log" pivot="0 1" preferredHeight="200" contentSizeFitter="vertical">
+      <Panel name="Log Entries" internalId="log-entries-content" width="100%" height="500" offsetXY="5 0">
+        <TextMeshPro internalId="template-log-entry" text="Testing 123" height="20" width="100%" alignment="Left" rectAlignment="UpperCenter" overflowMode="Ellipsis" active="false">
+          <Image class="log-entry" onClick="OnLogEntryClicked(this)" />
+        </TextMeshPro>
+      </Panel>
+    </VerticalScrollView>
+    <!-- Log Details Panel -->
+    <VerticalScrollView class="no-image" internalId="scroll-view-log-details" pivot="0 1" preferredHeight="60" contentSizeFitter="vertical" active="false">
+      <VerticalLayout class="no-image" contentSizeFitter="vertical" minHeight="60" padding="10 10 5 5" childAlignment="MiddleCenter" childForceExpandHeight="false" pivot="0 1">
+        <Image color="Black" opacity="0.3" ignoreLayout="true" width="100%" height="100%" offsetXY="5 0" />
+        <TextMeshPro internalId="log-entry-details-text" text="Testing 123" alignment="Left" rectAlignment="UpperCenter" offsetXY="5 5" />
+      </VerticalLayout>
+    </VerticalScrollView>
+  </VerticalLayout>
+</XmlLayout>

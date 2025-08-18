@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<GameObject name="Indicator1" path="Craft/Parts/Prefabs/Gauges/Indicator1.prefab">
+  <Component type="UnityEngine.MeshFilter" />
+  <Component type="UnityEngine.MeshRenderer" />
+  <Component type="ModApi.Craft.Parts.PartMeshScript" />
+</GameObject>

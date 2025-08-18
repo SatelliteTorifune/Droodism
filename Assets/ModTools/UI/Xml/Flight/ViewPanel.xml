@@ -1,0 +1,153 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XmlLayout xmlns="http://www.w3schools.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\XmlLayout.xsd">
+  <Include path="Ui/Xml/Flight/FlightStyles.xml" />
+  <Defaults>
+    <Image class="transparent" color="Transparent" />
+    <ContentButton class="view-button" color="Transparent" preferredHeight="40" preferredWidth="40" tooltipPosition="Below" hoverClass="view-button-hover" />
+    <Image class="view-button&gt;@Image" width="20" height="20" color="PanelButton" />
+    <Image class="view-button-hover&gt;@Image" color="PanelButtonHover" />
+    <Image class="selected&gt;@Image" color="Primary" />
+    <TextMeshPro class="selected&gt;@TextMeshPro" color="ValueText" />
+    <Image class="requirement-status-icon" sprite="Ui/Sprites/Flight/RequirementPass" color="Button" width="16" height="16" rectAlignment="MiddleLeft" tooltipPosition="Above" tooltip="This requirement is incomplete" />
+    <Image class="failed" sprite="Ui/Sprites/Flight/RequirementFail" color="Alert" tooltip="You have failed this requirement" />
+    <Image class="passed" sprite="Ui/Sprites/Flight/RequirementPass" color="Primary" tooltip="You have passed this requirement (for now)" />
+    <Panel class="contract-panel" hoverClass="contract-panel-hover" raycastTarget="true" />
+    <Panel class="contract-panel-hover" hoverClass="contract-panel-hover" color="Button" />
+    <Image class="feedback-star" sprite="Ui/Sprites/Menu/Star" preferredWidth="24" preferredHeight="24" color="ButtonText" raycastTarget="true" hoverClass="feedback-star-hover" />
+    <Image class="feedback-star-hover" color="ButtonHover" />
+    <Image class="feedback-star-selected" color="Primary" />
+    <Panel class="requirement" preferredHeight="20" />
+    <Panel class="requirement-tall" preferredHeight="40" />
+    <VerticalLayout class="contracts-panel" offsetXY="40 -40" device="mobile" />
+    <VerticalLayout class="contracts-panel" offsetXY="0 -40" device="desktop" />
+  </Defaults>
+  <HorizontalLayout class="flight-panel" height="40" rectAlignment="UpperLeft" pivot="0 1" spacing="0" contentSizeFitter="both" childForceExpandHeight="false" childForceExpandWidth="false">
+    <ContentButton name="ToggleMenu" class="view-button audio-btn-click" tooltip="Open the menu" onClick="OnToggleMenuButtonClicked();">
+      <Image sprite="Ui/Sprites/Common/IconMenu" />
+    </ContentButton>
+    <ContentButton name="ToggleMapView" id="toggle-map-view-button" class="view-button audio-btn-click" tooltip="Toggle Map View" onClick="OnMapViewButtonClicked();">
+      <Image sprite="Ui/Sprites/Flight/IconMapView" />
+    </ContentButton>
+    <ContentButton id="toggle-camera-panel-button" class="view-button audio-btn-click game-view-only" tooltip="Change camera view" onClick="OnToggleCameraPanelButtonClicked(this);">
+      <Image sprite="Ui/Sprites/Flight/IconChangeCamera" />
+    </ContentButton>
+    <!--<ContentButton class="view-button audio-btn-click map-view-only" tooltip="Camera Parts" onClick="OnSelectPlayer();">
+         <Image sprite="Ui/Sprites/MapView/IconPlayer" />
+      </ContentButton>-->
+    <ContentButton name="MapViewSearch" class="view-button audio-btn-click map-view-only" tooltip="Search for planets and crafts" onClick="OnSearchButtonClicked(this);">
+      <Image sprite="Ui/Sprites/Common/IconSearch" />
+    </ContentButton>
+    <ContentButton id="contracts-button" class="view-button audio-btn-click" tooltip="View active contracts" onClick="OnContractsButtonClicked(this);">
+      <Image sprite="Ui/Sprites/Common/IconButtonContracts" />
+    </ContentButton>
+    <ContentButton id="recenter-button" active="true" class="view-button audio-btn-click" onClick="OnRecenterButtonClicked();" tooltip="Re-center View on Target">
+      <Image sprite="Ui/Sprites/Flight/IconCameraRecenter" />
+    </ContentButton>
+    <Panel id="recenter-hint" name="recenter-hint" ignoreLayout="true" width="300" offsetXY="25 0" height="30" class="panel" color="Warning" pivot="0 0.5" rectAlignment="MiddleRight" active="false">
+      <Image class="header-arrow" color="Warning" pivot="0.5 0.5" offsetXY="-6 0" sprite="Ui/Sprites/Common/IconTriangleRight" width="24" height="16" rectAlignment="MiddleLeft" rotation="0 0 180" />
+      <TextMeshPro class="value" offsetXY="0 0" text="Click this to recenter your camera." />
+    </Panel>
+  </HorizontalLayout>
+  <VerticalLayout id="contracts-panel" class="flight-panel contracts-panel" active="false" width="450" rectAlignment="UpperLeft" pivot="0 1" spacing="5" contentSizeFitter="vertical" childForceExpandHeight="false" padding="5">
+    <Panel id="contract-template" preferredHeight="50" class="contract-panel" onClick="OnContractClicked(this);" raycastTarget="true" active="false">
+      <Image internalId="icon" class="requirement-status-icon" offsetXY="5 0" />
+      <TextMeshPro internalId="description" class="label" alignment="Left" offsetMin="35, 0" overflowMode="Ellipsis" />
+    </Panel>
+    <Panel id="no-contracts" preferredHeight="50" active="false">
+      <TextMeshPro class="label" alignment="Center" text="No Active Contracts" />
+    </Panel>
+    <Panel id="requirement-template" class="requirement" active="false">
+      <ContentButton internalId="button" active="false" class="view-button audio-btn-click" color="Button" onClick="OnRequirementClicked(this);" width="24" height="24" rectAlignment="MiddleLeft">
+        <Image internalId="button-icon" />
+      </ContentButton>
+      <Image internalId="icon" class="requirement-status-icon" offsetXY="35 0" />
+      <TextMeshPro internalId="description" class="label" alignment="Left" offsetMin="60 0" offsetMax="-100 0" overflowMode="Ellipsis" />
+      <TextMeshPro internalId="value" class="value" alignment="Right" offsetXY="-10 0" />
+    </Panel>
+    <Panel active="false" internalId="contract-feedback" preferredHeight="200">
+      <TextMeshPro color="Primary" text="Please send us your thoughts about this contract. Thanks!" alignment="Left" height="25" rectAlignment="UpperCenter" />
+      <VerticalLayout internalId="feedback-fun" offsetMax="0 -30" offsetMin="0 60" width="49%" rectAlignment="MiddleLeft" class="border" color="Black" translucency="0.05" padding="10">
+        <TextMeshPro text="How fun was it?" rectAlignment="MiddleLeft" color="ButtonText" />
+        <HorizontalLayout rectAlignment="MiddleRight" width="40%" spacing="10">
+          <Image class="feedback-star" internalId="Star-1" />
+          <Image class="feedback-star" internalId="Star-2" />
+          <Image class="feedback-star" internalId="Star-3" />
+          <Image class="feedback-star" internalId="Star-4" />
+          <Image class="feedback-star" internalId="Star-5" />
+        </HorizontalLayout>
+        <Panel preferredHeight="30">
+          <TextMeshPro text="Very&lt;br&gt;Boring" alignment="Left" fontSize="12" color="LabelText" />
+          <TextMeshPro text="Okay" alignment="Center" fontSize="12" color="LabelText" />
+          <TextMeshPro text="Very&lt;br&gt;Fun" alignment="Right" fontSize="12" color="LabelText" />
+        </Panel>
+      </VerticalLayout>
+      <VerticalLayout internalId="feedback-difficulty" offsetMax="0 -30" offsetMin="0 60" width="49%" rectAlignment="MiddleRight" class="border" color="Black" translucency="0.05" padding="10">
+        <TextMeshPro text="How difficult was it?" rectAlignment="MiddleLeft" color="ButtonText" />
+        <HorizontalLayout rectAlignment="MiddleRight" width="40%" spacing="10">
+          <Image class="feedback-star" internalId="Star-1" />
+          <Image class="feedback-star" internalId="Star-2" />
+          <Image class="feedback-star" internalId="Star-3" />
+          <Image class="feedback-star" internalId="Star-4" />
+          <Image class="feedback-star" internalId="Star-5" />
+        </HorizontalLayout>
+        <Panel preferredHeight="30" padding="5 5 5 5">
+          <TextMeshPro text="Too&lt;br&gt;Easy" alignment="Left" fontSize="12" color="LabelText" />
+          <TextMeshPro text="Just&lt;br&gt;Right" alignment="Center" fontSize="12" color="LabelText" />
+          <TextMeshPro text="Too&lt;br&gt;Hard" alignment="Right" fontSize="12" color="LabelText" />
+        </Panel>
+      </VerticalLayout>
+      <Panel height="30" rectAlignment="LowerCenter" offsetMin="0 25">
+        <Button internalId="cancel-button" class="btn" rectAlignment="MiddleLeft" width="49%">
+          <TextMeshPro text="NO THANKS" />
+        </Button>
+        <Button internalId="submit-button" class="btn btn-primary" rectAlignment="MiddleRight" width="49%">
+          <TextMeshPro text="SUBMIT FEEDBACK" />
+        </Button>
+      </Panel>
+    </Panel>
+    <Panel id="finish-contracts" preferredHeight="30" active="false">
+      <Button id="end-flight-button" class="btn btn-primary" rectAlignment="MiddleRight" width="40%" onClick="OnEndFlightButtonClicked();">
+        <TextMeshPro text="END FLIGHT" />
+      </Button>
+      <Button id="retry-button" class="btn btn-danger" rectAlignment="MiddleRight" width="40%" onClick="OnEndFlightButtonClicked();">
+        <TextMeshPro text="RETRY" />
+      </Button>
+    </Panel>
+  </VerticalLayout>
+  <HorizontalLayout id="camera-panel" class="flight-panel" active="false" height="40" rectAlignment="UpperLeft" offsetXY="0 -40" pivot="0 1" spacing="0" contentSizeFitter="both" childForceExpandHeight="false" childForceExpandWidth="false">
+    <ContentButton class="view-button audio-btn-click" id="camera-third-person" tooltip="Third Person" onClick="OnCameraModeClicked(this);" active="false">
+      <Image sprite="Ui/Sprites/Flight/IconCameraThirdPerson" />
+    </ContentButton>
+    <ContentButton class="view-button audio-btn-click" id="camera-first-person" tooltip="First Person" onClick="OnCameraModeClicked(this);" active="false">
+      <Image sprite="Ui/Sprites/Flight/IconCameraFirstPerson" />
+    </ContentButton>
+    <ContentButton class="view-button audio-btn-click" id="camera-planet-aligned" tooltip="Default View" onClick="OnCameraModeClicked(this);">
+      <Image sprite="Ui/Sprites/Flight/IconCameraPlanetAligned" />
+    </ContentButton>
+    <ContentButton class="view-button audio-btn-click" id="camera-space-aligned" tooltip="Space Aligned" onClick="OnCameraModeClicked(this);">
+      <Image sprite="Ui/Sprites/Flight/IconCameraSpaceAligned" />
+    </ContentButton>
+    <ContentButton class="view-button audio-btn-click" id="camera-orbit-chase" tooltip="Chase View" onClick="OnCameraModeClicked(this);">
+      <Image sprite="Ui/Sprites/Flight/IconCameraChase" />
+    </ContentButton>
+    <ContentButton class="view-button audio-btn-click" id="camera-orbit-sr1" tooltip="2D View" onClick="OnCameraModeClicked(this);">
+      <Image sprite="Ui/Sprites/Flight/IconCamera2D" />
+    </ContentButton>
+    <ContentButton class="view-button audio-btn-click" id="camera-fly-by-cinematic" tooltip="Fly-By Cinematic" onClick="OnCameraModeClicked(this);">
+      <Image sprite="Ui/Sprites/Flight/IconCameraFlyBy" />
+    </ContentButton>
+    <ContentButton class="view-button audio-btn-click" id="camera-fly-by-stationary" tooltip="Fly-By Stationary" onClick="OnCameraModeClicked(this);">
+      <Image sprite="Ui/Sprites/Flight/IconCameraFlyByStationary" />
+    </ContentButton>
+    <ContentButton class="view-button audio-btn-click" id="camera-parts" tooltip="Camera Parts" onClick="OnToggleCameraPartsPanelButtonClicked();">
+      <Image sprite="Ui/Sprites/Flight/IconCameraParts" />
+    </ContentButton>
+  </HorizontalLayout>
+  <VerticalLayout id="camera-parts-panel" class="flight-panel" active="false" height="40" width="200" rectAlignment="UpperLeft" offsetXY="40 -80" pivot="0 1" spacing="5" contentSizeFitter="vertical" childForceExpandHeight="false" padding="5">
+    <TextMeshPro id="no-camera-parts-text" text="No Camera Parts" />
+    <ContentButton id="camera-part-template" active="false" preferredHeight="25" class="btn" onClick="OnCameraModeClicked(this);">
+      <Image class="transparent" />
+      <TextMeshPro internalId="text" text="Camera Part" />
+    </ContentButton>
+  </VerticalLayout>
+</XmlLayout>

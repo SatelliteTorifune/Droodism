@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Part name="Sodium Peroxide Container">
+  <PartType id="Sodium Peroxide Container" includeInBodyDrag="true" name="Sodium Peroxide Container" prefabPath="Assets/Resources/Craft/Parts/Prefabs/Sodium Peroxide Container.prefab" mass="10" price="10000" partCollisions="Default" defaultMaterials="0,1,2,3,4" subpartsSharePartStyle="false" stylesShareHeader="false">
+    <Modifiers>
+      <Config autoActivateIfNoStageOrActivationGroup="false" buoyancyBaseScale="1" buoyancyUserScale="1" castShadows="true" centerOfMass="0,0,0" collisionDisconnectImpulse="1000" collisionDisconnectVelocity="15" collisionExplodeImpulse="2000" collisionExplodeVelocity="30" collisionPreventExternalDisconnections="false" collisionVelocityMode="NormalOnly" dragScale="1" dragScaleActive="1" dragScaleAngular="1" explosiveness="0" fuelLine="true" heatShield="0" heatShieldBaseScale="1" heatShieldMass="0" heatShieldScale="-1" heatShieldValidation="true" ignoreValidation="false" includeInDrag="true" inertiaTensorBaseScale="1" inertiaTensorMin="0.05" inertiaTensorUserScale="1" initialCraftNodeId="-1" massScale="1" maxDamage="100" maxDrag="0" maxDragActive="0" maxTemperature="1500" occlusion="Auto" partCollisionHandling="Default" partCollisionResponse="Default" partScale="1,1,1" partSelectionEnabled="true" preventDebris="false" priceScale="1" raiseWaterEventsEvenIfNotBuoyant="false" renderQueue="Default" stageActivationType="None" supportsActivation="true" supportsTransparency="true" thermalMassRatio="1" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
+      <SodiumPeroxide co2LevelInfluence="5" oxygenGeneratorScale="1" maxOxygenGenerateAmount="200" co2ComsumeRate="1" wastedWaterComsumeRate="200" waterComsumeRate="200" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
+      <SubPartRotator adjustableRate="true" angleLerp="Quaternion" currentEnabledPercent="0" designerIconEnabledPercent="0" disabledRotation="0,0,0" enabledRotation="0,180,0" positionOffset="0,0,0" rotationRate="0.5" rotationSpeed="1" selfGoverned="true" startEnabled="false" startEnabledLabel="Start Deploy(not recommend)" subPartPath="Na2O2container/Na2O2cap" syncActivationGroup="true" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
+    </Modifiers>
+    <AttachPoints>
+      <AttachPoint name="AttachPoint1" displayName="Side Connection" position="0,0,0.13" rotation="0,0,0" positionOffset="0,0,0" rotationOffset="0,0,0" allowRotation="true" allowInvertedConnection="false" canReceive="true" canSeek="true" ignoreSurfaces="false" radius="1" fuelLine="true" />
+    </AttachPoints>
+    <SubpartTypes>
+      <SubpartType index="0" xmlName="" displayName="Part" />
+    </SubpartTypes>
+  </PartType>
+  <DesignerParts>
+    <DesignerPart name="Sodium Peroxide Container" category="LifeSupport" description="Taking in CO2/Wasted Water and Give out &lt;color=green&gt;Oxygen&lt;/color&gt; when emergency,does not require electricity charge to work|" order="0" showInDesigner="true" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
+      <Assembly>
+        <Parts>
+          <Part id="1" partType="Sodium Peroxide Container" position="0,0,0" rotation="0,0,0">
+            <Config />
+            <SodiumPeroxide />
+            <SubPartRotator />
+          </Part>
+        </Parts>
+      </Assembly>
+    </DesignerPart>
+  </DesignerParts>
+  <PartStyles>
+    <SubpartStyles subpartIndex="0">
+      <Style id="Default" displayName="Default" />
+    </SubpartStyles>
+  </PartStyles>
+</Part>

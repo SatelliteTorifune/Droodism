@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XmlLayout xmlns="http://www.w3schools.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\XmlLayout.xsd">
+  <Include path="Ui/Xml/Styles.xml" />
+  <Defaults></Defaults>
+  <Panel id="panel" showAnimation="FadeIn" hideAnimation="FadeOut" animationDuration="0.1" class="dialog-background">
+    <VerticalLayout id="form" width="400" contentSizeFitter="vertical" spacing="0" padding="25">
+      <Panel ignoreLayout="true" class="translucent-panel border"></Panel>
+      <VerticalLayout contentSizeFitter="vertical" spacing="0" padding="0">
+        <TextMeshPro id="header-text" class="text-header" text="NEW GAME" preferredHeight="40" />
+        <Panel preferredHeight="10" />
+        <Panel class="row" padding="0">
+          <TextMeshProInputField id="name-input" text="" characterLimit="50">
+            <TMP_Placeholder text="Company Name" alignment="Center" />
+            <TMP_Text text="" alignment="Center" />
+          </TextMeshProInputField>
+        </Panel>
+        <Panel preferredHeight="25" />
+        <TextMeshPro class="text-subheader" text="GAME TYPE" preferredHeight="30" />
+        <Panel preferredHeight="10" />
+        <Panel class="row toggle-buttons" rectAlignment="UpperCenter" preferredHeight="30">
+          <ToggleGroup>
+            <ToggleButton id="toggle-career" isOn="true" onValueChanged="OnGameTypeChanged(true);">
+              <TextMeshPro text="Career" />
+            </ToggleButton>
+            <ToggleButton id="toggle-sandbox" rectAlignment="MiddleRight" onValueChanged="OnGameTypeChanged(false);">
+              <TextMeshPro text="Sandbox" />
+            </ToggleButton>
+          </ToggleGroup>
+        </Panel>
+        <Panel class="translucent-panel-dark" preferredHeight="100" padding="10">
+          <TextMeshPro id="description-career" color="LabelText" text="Complete contracts, conquer milestones, and explore landmarks to earn money and tech points. Unlock new parts and capabilities in the Tech Tree." active="false" />
+          <TextMeshPro id="description-sandbox" color="LabelText" text="There is no money and no research in Sandbox Mode. All parts are unlocked so you can build whatever you want right from the start." />
+        </Panel>
+        <VerticalLayout id="planetary-system-panel" preferredHeight="90" padding="0 0 10 0">
+          <Panel preferredHeight="10" active="true" />
+          <TextMeshPro class="text-subheader" text="PLANETARY SYSTEM" preferredHeight="30" active="true" />
+          <Panel preferredHeight="10" active="true" />
+          <Button id="planetary-system-button" class="btn audio-btn-back" onClick="OnPlanetarySystemButtonClicked();">
+            <TextMeshPro text="Planetary System Name" />
+          </Button>
+        </VerticalLayout>
+        <VerticalLayout id="career-selector-panel" preferredHeight="90" padding="0 0 10 0" active="false">
+          <Panel preferredHeight="10" active="true" />
+          <TextMeshPro class="text-subheader" text="CAREER MODE" preferredHeight="30" active="true" />
+          <Panel preferredHeight="10" active="true" />
+          <Button class="btn audio-btn-back" onClick="OnCareerSelectorButtonClicked();">
+            <TextMeshPro id="career-name-text" />
+          </Button>
+        </VerticalLayout>
+        <Panel preferredHeight="20" />
+        <TextMeshPro id="validation-text" color="Warning" text="Please enter a Company Name above." active="false" margin="0 0 0 5" />
+      </VerticalLayout>
+      <Image preferredHeight="1" color="Border" />
+      <HorizontalLayout preferredHeight="50" spacing="20" childForceExpandHeight="false" padding="0 0 20 0">
+        <Button id="cancel-button" class="btn audio-btn-back" onClick="OnCancelButtonClicked();">
+          <TextMeshPro text="CANCEL" />
+        </Button>
+        <Button id="okay-button" class="btn btn-primary audio-btn-big" onClick="OnOkayButtonClicked();">
+          <TextMeshPro text="OKAY" />
+        </Button>
+      </HorizontalLayout>
+    </VerticalLayout>
+    <TextMeshPro id="loading" text="Loading..." active="false" />
+  </Panel>
+</XmlLayout>

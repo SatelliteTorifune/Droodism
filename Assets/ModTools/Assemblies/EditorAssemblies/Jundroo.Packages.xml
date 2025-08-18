@@ -1,0 +1,1771 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Jundroo.Packages</name>
+    </assembly>
+    <members>
+        <member name="T:Jundroo.Services.Ads.AdLoader">
+            <summary>
+            A class used for loading ads.
+            </summary>
+        </member>
+        <member name="M:Jundroo.Services.Ads.AdLoader.LoadInterstitialAdAsync(System.String,System.Collections.Generic.ICollection{System.String},System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Asynchronously loads an interstitial ad.
+            </summary>
+            <param name="adUnitId">The ad unit identifier.</param>
+            <param name="keywords">The keywords for the ad request.</param>
+            <param name="extras">The extras settings for the ad request.</param>
+            <returns>The asynchronous task that returns the loaded interstitial ad or <c>null</c> if the ad failed to load.</returns>
+        </member>
+        <member name="T:Jundroo.Services.Ads.AdLoggingFlags">
+            <summary>
+            An enumeration defining the different flags used for logging in the advertisement framework.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Ads.AdLoggingFlags.Default">
+            <summary>
+            The default logging option.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Ads.AdLoggingFlags.LogAdEvents">
+            <summary>
+            An option used to log all ad events (clicked, opened, etc).
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Ads.AdLoggingFlags.LogAdLoads">
+            <summary>
+            An option used to log when ads successfully load.
+            </summary>
+        </member>
+        <member name="T:Jundroo.Services.Ads.AdManagerBase`2">
+            <summary>
+            A base class mono behaviour used to manage advertising related functionality.
+            This manager can pre-load, cache, and server ads for the game.
+            Implements the <see cref="T:UnityEngine.MonoBehaviour" />
+            </summary>
+            <typeparam name="TAdManager">The type of the ad manager.</typeparam>
+            <typeparam name="TAdManagerConfig">The type of the ad manager configuration.</typeparam>
+            <seealso cref="T:UnityEngine.MonoBehaviour" />
+        </member>
+        <member name="F:Jundroo.Services.Ads.AdManagerBase`2._nextAdId">
+            <summary>
+            The next ad identifier.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Ads.AdManagerBase`2._stopwatch">
+            <summary>
+            The stopwatch, used for threadsafe time tracking.
+            </summary>
+        </member>
+        <member name="T:Jundroo.Services.Ads.AdManagerBase`2.PreloadedAdStatus">
+            <summary>
+            An enumeration defining the different status types of preloaded ads.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Ads.AdManagerBase`2.PreloadedAdStatus.Unknown">
+            <summary>
+            An unknown status type.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Ads.AdManagerBase`2.PreloadedAdStatus.Loading">
+            <summary>
+            A status indicating that the ad is loading.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Ads.AdManagerBase`2.PreloadedAdStatus.Loaded">
+            <summary>
+            A status indicating that the ad is loaded.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Ads.AdManagerBase`2.PreloadedAdStatus.LoadFailed">
+            <summary>
+            A status indicating that the ad has failed to load.
+            </summary>
+        </member>
+        <member name="P:Jundroo.Services.Ads.AdManagerBase`2.AdLoadCooldownTime">
+            <summary>
+            Gets the ad load cool-down time (in seconds).
+            </summary>
+            <value>The ad load cool-down time (in seconds).</value>
+        </member>
+        <member name="P:Jundroo.Services.Ads.AdManagerBase`2.Config">
+            <summary>
+            Gets the configuration.
+            </summary>
+            <value>The configuration.</value>
+        </member>
+        <member name="P:Jundroo.Services.Ads.AdManagerBase`2.PreloadedInterstitialAds">
+            <summary>
+            Gets the preloaded interstitial ads.
+            </summary>
+            <value>The preloaded interstitial ads.</value>
+        </member>
+        <member name="M:Jundroo.Services.Ads.AdManagerBase`2.Create(UnityEngine.GameObject,`1)">
+            <summary>
+            Creates the ad manager.
+            </summary>
+            <param name="parentGameObject">The parent game object.</param>
+            <param name="config">The configuration.</param>
+            <returns>The requested ad manager.</returns>
+        </member>
+        <member name="M:Jundroo.Services.Ads.AdManagerBase`2.GetInterstitialAd">
+            <summary>
+            Gets a loaded interstitial ad that is ready to be shown.
+            This will return <c>null</c> if there is no pre-loaded ad ready.
+            </summary>
+            <returns>The requested ad or <c>null</c> if there is no pre-loaded ad available.</returns>
+        </member>
+        <member name="M:Jundroo.Services.Ads.AdManagerBase`2.UpdateConfiguration(`1)">
+            <summary>
+            Updates the configuration.
+            </summary>
+            <param name="config">The configuration.</param>
+        </member>
+        <member name="M:Jundroo.Services.Ads.AdManagerBase`2.OnConfigurationUpdated">
+            <summary>
+            Called when the configuration is updated.
+            </summary>
+        </member>
+        <member name="M:Jundroo.Services.Ads.AdManagerBase`2.PreloadAds">
+            <summary>
+            Pre-loads ads as needed.
+            </summary>
+        </member>
+        <member name="M:Jundroo.Services.Ads.AdManagerBase`2.PreloadAds``1(System.Collections.Generic.List{Jundroo.Services.Ads.AdManagerBase{`0,`1}.PreloadedAd{``0}},System.Int32)">
+            <summary>
+            Pre-loads ads as needed.
+            </summary>
+            <typeparam name="T">The type of the ads to pre-load.</typeparam>
+            <param name="preloadedAds">The preloaded ads.</param>
+            <param name="maxCached">The maximum number of cached ads.</param>
+        </member>
+        <member name="M:Jundroo.Services.Ads.AdManagerBase`2.UnloadInvalidAndExpiredAds``1(System.Collections.Generic.List{Jundroo.Services.Ads.AdManagerBase{`0,`1}.PreloadedAd{``0}})">
+            <summary>
+            Unloads the invalid and expired ads.
+            </summary>
+            <typeparam name="T">The type of the ads.</typeparam>
+            <param name="preloadedAds">The preloaded ads.</param>
+        </member>
+        <member name="M:Jundroo.Services.Ads.AdManagerBase`2.UnloadInvalidAndExpiredAds">
+            <summary>
+            Unloads the invalid and expired ads.
+            </summary>
+        </member>
+        <member name="M:Jundroo.Services.Ads.AdManagerBase`2.Update">
+            <summary>
+            Update is called every frame, if the MonoBehaviour is enabled.
+            </summary>
+        </member>
+        <member name="T:Jundroo.Services.Ads.AdManagerBase`2.AdManagerConfigurationBase">
+            <summary>
+            A class representing configuration of the <see cref="T:Jundroo.Services.Ads.AdManagerBase`2"/>
+            </summary>
+        </member>
+        <member name="P:Jundroo.Services.Ads.AdManagerBase`2.AdManagerConfigurationBase.AdUnitId">
+            <summary>
+            Gets or sets the ad unit identifier.
+            </summary>
+            <value>
+            The ad unit identifier.
+            </value>
+        </member>
+        <member name="P:Jundroo.Services.Ads.AdManagerBase`2.AdManagerConfigurationBase.FailedAdLoadRetryCooldownTime">
+            <summary>
+            Gets or sets the retry cool-down time (in seconds) for failed ad loads.
+            </summary>
+            <value>The retry cool-down time (in seconds) for failed ad loads.</value>
+        </member>
+        <member name="P:Jundroo.Services.Ads.AdManagerBase`2.AdManagerConfigurationBase.MaxCachedInterstitialAds">
+            <summary>
+            Gets or sets the maximum number of cached interstitial ads.
+            </summary>
+            <value>The maximum number of cached interstitial ads.</value>
+        </member>
+        <member name="T:Jundroo.Services.Ads.AdManagerBase`2.PreloadedAd`1">
+            <summary>
+            A class representing a preloaded (or preloading) ad.
+            </summary>
+            <typeparam name="T">The type of the ad.</typeparam>
+        </member>
+        <member name="P:Jundroo.Services.Ads.AdManagerBase`2.PreloadedAd`1.Ad">
+            <summary>
+            Gets or sets the actual ad reference.
+            </summary>
+            <value>The actual ad reference.</value>
+        </member>
+        <member name="P:Jundroo.Services.Ads.AdManagerBase`2.PreloadedAd`1.Id">
+            <summary>
+            Gets or sets the identifier of the ad.
+            This is simply an ever incrementing integer value of no consequence.
+            </summary>
+            <value>The identifier of the ad.</value>
+        </member>
+        <member name="P:Jundroo.Services.Ads.AdManagerBase`2.PreloadedAd`1.LoadCompletedTime">
+            <summary>
+            Gets or sets the time at which the load completed.
+            </summary>
+            <value>The time at which the load completed.</value>
+        </member>
+        <member name="P:Jundroo.Services.Ads.AdManagerBase`2.PreloadedAd`1.LoadStartedTime">
+            <summary>
+            Gets or sets the time at which the load started.
+            </summary>
+            <value>The time at which the load started.</value>
+        </member>
+        <member name="P:Jundroo.Services.Ads.AdManagerBase`2.PreloadedAd`1.Status">
+            <summary>
+            Gets or sets the status of the preloaded ad.
+            </summary>
+            <value>The status of the preloaded ad.</value>
+        </member>
+        <member name="T:Jundroo.Services.Ads.AdsService">
+            <summary>
+            A static service class for interacting with the advertising service.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Ads.AdsService._initialized">
+            <summary>
+            A value indicating whether the service has been initialized.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Ads.AdsService._mobileAdsInitialized">
+            <summary>
+            A value indicating whether the mobile ads framework has been initialized this session.
+            </summary>
+        </member>
+        <member name="P:Jundroo.Services.Ads.AdsService.CanModifyPrivacyOptions">
+            <summary>
+            Gets a value indicating whether the user can modify their privacy options.
+            </summary>
+            <value><c>true</c> if the user can modify their privacy options; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:Jundroo.Services.Ads.AdsService.Enabled">
+            <summary>
+            Gets a value indicating whether advertising is currently enabled.
+            </summary>
+            <value><c>true</c> if advertising is currently enabled; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:Jundroo.Services.Ads.AdsService.EnabledInBuild">
+            <summary>
+            Gets a value indicating whether advertisement services are enabled in this build.
+            </summary>
+            <value><c>true</c> if advertisement services are enabled in this build; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:Jundroo.Services.Ads.AdsService.ForceTestAdsOnly">
+            <summary>
+            Gets a value indicating whether the service will force all ads that are served to be test ads.
+            This should only ever be used for development/debugging purposes.
+            </summary>
+            <value><c>true</c> if the service will force all ads that are served to be test ads; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:Jundroo.Services.Ads.AdsService.Initialized">
+            <summary>
+            Gets a value indicating whether this service is initialized.
+            This will always return <c>false</c> if the service is not enabled in the build.
+            </summary>
+            <value><c>true</c> if initialized; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:Jundroo.Services.Ads.AdsService.LoggingFlags">
+            <summary>
+            Gets the flags used to determine what the advertisement framework sends to the game log.
+            </summary>
+            <value>The flags used to determine what the advertisement framework sends to the game log.</value>
+        </member>
+        <member name="M:Jundroo.Services.Ads.AdsService.Initialize(Jundroo.Services.Ads.AdsService.InitializationParameters)">
+            <summary>
+            Initializes the Ads Services.
+            </summary>
+            <param name="initParams">The initialize parameters.</param>
+            <returns>The async task.</returns>
+        </member>
+        <member name="M:Jundroo.Services.Ads.AdsService.ResetConsentInformation">
+            <summary>
+            Resets the consent information.
+            </summary>
+        </member>
+        <member name="M:Jundroo.Services.Ads.AdsService.SetApplicationVolume(System.Single)">
+            <summary>
+            Sets the application volume for the ads service.
+            </summary>
+            <param name="volume">The volume value ranging from 0.0 (silent) to 1.0 (current device volume).</param>
+        </member>
+        <member name="M:Jundroo.Services.Ads.AdsService.ShowPrivacyOptionsForm">
+            <summary>
+            Shows the privacy options form, reacting to any changes as needed.
+            </summary>
+        </member>
+        <member name="T:Jundroo.Services.Ads.AdsService.InitializationParameters">
+            <summary>
+            The initialization parameters for the service.
+            </summary>
+        </member>
+        <member name="M:Jundroo.Services.Ads.AdsService.InitializationParameters.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jundroo.Services.Ads.AdsService.InitializationParameters"/> class.
+            </summary>
+        </member>
+        <member name="M:Jundroo.Services.Ads.AdsService.InitializationParameters.#ctor(System.Boolean,System.Boolean,Jundroo.Services.Ads.AdLoggingFlags,Jundroo.Services.Ads.DebugGeography,System.Collections.Generic.List{System.String})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jundroo.Services.Ads.AdsService.InitializationParameters" /> class.
+            </summary>
+            <param name="underAgeOfConsent">If set to <c>true</c>, the user is under the age of consent.</param>
+            <param name="resetConsentInformation">If set to <c>true</c>, consent information will be reset during initialization. (for debug purposes only)</param>
+            <param name="loggingFlags">The logging flags used to determine what the advertisement framework sends to the game log.</param>
+            <param name="debugGeography">A value indicating which geography setting should be used to override the user's current geography for debug purposes.</param>
+            <param name="testDeviceIds">The test device ids.</param>
+        </member>
+        <member name="P:Jundroo.Services.Ads.AdsService.InitializationParameters.DebugGeography">
+            <summary>
+            Gets or sets a value indicating which geography setting should be used to override the user's current geography for debug purposes.
+            </summary>
+            <value>A value indicating which geography setting should be used to override the user's current geography for debug purposes.</value>
+        </member>
+        <member name="P:Jundroo.Services.Ads.AdsService.InitializationParameters.ForceTestAdsOnly">
+            <summary>
+            Gets or sets a value indicating whether the service will force all ads that are served to be test ads.
+            This should only ever be used for development/debugging purposes.
+            </summary>
+            <value><c>true</c> if the service will force all ads that are served to be test ads; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:Jundroo.Services.Ads.AdsService.InitializationParameters.LoggingFlags">
+            <summary>
+            Gets or sets the logging flags.
+            </summary>
+            <value>The logging flags.</value>
+        </member>
+        <member name="P:Jundroo.Services.Ads.AdsService.InitializationParameters.ResetConsentInformation">
+            <summary>
+            Gets or sets a value indicating whether consent information will be reset during initialization (for debug purposes only).
+            </summary>
+            <value><c>true</c> if consent information will be reset during initialization (for debug purposes only); otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:Jundroo.Services.Ads.AdsService.InitializationParameters.TestDeviceIds">
+            <summary>
+            Gets or sets the test device ids.
+            </summary>
+            <value>The test device ids.</value>
+        </member>
+        <member name="P:Jundroo.Services.Ads.AdsService.InitializationParameters.UnderAgeOfConsent">
+            <summary>
+            Gets or sets a value indicating whether the user is under the age of consent.
+            </summary>
+            <value>A value indicating whether the user is under the age of consent.</value>
+        </member>
+        <member name="T:Jundroo.Services.Ads.AdValue">
+            <summary>
+            A class representing a financial value associated with an ad.
+            </summary>
+        </member>
+        <member name="M:Jundroo.Services.Ads.AdValue.#ctor(System.Int64,Jundroo.Services.Ads.AdValue.PrecisionType,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jundroo.Services.Ads.AdValue"/> class.
+            </summary>
+            <param name="value">The financial value.</param>
+            <param name="precision">The precision of the value.</param>
+            <param name="currencyCode">The currency code associated with the value.</param>
+        </member>
+        <member name="T:Jundroo.Services.Ads.AdValue.PrecisionType">
+            <summary>
+            An enumeration defining the precision type of the financial data.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Ads.AdValue.PrecisionType.Unknown">
+            <summary>
+            The precision of the value is unknown.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Ads.AdValue.PrecisionType.Estimated">
+            <summary>
+            The value is estimated.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Ads.AdValue.PrecisionType.PublisherProvided">
+            <summary>
+            The value is provided by the publisher.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Ads.AdValue.PrecisionType.Precise">
+            <summary>
+            The value is precise.
+            </summary>
+        </member>
+        <member name="P:Jundroo.Services.Ads.AdValue.CurrencyCode">
+            <summary>
+            Gets or sets the currency code associated with the value.
+            </summary>
+            <value>The currency code associated with the value.</value>
+        </member>
+        <member name="P:Jundroo.Services.Ads.AdValue.Precision">
+            <summary>
+            Gets or sets the precision of the value.
+            </summary>
+            <value>The precision of the value.</value>
+        </member>
+        <member name="P:Jundroo.Services.Ads.AdValue.Value">
+            <summary>
+            Gets or sets the financial value.
+            </summary>
+            <value>The financial value.</value>
+        </member>
+        <member name="M:Jundroo.Services.Ads.AdValue.ToString">
+            <summary>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </summary>
+            <returns>A <see cref="T:System.String" /> that represents this instance.</returns>
+        </member>
+        <member name="T:Jundroo.Services.Ads.DebugGeography">
+            <summary>
+            An enumeration defining different debug states for the user's geography with regards to the advertising service.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Ads.DebugGeography.Disabled">
+            <summary>
+            Geography will not be overridden.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Ads.DebugGeography.EEA">
+            <summary>
+            Geography will be overridden for debug purposes to indicate the user is within the European Economic Area (EEA).
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Ads.DebugGeography.NotEEA">
+            <summary>
+            Geography will be overridden for debug purposes to indicate the user is outside of the European Economic Area (EEA).
+            </summary>
+        </member>
+        <member name="T:Jundroo.Services.Ads.Events.InterstitialAdErrorEventArgs">
+            <summary>
+            Event arguments for an error event of an interstitial ad.
+            Implements the <see cref="T:System.EventArgs" />
+            </summary>
+            <seealso cref="T:System.EventArgs" />
+        </member>
+        <member name="M:Jundroo.Services.Ads.Events.InterstitialAdErrorEventArgs.#ctor(Jundroo.Services.Ads.IInterstitialAd,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jundroo.Services.Ads.Events.InterstitialAdErrorEventArgs" /> class.
+            </summary>
+            <param name="ad">The ad associated with the event.</param>
+            <param name="error">The error message.</param>
+        </member>
+        <member name="P:Jundroo.Services.Ads.Events.InterstitialAdErrorEventArgs.Ad">
+            <summary>
+            Gets the ad associated with the event.
+            </summary>
+            <value>The ad associated with the event.</value>
+        </member>
+        <member name="P:Jundroo.Services.Ads.Events.InterstitialAdErrorEventArgs.Error">
+            <summary>
+            Gets the error message.
+            </summary>
+            <value>The error message.</value>
+        </member>
+        <member name="T:Jundroo.Services.Ads.Events.InterstitialAdEventArgs">
+            <summary>
+            Event arguments for events related to an interstitial ad.
+            Implements the <see cref="T:System.EventArgs" />
+            </summary>
+            <seealso cref="T:System.EventArgs" />
+        </member>
+        <member name="M:Jundroo.Services.Ads.Events.InterstitialAdEventArgs.#ctor(Jundroo.Services.Ads.IInterstitialAd)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jundroo.Services.Ads.Events.InterstitialAdEventArgs"/> class.
+            </summary>
+            <param name="ad">The ad associated with the event.</param>
+        </member>
+        <member name="P:Jundroo.Services.Ads.Events.InterstitialAdEventArgs.Ad">
+            <summary>
+            Gets the ad associated with the event.
+            </summary>
+            <value>The ad associated with the event.</value>
+        </member>
+        <member name="T:Jundroo.Services.Ads.Events.InterstitialAdPaidEventArgs">
+            <summary>
+            Event arguments for the paid event of an interstitial ad.
+            Implements the <see cref="T:System.EventArgs" />
+            </summary>
+            <seealso cref="T:System.EventArgs" />
+        </member>
+        <member name="M:Jundroo.Services.Ads.Events.InterstitialAdPaidEventArgs.#ctor(Jundroo.Services.Ads.IInterstitialAd,Jundroo.Services.Ads.AdValue)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jundroo.Services.Ads.Events.InterstitialAdPaidEventArgs" /> class.
+            </summary>
+            <param name="ad">The ad associated with the event.</param>
+            <param name="adValue">The ad value.</param>
+        </member>
+        <member name="P:Jundroo.Services.Ads.Events.InterstitialAdPaidEventArgs.Ad">
+            <summary>
+            Gets the ad associated with the event.
+            </summary>
+            <value>The ad associated with the event.</value>
+        </member>
+        <member name="P:Jundroo.Services.Ads.Events.InterstitialAdPaidEventArgs.AdValue">
+            <summary>
+            Gets the ad value.
+            </summary>
+            <value>The ad value.</value>
+        </member>
+        <member name="T:Jundroo.Services.Ads.IAd">
+            <summary>
+            An interface for an ad.
+            </summary>
+        </member>
+        <member name="M:Jundroo.Services.Ads.IAd.CanShowAd">
+            <summary>
+            Determines whether the ad can be shown.
+            </summary>
+            <returns><c>true</c> if the ad can be shown; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:Jundroo.Services.Ads.IAd.Destroy">
+            <summary>
+            Destroys the ad.
+            </summary>
+        </member>
+        <member name="M:Jundroo.Services.Ads.IAd.Show">
+            <summary>
+            Shows the ad.
+            </summary>
+        </member>
+        <member name="T:Jundroo.Services.Ads.IInterstitialAd">
+            <summary>
+            An interface for an interstitial ad.
+            </summary>
+        </member>
+        <member name="E:Jundroo.Services.Ads.IInterstitialAd.AdClicked">
+            <summary>
+            Occurs when the ad is clicked.
+            </summary>
+        </member>
+        <member name="E:Jundroo.Services.Ads.IInterstitialAd.AdClosed">
+            <summary>
+            Occurs when the ad is closed.
+            </summary>
+        </member>
+        <member name="E:Jundroo.Services.Ads.IInterstitialAd.AdFailed">
+            <summary>
+            Occurs when the ad failed to open.
+            </summary>
+        </member>
+        <member name="E:Jundroo.Services.Ads.IInterstitialAd.AdImpression">
+            <summary>
+            Occurs when an impression has been recorded for the ad.
+            </summary>
+        </member>
+        <member name="E:Jundroo.Services.Ads.IInterstitialAd.AdOpened">
+            <summary>
+            Occurs when the ad is opened.
+            </summary>
+        </member>
+        <member name="E:Jundroo.Services.Ads.IInterstitialAd.AdPaid">
+            <summary>
+            Occurs when the ad is estimated to have earned money.
+            </summary>
+        </member>
+        <member name="M:Jundroo.Services.Ads.IInterstitialAd.ShowAsync">
+            <summary>
+            Shows the ad asynchronously.
+            </summary>
+            <returns>The task for the async call.</returns>
+        </member>
+        <member name="T:Jundroo.Services.Ads.TestAdUnitsIds">
+            <summary>
+            A class containing ad unit ids that are always configured to return test ads.
+            </summary>
+        </member>
+        <member name="P:Jundroo.Services.Ads.TestAdUnitsIds.InterstitialAd">
+            <summary>
+            Gets an ad unit id that is configured to always return a test interstitial ad.
+            </summary>
+            <value>An ad unit id that is configured to always return a test interstitial ad.</value>
+        </member>
+        <member name="T:Jundroo.Services.Analytics.AnalyticsConsentState">
+            <summary>
+            An enumeration defining the different states of analytics consent.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Analytics.AnalyticsConsentState.NotSet">
+            <summary>
+            The user has not opted in or out of analytics yet.
+            Treat this as OptOut until the user makes a choice to opt in or out.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Analytics.AnalyticsConsentState.OptOut">
+            <summary>
+            The user has opted out of analytics. Do not perform any data collection.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Analytics.AnalyticsConsentState.OptIn">
+            <summary>
+            The user has opted in to analytics. Data collection may be performed.
+            </summary>
+        </member>
+        <member name="T:Jundroo.Services.Analytics.AnalyticsService">
+            <summary>
+            A static service class for interacting with the analytics service.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Analytics.AnalyticsService._getConsentState">
+            <summary>
+            The delegate used to get the user's consent choice.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Analytics.AnalyticsService._initialized">
+            <summary>
+            A value indicating whether the service has been initialized.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Analytics.AnalyticsService._showConsentDialog">
+            <summary>
+            The delegate used to show the consent dialog.
+            </summary>
+        </member>
+        <member name="T:Jundroo.Services.Analytics.AnalyticsService.GetConsentStateDelegate">
+            <summary>
+            The delegate used to get the user's analytics consent choice.
+            </summary>
+            <returns>The user's analytics consent choice.</returns>
+        </member>
+        <member name="T:Jundroo.Services.Analytics.AnalyticsService.ShowConsentDialogDelegate">
+            <summary>
+            A delegate used to show the analytics consent dialog.
+            </summary>
+            <returns>The async task.</returns>
+        </member>
+        <member name="P:Jundroo.Services.Analytics.AnalyticsService.ConsentState">
+            <summary>
+            Gets the user's analytics consent choice.
+            </summary>
+            <value>The user's analytics consent choice.</value>
+        </member>
+        <member name="P:Jundroo.Services.Analytics.AnalyticsService.Enabled">
+            <summary>
+            Gets a value indicating whether analytics are currently enabled.
+            </summary>
+            <value><c>true</c> if analytics are currently enabled; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:Jundroo.Services.Analytics.AnalyticsService.EnabledInBuild">
+            <summary>
+            Gets a value indicating whether analytics are enabled in this build.
+            </summary>
+            <value><c>true</c> if analytics are enabled in this build; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:Jundroo.Services.Analytics.AnalyticsService.Initialized">
+            <summary>
+            Gets a value indicating whether this service is initialized.
+            This will always return <c>false</c> if the service is not enabled in the build.
+            </summary>
+            <value><c>true</c> if initialized; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:Jundroo.Services.Analytics.AnalyticsService.PrivacyPolicyUrl">
+            <summary>
+            Gets the privacy policy URL.
+            </summary>
+            <value>The privacy policy URL.</value>
+        </member>
+        <member name="M:Jundroo.Services.Analytics.AnalyticsService.Initialize(Jundroo.Services.Analytics.AnalyticsService.InitializationParameters)">
+            <summary>
+            Initializes the analytics service.
+            </summary>
+            <param name="initParams">The initialize parameters.</param>
+            <returns>The async task.</returns>
+        </member>
+        <member name="M:Jundroo.Services.Analytics.AnalyticsService.LogEvent(System.String)">
+            <summary>
+            Logs the event with the analytics service.
+            </summary>
+            <param name="eventName">The name of the event.</param>
+        </member>
+        <member name="M:Jundroo.Services.Analytics.AnalyticsService.LogEvent(System.String,System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary>
+            Logs the event with the analytics service.
+            </summary>
+            <param name="eventName">The name of the event.</param>
+            <param name="eventData">The custom event data.</param>
+        </member>
+        <member name="M:Jundroo.Services.Analytics.AnalyticsService.OnAnalyticsConsentChanged">
+            <summary>
+            This can be called when the analytics consent state changes.
+            This will enable/disable analytics as needed.
+            </summary>
+        </member>
+        <member name="M:Jundroo.Services.Analytics.AnalyticsService.ShowConsentDialog">
+            <summary>
+            Shows the analytics consent dialog to the user.
+            After opting in or out, analytics will be enabled/disabled as needed.
+            </summary>
+            <returns>The async task.</returns>
+        </member>
+        <member name="M:Jundroo.Services.Analytics.AnalyticsService.SetEnabled(System.Boolean)">
+            <summary>
+            Enables or disables Analytics which will stop/start data collection as needed.
+            </summary>
+            <param name="enabled">If set to <c>true</c>, analytics should be enabled; otherwise analytics will be disabled.</param>
+        </member>
+        <member name="M:Jundroo.Services.Analytics.AnalyticsService.VerifyUnityServicesAreInitialized">
+            <summary>
+            Verifies that the Unity Services Core is initialized.
+            </summary>
+            <exception cref="T:System.InvalidOperationException">The Unity Analytics service is not available because the Unity Services Core has not be initialized.</exception>
+        </member>
+        <member name="T:Jundroo.Services.Analytics.AnalyticsService.InitializationParameters">
+            <summary>
+            The initialization parameters for the service.
+            </summary>
+        </member>
+        <member name="M:Jundroo.Services.Analytics.AnalyticsService.InitializationParameters.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jundroo.Services.Analytics.AnalyticsService.InitializationParameters"/> class.
+            </summary>
+        </member>
+        <member name="M:Jundroo.Services.Analytics.AnalyticsService.InitializationParameters.#ctor(Jundroo.Services.Analytics.AnalyticsService.GetConsentStateDelegate,Jundroo.Services.Analytics.AnalyticsService.ShowConsentDialogDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jundroo.Services.Analytics.AnalyticsService.InitializationParameters"/> class.
+            </summary>
+            <param name="getConsentStateDelegate">The delegate used to get the user's consent choice.</param>
+            <param name="showConsentDialogDelegate">The delegate used to show the consent dialog.</param>
+        </member>
+        <member name="P:Jundroo.Services.Analytics.AnalyticsService.InitializationParameters.GetConsentStateDelegate">
+            <summary>
+            Gets or sets the delegate used to get the user's consent choice.
+            </summary>
+        </member>
+        <member name="P:Jundroo.Services.Analytics.AnalyticsService.InitializationParameters.ShowConsentDialogDelegate">
+            <summary>
+            Gets or sets the delegate used to show the consent dialog.
+            </summary>
+        </member>
+        <member name="T:Jundroo.Services.Purchasing.Events.InitializationFailedEventArgs">
+            <summary>
+            Event arguments used for the event when the purchasing service initialization fails.
+            Implements the <see cref="T:System.EventArgs" />
+            </summary>
+            <seealso cref="T:System.EventArgs" />
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.Events.InitializationFailedEventArgs.#ctor(Jundroo.Services.Purchasing.InitializationFailureReason,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jundroo.Services.Purchasing.Events.InitializationFailedEventArgs" /> class.
+            </summary>
+            <param name="failureReason">The failure reason.</param>
+            <param name="message">The message.</param>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.Events.InitializationFailedEventArgs.FailureReason">
+            <summary>
+            Gets the failure reason.
+            </summary>
+            <value>The failure reason.</value>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.Events.InitializationFailedEventArgs.Message">
+            <summary>
+            Gets the message.
+            </summary>
+            <value>The message.</value>
+        </member>
+        <member name="T:Jundroo.Services.Purchasing.Events.InitializationSucceededEventArgs">
+            <summary>
+            Event arguments used for the event when the purchasing service initialization succeeds.
+            Implements the <see cref="T:System.EventArgs" />
+            </summary>
+            <seealso cref="T:System.EventArgs" />
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.Events.InitializationSucceededEventArgs.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jundroo.Services.Purchasing.Events.InitializationSucceededEventArgs"/> class.
+            </summary>
+        </member>
+        <member name="T:Jundroo.Services.Purchasing.Events.ProductPurchaseCompletedEventArgs">
+            <summary>
+            The event arguments used when a product purchase has completed, regardless of whether it was a success or failure.
+            Implements the <see cref="T:System.EventArgs" />
+            </summary>
+            <seealso cref="T:System.EventArgs" />
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.Events.ProductPurchaseCompletedEventArgs.#ctor(Jundroo.Services.Purchasing.Product)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jundroo.Services.Purchasing.Events.ProductPurchaseCompletedEventArgs"/> class.
+            </summary>
+            <param name="product">The product associated with the purchase.</param>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.Events.ProductPurchaseCompletedEventArgs.#ctor(Jundroo.Services.Purchasing.Product,System.Nullable{Jundroo.Services.Purchasing.PurchaseFailureReason},System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jundroo.Services.Purchasing.Events.ProductPurchaseCompletedEventArgs" /> class.
+            </summary>
+            <param name="product">The product associated with the purchase.</param>
+            <param name="failureReason">The reason for the purchase failure or <c>null</c> if it was successful.</param>
+            <param name="failureMessage">The message associated with the failure or <c>null</c> if it was successful.</param>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.Events.ProductPurchaseCompletedEventArgs.FailureMessage">
+            <summary>
+            Gets the message associated with the purchase failure or returns <c>null</c> if the purchase was a success.
+            </summary>
+            <value>The message associated with the purchase failure or <c>null</c> if the purchase was a success.</value>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.Events.ProductPurchaseCompletedEventArgs.FailureReason">
+            <summary>
+            Gets the reason for the purchase failure or returns <c>null</c> if the purchase was a success.
+            </summary>
+            <value>The reason for the purchase failure or <c>null</c> if the purchase was a success.</value>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.Events.ProductPurchaseCompletedEventArgs.Product">
+            <summary>
+            Gets the product associated with the purchase.
+            </summary>
+            <value>The product associated with the purchase.</value>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.Events.ProductPurchaseCompletedEventArgs.Success">
+            <summary>
+            Gets a value indicating whether the purchase was a success.
+            </summary>
+            <value><c>true</c> if the purchase was a success; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="T:Jundroo.Services.Purchasing.Events.ProductPurchaseFailedEventArgs">
+            <summary>
+            Event arguments used when raising events for failed product purchases.
+            Implements the <see cref="T:System.EventArgs" />
+            </summary>
+            <seealso cref="T:System.EventArgs" />
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.Events.ProductPurchaseFailedEventArgs.#ctor(Jundroo.Services.Purchasing.Product,Jundroo.Services.Purchasing.PurchaseFailureReason,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jundroo.Services.Purchasing.Events.ProductPurchaseFailedEventArgs"/> class.
+            </summary>
+            <param name="product">The product that the user attempted to purchase.</param>
+            <param name="failureReason">The failure reason.</param>
+            <param name="message">The message.</param>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.Events.ProductPurchaseFailedEventArgs.FailureReason">
+            <summary>
+            Gets the failure reason.
+            </summary>
+            <value>The failure reason.</value>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.Events.ProductPurchaseFailedEventArgs.Message">
+            <summary>
+            Gets the message.
+            </summary>
+            <value>The message.</value>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.Events.ProductPurchaseFailedEventArgs.Product">
+            <summary>
+            Gets the product that the user attempted to purchase.
+            </summary>
+            <value>The product that the user attempted to purchase.</value>
+        </member>
+        <member name="T:Jundroo.Services.Purchasing.Events.ProductPurchaseSucceededEventArgs">
+            <summary>
+            Event arguments used for events raised when a product is purchased.
+            Implements the <see cref="T:System.EventArgs" />
+            </summary>
+            <seealso cref="T:System.EventArgs" />
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.Events.ProductPurchaseSucceededEventArgs.#ctor(Jundroo.Services.Purchasing.Product)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jundroo.Services.Purchasing.Events.ProductPurchaseSucceededEventArgs"/> class.
+            </summary>
+            <param name="product">The product that was purchased.</param>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.Events.ProductPurchaseSucceededEventArgs.Product">
+            <summary>
+            Gets the product that was purchased.
+            </summary>
+            <value>The product that was purchased.</value>
+        </member>
+        <member name="T:Jundroo.Services.Purchasing.InitializationFailureReason">
+            <summary>
+            Reasons for which purchasing initialization could fail.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Purchasing.InitializationFailureReason.PurchasingUnavailable">
+            <summary>
+            In App Purchases disabled in device settings.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Purchasing.InitializationFailureReason.NoProductsAvailable">
+            <summary>
+            No products available for purchase,
+            Typically indicates a configuration error.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Purchasing.InitializationFailureReason.AppNotKnown">
+            <summary>
+            The store reported the app as unknown.
+            Typically indicates the app has not been created
+            on the relevant developer portal, or the wrong
+            identifier has been configured.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Purchasing.InitializationFailureReason.GooglePlayServiceDisconnected">
+            <summary>
+            The google play service was disconnected at the time of initialization.
+            </summary>
+            <remarks>NOTE: This was added by Jundroo and has no equivalent value in the Unity Purchasing API.</remarks>
+        </member>
+        <member name="T:Jundroo.Services.Purchasing.InitializationState">
+            <summary>
+            An enumeration defining the different initialization states for the purchasing service.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Purchasing.InitializationState.Uninitialized">
+            <summary>
+            The service has not yet started initialization.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Purchasing.InitializationState.Initializing">
+            <summary>
+            The service is currently initializing.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Purchasing.InitializationState.Initialized">
+            <summary>
+            The service is initialized.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Purchasing.InitializationState.InitializationFailed">
+            <summary>
+            The service initialization failed.
+            </summary>
+        </member>
+        <member name="T:Jundroo.Services.Purchasing.Product">
+            <summary>
+            May be purchased as an In App Purchase.
+            </summary>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.Product.#ctor(Jundroo.Services.Purchasing.ProductDefinition,Jundroo.Services.Purchasing.ProductMetadata,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jundroo.Services.Purchasing.Product"/> class.
+            Products must have a definition as minimum.
+            Further metadata may be populated following retrieval from the store system.
+            </summary>
+            <param name="definition">The definition.</param>
+            <param name="metadata">The metadata.</param>
+            <param name="receipt">The receipt.</param>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.Product.#ctor(Jundroo.Services.Purchasing.ProductDefinition,Jundroo.Services.Purchasing.ProductMetadata)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jundroo.Services.Purchasing.Product"/> class.
+            Products must have a definition as minimum.
+            Further metadata may be populated following retrieval from the store system.
+            </summary>
+            <param name="definition">The definition.</param>
+            <param name="metadata">The metadata.</param>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.Product.AppleOriginalTransactionID">
+            <summary>
+            Gets a unique identifier for this Apple product's original transaction.
+            This will only be set when the Apple product was purchased during this session.
+            </summary>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.Product.AppleProductIsRestored">
+            <summary>
+            Gets a value indicating whether this Apple product is restored.
+            </summary>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.Product.AvailableToPurchase">
+            <summary>
+            Gets a value indicating whether this product is available to purchase according to the store subsystem.
+            This will be false if the product's identifier is unknown, incorrect or otherwise disabled with the store provider (ie Apple, Google et al).
+            If this is false, purchase attempts will immediately fail.
+            </summary>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.Product.Definition">
+            <summary>
+            Gets the basic immutable product properties.
+            </summary>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.Product.HasReceipt">
+            <summary>
+            Gets a value indicating whether this product has a receipt.
+            Owned Non Consumables and Subscriptions should always have receipts.
+            Consumable's receipts are not persisted between App restarts unless it has a pending transaction.
+            Once a consumable has been acknowledged (ConfirmPendingPurchase) the `receipt` is removed.
+            </summary>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.Product.Metadata">
+            <summary>
+            Gets the localized metadata provided by the store system.
+            </summary>
+            <value>The metadata.</value>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.Product.Receipt">
+            <summary>
+            Gets the purchase receipt for this product, if owned.
+            For consumable purchases, this will be the most recent purchase receipt.
+            Consumable's receipts are not set between app restarts unless it has a pending transaction.
+            Once a consumable has been acknowledged (ConfirmPendingPurchase) the `receipt` is removed.
+            Receipts is in JSON format.
+            </summary>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.Product.TransactionID">
+            <summary>
+            Gets a unique identifier for this product's transaction.
+            This will only be set when the product was purchased during this session.
+            Consumable's transactionID are not set between app restarts unless it has a pending transaction.
+            Once a consumable has been acknowledged (ConfirmPendingPurchase) the `transactionID` is removed.
+            </summary>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.Product.Equals(System.Object)">
+            <summary>
+            Check if this product is equal to another.
+            </summary>
+            <param name="obj"> The product to compare with this object. </param>
+            <returns> True if the products are equal </returns>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.Product.GetHashCode">
+            <summary>
+            Get the unique Hash representing the product.
+            </summary>
+            <returns> The hash code as integer </returns>
+        </member>
+        <member name="T:Jundroo.Services.Purchasing.ProductDefinition">
+            <summary>
+            Product definition used by applications declaring products for sale.
+            </summary>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.ProductDefinition.#ctor(System.String,System.String,Jundroo.Services.Purchasing.ProductType)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jundroo.Services.Purchasing.ProductDefinition"/> class.
+            </summary>
+            <param name="id"> The product id. </param>
+            <param name="storeSpecificId"> The product's id for a specific store. </param>
+            <param name="type"> The product type. </param>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.ProductDefinition.#ctor(System.String,System.String,Jundroo.Services.Purchasing.ProductType,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jundroo.Services.Purchasing.ProductDefinition"/> class.
+            </summary>
+            <param name="id">The product id.</param>
+            <param name="storeSpecificId">The product's id for a specific store.</param>
+            <param name="type">The product type.</param>
+            <param name="enabled">Whether the product is enabled for purchase or not.</param>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.ProductDefinition.#ctor(System.String,Jundroo.Services.Purchasing.ProductType)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jundroo.Services.Purchasing.ProductDefinition"/> class.
+            </summary>
+            <param name="id"> The product id as well as its store-specific id. </param>
+            <param name="type"> The product type. </param>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.ProductDefinition.Enabled">
+            <summary>
+            Gets a value indicating whether or not the product is enabled for purchase.
+            </summary>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.ProductDefinition.Id">
+            <summary>
+            Gets the store independent ID.
+            </summary>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.ProductDefinition.StoreSpecificId">
+            <summary>
+            Gets the ID this product has on a specific store.
+            </summary>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.ProductDefinition.Type">
+            <summary>
+            Gets the type of the product.
+            </summary>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.ProductDefinition.Equals(System.Object)">
+            <summary>
+            Check if this product definition is equal to another.
+            </summary>
+            <param name="obj"> The product definition to compare with this object. </param>
+            <returns><c>true</c> if the definitions are equal.</returns>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.ProductDefinition.GetHashCode">
+            <summary>
+            Get the unique Hash representing the product definition.
+            </summary>
+            <returns> The hash code as integer </returns>
+        </member>
+        <member name="T:Jundroo.Services.Purchasing.ProductMetadata">
+            <summary>
+            Metadata for the product, namely that which is relevant to the store subsystem
+            </summary>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.ProductMetadata.#ctor(System.String,System.String,System.String,System.String,System.Decimal)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jundroo.Services.Purchasing.ProductMetadata"/> class.
+            </summary>
+            <param name="priceString">The price, as a string.</param>
+            <param name="title">The title of the product.</param>
+            <param name="description">The description of the product.</param>
+            <param name="currencyCode">The currency code of the localized price.</param>
+            <param name="localizedPrice">The localized price, by currency.</param>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.ProductMetadata.#ctor(Jundroo.Services.Purchasing.ProductMetadata)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jundroo.Services.Purchasing.ProductMetadata"/> class.
+            </summary>
+            <param name="productMetadata">The product metadata.</param>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.ProductMetadata.IsoCurrencyCode">
+            <summary>
+            Gets the product's currency in ISO 4217 format eg GBP, USD etc.
+            </summary>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.ProductMetadata.LocalizedDescription">
+            <summary>
+            Gets the localized description, as retrieved from the store subsystem; Apple, Google etc.
+            </summary>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.ProductMetadata.LocalizedPrice">
+            <summary>
+            Gets the product's price, denominated in the currency indicated by <c>isoCurrencySymbol</c>.
+            </summary>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.ProductMetadata.LocalizedPriceString">
+            <summary>
+            Gets the localized price. This is the price formatted with currency symbol.
+            </summary>
+            <value>The localized price string.</value>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.ProductMetadata.LocalizedTitle">
+            <summary>
+            Gets the localized title, as retrieved from the store subsystem; Apple, Google etc.
+            </summary>
+        </member>
+        <member name="T:Jundroo.Services.Purchasing.ProductType">
+            <summary>
+            Types of a product, relevant to the store subsystem.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Purchasing.ProductType.Consumable">
+             <summary>
+             Consumables may be purchased more than once.
+            
+             Purchase history is not typically retained by store
+             systems once consumed.
+             </summary>
+        </member>
+        <member name="F:Jundroo.Services.Purchasing.ProductType.NonConsumable">
+            <summary>
+            Non consumables cannot be repurchased and are owned indefinitely.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Purchasing.ProductType.Subscription">
+            <summary>
+            Subscriptions have a finite window of validity.
+            </summary>
+        </member>
+        <member name="T:Jundroo.Services.Purchasing.PurchaseFailureReason">
+            <summary>
+            The various reasons a purchase can fail.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Purchasing.PurchaseFailureReason.PurchasingUnavailable">
+            <summary>
+            Purchasing may be disabled in security settings.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Purchasing.PurchaseFailureReason.ExistingPurchasePending">
+            <summary>
+            Another purchase is already in progress.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Purchasing.PurchaseFailureReason.ProductUnavailable">
+            <summary>
+            The product was reported unavailable by the purchasing system.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Purchasing.PurchaseFailureReason.SignatureInvalid">
+            <summary>
+            Signature validation of the purchase's receipt failed.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Purchasing.PurchaseFailureReason.UserCancelled">
+            <summary>
+            The user opted to cancel rather than proceed with the purchase.
+            This is not specified on platforms that do not distinguish
+            cancellation from other failure (Amazon, Microsoft).
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Purchasing.PurchaseFailureReason.PaymentDeclined">
+            <summary>
+            There was a problem with the payment.
+            This is unique to Apple platforms.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Purchasing.PurchaseFailureReason.DuplicateTransaction">
+            <summary>
+            The transaction has already been completed successfully. This error can occur
+            on Apple platforms if the transaction is finished successfully while the user
+            is logged out of the app store, using a receipt generated while the user was
+            logged in.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Purchasing.PurchaseFailureReason.Unknown">
+            <summary>
+            A catch all for remaining purchase problems.
+            Note: Use Enum.Parse to use this named constant if targeting Unity 5.3
+            or 5.4. Its value differs for 5.5+ which introduced DuplicateTransaction.
+            </summary>
+        </member>
+        <member name="T:Jundroo.Services.Purchasing.PurchaseProcessingResult">
+            <summary>
+            Informs Unity Purchasing as to whether an Application has finished processing a purchase.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Purchasing.PurchaseProcessingResult.Complete">
+            <summary>
+            The application has finished processing the purchase.
+            Unity Purchasing should not inform the application of this transaction again.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Purchasing.PurchaseProcessingResult.Pending">
+            <summary>
+            The application has not finished processing the purchase, eg it is pushing it to a server asynchronously.
+            Unity Purchasing should continue to send the application notifications about this transaction when it starts.
+            </summary>
+        </member>
+        <member name="T:Jundroo.Services.Purchasing.PurchaseProductResult">
+            <summary>
+            A class representing the result of a product purchase attempt.
+            </summary>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchaseProductResult.#ctor(Jundroo.Services.Purchasing.Product)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jundroo.Services.Purchasing.PurchaseProductResult"/> class.
+            </summary>
+            <param name="product">The product associated with the purchase.</param>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchaseProductResult.#ctor(Jundroo.Services.Purchasing.Product,System.Nullable{Jundroo.Services.Purchasing.PurchaseFailureReason},System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jundroo.Services.Purchasing.PurchaseProductResult" /> class.
+            </summary>
+            <param name="product">The product associated with the purchase.</param>
+            <param name="failureReason">The reason for the purchase failure or <c>null</c> if it was successful.</param>
+            <param name="failureMessage">The message associated with the failure or <c>null</c> if it was successful.</param>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.PurchaseProductResult.FailureMessage">
+            <summary>
+            Gets the message associated with the purchase failure or returns <c>null</c> if the purchase was a success.
+            </summary>
+            <value>The message associated with the purchase failure or <c>null</c> if the purchase was a success.</value>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.PurchaseProductResult.FailureReason">
+            <summary>
+            Gets the reason for the purchase failure or returns <c>null</c> if the purchase was a success.
+            </summary>
+            <value>The reason for the purchase failure or <c>null</c> if the purchase was a success.</value>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.PurchaseProductResult.Product">
+            <summary>
+            Gets the product associated with the purchase.
+            </summary>
+            <value>The product associated with the purchase.</value>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.PurchaseProductResult.Success">
+            <summary>
+            Gets a value indicating whether the purchase was a success.
+            </summary>
+            <value><c>true</c> if the purchase was a success; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="T:Jundroo.Services.Purchasing.PurchasingManagerBase">
+            <summary>
+            A base class mono behaviour used to manage purchasing related functionality.
+            Implements the <see cref="T:UnityEngine.MonoBehaviour" />
+            </summary>
+            <seealso cref="T:UnityEngine.MonoBehaviour" />
+        </member>
+        <member name="F:Jundroo.Services.Purchasing.PurchasingManagerBase._activePurchaseTaskCompletionSource">
+            <summary>
+            The task completion source for the active purchase (or <c>null</c> when not actively attempting to purchase a product).
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Purchasing.PurchasingManagerBase._productsRegistered">
+            <summary>
+            A value indicating whether products have already been registered this session.
+            </summary>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.PurchasingManagerBase.Initialized">
+            <summary>
+            Gets a value indicating whether the purchasing service is initialized.
+            This will always return <c>false</c> if the purchasing service is not enabled in the build.
+            </summary>
+            <value><c>true</c> if initialized; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.PurchasingManagerBase.InitializationFailureInfo">
+            <summary>
+            Gets the initialization failure information if the service failed to initialize.
+            </summary>
+            <value>The initialization failure information if the service failed to initialize.</value>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingManagerBase.IsProductAvailable(System.String)">
+            <summary>
+            Determines whether the product with the specified ID is available to purchase.
+            This will be <c>false</c> if the product's identifier is unknown, incorrect or otherwise disabled with the store provider (ie Apple, Google et al).
+            If this is <c>false</c>, purchase attempts will immediately fail.
+            </summary>
+            <param name="productId">The product identifier.</param>
+            <returns><c>true</c> if the product with the specified ID is available to purchase; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingManagerBase.IsProductOwned(System.String)">
+            <summary>
+            Determines whether the user owns the product with the specified ID.
+            </summary>
+            <param name="productId">The product identifier.</param>
+            <returns><c>true</c> if the user owns the product with the specified ID; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingManagerBase.PurchaseProductAsync(System.String)">
+            <summary>
+            Initiates the purchases the specified product asynchronously.
+            </summary>
+            <param name="productId">The product identifier.</param>
+            <returns>The asynchronous task with the result of the purchase.</returns>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingManagerBase.RegisterProducts(Jundroo.Services.Purchasing.PurchasingService.RegisterProductDelegate)">
+            <summary>
+            Registers the in-app purchase products.
+            </summary>
+            <param name="registerProduct">The delegate used to register a product.</param>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingManagerBase.GetLocalCacheKeyForPurchases(System.String)">
+            <summary>
+            Gets the key for the local cache of purchases for the specified product id.
+            </summary>
+            <param name="productId">The product identifier.</param>
+            <returns>The requested key.</returns>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingManagerBase.GetPurchasesLocalCache(System.String)">
+            <summary>
+            Gets a value from the purchases local cache that indicates whether the user owns the product with the specified id.
+            </summary>
+            <param name="productId">The product identifier.</param>
+            <returns><c>true</c> if the user owns the product with the specified id, <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingManagerBase.UpdatePurchasesLocalCache(System.String,System.Boolean)">
+            <summary>
+            Updates the local cache of purchases for the specified product.
+            </summary>
+            <param name="productId">The product identifier.</param>
+            <param name="owned">If set to <c>true</c>, the cache will be updated to indicate that the user owns the product.</param>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingManagerBase.Awake">
+            <summary>
+            Awake is called when the script instance is being loaded.
+            </summary>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingManagerBase.OnInitializationFailed(Jundroo.Services.Purchasing.InitializationFailureReason,System.String)">
+            <summary>
+            Called when the initialization of the purchasing service fails.
+            </summary>
+            <param name="failureReason">The failure reason.</param>
+            <param name="message">The message.</param>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingManagerBase.OnInitialized">
+            <summary>
+            Called when the purchasing service is initialized.
+            </summary>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingManagerBase.OnPurchaseCompleted(Jundroo.Services.Purchasing.Product,Jundroo.Services.Purchasing.PurchaseProductResult)">
+            <summary>
+            Called when a purchase completes, regardless of whether it is a success or failure.
+            </summary>
+            <param name="product">The product.</param>
+            <param name="purchaseProductResult">The purchase product result.</param>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingManagerBase.OnPurchaseFailed(Jundroo.Services.Purchasing.Product,Jundroo.Services.Purchasing.PurchaseFailureReason,System.String)">
+            <summary>
+            Called when a purchase fails.
+            </summary>
+            <param name="product">The product.</param>
+            <param name="failureReason">The failure reason.</param>
+            <param name="message">The message.</param>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingManagerBase.OnPurchaseSucceeded(Jundroo.Services.Purchasing.Product)">
+            <summary>
+            Called when a purchase succeeds.
+            </summary>
+            <param name="product">The product.</param>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingManagerBase.OnRegisterProducts(Jundroo.Services.Purchasing.PurchasingService.RegisterProductDelegate)">
+            <summary>
+            Registers the in-app purchase products.
+            </summary>
+            <param name="registerProduct">The delegate used to register a product.</param>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingManagerBase.OnUpdateNonConsumableProductInfo(Jundroo.Services.Purchasing.Product)">
+            <summary>
+            Called when product information for a non-consumable purchase is being updated.
+            This typically occurs after the service has been initialize as well as after a purchase occurs.
+            </summary>
+            <param name="product">The product.</param>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingManagerBase.OnInitializationFailed(System.Object,Jundroo.Services.Purchasing.Events.InitializationFailedEventArgs)">
+            <summary>
+            Handles the <see cref="E:Jundroo.Services.Purchasing.PurchasingService.InitializationFailed" /> event.
+            </summary>
+            <param name="sender">The sender.</param>
+            <param name="e">The <see cref="T:Jundroo.Services.Purchasing.Events.InitializationFailedEventArgs"/> instance containing the event data.</param>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingManagerBase.OnInitialized(System.Object,Jundroo.Services.Purchasing.Events.InitializationSucceededEventArgs)">
+            <summary>
+            Handles the <see cref="P:Jundroo.Services.Purchasing.PurchasingService.Initialized" /> event.
+            </summary>
+            <param name="sender">The sender.</param>
+            <param name="e">The <see cref="T:Jundroo.Services.Purchasing.Events.InitializationSucceededEventArgs"/> instance containing the event data.</param>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingManagerBase.OnPurchaseCompleted(System.Object,Jundroo.Services.Purchasing.Events.ProductPurchaseCompletedEventArgs)">
+            <summary>
+            Handles the <see cref="E:Jundroo.Services.Purchasing.PurchasingService.PurchaseCompleted" /> event.
+            </summary>
+            <param name="sender">The sender.</param>
+            <param name="e">The <see cref="T:Jundroo.Services.Purchasing.Events.ProductPurchaseCompletedEventArgs"/> instance containing the event data.</param>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingManagerBase.OnPurchaseFailed(System.Object,Jundroo.Services.Purchasing.Events.ProductPurchaseFailedEventArgs)">
+            <summary>
+            Handles the <see cref="E:Jundroo.Services.Purchasing.PurchasingService.PurchaseFailed" /> event.
+            </summary>
+            <param name="sender">The sender.</param>
+            <param name="e">The <see cref="T:Jundroo.Services.Purchasing.Events.ProductPurchaseFailedEventArgs"/> instance containing the event data.</param>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingManagerBase.OnPurchaseSucceeded(System.Object,Jundroo.Services.Purchasing.Events.ProductPurchaseSucceededEventArgs)">
+            <summary>
+            Handles the <see cref="E:Jundroo.Services.Purchasing.PurchasingService.PurchaseSucceeded" /> event.
+            </summary>
+            <param name="sender">The sender.</param>
+            <param name="e">The <see cref="T:Jundroo.Services.Purchasing.Events.ProductPurchaseSucceededEventArgs"/> instance containing the event data.</param>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingManagerBase.UpdateNonConsumableProductInfo(Jundroo.Services.Purchasing.Product)">
+            <summary>
+            Updates product information for a non-consumable purchase.
+            </summary>
+            <param name="product">The product.</param>
+        </member>
+        <member name="T:Jundroo.Services.Purchasing.PurchasingService">
+            <summary>
+            A static service class for interacting with the in-app purchasing service.
+            </summary>
+        </member>
+        <member name="T:Jundroo.Services.Purchasing.PurchasingService.RegisterProductDelegate">
+            <summary>
+            A delegate used to register a product with the service during initialization.
+            </summary>
+            <param name="productID">The product identifier.</param>
+            <param name="productType">The type of the product.</param>
+        </member>
+        <member name="T:Jundroo.Services.Purchasing.PurchasingService.RegisterProductsDelegate">
+            <summary>
+            A delegate used to register products with the service during initialization.
+            </summary>
+            <param name="registerProductDelegate">A delegate used to register a product with the service during initialization.</param>
+        </member>
+        <member name="E:Jundroo.Services.Purchasing.PurchasingService.InitializationFailed">
+            <summary>
+            Occurs when the purchasing service initialization fails.
+            </summary>
+        </member>
+        <member name="E:Jundroo.Services.Purchasing.PurchasingService.InitializationSucceeded">
+            <summary>
+            Occurs when the purchasing service initialization succeeds.
+            </summary>
+        </member>
+        <member name="E:Jundroo.Services.Purchasing.PurchasingService.PurchaseCompleted">
+            <summary>
+            Occurs when a product purchase completes, regardless of success or failure.
+            This event will be raised after all <see cref="E:Jundroo.Services.Purchasing.PurchasingService.PurchaseSucceeded"/> events
+            or a <see cref="E:Jundroo.Services.Purchasing.PurchasingService.PurchaseFailed"/> event associated with a product purchase.
+            </summary>
+        </member>
+        <member name="E:Jundroo.Services.Purchasing.PurchasingService.PurchaseFailed">
+            <summary>
+            Occurs when a product purchase fails.
+            </summary>
+        </member>
+        <member name="E:Jundroo.Services.Purchasing.PurchasingService.PurchaseSucceeded">
+            <summary>
+            Occurs when a product purchase succeeds.
+            </summary>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.PurchasingService.CanMakePayments">
+            <summary>
+            Gets a value indicating whether the user is allowed to make payments.
+            </summary>
+            <value><c>true</c> if the user is allowed to make payments; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.PurchasingService.EnabledInBuild">
+            <summary>
+            Gets a value indicating whether in-app purchasing services are enabled in this build.
+            </summary>
+            <value><c>true</c> if in-app purchasing services are enabled in this build; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.PurchasingService.InitializationState">
+            <summary>
+            Gets the initialization state of the service.
+            </summary>
+            <value>The initialization state of the service.</value>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.PurchasingService.Initialized">
+            <summary>
+            Gets a value indicating whether this service is initialized.
+            This will always return <c>false</c> if the service is not enabled in the build.
+            </summary>
+            <value><c>true</c> if initialized; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingService.ConfirmPendingPurchase(System.String)">
+            <summary>
+            This must be called to confirm purchases that returned a <see cref="F:Jundroo.Services.Purchasing.PurchaseProcessingResult.Pending"/> value.
+            For the current implementation of this API, this is only relevant for consumable purchases.
+            https://docs.unity3d.com/Packages/com.unity.purchasing@4.10/manual/UnityIAPProcessingPurchases.html
+            </summary>
+            <param name="id">The product identifier.</param>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingService.GetProductById(System.String)">
+            <summary>
+            Gets the product with the specified product ID or <c>null</c> if it could not be found.
+            </summary>
+            <param name="id">The ID of the product to get.</param>
+            <returns>The product with the specified product ID or <c>null</c> if it could not be found.</returns>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingService.GetProducts">
+            <summary>
+            Gets the list of all products.
+            Note: This returns new class instances of products representing the underlying product classes in the purchasing API (and therefore allocates).
+            </summary>
+            <returns>The list of all products.</returns>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingService.Initialize(Jundroo.Services.Purchasing.PurchasingService.InitializationParameters)">
+            <summary>
+            Initializes the Purchasing Services.
+            </summary>
+            <param name="initParams">The initialize parameters.</param>
+            <returns>The async task.</returns>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingService.IsProductAvailable(System.String)">
+            <summary>
+            Determines whether the product with the specified ID is available to purchase.
+            This will be <c>false</c> if the product's identifier is unknown, incorrect or otherwise disabled with the store provider (ie Apple, Google et al).
+            If this is <c>false</c>, purchase attempts will immediately fail.
+            </summary>
+            <param name="id">The product identifier.</param>
+            <returns>
+            This will return <c>true</c> if the specified product is available to purchase.
+            If the products have not yet been loaded or if the product cannot be found, this will return <c>null</c>.
+            the product's identifier is unknown, incorrect or otherwise disabled with the store provider, this will return <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingService.IsProductOwned(System.String)">
+            <summary>
+            Determines whether the user owns the product with the specified ID.
+            </summary>
+            <param name="id">The product identifier.</param>
+            <returns>
+            This will return <c>true</c> if the user owns the specified product.
+            If the products have not yet been loaded or if the product cannot be found or is consumable, this will return <c>null</c>.
+            If the product is not owned by the user, this will return <c>false.</c>
+            </returns>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingService.PurchaseProduct(System.String)">
+            <summary>
+            Initiates a purchases of an in-app product with the specified ID.
+            </summary>
+            <param name="id">The product identifier.</param>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingService.RestorePurchases(System.Action{System.Boolean,System.String})">
+            <summary>
+            Initiates a request to Apple to restore previously made purchases.
+            </summary>
+            <param name="callback">The action that will be called when the request to Apple comes back.
+            The bool will be <c>true</c> if it was successful with a <c>null</c> string or <c>false</c> if it was not with the error message in the string.</param>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingService.ProcessPurchase(Jundroo.Services.Purchasing.Product)">
+            <summary>
+            Processes the purchase of the specified product.
+            </summary>
+            <param name="product">The product purchased.</param>
+            <returns>The result of the purchase.</returns>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingService.RaiseInitializationSucceededEvent">
+            <summary>
+            Raises the <see cref="E:Jundroo.Services.Purchasing.PurchasingService.InitializationSucceeded" /> event.
+            </summary>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingService.RaiseInitializeFailedEvent(Jundroo.Services.Purchasing.InitializationFailureReason,System.String)">
+            <summary>
+            Raises the <see cref="E:Jundroo.Services.Purchasing.PurchasingService.InitializationFailed"/> event.
+            </summary>
+            <param name="failureReason">The failure reason.</param>
+            <param name="message">The message.</param>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingService.RaisePurchaseCompletedEvent(Jundroo.Services.Purchasing.Product,System.Nullable{Jundroo.Services.Purchasing.PurchaseFailureReason},System.String)">
+            <summary>
+            Raises the purchase completed event.
+            </summary>
+            <param name="product">The product that was purchased (or attempted to be purchased).</param>
+            <param name="failureReason">The failure reason or <c>null</c> if the purchase succeeded.</param>
+            <param name="failureMessage">The failure message or <c>null</c> if the purchase succeeded.</param>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingService.RaisePurchaseFailedEvent(Jundroo.Services.Purchasing.Product,Jundroo.Services.Purchasing.PurchaseFailureReason,System.String)">
+            <summary>
+            Raises the <see cref="E:Jundroo.Services.Purchasing.PurchasingService.PurchaseFailed" /> event.
+            </summary>
+            <param name="product">The product.</param>
+            <param name="failureReason">The failure reason.</param>
+            <param name="message">The message.</param>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingService.RaisePurchaseSucceededEvent(Jundroo.Services.Purchasing.Product)">
+            <summary>
+            Raises the <see cref="E:Jundroo.Services.Purchasing.PurchasingService.PurchaseSucceeded" /> event.
+            </summary>
+            <param name="product">The product.</param>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingService.ValidateReceipt(Jundroo.Services.Purchasing.Product,System.Collections.Generic.List{Jundroo.Services.Purchasing.Product}@)">
+            <summary>
+            Validates the receipt for the product and returns a list of validated products contained in the receipt.
+            </summary>
+            <param name="purchasedProduct">The purchased product.</param>
+            <param name="receiptProducts">The validated receipt products.</param>
+            <returns><c>true</c> if the receipt was valid, <c>false</c> otherwise.</returns>
+        </member>
+        <member name="T:Jundroo.Services.Purchasing.PurchasingService.InitializationParameters">
+            <summary>
+            The initialization parameters for the service.
+            </summary>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingService.InitializationParameters.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jundroo.Services.Purchasing.PurchasingService.InitializationParameters"/> class.
+            </summary>
+        </member>
+        <member name="M:Jundroo.Services.Purchasing.PurchasingService.InitializationParameters.#ctor(Jundroo.Services.Purchasing.PurchasingManagerBase)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jundroo.Services.Purchasing.PurchasingService.InitializationParameters" /> class.
+            </summary>
+            <param name="purchasingManager">The purchasing manager.</param>
+        </member>
+        <member name="P:Jundroo.Services.Purchasing.PurchasingService.InitializationParameters.PurchasingManager">
+            <summary>
+            Gets or sets the purchasing manager.
+            </summary>
+            <value>The purchasing manager.</value>
+        </member>
+        <member name="T:Jundroo.Services.ServicesCommon">
+            <summary>
+            A class containing service initialization and functionality common to multiple services.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.ServicesCommon._dialogBasedServicesInitialized">
+            <summary>
+            A value indicating whether the dialog-based services have been initialized.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.ServicesCommon._initiParamsPurchasing">
+            <summary>
+            The initialize parameters for the purchasing service.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.ServicesCommon._initParamsAds">
+            <summary>
+            The initialize parameters for the advertising service.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.ServicesCommon._initParamsAnalytics">
+            <summary>
+            The initialize parameters for the analytics service.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.ServicesCommon._startupServicesInitialized">
+            <summary>
+            A value indicating whether the startup services have been initialized.
+            </summary>
+        </member>
+        <member name="M:Jundroo.Services.ServicesCommon.ConfigureAdsService(Jundroo.Services.Ads.AdsService.InitializationParameters)">
+            <summary>
+            Configures the advertising service prior to initialization.
+            </summary>
+            <param name="initParams">The initialization parameters.</param>
+        </member>
+        <member name="M:Jundroo.Services.ServicesCommon.ConfigureAnalyticsService(Jundroo.Services.Analytics.AnalyticsService.InitializationParameters)">
+            <summary>
+            Configures the analytics service prior to initialization.
+            </summary>
+            <param name="initParams">The initialization parameters.</param>
+        </member>
+        <member name="M:Jundroo.Services.ServicesCommon.ConfigurePurchasingService(Jundroo.Services.Purchasing.PurchasingService.InitializationParameters)">
+            <summary>
+            Configures the purchasing service prior to initialization.
+            </summary>
+            <param name="initParams">The initialization parameters.</param>
+        </member>
+        <member name="M:Jundroo.Services.ServicesCommon.InitializeDialogBasedServicesIfNecessary">
+            <summary>
+            Initializes the dialog based services if necessary.
+            </summary>
+            <returns>The async task.</returns>
+        </member>
+        <member name="M:Jundroo.Services.ServicesCommon.InitializeStartupServices(System.String)">
+            <summary>
+            Initializes the startup services.
+            </summary>
+            <param name="environment">The environment for which to initialize the services.</param>
+            <returns>The async task.</returns>
+        </member>
+        <member name="T:Jundroo.Services.Unity.ServicesInitializationState">
+            <summary>
+            Initialization state of Unity Services
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Unity.ServicesInitializationState.Uninitialized">
+            <summary>
+            Initialization has not been started.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Unity.ServicesInitializationState.Initializing">
+            <summary>
+            Initialization in progress.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Unity.ServicesInitializationState.Initialized">
+            <summary>
+            Initialization has been successfully completed.
+            </summary>
+        </member>
+        <member name="T:Jundroo.Services.Unity.UnityServices">
+            <summary>
+            A static service class for interacting with the Unity Services Core.
+            </summary>
+        </member>
+        <member name="F:Jundroo.Services.Unity.UnityServices._initialized">
+            <summary>
+            A value indicating whether the service has been initialized.
+            </summary>
+        </member>
+        <member name="P:Jundroo.Services.Unity.UnityServices.EnabledInBuild">
+            <summary>
+            Gets a value indicating whether any Unity Services Core services are enabled in this build.
+            </summary>
+            <value><c>true</c> if Unity Services Core services are enabled in this build; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:Jundroo.Services.Unity.UnityServices.Environment">
+            <summary>
+            Gets the environment for which the service was initialized.
+            </summary>
+            <value>The environment for which the service was initialized.</value>
+        </member>
+        <member name="P:Jundroo.Services.Unity.UnityServices.Initialized">
+            <summary>
+            Gets a value indicating whether this service is initialized.
+            This will always return <c>false</c> if the service is not enabled in the build.
+            </summary>
+            <value><c>true</c> if initialized; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:Jundroo.Services.Unity.UnityServices.State">
+            <summary>
+            Gets the initialization state.
+            </summary>
+            <value>The initialization state.</value>
+        </member>
+        <member name="M:Jundroo.Services.Unity.UnityServices.Initialize(System.String)">
+            <summary>
+            Initializes the Unity Services core.
+            </summary>
+            <param name="environment">The environment for which to initialize Unity Services.</param>
+            <returns>The async task.</returns>
+        </member>
+        <member name="T:UnitySourceGeneratedAssemblyMonoScriptTypes_v1.MonoScriptData">
+            <summary>
+            Data is UTF-8 encoded strings
+            </summary>
+        </member>
+    </members>
+</doc>

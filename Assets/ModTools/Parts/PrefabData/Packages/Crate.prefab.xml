@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<GameObject name="Crate" path="Craft/Parts/Prefabs/Packages/Crate.prefab">
+  <GameObject name="Mesh">
+    <Component type="UnityEngine.MeshFilter" />
+    <Component type="UnityEngine.MeshRenderer" />
+    <Component type="Assets.Scripts.Flight.Sim.DynamicColorMaterialScript" />
+    <Component type="UnityEngine.BoxCollider" />
+    <Component type="ModApi.Craft.Parts.PartColliderScript" />
+  </GameObject>
+  <GameObject name="AttachPoints">
+    <GameObject name="AttachPointBottom" />
+    <GameObject name="AttachPointTop" />
+    <GameObject name="AttachPointRight" />
+    <GameObject name="AttachPointLeft" />
+    <GameObject name="AttachPointFront" />
+    <GameObject name="AttachPointBack" />
+  </GameObject>
+</GameObject>

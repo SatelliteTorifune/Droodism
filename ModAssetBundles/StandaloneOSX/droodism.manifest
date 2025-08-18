@@ -1,0 +1,100 @@
+ManifestFileVersion: 0
+CRC: 608446455
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 6d4f0c036e946ca7d22f575b6db9a68a
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: eb04544188a2d25efa4afd9b3b22881c
+  IncrementalBuildHash:
+    serializedVersion: 2
+    Hash: 6d4f0c036e946ca7d22f575b6db9a68a
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 49
+  Script: {instanceID: 0}
+- Class: 64
+  Script: {instanceID: 0}
+- Class: 65
+  Script: {instanceID: 0}
+- Class: 90
+  Script: {instanceID: 0}
+- Class: 95
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 212942404, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
+- Class: 114
+  Script: {fileID: 462600611, guid: a67a49df4508efd41b25d5ea1d54bed1, type: 3}
+- Class: 114
+  Script: {fileID: 2121057919, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
+- Class: 114
+  Script: {fileID: -468989955, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
+- Class: 114
+  Script: {fileID: 264738313, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 21d232c8cc85f2143ac45bab630e8754, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+- Class: 134
+  Script: {instanceID: 0}
+- Class: 198
+  Script: {instanceID: 0}
+- Class: 199
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers:
+- AssemblyName: XmlLayout
+  ClassName: UI.Xml.XmlLayoutResourceEntry
+Assets:
+- Assets/Resources/Craft/Parts/Prefabs/ResourcesPack.prefab
+- Assets/Resources/Craft/Parts/Definitions/WaterTank.xml
+- Assets/Resources/Craft/Parts/Prefabs/WaterTank.prefab
+- Assets/Resources/Craft/Parts/Prefabs/GravityRing.prefab
+- Assets/_ModAssets_/ModManifest.xml.bytes
+- Assets/Content/Craft/Parts/GasDepressure.png
+- Assets/Content/XML UI/Sprites/White.png
+- Assets/Resources/Craft/Parts/Definitions/CarbonDioxideFilter.xml
+- Assets/Resources/Craft/Parts/Definitions/GasDepressurizeDevice.xml
+- Assets/Resources/Craft/Parts/Definitions/GasPressurizeDevice.xml
+- Assets/Resources/Craft/Parts/Prefabs/FoodTank.prefab
+- Assets/Content/Resources/flag.xml
+- Assets/Resources/Craft/Parts/Prefabs/ElectrolyticDevice.prefab
+- Assets/Resources/Craft/Parts/Definitions/FoodTank.xml
+- Assets/Resources/Craft/Parts/Definitions/Sodium Peroxide Container.xml
+- Assets/Content/Craft/Parts/RocketEngines/Propulsion.xml
+- Assets/Content/Craft/Parts/Categories/LifeSupport.asset
+- Assets/Resources/Craft/Parts/Definitions/ElectrolyticDevice.xml
+- Assets/Resources/Craft/Parts/Prefabs/CarbonDioxideFilter.prefab
+- Assets/Resources/Craft/Parts/Definitions/GravityRing.xml
+- Assets/Content/Prefabs/DroodismUI.prefab
+- Assets/Content/XML UI/Sprites/DroodsimUIIcon.png
+- Assets/Resources/Craft/Parts/Prefabs/SewageTreatDevice.prefab
+- Assets/Resources/Craft/Parts/Prefabs/Sodium Peroxide Container.prefab
+- Assets/Resources/Craft/Parts/Definitions/PhotoBioReactor.xml
+- Assets/_ModAssets_/Droodism.dll.bytes
+- Assets/Content/XML UI/UIResourceDatabase.asset
+- Assets/Resources/Craft/Parts/Prefabs/GasPressurizeDevice.prefab
+- Assets/Resources/Craft/Parts/Prefabs/GasDepressurizeDevice.prefab
+- Assets/Resources/Craft/Parts/Definitions/ResourcesPack.xml
+- Assets/Resources/Craft/Parts/Definitions/SewageTreatDevice.xml
+- Assets/Resources/Craft/Parts/Prefabs/PhotoBioReactor.prefab
+- Assets/Content/Craft/Parts/GravityRingIcon.png
+Dependencies: []

@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<GameObject name="Generator2" path="Craft/Parts/Prefabs/Generator2.prefab">
+  <GameObject name="Scalar">
+    <GameObject name="Mesh">
+      <Component type="UnityEngine.MeshFilter" />
+      <Component type="UnityEngine.MeshRenderer" />
+      <GameObject name="Cylinder Collider">
+        <Component type="UnityEngine.MeshCollider" />
+        <Component type="ModApi.Craft.Parts.PartColliderScript" />
+      </GameObject>
+      <GameObject name="Radiator Collider">
+        <Component type="UnityEngine.BoxCollider" />
+        <Component type="ModApi.Craft.Parts.PartColliderScript" />
+      </GameObject>
+      <GameObject name="Radiator Collider (1)">
+        <Component type="UnityEngine.BoxCollider" />
+        <Component type="ModApi.Craft.Parts.PartColliderScript" />
+      </GameObject>
+      <GameObject name="Radiator Collider (2)">
+        <Component type="UnityEngine.BoxCollider" />
+        <Component type="ModApi.Craft.Parts.PartColliderScript" />
+      </GameObject>
+      <GameObject name="Radiator Collider (3)">
+        <Component type="UnityEngine.BoxCollider" />
+        <Component type="ModApi.Craft.Parts.PartColliderScript" />
+      </GameObject>
+    </GameObject>
+    <GameObject name="Base">
+      <Component type="UnityEngine.MeshFilter" />
+      <Component type="UnityEngine.MeshRenderer" />
+      <GameObject name="Base Collider">
+        <Component type="UnityEngine.MeshCollider" />
+        <Component type="ModApi.Craft.Parts.PartColliderScript" />
+      </GameObject>
+    </GameObject>
+  </GameObject>
+</GameObject>

@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XmlLayout xmlns="http://www.w3schools.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\XmlLayout.xsd">
+  <Include path="Ui/Xml/Design/DesignStyles.xml" />
+  <Defaults>
+    <Panel class="tool-button" tooltipPosition="Right" />
+  </Defaults>
+  <VerticalLayout id="tool-buttons" class="no-image" childForceExpandHeight="false" width="50" offsetXY="0 0" rectAlignment="UpperLeft">
+    <Panel name="PreflightPanel.StagingPanelButton" class="toggle-button tool-button audio-btn-click" tooltip="Staging Editor" data-tool-id="StagingPanel" onClick="OnToolButtonClicked(this);">
+      <Image class="toggle-button-icon" sprite="Ui/Sprites/Design/IconButtonStaging" />
+    </Panel>
+    <Panel class="toggle-button tool-button audio-btn-click" tooltip="Activation Groups" data-tool-id="ActivationPanel" onClick="OnToolButtonClicked(this);">
+      <Image class="toggle-button-icon" sprite="Ui/Sprites/Flight/IconActivationPanelToggle" />
+    </Panel>
+    <Panel class="toggle-button tool-button audio-btn-click" tooltip="Craft Validation" data-tool-id="ValidationPanel" onClick="OnToolButtonClicked(this);">
+      <Image class="toggle-button-icon" sprite="Ui/Sprites/Design/IconButtonValidation" />
+    </Panel>
+  </VerticalLayout>
+  <Panel class="no-image" offsetMin="52 0" height="100%">
+    <ChildXmlLayout id="StagingPanel" viewPath="Ui/Xml/Design/StagingEditorPanel" controller="Assets.Scripts.Design.Staging.StagingEditorPanelScript" active="true" />
+    <ChildXmlLayout id="ActivationPanel" viewPath="Ui/Xml/Design/ActivationGroupsPanel" controller="Assets.Scripts.Design.ActivationGroupsPanelScript" active="true" />
+    <ChildXmlLayout id="ValidationPanel" viewPath="Ui/Xml/Design/ValidationPanel" controller="Assets.Scripts.Design.ValidationPanelScript" active="true" />
+  </Panel>
+</XmlLayout>

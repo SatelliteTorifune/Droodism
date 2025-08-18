@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XmlLayout name="CraftPartsPanel" xmlns="http://www.w3schools.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\XmlLayout.xsd">
+  <Include path="Ui/Xml/Design/DesignStyles.xml" />
+  <Defaults>
+    <ContentButton class="list-item" buttonColors="Transparent|Button|ButtonPressed|Button" navigation="None" preferredHeight="40" rectAlignment="UpperCenter" raycastTarget="true" hoverClass="list-item-hover" onClick="OnListItemClicked(this);" onMouseEnter="OnMouseEnterListItem(this);" onMouseExit="OnMouseExitListItem(this);" />
+    <ContentButton class="list-item-selected" buttonColors="Primary|PrimaryHover|ButtonPressed|Button" />
+    <ContentButton class="tall" preferredHeight="80" />
+  </Defaults>
+  <Panel class="no-image" height="100%">
+    <Panel height="40" color="ButtonPressed" rectAlignment="UpperCenter">
+      <TextMeshPro id="status" offsetMin="10 0" alignment="Left" rectAlignment="MiddleLeft" />
+    </Panel>
+    <Panel id="autofix" height="40" rectAlignment="UpperCenter" offsetMax="0 -60">
+      <Button name="FixButton" class="btn btn-primary" onClick="OnFixClicked();">
+        <TextMeshPro text="&lt;b&gt;Attempt Auto-Fix&lt;/b&gt;" />
+      </Button>
+    </Panel>
+    <VerticalScrollView id="scrollview" class="no-image" pivot="0 1" offsetMax="0 -70">
+      <VerticalLayout id="content" class="no-image" contentSizeFitter="vertical" childAlignment="UpperCenter" childForceExpandHeight="false" pivot="0 1" padding="0 0 0 40">
+        <ContentButton id="template" class="list-item btn" active="false">
+          <TextMeshPro internalId="name" class="text-sm" offsetMin="10 0" alignment="Left" enableWordWrapping="true" overflowMode="Truncate" text="Part Name" />
+          <Image class="border" rectAlignment="LowerCenter" height="1" />
+        </ContentButton>
+      </VerticalLayout>
+    </VerticalScrollView>
+  </Panel>
+</XmlLayout>

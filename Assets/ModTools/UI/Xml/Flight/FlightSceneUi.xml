@@ -1,0 +1,205 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XmlLayout xmlns="http://www.w3schools.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\XmlLayout.xsd">
+  <Include path="Ui/Xml/Flight/FlightStyles.xml" />
+  <Defaults>
+    <Image class="toggle-icon" opacity="0.5" hoverClass="hover" />
+    <Image class="hover" opacity="0.75" />
+    <ChildXmlLayout class="animated" showAnimation="FadeIn" hideAnimation="FadeOut" animationDuration="0.05" />
+    <Image class="radial-progress-bar" sprite="Ui/Sprites/CircleProgressBar" type="Filled" fillMethod="Radial360" rotation="0 0 -72" />
+    <Button class="menu-button" rectAlignment="LowerLeft" width="220" />
+    <TextMeshPro class="target-text" offsetXY="0 -35" width="200" />
+    <TextMeshPro class="target-text-flipped" offsetXY="0 35" />
+    <Panel class="analog-control" width="160" height="160" raycastTarget="true" />
+    <Image class="analog-control&gt;analog-background" sprite="Ui/Sprites/Flight/AnalogStickArea" color="#333333" opacity="0.5" />
+    <Image class="analog-control&gt;analog-stick" sprite="Ui/Sprites/Flight/AnalogStick" width="38%" height="38%" color="#333333" opacity="0.9" />
+    <Image class="analog-control&gt;analog-stick&gt;translation-mode-icon" sprite="Ui/Sprites/Flight/IconNavSphereTranslationMode" width="76%" height="76%" color="#999999" opacity="0.666" />
+    <Button class="icon-button" preferredWidth="40" preferredHeight="40" />
+    <Panel class="flight-message-panel" offsetXY="0 -50" />
+    <Panel class="scooch" offsetXY="0 -120" />
+    <RectTransform class="scooch-analog-controls" offsetXY="0 110" />
+    <TextMeshPro class="instruments-secondary" color="InstrumentsSecondary" />
+    <TextMeshPro class="child-text-white:@TextMeshPro" color="White" />
+    <Image class="child-text-white:@Image" color="White" />
+  </Defaults>
+  <RectTransform class="safe-area">
+    <ChildXmlLayout id="time-panel" viewPath="Ui/Xml/Flight/TimePanel" controller="Assets.Scripts.Flight.UI.TimePanelController" />
+    <ChildXmlLayout id="staging-panel" viewPath="Ui/Xml/Flight/StagingPanel" controller="Assets.Scripts.Flight.UI.StagingPanelController" />
+    <ChildXmlLayout id="view-panel" viewPath="Ui/Xml/Flight/ViewPanel" controller="Assets.Scripts.Flight.UI.ViewPanelController" />
+    <ChildXmlLayout id="fuel-transfer-panel" viewPath="Ui/Xml/Flight/FuelTransferPanel" controller="Assets.Scripts.Flight.UI.FuelTransferPanelController" />
+    <ChildXmlLayout id="eva-panel" class="hide-on-start" viewPath="Ui/Xml/Flight/EvaPanel" controller="Assets.Scripts.Flight.UI.EvaPanelController" />
+    <Panel id="flight-message-panel" name="FlightMessagePanel" class="flight-message-panel" rectAlignment="UpperCenter" width="90%" height="80">
+      <TextMeshPro id="message-damage" name="FlightMessageDamage" width="100%" height="30" rectAlignment="UpperCenter" />
+      <TextMeshPro id="message" name="FlightMessage" width="100%" height="50" offsetXY="0 -30" rectAlignment="UpperCenter" />
+    </Panel>
+    <RectTransform id="analog-stick-container">
+      <Panel id="analog-control-left" name="AnalogStick.Left" class="analog-control" rectAlignment="LowerLeft" offsetXY="120 70" device="mobile">
+        <Image class="analog-background" />
+        <Image class="analog-stick" rectAlignment="MiddleCenter">
+          <Image class="translation-mode-icon" rectAlignment="MiddleCenter" />
+        </Image>
+      </Panel>
+      <Panel id="analog-control-right" name="AnalogStick.Right" class="analog-control" rectAlignment="LowerRight" offsetXY="-120 70" device="mobile">
+        <Image class="analog-background" />
+        <Image class="analog-stick" rectAlignment="MiddleCenter">
+          <Image class="translation-mode-icon" rectAlignment="MiddleCenter" />
+        </Image>
+      </Panel>
+    </RectTransform>
+    <Panel id="mobile-throttle-panel" class="no-image" rectAlignment="LowerLeft" width="42" height="300" device="mobile">
+      <Image class="flight-panel" sprite="Ui/Sprites/Flight/ThrottlePanel" />
+      <Image color="#33333390" id="throttle-rect" offsetXY="5 25" width="31" height="250" rectAlignment="LowerLeft" name="Throttle.SliderPanel" />
+      <Image color="Warning" id="mobile-throttle-fill" sprite="Ui/Sprites/Flight/ThrottleSlider" offsetXY="5 25" width="31" height="250" rectAlignment="LowerLeft" type="Filled" fillMethod="Vertical" />
+      <Image id="throttle-input" color="Transparent" opacity="0.25" offsetXY="0 0" width="50" height="305" rectAlignment="LowerLeft" raycastTarget="true" />
+      <TextMeshPro text="MAX" color="#777777" width="42" height="20" fontSize="12" rectAlignment="LowerLeft" alignment="Center" offsetXY="0 278" />
+      <TextMeshPro id="mobile-throttle-text" name="throttle-text" color="Warning" width="46" height="20" fontSize="12" rectAlignment="LowerLeft" alignment="Center" offsetXY="0 2" />
+    </Panel>
+    <Panel class="instrument-panel" rectAlignment="LowerCenter">
+      <!-- Navball -->
+      <Panel id="navball-container" class="">
+        <!-- Opener -->
+        <Panel hoverClass="child-text-white" class="navball-when-closed audio-btn-click" width="151" height="54" rectAlignment="LowerCenter" offsetXY="0 0" raycastTarget="true" onClick="OnToggleNavballClicked();" tooltip="Open the navball (FDAI)." tooltipPosition="Above">
+          <Panel height="17" rectAlignment="UpperCenter">
+            <Image class="flight-panel" color="Black" sprite="Ui/Sprites/Flight/NavBallOpenButton" width="151" height="17" name="Flight.Nav.Open" />
+            <TextMeshPro class="instruments-secondary" text="NAVBALL" alignment="Midline" fontSize="13" />
+            <Image class="navball-chevron chevron-up" offsetXY="-48 0" />
+            <Image class="navball-chevron chevron-up" offsetXY="48 0" />
+          </Panel>
+        </Panel>
+        <!-- Actual navball -->
+        <Image class="navball-when-open" id="navball-renderer" prefabPath="Ui/Prefabs/Navball" width="255" height="255" rectAlignment="LowerCenter" offsetXY="0 -10" />
+        <Image class="navball-when-open direction-indicator" sprite="Ui/Sprites/Flight/WhichWayYouArePointingIndicator" width="113" height="33" rectAlignment="MiddleCenter" offsetXY="0 99" pivot="0.5 0.818181" scale="0.8 0.8 1" />
+        <Image id="player-position-arrow" class="navball-when-open position-indicator" sprite="Ui/Sprites/Flight/NavBallMapArrow" width="40" height="40" rectAlignment="MiddleCenter" offsetXY="0 99" pivot="0.5 0.4" opacity="0.75" color="#E57432" />
+        <Image id="map-north-up" class="navball-when-open position-indicator" sprite="Ui/Sprites/Flight/NorthUp" width="32" height="32" rectAlignment="MiddleCenter" offsetXY="-70 170" pivot="0.5 0.39" color="InstrumentsPrimary" raycastTarget="true" onClick="OnToggleNorthUpClicked()" />
+        <Image class="navball-when-open" sprite="Ui/Sprites/Flight/NavBallBezel" color="InstrumentsBackground" width="260" height="213" rectAlignment="LowerCenter" offsetXY="0 37" fillCenter="false" type="Sliced" />
+        <!-- Minimise button -->
+        <Panel hoverClass="child-text-white" class="navball-when-open audio-btn-click navball-side-button" offsetXY="122 37" onClick="OnToggleNavballClicked();" tooltip="Close the navball (FDAI)." tooltipPosition="Right">
+          <Image sprite="Ui/Sprites/Flight/NavBallSideButton" rectAlignment="LowerRight" offsetXY="-20 0" width="20" height="66" scale="-1 1 1" color="InstrumentsBackground" name="Flight.Nav.Close">
+            <Image class="navball-chevron" offsetXY="0 7" rectAlignment="LowerCenter" />
+            <Image class="navball-chevron" offsetXY="0 21" rectAlignment="LowerCenter" />
+          </Image>
+        </Panel>
+        <!-- Map button -->
+        <Panel hoverClass="child-text-white" class="navball-when-open audio-btn-click navball-side-button map-button" tooltipPosition="Left" onClick="OnToggleMapClicked();">
+          <Image sprite="Ui/Sprites/Flight/NavBallSideButton" width="20" height="66" color="InstrumentsBackground" rectAlignment="LowerLeft" name="Flight.Nav.MapToggle">
+            <TextMeshPro class="map-text" text="MAP" rotation="0 0 90" width="50" height="20" rectAlignment="LowerLeft" alignment="Midline" offsetXY="20 0" />
+          </Image>
+        </Panel>
+        <!-- Map controls -->
+        <Panel class="map-controls" width="33" height="115" color="InstrumentsBackground" offsetXY="-141.5 76">
+          <Panel rectAlignment="UpperLeft" width="17" height="17" offsetXY="5 -5" color="InstrumentsPrimary">
+            <TextMeshPro text="+" alignment="CenterGeoAligned" fontSize="23" />
+            <Panel width="35" height="35" offsetXY="4 -4" raycastTarget="true" onClick="IncreaseMapZoom();" />
+          </Panel>
+          <Panel rectAlignment="LowerLeft" width="17" height="17" offsetXY="5 2" color="InstrumentsPrimary" raycastTarget="true" onClick="DecreaseMapZoom();">
+            <TextMeshPro text="-" alignment="CenterGeoAligned" fontSize="23" />
+            <Panel width="35" height="35" offsetXY="4 4" raycastTarget="true" onClick="DecreaseMapZoom();" />
+          </Panel>
+          <TextMeshPro id="map-zoom-level" rectAlignment="MiddleLeft" rotation="0 0 90" offsetXY="13.5 -35" width="70" height="17" fontSize="15" alignment="Midline" />
+        </Panel>
+      </Panel>
+      <!-- Bottom panel background (in front of navball) -->
+      <Image class="flight-panel" color="InstrumentsBackground" sprite="Ui/Sprites/Flight/NavBallBottomPanel.png" />
+      <Image class="flight-panel" color="InstrumentsBackground" height="10" anchorMin="0 0" anchorMax="1 0" pivot="0 1" />
+      <!-- Fuel/Throttle -->
+      <Panel class="no-image" pivot="1 0" offsetXY="-1 -14" width="103" height="20" name="InstrumentPanel.Throttle">
+        <Image sprite="Ui/Sprites/Flight/InstrumentRectFill" color="#7f4b00" />
+        <Image id="throttle-fill" sprite="Ui/Sprites/Flight/InstrumentRectFill" fillMethod="Horizontal" fillAmount="0.5" fillOrigin="1" type="Filled" color="#ff9600" />
+        <Image sprite="Ui/Sprites/Flight/IconCraftThrottle" opacity="0.35" rectAlignment="MiddleRight" offsetXY="-5 0" width="16" height="16" color="white" />
+        <TextMeshPro id="throttle-text" text="100%" color="white" offsetXY="20 0" alignment="Left" pivot="1 0" />
+      </Panel>
+      <Panel class="no-image" pivot="0 0" offsetXY="1 -14" width="103" height="20">
+        <Image sprite="Ui/Sprites/Flight/InstrumentRectFill" color="#006280" scale="-1 1 1" />
+        <Image id="fuel-fill" sprite="Ui/Sprites/Flight/InstrumentRectFill" scale="-1 1 1" fillMethod="Horizontal" fillAmount="0.5" fillOrigin="1" type="Filled" color="#00b7ed" />
+        <Image sprite="Ui/Sprites/Flight/IconCraftFuel" opacity="0.35" rectAlignment="MiddleLeft" offsetXY="5 0" width="16" height="16" color="white" />
+        <TextMeshPro id="fuel-text" text="100%" color="white" offsetXY="-20 0" alignment="Right" pivot="1 0" />
+      </Panel>
+      <Panel sprite="Ui/Sprites/Flight/InstrumentRectFillSmall" pivot="1 0" offsetXY="-1 9" width="83" height="6" color="#666666">
+        <Image id="mono-fill" sprite="Ui/Sprites/Flight/InstrumentRectFillSmall" fillMethod="Horizontal" fillAmount="0.5" fillOrigin="1" type="Filled" color="#dddddd" />
+      </Panel>
+      <Panel sprite="Ui/Sprites/Flight/InstrumentRectFillSmall" scale="-1 1 1" pivot="1 0" offsetXY="1 9" width="83" height="6" color="#008000">
+        <Image id="battery-fill" sprite="Ui/Sprites/Flight/InstrumentRectFillSmall" fillMethod="Horizontal" fillAmount="0.5" fillOrigin="1" type="Filled" color="#00ff00" />
+      </Panel>
+      <!-- Indicators -->
+      <TextMeshPro id="craft-speed" class="instrument-value" text="0m/s" offsetXY="-153 4" />
+      <TextMeshPro id="craft-altitude" class="instrument-value" text="323m" offsetXY="153 4" />
+      <!-- Mode labels -->
+      <TextMeshPro id="craft-speed-type" class="instrument-type instruments-secondary" offsetXY="-153 22"><![CDATA[
+            S <b><color=#00B7ED>ORBT</color></b> T
+            ]]></TextMeshPro>
+      <TextMeshPro id="craft-altitude-type" class="instrument-type instruments-secondary" offsetXY="152 22" />
+      <Image id="indicator-color" height="0" width="0" color="Primary" />
+      <!-- Mode buttons -->
+      <Panel class="audio-btn-click mode-button" offsetXY="-145 0" onClick="OnSpeedTypeClicked();" name="Flight.SpeedType" />
+      <Panel class="audio-btn-click mode-button" offsetXY="145 0" onClick="OnAltitudeTypeClicked();" name="Flight.AltitudeType" />
+    </Panel>
+    <ChildXmlLayout id="activation-panel" class="animated hide-on-start" viewPath="Ui/Xml/Flight/ActivationPanel" controller="Assets.Scripts.Flight.UI.ActivationPanelController" />
+    <ChildXmlLayout id="input-slider-panel" viewPath="Ui/Xml/Flight/InputSliderPanel" controller="Assets.Scripts.Flight.UI.InputSliderPanelController" />
+    <ChildXmlLayout id="nav-panel" viewPath="Ui/Xml/Flight/NavPanel" controller="Assets.Scripts.Flight.UI.NavPanelController" />
+    <Panel id="target-panel" class="no-image" width="32" height="32">
+      <Image internalId="target-box" sprite="Ui/Sprites/Border/Target-1px" type="Sliced" />
+      <Image internalId="target-arrow" sprite="Ui/Sprites/Flight/TargetArrow" active="false" />
+      <TextMeshPro internalId="target-name" class="target-text" />
+    </Panel>
+    <VerticalLayout id="career-notification" name="CareerNotification" active="false" padding="20 20 10 10" spacing="10" animationDuration="0.15" showAnimation="Grow_Vertical" hideAnimation="Shrink_Vertical" class="flight-panel" rectAlignment="UpperCenter" width="580" contentSizeFitter="both" pivot="0.5 1" offsetXY="0 -10" raycastTarget="true" onClick="OnRewardMessageClicked();">
+      <Image color="Primary" height="2" rectAlignment="UpperCenter" ignoreLayout="true" />
+      <Image color="Primary" height="2" rectAlignment="LowerCenter" ignoreLayout="true" />
+      <TextMeshPro id="career-notification-rewards" />
+      <TextMeshPro id="career-notification-text" />
+    </VerticalLayout>
+    <ChildXmlLayout id="context-menu" viewPath="Ui/Xml/Flight/ContextMenuPanel" controller="Assets.Scripts.Flight.UI.ContextMenuController" />
+    <Panel id="menu" class="no-image" active="false">
+      <Panel class="panel flyout" width="250" offsetXY="0 0">
+        <Panel class="flyout-header">
+          <TextMeshPro text="FLIGHT MENU" />
+          <Image class="flyout-close-button audio-btn-click" onClick="ToggleMenu();" />
+        </Panel>
+        <Panel class="flyout-content no-image">
+          <VerticalScrollView class="no-image">
+            <VerticalLayout class="no-image" childForceExpandHeight="false" padding="20" spacing="10">
+              <Button class="btn menu-button btn-primary" onClick="OnExitButtonClicked();">
+                <TextMeshPro text="END FLIGHT" />
+              </Button>
+              <Button class="btn menu-button" onClick="OnRelaunchButtonClicked();" id="relaunch-button" gameMode="sandbox">
+                <TextMeshPro text="RELAUNCH" />
+              </Button>
+              <Button class="btn menu-button" onClick="OnSwitchLocationButtonClicked();" id="switch-location-button" gameMode="sandbox">
+                <TextMeshPro text="SWITCH LOCATION" />
+              </Button>
+              <Button class="btn menu-button" onClick="OnSaveLocationButtonClicked();" gameMode="sandbox">
+                <TextMeshPro text="SAVE LOCATION" />
+              </Button>
+              <Button id="flight-scene-menu-career-button" class="btn menu-button" onClick="OnCareerButtonClicked();" gameMode="career">
+                <TextMeshPro text="CAREER" />
+              </Button>
+              <Image preferredHeight="2" color="Border" />
+              <Panel class="no-image" preferredHeight="40">
+                <Button class="icon-button audio-btn-big" icon="Ui/Sprites/Common/IconSettings" rectAlignment="MiddleLeft" offsetXY="15 0" onClick="OnSettingsButtonClicked();" tooltip="Settings" tooltipPosition="Above" />
+                <Button class="icon-button audio-btn-big" icon="Ui/Sprites/Common/IconButtonShare" rectAlignment="MiddleCenter" onClick="OnShareSandboxButtonClicked();" tooltip="Share Sandbox" tooltipPosition="Above" id="share-sandbox-button" />
+                <Button class="icon-button audio-btn-big" icon="Ui/Sprites/Common/IconButtonCamera" rectAlignment="MiddleRight" offsetXY="-15 0" onClick="OnPhotoLibraryButtonClicked();" tooltip="Photo Library" tooltipPosition="Above" id="photo-library-button" />
+              </Panel>
+              <Image preferredHeight="2" color="Border" />
+              <Panel class="no-image" preferredHeight="50">
+                <Button class="btn menu-button" onClick="OnQuickSaveButtonClicked();" width="46%" rectAlignment="MiddleLeft" height="45">
+                  <TextMeshPro text="QUICK&#xA;SAVE" />
+                </Button>
+                <Button class="btn menu-button" onClick="OnQuickLoadButtonClicked();" width="46%" rectAlignment="MiddleRight" height="45">
+                  <TextMeshPro text="QUICK&#xA;LOAD" />
+                </Button>
+              </Panel>
+              <Image preferredHeight="2" color="Border" />
+              <Button class="btn menu-button" onClick="OnToggleFpsClicked();">
+                <TextMeshPro text="TOGGLE FPS" />
+              </Button>
+              <Button id="benchmark-button" class="btn menu-button" onClick="OnRunBenchmarkButtonClicked();" active="false">
+                <TextMeshPro text="RUN BENCHMARK" />
+              </Button>
+              <Button class="btn menu-button" onClick="OnReportBugButtonClicked();">
+                <TextMeshPro text="REPORT A BUG" />
+              </Button>
+            </VerticalLayout>
+          </VerticalScrollView>
+        </Panel>
+      </Panel>
+    </Panel>
+  </RectTransform>
+</XmlLayout>

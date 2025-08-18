@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XmlLayout xmlns="http://www.w3schools.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\XmlLayout.xsd">
+  <Include path="Ui/Xml/Styles.xml" />
+  <Defaults>
+    <Panel class="main-panel" maxSize="800,600" />
+    <Panel class="main-panel-size" width="100%" height="95%" device="mobile" />
+    <Panel class="main-panel-size" width="80%" height="90%" device="desktop" />
+    <ContentButton class="list-item" preferredHeight="40" border="border" buttonColors="DarkPanel|Panel|PanelHover|DarkPanel" />
+    <ContentButton class="list-item-header" preferredHeight="64" buttonColors="Button|ButtonHover|ButtonPressed|ButtonDisabled" border="ButtonHover" />
+    <ContentButton class="highlighted" border="#04B400" />
+    <ContentButton class="disabled" color="ButtonDisabled" />
+    <TextMeshPro class="disabled:@TextMeshPro" color="ButtonDisabledText" />
+    <ContentButton class="drop-target" border="Primary" />
+    <Panel class="drop-target" border="Primary" />
+    <Button class="dialog-button" width="150" />
+    <Panel class="column-left" anchorMin="0 0" anchorMax="0.5 1" offsetMin="20 0" offsetMax="-20 0" />
+    <Panel class="column-right" anchorMin="0.5 0" anchorMax="1 1" offsetMin="20 0" offsetMax="-20 0" />
+    <VerticalLayout class="item-container" contentSizeFitter="vertical" spacing="10" childAlignment="UpperCenter" childForceExpandHeight="false" pivot="0 1" rectAlignment="UpperLeft" padding="10 10 10 70" />
+    <Image class="header-arrow" color="LabelText" pivot="0.5 0.5" sprite="Ui/Sprites/Common/IconTriangleRight" width="12" height="12" rectAlignment="MiddleLeft" rotation="0 0 -90" />
+    <Image class="expanded:header-arrow" rotation="0 0 0" />
+    <TextMeshPro class="status-text" active="true" />
+    <TextMeshPro class="nested&gt;status-text" active="false" />
+    <Button class="delete-button" active="false" />
+    <Button class="nested&gt;delete-button" active="true" />
+  </Defaults>
+  <Panel id="click-blocker" class="audio-btn-back" opacity="0" height="100%" width="100%" raycastTarget="true" onClick="OnOkayButtonClicked();" />
+  <RectTransform class="safe-area">
+    <Panel class="translucent-panel border main-panel main-panel-size" allowDragging="true" returnToOriginalPositionWhenReleased="false">
+      <Panel class="column-right no-image">
+        <Button class="icon-button audio-btn-back" width="40" height="40" icon="Ui/Sprites/Common/IconCloseButton" rectAlignment="UpperRight" offsetXY="0 -10" onClick="OnOkayButtonClicked();" />
+      </Panel>
+      <Panel rectAlignment="UpperCenter" height="100">
+        <TextMeshPro class="text-header" text="CREW ASSIGNMENT" offsetXY="0 20" />
+        <Panel rectAlignment="LowerCenter" height="30" offsetXY="0 10">
+          <Panel class="column-left">
+            <HorizontalLayout spacing="10">
+              <Button id="filter-source-available" class="btn btn-primary" onClick="OnFilterCrewButtonClicked(false);">
+                <TextMeshPro text="AVAILABLE CREW" />
+              </Button>
+              <Button id="filter-source-all" class="btn btn-primary" onClick="OnFilterCrewButtonClicked(true);">
+                <TextMeshPro text="ALL CREW" />
+              </Button>
+            </HorizontalLayout>
+          </Panel>
+          <Panel class="column-right">
+            <HorizontalLayout spacing="10">
+              <Button class="btn">
+                <TextMeshPro text="CREW IN THIS CRAFT" />
+              </Button>
+            </HorizontalLayout>
+          </Panel>
+        </Panel>
+      </Panel>
+      <Panel class="no-image" offsetMin="0 75" offsetMax="0 -100">
+        <Panel id="restore-crew-drop-target" class="column-left restore-crew">
+          <VerticalScrollView class="translucent-panel-dark">
+            <VerticalLayout id="source-parent" class="item-container">
+              <ContentButton id="crew-item-template" class="btn list-item" active="false" navigation="None">
+                <TextMeshPro internalId="name" class="text-lg" enableWordWrapping="false" offsetMin="10 0" alignment="Left" text="Falcon A" />
+                <TextMeshPro class="status-text" internalId="status" offsetMax="-10 0" alignment="Right" text="" overflowMode="Ellipsis" enableWordWrapping="false" />
+                <Button internalId="delete-button" class="delete-button" colors="Button|ButtonHover|ButtonPressed|Button" rectAlignment="MiddleRight" offsetXY="-10 0" onClick="OnRemoveCrewClicked(this);" />
+              </ContentButton>
+            </VerticalLayout>
+          </VerticalScrollView>
+        </Panel>
+        <Panel class="column-right">
+          <VerticalScrollView class="translucent-panel-dark">
+            <VerticalLayout id="targets-parent" class="item-container">
+              <ContentButton id="template-part-header" class="btn list-item-header" active="false" navigation="None">
+                <Image class="header-arrow" offsetXY="12 10" />
+                <TextMeshPro internalId="name" class="text-lg" enableWordWrapping="false" offsetMin="25 0" offsetXY="0 20" alignment="Left" text="" />
+                <TextMeshPro internalId="status" offsetMin="25 0" offsetXY="0 -25" alignment="Left" text="" overflowMode="Ellipsis" enableWordWrapping="false" />
+              </ContentButton>
+            </VerticalLayout>
+          </VerticalScrollView>
+        </Panel>
+      </Panel>
+      <Panel rectAlignment="LowerCenter" height="75">
+        <Panel class="column-left">
+          <Button id="cancel-button" class="btn btn-primary audio-btn-back" onClick="OnHireButtonClicked();" width="50%" rectAlignment="MiddleLeft">
+            <TextMeshPro text="HIRE ASTRONAUT" />
+          </Button>
+        </Panel>
+      </Panel>
+    </Panel>
+    <Panel id="drag-parent" class="no-image" active="true"></Panel>
+  </RectTransform>
+</XmlLayout>

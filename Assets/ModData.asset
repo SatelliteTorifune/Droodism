@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1366777262, guid: c37b925f2b4978342b2e0b83a8fa404a, type: 3}
+  m_Name: ModData
+  m_EditorClassIdentifier: 
+  _assemblies:
+  - Droodism.dll
+  _author: SatelliteTorifune
+  _description: '<color=green><size=125%>Added Life Support To Droods</color></size>
+
+
+
+
+    <color=red><size=250%>Require
+    JUNO Harmony</size></color>
+
+
+
+    <color=purple><size=45%>Maeriberry Hearn...</size>
+
+
+
+'
+  _loadPriority: 400
+  _name: Droodism
+  _otherAssets:
+  - {fileID: 2800000, guid: c2503f6c8b1301f47931ce7891b9443b, type: 3}
+  - {fileID: 4900000, guid: 2f28744980bce6a46b09955e6f949278, type: 3}
+  - {fileID: 2800000, guid: c837144b5a2a3cf49bc0d20fadf51828, type: 3}
+  - {fileID: 2800000, guid: da089e9f8ceab6c49854baaa5ddce7c6, type: 3}
+  - {fileID: 2800000, guid: 3f4d05df030de054c89ccb84352006ed, type: 3}
+  _prefabs: []
+  _steamDescription: 
+  _steamLanguage: English
+  _steamPreviewPath: 
+  _steamTags: 
+  _steamTitle: 
+  _steamVisibility: 0
+  _versionMajor: 0
+  _versionMinor: 273
+  _partCategories:
+  - {fileID: 11400000, guid: 7d2b6f557b8767544a162f30e61d22b6, type: 2}
+  _parts:
+  - {fileID: 4900000, guid: 31490106fb7b35346a5dd4a598ffc6da, type: 3}
+  - {fileID: 4900000, guid: 14776ff5d3403f64eba601b94451442d, type: 3}
+  - {fileID: 4900000, guid: 21a224a5845f95b48a100381457d8adc, type: 3}
+  - {fileID: 4900000, guid: 0f5263b52e7ba02499432df7cc10aff6, type: 3}
+  - {fileID: 4900000, guid: 507b6b60379cb1542a872044c2021a37, type: 3}
+  - {fileID: 4900000, guid: fafe886b5b9aee1478cff4f83f94d2bc, type: 3}
+  - {fileID: 4900000, guid: 8ab442a4620aba345a00dddf639c5d2c, type: 3}
+  - {fileID: 4900000, guid: 69fd3de320f79e14db97198de0f602fc, type: 3}
+  - {fileID: 4900000, guid: 94d3c8abb77d8b54291b1cf067f7ddbf, type: 3}
+  - {fileID: 4900000, guid: 11a692886d113e149937457d57601c68, type: 3}
+  - {fileID: 4900000, guid: 3187f51072da32145ad84924d186c061, type: 3}
+  _partStyleExtensions: []
+  _partTextureStyles: []
+  _persistentObjects: []
+  _uiResourceDatabases:
+  - {fileID: 11400000, guid: f4a792f930de4064aa7af08996bcf44f, type: 2}

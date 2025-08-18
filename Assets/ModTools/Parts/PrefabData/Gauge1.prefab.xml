@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<GameObject name="Gauge1" path="Craft/Parts/Prefabs/Gauge1.prefab">
+  <GameObject name="Scalar">
+    <GameObject name="GaugeIndicatorBase">
+      <Component type="UnityEngine.MeshFilter" />
+      <Component type="UnityEngine.MeshRenderer" />
+      <GameObject name="GaugeIndicator">
+        <Component type="UnityEngine.MeshFilter" />
+        <Component type="UnityEngine.MeshRenderer" />
+        <Component type="ModApi.Craft.Parts.PartMeshScript" />
+      </GameObject>
+    </GameObject>
+    <GameObject name="GaugeFace1">
+      <Component type="UnityEngine.MeshFilter" />
+      <Component type="UnityEngine.MeshRenderer" />
+      <Component type="UnityEngine.MeshCollider" />
+      <Component type="ModApi.Craft.Parts.PartColliderScript" />
+    </GameObject>
+  </GameObject>
+</GameObject>

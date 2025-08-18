@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Part name="ResourcesPack">
+  <PartType id="ResourcesPack" includeInBodyDrag="true" name="ResourcesPack" prefabPath="Assets/Resources/Craft/Parts/Prefabs/ResourcesPack.prefab" mass="10" price="10" partCollisions="Default" defaultMaterials="0,1,2,3,4" subpartsSharePartStyle="false" stylesShareHeader="false">
+    <Modifiers>
+      <Config autoActivateIfNoStageOrActivationGroup="true" buoyancyBaseScale="1" buoyancyUserScale="1" castShadows="true" centerOfMass="0,0,0" collisionDisconnectImpulse="1000" collisionDisconnectVelocity="15" collisionExplodeImpulse="2000" collisionExplodeVelocity="30" collisionPreventExternalDisconnections="false" collisionVelocityMode="NormalOnly" dragScale="1" dragScaleActive="1" dragScaleAngular="1" explosiveness="0" fuelLine="true" heatShield="0" heatShieldBaseScale="1" heatShieldMass="0" heatShieldScale="-1" heatShieldValidation="true" ignoreValidation="false" includeInDrag="true" inertiaTensorBaseScale="1" inertiaTensorMin="0.05" inertiaTensorUserScale="1" initialCraftNodeId="-1" massScale="1" maxDamage="100" maxDrag="0" maxDragActive="0" maxTemperature="1500" occlusion="Auto" partCollisionHandling="Default" partCollisionResponse="Default" partScale="1,1,1" partSelectionEnabled="true" preventDebris="false" priceScale="1" raiseWaterEventsEvenIfNotBuoyant="false" renderQueue="Default" stageActivationType="None" supportsActivation="false" supportsTransparency="true" thermalMassRatio="1" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
+      <FuelTank autoFuelType="true" capacity="610" fuel="610" fuelType="Oxygen" priority="0" subPriority="0" utilization="-1" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
+      <FuelTank autoFuelType="true" capacity="3" fuel="3" fuelType="H2O" priority="0" subPriority="0" utilization="-1" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
+      <FuelTank autoFuelType="true" capacity="0.5" fuel="0.5" fuelType="Food" priority="0" subPriority="0" utilization="-1" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
+      <FuelTank autoFuelType="true" capacity="300" fuel="0" fuelType="CO2" priority="0" subPriority="0" utilization="-1" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
+      <FuelTank autoFuelType="true" capacity="1.25" fuel="0" fuelType="Wasted Water" priority="0" subPriority="0" utilization="-1" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
+      <FuelTank autoFuelType="true" capacity="0.8" fuel="0" fuelType="Solid Waste" priority="0" subPriority="0" utilization="-1" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
+    </Modifiers>
+    <AttachPoints>
+      <AttachPoint name="AttachPoint1" displayName="Bottom" position="0,-0.528,0" rotation="90,0,0" positionOffset="0,0,0" rotationOffset="0,0,0" allowRotation="true" allowInvertedConnection="false" canReceive="true" canSeek="true" ignoreSurfaces="false" radius="0.5" />
+      <AttachPoint name="AttachPoint2" displayName="Side" position="0.386,0,0" rotation="0,180,0" positionOffset="0,0,0" rotationOffset="0,0,0" allowRotation="true" allowInvertedConnection="false" canReceive="true" canSeek="true" ignoreSurfaces="false" radius="0.5" fuelLine="true" />
+    </AttachPoints>
+    <SubpartTypes>
+      <SubpartType index="0" xmlName="" displayName="Part" />
+    </SubpartTypes>
+  </PartType>
+  <DesignerParts>
+    <DesignerPart name="ResourcesPack" category="LifeSupport" description="A quicker choice if you don't want to spend time set and place the life support resources tanks one by one,this part integrated necessary resources for &lt;color=green&gt;a single Drood&lt;/color&gt;to consume in 24 hours." order="0" showInDesigner="true" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
+      <Assembly>
+        <Parts>
+          <Part id="1" partType="ResourcesPack" position="0,0,0" rotation="0,0,0">
+            <Config />
+            <FuelTank />
+            <FuelTank />
+            <FuelTank />
+            <FuelTank />
+            <FuelTank />
+            <FuelTank />
+          </Part>
+        </Parts>
+      </Assembly>
+    </DesignerPart>
+  </DesignerParts>
+  <PartStyles>
+    <SubpartStyles subpartIndex="0">
+      <Style id="Default" displayName="Default" />
+    </SubpartStyles>
+  </PartStyles>
+</Part>

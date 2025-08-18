@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Part name="CarbonDeoxideFilter">
+  <PartType id="CarbonDeoxideFilter" includeInBodyDrag="true" name="CarbonDeoxideFilter" prefabPath="Assets/Resources/Craft/Parts/Prefabs/CarbonDeoxideFilter.prefab" mass="0" price="0" partCollisions="Default" defaultMaterials="0,1,2,3,4" subpartsSharePartStyle="false" stylesShareHeader="false">
+    <Modifiers>
+      <Config autoActivateIfNoStageOrActivationGroup="true" buoyancyBaseScale="1" buoyancyUserScale="1" castShadows="true" centerOfMass="0,0,0" collisionDisconnectImpulse="1000" collisionDisconnectVelocity="15" collisionExplodeImpulse="2000" collisionExplodeVelocity="30" collisionPreventExternalDisconnections="false" collisionVelocityMode="NormalOnly" dragScale="1" dragScaleActive="1" dragScaleAngular="1" explosiveness="0" fuelLine="false" heatShield="0" heatShieldBaseScale="1" heatShieldMass="0" heatShieldScale="-1" heatShieldValidation="true" ignoreValidation="false" includeInDrag="true" inertiaTensorBaseScale="1" inertiaTensorMin="0.05" inertiaTensorUserScale="1" initialCraftNodeId="-1" massScale="1" maxDamage="100" maxDrag="0" maxDragActive="0" maxTemperature="1500" occlusion="Auto" partCollisionHandling="Default" partCollisionResponse="Default" partScale="1,1,1" partSelectionEnabled="true" preventDebris="false" priceScale="1" raiseWaterEventsEvenIfNotBuoyant="false" renderQueue="Default" stageActivationType="None" supportsActivation="true" supportsTransparency="true" thermalMassRatio="1" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
+      <Droodism.CarbonDeoxideFilter fanSpeed="1" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
+    </Modifiers>
+    <AttachPoints>
+      <AttachPoint name="AttachPoint1" displayName="Connect" position="0,-0.232,0" rotation="90,0,0" positionOffset="0,0,0" rotationOffset="0,0,0" allowRotation="true" allowInvertedConnection="false" canReceive="true" canSeek="true" ignoreSurfaces="false" radius="1" fuelLine="true" />
+    </AttachPoints>
+    <SubpartTypes>
+      <SubpartType index="0" xmlName="" displayName="Part" />
+    </SubpartTypes>
+  </PartType>
+  <DesignerParts>
+    <DesignerPart name="CarbonDeoxideFilter" category="LifeSupport" description="" order="0" showInDesigner="true" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
+      <Assembly>
+        <Parts>
+          <Part id="1" partType="CarbonDeoxideFilter" position="0,0,0" rotation="0,0,0">
+            <Config />
+            <Droodism.CarbonDeoxideFilter />
+          </Part>
+        </Parts>
+      </Assembly>
+    </DesignerPart>
+  </DesignerParts>
+  <PartStyles>
+    <SubpartStyles subpartIndex="0">
+      <Style id="Default" displayName="Default" />
+    </SubpartStyles>
+  </PartStyles>
+</Part>

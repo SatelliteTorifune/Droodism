@@ -1,0 +1,151 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XmlLayout xmlns="http://www.w3schools.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\XmlLayout.xsd">
+  <Include path="Ui/Xml/Styles.xml" />
+  <Defaults>
+    <Button class="toggled" iconColor="Primary" />
+    <ContentButton class="list-item" preferredHeight="70" buttonColors="#1d2127ba|Button|ButtonHover|Button" rectAlignment="UpperCenter" onClick="OnListItemClicked(this);" />
+    <Button class="selected" colors="Primary|PrimaryHover|PrimaryPressed|Button" />
+    <ContentButton class="selected" buttonColors="Primary|PrimaryHover|PrimaryPressed|Button" />
+    <TextMeshPro class="selected:@TextMeshPro" color="ValueText" />
+    <Panel class="detail-property" preferredHeight="22" />
+    <TextMeshPro class="detail-property:label" alignment="Left" />
+    <TextMeshPro class="detail-property:value" alignment="Right" />
+    <Panel class="column-left" anchorMin="0 0" anchorMax="0.30 1" />
+    <Panel class="column-middle" anchorMin="0.30 0" anchorMax="0.70 1" />
+    <Panel class="column-right" anchorMin="0.7 0" anchorMax="1 1" />
+    <Panel class="details" offsetMax="-20 0" />
+    <Panel class="no-preview" width="75%" height="90%" />
+    <Panel class="no-preview:background" border="Border" color="Panel" />
+    <Panel class="transparent-background" color="Transparent" translucency="0" border="Transparent" />
+    <Panel class="opaque-background" translucency="0" color="DarkPanel" />
+    <Panel class="small" maxSize="960 600" />
+    <Panel class="no-preview:items" anchorMin="0 0" anchorMax="0.5 1" />
+    <Panel class="no-preview:footer" anchorMin="0.55 0" anchorMax="0.95 1" />
+    <Panel class="no-preview:header" minWidth="320" />
+    <Panel class="no-preview:details" anchorMin="0.52 0" offsetMax="-20 0" offsetMin="10 10" />
+    <Panel class="border-angled" active="false" />
+    <Panel class="no-preview:border-angled" active="true" />
+    <Image class="status-icon" opacity="0.0" sprite="" width="24" height="24" rectAlignment="MiddleRight" offsetXY="-10 0" tooltipPosition="Above" tooltip="Not Yet Completed" />
+    <Image class="status-checkmark" opacity="1.0" sprite="Ui/Sprites/Menu/IconComplete" />
+    <Image class="status-exclamation" opacity="1.0" sprite="Ui/Sprites/Menu/IconExclamation" />
+    <Image class="status-lock" opacity="1.0" sprite="Ui/Sprites/Menu/IconLock" />
+    <Image class="flair" rectAlignment="LowerRight" pivot="1 0" offsetXY="-5 5" width="100" height="20" />
+    <Image class="primary" color="Primary" />
+    <Image class="danger" color="Danger" />
+    <Image class="warning" color="Warning" />
+    <Image class="success" color="Success" />
+  </Defaults>
+  <Panel id="click-blocker" class="audio-btn-back" opacity="0" height="100%" width="100%" raycastTarget="true" onClick="OnCloseButtonClicked();" />
+  <Panel id="panel" class="safe-area no-image">
+    <Panel id="background" class="translucent-panel border" raycastTarget="true"></Panel>
+    <Panel id="preview-drag-handler" anchorMin="0.325 0.20" anchorMax="0.675 0.80" raycastTarget="true"></Panel>
+    <Panel class="column-left no-image">
+      <TextMeshPro id="title-text" class="text-header" alignment="Left" rectAlignment="UpperLeft" height="40" offsetXY="20 -20" />
+    </Panel>
+    <Panel class="column-right no-image">
+      <Button class="icon-button audio-btn-back" width="40" height="40" icon="Ui/Sprites/Common/IconCloseButton" rectAlignment="UpperRight" offsetXY="-20 -20" onClick="OnCloseButtonClicked();" tooltip="Close" tooltipPosition="Below" />
+    </Panel>
+    <Panel id="context-menu-toggle" class="column-right no-image" active="false">
+      <Button class="icon-button audio-btn-back" width="40" height="40" icon="Ui/Sprites/Common/IconButtonMenu" rectAlignment="UpperRight" offsetXY="-70 -20" onClick="OnContextMenuButtonClicked();" />
+    </Panel>
+    <Panel class="column-left items no-image">
+      <Panel class="no-image" offsetMin="20 10" offsetMax="0 -80">
+        <VerticalScrollView class="no-image">
+          <GridLayout active="false" id="grid-items-parent" class="no-image" cellSize="160 195" contentSizeFitter="vertical" spacing="10" childAlignment="UpperCenter" pivot="0 1" rectAlignment="UpperLeft" padding="0 0 0 70">
+            <ContentButton id="grid-list-icon-item-template" class="btn list-item" active="false" navigation="None">
+              <Image internalId="icon" width="150" height="150" active="true" rectAlignment="UpperCenter" offsetXY="0 -5" />
+              <TextMeshPro internalId="title" class="text-lg" enableWordWrapping="false" color="ValueText" rectAlignment="LowerCenter" alignment="Bottom" text="Falcon A" offsetXY="0 10" />
+              <Image internalId="status-icon" class="status-icon" />
+            </ContentButton>
+          </GridLayout>
+          <VerticalLayout active="false" id="items-parent" class="no-image" contentSizeFitter="vertical" spacing="10" childAlignment="UpperCenter" childForceExpandHeight="false" pivot="0 1" rectAlignment="UpperLeft" padding="0 0 0 70">
+            <Panel class="no-image" preferredHeight="40" padding="1 2 0 0">
+              <TextMeshProInputField id="search-input" text="" onValueChanged="OnSearchChanged(value);">
+                <TMP_Placeholder text="Search..." alignment="Left" />
+                <TMP_Text text="" alignment="Left" />
+              </TextMeshProInputField>
+            </Panel>
+            <ContentButton id="list-icon-item-template" class="btn list-item" active="false" navigation="None">
+              <Image internalId="icon" width="64" height="64" active="true" rectAlignment="MiddleLeft" offsetXY="4 0" color="White" />
+              <TextMeshPro internalId="title" class="text-lg" enableWordWrapping="false" color="ValueText" offsetMin="90 0" offsetXY="0 20" alignment="Left" text="Falcon A" />
+              <TextMeshPro internalId="subtitle" offsetMin="90 0" offsetXY="0 -25" alignment="Left" text="Subtitle" overflowMode="Ellipsis" enableWordWrapping="false" />
+              <Image internalId="status-icon" class="status-icon" />
+              <Image internalId="flair" class="flair primary" active="false">
+                <TextMeshPro internalId="flair-text" color="ValueText" />
+              </Image>
+            </ContentButton>
+            <ContentButton id="list-item-template" class="btn list-item" active="false" navigation="None">
+              <TextMeshPro internalId="title" class="text-lg" enableWordWrapping="false" color="ValueText" offsetMin="20 0" offsetXY="0 20" alignment="Left" text="Falcon A" />
+              <TextMeshPro internalId="subtitle" offsetMin="20 0" offsetXY="0 -25" alignment="Left" text="Subtitle" overflowMode="Ellipsis" enableWordWrapping="false" />
+              <Image internalId="status-icon" class="status-icon" />
+            </ContentButton>
+          </VerticalLayout>
+        </VerticalScrollView>
+      </Panel>
+    </Panel>
+    <TextMeshPro id="loading-text" text="Loading..." />
+    <Panel class="column-right details no-image">
+      <Panel class="no-image" rectAlignment="UpperCenter" height="80" width="100%">
+        <TextMeshPro id="details-title-text" class="text-header" alignment="Left" offsetMin="15 10" offsetMax="-100 -10" enableWordWrapping="false" overflowMode="Ellipsis" enableAutoSizing="true" />
+      </Panel>
+      <Panel class="no-image" offsetMin="10 10" offsetMax="10 -80">
+        <TextMeshPro id="no-selection-message" text="Select something on the left for more details." alignment="Top" />
+        <VerticalScrollView id="scrollview" pivot="0 1" class="no-image">
+          <VerticalLayout id="details" class="no-image" contentSizeFitter="vertical" childAlignment="UpperCenter" childForceExpandWidth="true" childForceExpandHeight="false" pivot="0 1" spacing="10" padding="5 10 0 70">
+            <RectTransform active="false">
+              <Panel id="details-image" class="no-image" preferredHeight="200" border="Border">
+                <Image />
+              </Panel>
+              <TextMeshPro id="details-header" class="text-lg" alignment="Left" fontStyle="UpperCase" />
+              <TextMeshPro id="details-text" color="LabelText" alignment="Left" />
+              <Panel id="details-button" class="no-image" preferredHeight="45">
+                <Button internalId="button" class="btn btn-primary" width="50%">
+                  <TextMeshPro internalId="button-text" />
+                </Button>
+              </Panel>
+              <Panel id="details-property" class="detail-property no-image">
+                <TextMeshPro internalId="label" class="label" text="Altitude" alignment="MidlineLeft" anchorMax="0.5 1" />
+                <TextMeshPro internalId="value" class="value" text="312km" alignment="MidlineRight" anchorMin="0.5 0" />
+              </Panel>
+              <Panel id="details-property-pair" class="detail-property no-image" device="desktop">
+                <TextMeshPro internalId="label-left" class="label" text="Lat" alignment="MidlineLeft" anchorMax="0.14 1" />
+                <TextMeshPro internalId="value-left" class="value" text="0" alignment="MidlineRight" anchorMin="0.14 0" anchorMax="0.43 1" />
+                <TextMeshPro internalId="label-right" class="label" text="Lon" alignment="MidlineLeft" anchorMin="0.48 0" anchorMax="0.62 1" />
+                <TextMeshPro internalId="value-right" class="value" text="0" alignment="MidlineRight" anchorMin="0.62 0" />
+              </Panel>
+              <Panel id="details-property-pair" class="detail-property no-image" preferredHeight="46" device="mobile">
+                <TextMeshPro internalId="label-left" class="label" text="Lat" alignment="TopLeft" anchorMin="0 0.5" anchorMax="0.5 1" />
+                <TextMeshPro internalId="value-left" class="value" text="0" alignment="TopRight" anchorMin="0 0.5" anchorMax="1 1" />
+                <TextMeshPro internalId="label-right" class="label" text="Lon" alignment="BottomLeft" anchorMin="0 0" anchorMax="0.5 0.5" />
+                <TextMeshPro internalId="value-right" class="value" text="0" alignment="BottomRight" anchorMin="0 0" anchorMax="1 0.5" />
+              </Panel>
+              <Panel id="details-spacer" class="no-image" preferredHeight="10" />
+              <Panel id="details-input" class="no-image" preferredHeight="30" height="30">
+                <TextMeshProInputField internalId="input" text="" width="80%" height="100%" rectAlignment="MiddleLeft" characterLimit="32">
+                  <TMP_Placeholder internalId="input-placeholder" text="Text..." alignment="Center" />
+                  <TMP_Text text="" alignment="Center" />
+                </TextMeshProInputField>
+              </Panel>
+            </RectTransform>
+          </VerticalLayout>
+        </VerticalScrollView>
+      </Panel>
+      <Panel id="footer" class="no-image" height="70" rectAlignment="LowerCenter" offsetXY="10 -10" active="false">
+        <Panel class="panel panel-angled border-angled" />
+        <HorizontalLayout class="no-image" padding="60 60 0 0" childForceExpandHeight="false" childForceExpandWidth="false" spacing="10" rectAlignment="MiddleCenter" childAlignment="MiddleCenter">
+          <Button id="delete-button" class="icon-button" minWidth="40" width="40" preferredHeight="40" icon="Ui/Sprites/Common/IconSubtract" onClick="OnDeleteButtonClicked(this);" tooltipPosition="Above" tooltip="Remove the selected item." />
+          <Button class="btn btn-primary audio-btn-big" preferredWidth="150" preferredHeight="40" onClick="OnPrimaryButtonClicked(this);">
+            <TextMeshPro id="primary-button-text" color="White" />
+          </Button>
+          <Button id="add-button" class="icon-button" preferredWidth="40" preferredHeight="40" icon="Ui/Sprites/Common/IconAdd" onClick="OnAddButtonClicked(this);" />
+        </HorizontalLayout>
+      </Panel>
+    </Panel>
+    <VerticalLayout id="item-context-menu" active="false" showAnimation="Grow_Vertical" hideAnimation="Shrink_Vertical" contentSizeFitter="vertical" animationDuration="0.1" width="220" childForceExpandHeight="false" spacing="10" pivot="1 1" color="Panel" border="Border" rectAlignment="UpperRight" padding="10" offsetXY="-20 -70">
+      <Button id="context-menu-item-template" class="btn context-menu-button" onClick="OnContextMenuItemClicked(this);" active="false">
+        <TextMeshPro internalId="text" />
+      </Button>
+      <Image id="context-menu-separator-template" class="separator" active="false" />
+    </VerticalLayout>
+  </Panel>
+</XmlLayout>

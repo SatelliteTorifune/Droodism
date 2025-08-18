@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XmlLayout xmlns="http://www.w3schools.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\XmlLayout.xsd">
+  <Include path="Ui/Xml/Flight/FlightStyles.xml" />
+  <Defaults>
+    <Panel class="column-left" width="50%" rectAlignment="MiddleLeft" />
+    <Panel class="column-right" width="50%" rectAlignment="MiddleRight" padding="10 10 0 0" />
+  </Defaults>
+  <Panel id="panel" raycastTarget="true">
+    <VerticalLayout class="translucent-panel border draggable" width="500" contentSizeFitter="vertical" spacing="10" padding="20">
+      <Panel class="no-image" preferredHeight="40">
+        <Button class="icon-button audio-btn-back" width="40" height="40" icon="Ui/Sprites/Common/IconCloseButton" rectAlignment="UpperRight" offsetXY="0 0" onClick="OnCancelClicked();" />
+        <TextMeshPro id="header-text" class="text-header" />
+      </Panel>
+      <VerticalLayout class="translucent-panel-dark border" childForceExpandHeight="false" childForceExpandWidth="false" contentSizeFitter="vertical" childAlignment="UpperCenter" pivot="0 1" spacing="5" padding="10" rectAlignment="UpperCenter">
+        <TextMeshPro id="stats-header" class="label" />
+        <Panel id="template-stat-row" preferredHeight="30" preferredWidth="400">
+          <Panel class="column-left" offsetXY="-10 0">
+            <TextMeshPro internalId="label" class="label" text="Thrust" alignment="Right" />
+          </Panel>
+          <Panel class="column-right" offsetXY="10 0">
+            <TextMeshPro internalId="value" class="value" text="480kN" alignment="Left" />
+          </Panel>
+        </Panel>
+      </VerticalLayout>
+      <HorizontalLayout id="button-panel" preferredHeight="30" class="no-image" spacing="10">
+        <Button id="button-cancel" class="btn" rectAlignment="LowerCenter" tooltipPosition="Above" onClick="OnCancelClicked();">
+          <TextMeshPro text="CANCEL" />
+        </Button>
+        <Button id="button-left" class="btn" rectAlignment="LowerCenter" tooltipPosition="Above">
+          <TextMeshPro />
+        </Button>
+        <Button id="button-center" class="btn" rectAlignment="LowerRight" tooltipPosition="Above">
+          <TextMeshPro />
+        </Button>
+        <Button id="button-right" class="btn" rectAlignment="LowerLeft" tooltipPosition="Above">
+          <TextMeshPro />
+        </Button>
+      </HorizontalLayout>
+    </VerticalLayout>
+  </Panel>
+</XmlLayout>

@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Part name="dick">
+  <PartType id="yituoshi" includeInBodyDrag="true" name="dick" prefabPath="Craft/Parts/Prefabs/Eva.prefab" mass="100" price="0" partCollisions="Always" allowIndividualPartRemoval="true" usePreferredNodeName="false" allowDesignerReorientationOnPullout="false" defaultMaterials="0,1,2,3,4" subpartsSharePartStyle="false" stylesShareHeader="false">
+    <Modifiers>
+      <Config autoActivateIfNoStageOrActivationGroup="true" buoyancyBaseScale="2.75" buoyancyUserScale="1" castShadows="true" centerOfMass="0,0,0" collisionDisconnectImpulse="750" collisionDisconnectVelocity="-1" collisionExplodeImpulse="1500" collisionExplodeVelocity="-1" collisionPreventExternalDisconnections="true" collisionVelocityMode="None" dragScale="1" dragScaleActive="1" dragScaleAngular="1" explosiveness="0" fuelLine="false" heatShield="0" heatShieldBaseScale="1" heatShieldMass="0" heatShieldScale="0" heatShieldValidation="true" ignoreValidation="false" includeInDrag="true" inertiaTensorBaseScale="1" inertiaTensorMin="0.05" inertiaTensorUserScale="1" initialCraftNodeId="-1" massScale="1" maxDamage="100" maxDrag="0" maxDragActive="0" maxTemperature="470" occlusion="Auto" partCollisionHandling="Default" partCollisionResponse="Default" partScale="1,1,1" partSelectionEnabled="true" preventDebris="true" priceScale="1" raiseWaterEventsEvenIfNotBuoyant="false" renderQueue="BeforeDepthMask" stageActivationType="None" supportsActivation="false" supportsTransparency="true" thermalMassRatio="1" inspectorEnabled="false" partPropertiesEnabled="false" staticPriceAndMass="true" version="1" versionLast="1" versionsAllowed="" />
+      <CommandPod activationGroupNames="" activationGroupStates="" autoRecalculateStages="true" configurableContents="false" configureBattery="0" configureGyros="0" craftConfigAutoAssign="false" craftConfigType="Plane" currentStage="0" pidPitch="0,0,0" pidRoll="0,0,0" pilotSeatRotation="0,0,0" powerConsumption="0" reorientCraftOnConfigChange="true" replicateActivationGroups="None" replicateControls="false" replicateStageActivations="false" stageCalculationVersion="2" useDefaultPilotSeatRotation="true" inspectorEnabled="false" partPropertiesEnabled="true" staticPriceAndMass="true" version="1" versionLast="1" versionsAllowed="" />
+      <Eva crewId="0" crewName="Crew member" grapplingHookEnabled="true" gDamageScale="1" gTolerance="7" jetpackAvailable="true" jetpackEnabled="true" jetpackPowerScalar="1" jumpPowerScalar="1" requiresCrewMember="true" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="true" version="1" versionLast="1" versionsAllowed="" />
+      <CameraVantage autoCenterCamera="true" cameraOffset="0,0.75,0.08" cameraRotationOffset="0,0,0" dirtIntensity="0" enabledByDefault="false" hideBase="false" scale="1" fieldOfView="60" fieldOfViewMax="100" fieldOfViewMin="40" isHidden="true" isNight="false" nightVisionColor="#80FF8080" lookAtCommandPod="false" manualRegister="true" padPosition="false" variableZoom="false" inspectorEnabled="false" partPropertiesEnabled="false" staticPriceAndMass="true" version="1" versionLast="1" versionsAllowed="" />
+      <FuelTank autoFuelType="false" capacity="600" fuel="600" fuelType="Battery" priority="0" subPriority="0" utilization="-1" inspectorEnabled="false" partPropertiesEnabled="false" staticPriceAndMass="true" version="1" versionLast="1" versionsAllowed="" />
+      <SupportLife oxygenComsumeRate="0.3" foodComsumeRate="0.3" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
+      <FuelTank autoFuelType="false" capacity="19" fuel="18" fuelType="Oxygen" priority="0" subPriority="0" utilization="-1" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
+    </Modifiers>
+    <AttachPoints>
+      <AttachPoint name="AttachPoint1" position="0,0,0" rotation="0,180,0" positionOffset="0,0,0" rotationOffset="0,0,0" allowRotation="true" allowInvertedConnection="false" canReceive="false" canSeek="true" ignoreSurfaces="false" jointType="Rigid" connectionType="Eva" requiresPhysicsJoint="true" />
+    </AttachPoints>
+    <SubpartTypes>
+      <SubpartType index="0" xmlName="" displayName="Part" />
+    </SubpartTypes>
+  </PartType>
+  <DesignerParts>
+    <DesignerPart name="dick" category="Command" description="dickhead" order="1" showInDesigner="true" snapshotDistanceScaler="0.7" snapshotPartRotation="0,180,0" snapshotPartOffset="0,0.85,0" snapshotRotation="0,10,0">
+      <Assembly>
+        <Parts>
+          <Part id="1" partType="yituoshi" position="0,0,0" rotation="0,0,0">
+            <Config />
+            <CommandPod />
+            <Eva />
+            <CameraVantage />
+            <FuelTank />
+            <SupportLife />
+            <FuelTank />
+          </Part>
+        </Parts>
+      </Assembly>
+    </DesignerPart>
+  </DesignerParts>
+  <PartStyles>
+    <SubpartStyles subpartIndex="0">
+      <Style id="Default" displayName="Default">
+        <TextureStyles>
+          <TextureStyle id="Eva" />
+        </TextureStyles>
+      </Style>
+    </SubpartStyles>
+  </PartStyles>
+</Part>

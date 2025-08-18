@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XmlLayout xmlns="http://www.w3schools.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\XmlLayout.xsd">
+  <Include path="Ui/Xml/Flight/FlightStyles.xml" />
+  <Defaults>
+    <VerticalLayout class="context-menu-layout" contentSizeFitter="both" childAlignment="MiddleLeft" childForceExpandHeight="false" childForceExpandWidth="true" pivot="0 1" raycastTarget="true" />
+    <ContentButton class="context-menu-button" preferredWidth="250" translucency="0.15" buttonColors="Black|ButtonHover|ButtonPressed|ButtonDisabled" />
+    <ContentButton class="context-menu-button" preferredHeight="24" device="-mobile" />
+    <ContentButton class="context-menu-button" preferredHeight="32" device="mobile" />
+    <Image class="context-menu-button&gt;@Image" pivot="0 0.5" anchorMin="0 0.5" anchorMax="0 0.5" offsetXY="2 0" />
+    <Image class="context-menu-button&gt;@Image" width="20" height="20" device="-mobile" />
+    <Image class="context-menu-button&gt;@Image" width="28" height="28" device="mobile" />
+    <TextMeshPro class="context-menu-button&gt;@TextMeshPro" alignment="Left" overflowMode="Truncate" pivot="0 0.5" />
+    <TextMeshPro class="context-menu-button&gt;@TextMeshPro" fontSize="16" device="-mobile" />
+    <TextMeshPro class="context-menu-button&gt;@TextMeshPro" fontSize="18" device="mobile" />
+    <Image class="context-menu-item-no-icon&gt;@Image" active="false" />
+    <TextMeshPro class="context-menu-item-no-icon&gt;@TextMeshPro" offsetMin="0 0" />
+    <Image class="context-menu-item-with-icon&gt;@Image" active="true" />
+    <TextMeshPro class="context-menu-item-with-icon&gt;@TextMeshPro" offsetMin="28 0" device="-mobile" />
+    <TextMeshPro class="context-menu-item-with-icon&gt;@TextMeshPro" offsetMin="36 0" device="mobile" />
+  </Defaults>
+  <VerticalLayout id="context-menu" class="no-image border context-menu-layout" active="false">
+    <ContentButton internalId="context-menu-button-template" class="btn list-item audio-btn-click context-menu-button" active="false">
+      <Image internalId="context-menu-item-icon" />
+      <TextMeshPro />
+    </ContentButton>
+  </VerticalLayout>
+</XmlLayout>

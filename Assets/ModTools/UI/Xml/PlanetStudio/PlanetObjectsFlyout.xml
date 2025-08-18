@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XmlLayout xmlns="http://www.w3schools.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\XmlLayout.xsd">
+  <Include path="Ui/Xml/Design/DesignStyles.xml" />
+  <Defaults>
+    <Panel class="list-item" hoverClass="list-item-hover" pressClass="list-item-press" onClick="OnListItemClicked(this);" />
+    <Panel class="list-item-hover" color="Button" />
+    <Panel class="list-item-press" color="ButtonHover" />
+    <Panel class="selected" color="Primary" />
+    <Image class="icon" active="false" />
+    <Image class="icon-location" sprite="Ui/Sprites/PlanetStudio/IconAddLaunchLocation" active="true" />
+    <Image class="icon-structure" sprite="Ui/Sprites/PlanetStudio/IconAddStructure" active="true" />
+    <Image class="header-arrow" color="LabelText" pivot="0.5 0.5" offsetXY="10 0" sprite="Ui/Sprites/Common/IconTriangleRight" width="12" height="12" rectAlignment="MiddleLeft" />
+    <ContentButton class="object-button" width="40" height="35" preferredWidth="40" preferredHeight="35" navigation="None" tooltipPosition="Below" rectAlignment="MiddleLeft" />
+  </Defaults>
+  <Panel class="no-image" offsetMax="0 -40">
+    <VerticalScrollView id="scroll-view" class="no-image" rectAlignment="UpperCenter" pivot="0 1">
+      <VerticalLayout class="no-image" childForceExpandHeight="false" padding="0" spacing="0" contentSizeFitter="vertical" pivot="0 1" childAlignment="UpperCenter" rectAlignment="UpperLeft">
+        <Panel id="row-template" class="list-item" preferredHeight="32" raycastTarget="true" active="false">
+          <Panel internalId="inner-panel">
+            <Image internalId="arrow" class="header-arrow" raycastTarget="true" active="false" />
+            <TextMeshPro text="" internalId="name" alignment="Left" color="ValueText" offsetXY="25 0" />
+          </Panel>
+          <Image internalId="icon" class="icon" rectAlignment="MiddleRight" width="20" height="20" color="LabelText" />
+          <Image class="border" height="1" rectAlignment="LowerCenter" />
+        </Panel>
+        <Panel name="insert-indicator" id="insert-indicator" raycastTarget="false" preferredHeight="0" active="false">
+          <Image color="Primary" raycastTarget="false" height="2" />
+        </Panel>
+      </VerticalLayout>
+    </VerticalScrollView>
+  </Panel>
+  <HorizontalLayout color="DarkPanel" offsetXY="-1 0" height="40" rectAlignment="UpperCenter" spacing="5" childForceExpandWidth="false">
+    <ContentButton class="btn btn-primary object-button" rectAlignment="MiddleLeft" onClick="OnAddLaunchLocationClicked();" tooltip="Add New Launch Location">
+      <Image sprite="Ui/Sprites/PlanetStudio/IconAddLaunchLocation" internalId="image" width="20" height="20" />
+    </ContentButton>
+    <ContentButton class="btn btn-primary object-button" rectAlignment="MiddleLeft" onClick="OnAddStructureClicked();" tooltip="Add New Structure">
+      <Image sprite="Ui/Sprites/PlanetStudio/IconAddStructure" internalId="image" width="20" height="20" />
+    </ContentButton>
+    <ContentButton class="btn btn-primary object-button" rectAlignment="MiddleLeft" onClick="OnAddSubStructureClicked();" tooltip="Add New Sub-Structure under the currently selected structure">
+      <Image sprite="Ui/Sprites/PlanetStudio/IconAddSubStructure" internalId="image" width="20" height="20" />
+    </ContentButton>
+    <ContentButton class="btn object-button visible-selected" rectAlignment="MiddleLeft" onClick="OnViewTargetClicked();" tooltip="Move View to Target">
+      <Image sprite="Ui/Sprites/PlanetStudio/IconViewTarget" internalId="image" width="20" height="20" />
+    </ContentButton>
+    <ContentButton id="clone-button" class="btn object-button" rectAlignment="MiddleLeft" onClick="OnCloneClicked();" tooltip="Clone the selected structure." active="false">
+      <Image sprite="Ui/Sprites/PlanetStudio/IconNoiseDuplicateNode" internalId="image" width="32" height="32" />
+    </ContentButton>
+    <ContentButton ignoreLayout="true" id="delete-button" class="btn btn-warning object-button visible-selected" rectAlignment="MiddleRight" onClick="OnDeleteObject();" tooltip="Delete selected object.">
+      <Image sprite="Ui/Sprites/Menu/IconButtonTrash" internalId="image" width="20" height="20" />
+    </ContentButton>
+  </HorizontalLayout>
+  <Panel id="drag-parent" class="no-image" active="true"></Panel>
+</XmlLayout>

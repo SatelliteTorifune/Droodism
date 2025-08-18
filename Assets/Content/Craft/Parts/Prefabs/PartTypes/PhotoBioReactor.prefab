@@ -1,0 +1,205 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3251988100121216993
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 919717351797244859}
+  - component: {fileID: 6425373659946220871}
+  - component: {fileID: 7033178411656935315}
+  - component: {fileID: 141077943972541464}
+  - component: {fileID: 4461973695236197520}
+  m_Layer: 0
+  m_Name: PhotoBioReactor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &919717351797244859
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3251988100121216993}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6425373659946220871
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3251988100121216993}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1298369543, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Data:
+    _allowDesignerReorientationOnPullout: 1
+    _allowIndividualPartRemoval: 0
+    _defaultColorIndexPrimary: 0
+    _defaultColorIndexTrim1: 0
+    _defaultColorIndexTrim2: 0
+    _defaultColorIndexTrim3: 0
+    _defaultColorIndexTrim4: 0
+    _id: PhotoBioReactor
+    _includeInBodyDrag: 1
+    _mirrorConfig:
+      _hasRotationOffset: 0
+      _rotationOffsetEuler: {x: 0, y: 0, z: 0}
+    _name: PhotoBio Reactor
+    _partCollisionHandling: 0
+    _price: 0
+    _unscaledMass: 0
+    _usePreferredNodeName: 1
+--- !u!114 &7033178411656935315
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3251988100121216993}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -631517893, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Data:
+    _activationGroup: 0
+    _category: {fileID: 11400000, guid: 7d2b6f557b8767544a162f30e61d22b6, type: 2}
+    _description: 'When<color=green>Active</color>,turning CO2/Water to Oxygen and
+      Food,powered by solar
+
+
+      When<color=red>Deactive</color>,and enabled function
+      of working on fold,turning CO2/Water to Oxygen and Food,Consuming Electricity
+      charge
+
+
+      Solid Waste Will boost the food generation'
+    _displayOrder: 0
+    _iconPath: 
+    _iconType: 0
+    _name: PhotoBio Reactor
+    _partTypeOverrides: []
+    _position: {x: 0, y: 0, z: 0}
+    _rotation: {x: 0, y: 0, z: 0}
+    _showInDesigner: 1
+    _snapshotDistanceScaler: 1
+    _snapshotPartOffset: {x: 0, y: 0, z: 0}
+    _snapshotPartRotation: {x: 0, y: 0, z: 0}
+    _snapshotRotation: {x: 30, y: 30, z: 0}
+--- !u!114 &141077943972541464
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3251988100121216993}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -841283480, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Data:
+    _id: 
+    _inputId: 
+    _inspectorEnabled: 1
+    _partPropertiesEnabled: 1
+    _staticPriceAndMass: 0
+    _version: 1
+    _versionLast: 1
+    _versionsAllowed: 
+    _autoActivateIfNoStageOrActivationGroup: 0
+    _buoyancyBaseScale: 1
+    _buoyancyUserScale: 1
+    _castShadows: 1
+    _centerOfMass: {x: 0, y: 0, z: 0}
+    _collisionDisconnectImpulse: 1000
+    _collisionDisconnectVelocity: 15
+    _collisionExplodeImpulse: 2000
+    _collisionExplodeVelocity: 30
+    _collisionPreventExternalDisconnections: 0
+    _collisionVelocityMode: 2
+    _dragScale: 1
+    _dragScaleActive: 1
+    _dragScaleAngular: 1
+    _explosiveness: 0
+    _fuelLine: 0
+    _heatShield: 0
+    _heatShieldBaseScale: 1
+    _heatShieldMass: 0
+    _heatShieldScale: -1
+    _heatShieldValidation: 1
+    _ignoreValidation: 0
+    _includeInDrag: 1
+    _inertiaTensorBaseScale: 1
+    _inertiaTensorMin: 0.05
+    _inertiaTensorUserScale: 1
+    _initialCraftNodeId: -1
+    _massScale: 1
+    _maxDamage: 100
+    _maxDrag: 0
+    _maxDragActive: 0
+    _maxTemperature: 1500
+    _occlusion: 0
+    _partCollisionHandling: 0
+    _partCollisionResponse: 2
+    _partScale: {x: 1, y: 1, z: 1}
+    _partSelectionEnabled: 1
+    _preventDebris: 0
+    _priceScale: 1
+    _raiseWaterEventsEvenIfNotBuoyant: 0
+    _renderQueue: 0
+    _stageActivationType: 0
+    _supportsActivation: 1
+    _supportsTransparency: 1
+    _thermalMassRatio: 1
+    _tutorialId: 
+--- !u!114 &4461973695236197520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3251988100121216993}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 102af2257e7cc674da34e5e7619fdb32, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Data:
+    _id: 
+    _inputId: 
+    _inspectorEnabled: 1
+    _partPropertiesEnabled: 1
+    _staticPriceAndMass: 0
+    _version: 1
+    _versionLast: 1
+    _versionsAllowed: 
+    _foodGeneratedScale: 1
+    _efficiency: 0.46
+    _growProgressTotal: 1
+    _growSpeed: 1
+    _decaySpeed: 0.3
+    _co2ConsumptionRate: 1
+    _oxygenGenerationRate: 1
+    _waterConsumptionRate: 1
+    _powerConsumptionRate: 1
+    _solidWasteConsumptionRate: 1
+    _wastedWaterGenerationRate: 1
+    _boosteScale: 3
+    SubPartPath: DeviceBase/MainPipe

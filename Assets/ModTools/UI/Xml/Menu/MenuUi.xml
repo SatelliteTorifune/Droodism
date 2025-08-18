@@ -1,0 +1,239 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XmlLayout xmlns="http://www.w3schools.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\XmlLayout.xsd">
+  <Include path="Ui/Xml/Styles.xml" />
+  <Defaults>
+    <Color name="GlassButtonNormal" color="#cccccc" />
+    <Color name="GlassButtonHover" color="#ffffff" />
+    <Color name="GlassButtonPressed" color="#999999" />
+    <Color name="GlassButtonDisabled" color="#333333" />
+    <Button class="toggled" iconColor="Primary" />
+    <Panel class="hide-by-default" active="false" />
+    <Panel class="missing-files:show-if-missing-files" active="true" />
+    <Panel class="missing-files:hide-if-missing-files" active="false" />
+    <Button class="missing-files:hide-if-missing-files" active="false" />
+    <TextMeshPro class="missing-files:hide-if-missing-files" active="false" />
+    <Panel class="center-panel-container" width="1460" height="100" scale="0.65" />
+    <Panel class="center-panel" width="932" height="100" />
+    <Panel class="text-stat" height="40" />
+    <TextMeshPro class="text-stat-value" fontSize="20" />
+    <TextMeshPro class="text-stat-label" fontSize="14" />
+    <ContentButton class="glass-button" color="Transparent" width="620" height="163" targetImage="target" buttonColors="GlassButtonNormal|GlassButtonHover|GlassButtonPressed|GlassButtonDisabled|GlassButtonNormal" navigation="None" />
+    <ContentButton class="simple-glass-button" color="Transparent" targetImage="target" buttonColors="GlassButtonNormal|GlassButtonHover|GlassButtonPressed|GlassButtonDisabled|GlassButtonNormal" navigation="None" />
+    <TextMeshPro class="simple-glass-button:@TextMeshPro" fontSize="32" />
+    <Panel class="simple-glass-button" scale="0.7" width="483" />
+    <HorizontalLayout class="menu-row" preferredHeight="163" />
+    <HorizontalLayout class="menu-row-small" spacing="50" preferredHeight="82" scale="0.5" />
+    <TextMeshPro class="menu-row-text-left" alignment="Center" fontSize="36" margin="50 0 0 0" />
+    <TextMeshPro class="menu-row-text-right" alignment="Center" fontSize="36" margin="0 0 50 0" />
+    <Panel class="text-button-link" border="ButtonHover" color="Button" hoverClass="text-button-link-hover" />
+    <Image class="text-button-arrow" color="White" sprite="Ui/Sprites/Flight/IconTriangle" width="16" height="16" />
+    <TextMeshPro class="text-button-link:@TextMeshPro" color="ButtonText" />
+    <Panel class="text-button-link-hover" color="ButtonHover" />
+  </Defaults>
+  <RectTransform id="main-panel" class="safe-area">
+    <TextMeshPro id="version-number-text" class="label" fontSize="12" rectAlignment="UpperRight" width="240" offsetXY="-20 -5" alignment="TopRight" />
+    <Panel id="top-panel" class="center-panel-container" rectAlignment="UpperCenter">
+      <Panel class="simple-glass-button career-mode hide-if-missing-files" pivot="0 1" rectAlignment="UpperLeft">
+        <ContentButton name="TechTreeButton" class="simple-glass-button audio-btn-big" onClick="OnTechTreeButtonClicked();">
+          <Image internalId="target" class="translucent flipped glass-button-simple" />
+          <TextMeshPro id="tech-tree-button-text" class="modern" text="TECH TREE" />
+        </ContentButton>
+      </Panel>
+      <Panel class="simple-glass-button career-mode hide-if-missing-files" pivot="1 1" rectAlignment="UpperRight">
+        <ContentButton name="CareerButton" class="simple-glass-button audio-btn-big" onClick="OnContractsButtonClicked();">
+          <Image internalId="target" class="translucent flipped-x glass-button-simple" />
+          <TextMeshPro id="career-button-text" class="modern" text="CAREER" />
+        </ContentButton>
+      </Panel>
+      <Panel class="simple-glass-button sandbox-mode" device="desktop" pivot="0 1" rectAlignment="UpperLeft">
+        <ContentButton class="simple-glass-button audio-btn-big" onClick="OnPlanetStudioButtonClicked();">
+          <Image internalId="target" class="translucent flipped glass-button-simple" />
+          <TextMeshPro class="modern" text="PLANET STUDIO" fontSize="24" />
+        </ContentButton>
+      </Panel>
+      <Panel class="simple-glass-button sandbox-mode" device="desktop" pivot="1 1" rectAlignment="UpperRight">
+        <ContentButton class="simple-glass-button audio-btn-big" onClick="OnModsButtonClicked();">
+          <Image internalId="target" class="translucent flipped-x glass-button-simple" />
+          <TextMeshPro class="modern" text="MOD MANAGER" fontSize="24" />
+        </ContentButton>
+      </Panel>
+      <Panel class="center-panel">
+        <Image class="center-panel-back" />
+        <Image class="center-panel-front" />
+        <RectTransform id="upgrade-button" active="false" offsetXY="125 0" rectAlignment="MiddleLeft" width="50" height="50">
+          <Image sprite="Ui/Sprites/Menu/IconStore" raycastTarget="true" pivot="0.5 0.5" onClick="OnUpgradeButtonClicked(this);" />
+        </RectTransform>
+        <RectTransform id="notification-button" offsetXY="-125 0" rectAlignment="MiddleRight" width="32" height="32">
+          <Image id="notification-button-image" active="false" sprite="Ui/Sprites/Menu/NotificationButton" color="Red" pivot="0.5 0.5" raycastTarget="true" />
+        </RectTransform>
+        <Panel offsetMin="100 0" offsetMax="-100 0">
+          <TextMeshPro id="company-text" class="modern" fontSize="36" />
+        </Panel>
+        <Panel class="career-mode" offsetXY="0 -100" rectAlignment="UpperCenter" height="50">
+          <Panel name="Career.Details.TechPoints" class="no-image text-stat" offsetXY="-300 0" width="150">
+            <TextMeshPro class="text-stat-value" id="tech-points-text" alignment="Bottom" />
+            <TextMeshPro class="text-stat-label" text="TECH POINTS" alignment="Top" />
+          </Panel>
+          <Panel class="no-image text-stat" offsetXY="-160 0" width="150">
+            <TextMeshPro class="text-stat-value" id="active-crafts-text" alignment="Bottom" />
+            <TextMeshPro class="text-stat-label" text="ACTIVE CRAFTS" alignment="Top" />
+          </Panel>
+          <Panel class="no-image text-stat" offsetXY="160 0" width="150">
+            <TextMeshPro class="text-stat-value" id="active-jobs-text" alignment="Bottom" />
+            <TextMeshPro class="text-stat-label" text="ACTIVE JOBS" alignment="Top" />
+          </Panel>
+          <Panel name="Career.Details.Money" class="no-image text-stat" offsetXY="300 0" width="150">
+            <TextMeshPro class="text-stat-value" id="money-text" alignment="Bottom" />
+            <TextMeshPro class="text-stat-label" text="CURRENT MONEY" alignment="Top" />
+          </Panel>
+        </Panel>
+        <Panel class="text-button-link audio-btn-click translucent-panel" width="175" height="40" offsetXY="0 -75" onClick="OnMenuButtonClicked(this);">
+          <TextMeshPro class="modern" text="MENU" fontSize="24" />
+        </Panel>
+      </Panel>
+    </Panel>
+    <Panel id="bottom-panel" class="center-panel-container hide-if-missing-files" rectAlignment="LowerCenter">
+      <Panel class="simple-glass-button" pivot="0 0" rectAlignment="LowerLeft">
+        <ContentButton class="simple-glass-button audio-btn-big" onClick="OnBuildButtonClicked();">
+          <Image internalId="target" class="translucent flipped-y glass-button-simple" />
+          <TextMeshPro class="modern" text="BUILD" />
+        </ContentButton>
+      </Panel>
+      <Panel class="simple-glass-button" pivot="1 0" rectAlignment="LowerRight">
+        <ContentButton class="simple-glass-button audio-btn-big" onClick="OnLaunchButtonClicked();">
+          <Image internalId="target" class="translucent flipped-x-y glass-button-simple" />
+          <TextMeshPro class="modern" text="LAUNCH" />
+        </ContentButton>
+      </Panel>
+      <Panel class="center-panel">
+        <Image class="center-panel-back flipped-y" />
+        <Image class="center-panel-front flipped-y" />
+        <Panel offsetMin="125 40" offsetMax="-125 0">
+          <TextMeshPro name="rocket-text" id="rocket-text" class="modern" fontSizeMin="28" fontSizeMax="36" enableAutoSizing="true" overflowMode="Ellipsis" />
+        </Panel>
+        <Panel offsetMax="0 -50">
+          <Panel class="no-image text-stat" offsetXY="-150 0">
+            <TextMeshPro class="text-stat-value" id="craft-mass-text" alignment="Top" />
+            <TextMeshPro class="text-stat-label" text="MASS" alignment="Bottom" />
+          </Panel>
+          <Panel class="no-image text-stat" offsetXY="150 0">
+            <TextMeshPro class="text-stat-value" id="craft-price-text" alignment="Top" />
+            <TextMeshPro class="text-stat-label" text="PRICE" alignment="Bottom" />
+          </Panel>
+        </Panel>
+        <Panel id="active-crafts-button" class="text-button-link audio-btn-click translucent-panel" width="275" height="40" offsetXY="0 75" onClick="OnActiveCraftsButtonClicked(this);">
+          <TextMeshPro class="modern" text="RESUME FLIGHT" fontSize="18" />
+        </Panel>
+        <Panel class="text-button-link audio-btn-click translucent-panel" width="175" height="40" offsetXY="0 -25" onClick="OnLoadCraftButtonClicked(this);">
+          <TextMeshPro class="modern" text="CRAFTS" fontSize="18" />
+        </Panel>
+      </Panel>
+    </Panel>
+    <Panel id="missing-files-panel" name="MissingFilesPanel" class="hide-by-default show-if-missing-files" width="380">
+      <VerticalLayout internalId="dialog-panel" class="panel border dialog-panel" contentSizeFitter="vertical" childForceExpandWidth="0" childAlignment="MiddleCenter" spacing="20" padding="20">
+        <TextMeshPro internalId="label-main" class="value" flexibleWidth="1" text="Unable to load the game because the planetary system is missing files." />
+        <Image internalId="loading-image" sprite="Ui/Sprites/Menu/LevelIcons/SatelliteRendezvous" />
+        <TextMeshPro internalId="label-status" class="value" flexibleWidth="1" text="Querying server for missing files..." />
+        <Button internalId="download-button" class="btn btn-primary audio-btn-big" preferredWidth="150" active="false" onClick="OnDownloadMissingFilesClicked">
+          <TextMeshPro internalId="download-button-text" text="DOWNLOAD" />
+        </Button>
+      </VerticalLayout>
+    </Panel>
+    <Panel id="whats-new" active="false" class="panel border translucent-panel" rectAlignment="UpperRight" width="500" height="100%" pivot="1 1">
+      <TextMeshPro ignoreLayout="true" text="WHAT'S NEW" fontSize="18" color="LabelText" offsetXY="0 0" height="50" rectAlignment="UpperCenter" />
+      <!--<Button class="btn btn-primary" rectAlignment="UpperLeft" width="100" offsetXY="10 -12" height="25" onClick="OnRoadmapButtonClicked();" tooltip="Check out what we're working on next." tooltipPosition="Above">
+            <TextMeshPro text="ROADMAP" />
+         </Button>-->
+      <Button class="btn btn-default" rectAlignment="UpperRight" width="100" offsetXY="-10 -12" height="25" onClick="OnWhatsNewButtonClicked();">
+        <TextMeshPro text="CLOSE" />
+      </Button>
+      <RectTransform>
+        <RectTransform offsetMin="10 10" offsetMax="-10 -50">
+          <Panel class="translucent-panel-dark" />
+          <VerticalScrollView border="Border">
+            <VerticalLayout childForceExpandHeight="false" contentSizeFitter="vertical" pivot="0 1" rectAlignment="UpperCenter" childAlignment="UpperCenter" padding="10" spacing="5">
+              <TextMeshPro id="whats-new-text" color="LabelText" pivot="0 1" rectAlignment="UpperLeft" alignment="TopLeft" scale="1,1,1" richText="true" raycastTarget="true" />
+            </VerticalLayout>
+          </VerticalScrollView>
+        </RectTransform>
+      </RectTransform>
+    </Panel>
+    <Panel active="false" id="file-menu" raycastTarget="true" onClick="OnFileMenuCloseClicked();">
+      <Panel class="menu-panel" rectAlignment="MiddleCenter" scale="0.6">
+        <VerticalLayout height="163" width="1280" padding="20" contentSizeFitter="vertical">
+          <HorizontalLayout class="menu-row-small">
+            <ContentButton class="glass-button audio-btn-big" onClick="OnWhatsNewButtonClicked();" raycastPadding="0 0 -40 -40">
+              <Image internalId="target" class="translucent flipped-y glass-button" />
+              <Image class="flipped-y glass-button-edge" color="Primary" />
+              <TextMeshPro class="modern menu-row-text-left" text="WHAT'S NEW" alignment="Center" fontSize="36" />
+            </ContentButton>
+            <ContentButton class="glass-button audio-btn-big" onClick="OnSettingsButtonClicked();" raycastPadding="0 0 -40 -40">
+              <Image internalId="target" class="translucent flipped-x-y glass-button" />
+              <Image class="flipped-x-y glass-button-edge" color="Primary" />
+              <TextMeshPro class="modern menu-row-text-right" text="SETTINGS" />
+            </ContentButton>
+          </HorizontalLayout>
+          <HorizontalLayout class="menu-row">
+            <ContentButton class="glass-button audio-btn-big" onClick="OnNewGameButtonClicked();">
+              <Image internalId="target" class="translucent flipped-y glass-button" />
+              <Image class="flipped-y glass-button-edge" color="Primary" />
+              <TextMeshPro class="modern menu-row-text-left" text="NEW GAME" alignment="Center" fontSize="36" />
+            </ContentButton>
+            <ContentButton class="glass-button audio-btn-big" onClick="OnLoadGameButtonClicked();">
+              <Image internalId="target" class="translucent flipped-x-y glass-button" />
+              <Image class="flipped-x-y glass-button-edge" color="Primary" />
+              <TextMeshPro class="modern menu-row-text-right" text="LOAD GAME" alignment="Center" fontSize="36" />
+            </ContentButton>
+          </HorizontalLayout>
+          <HorizontalLayout class="menu-row career-mode" device="desktop">
+            <ContentButton class="glass-button audio-btn-big" onClick="OnPlanetStudioButtonClicked();">
+              <Image internalId="target" class="translucent flipped glass-button" />
+              <Image class="flipped glass-button-edge" color="Primary" />
+              <TextMeshPro class="modern menu-row-text-left" text="PLANET STUDIO" alignment="Center" fontSize="36" />
+            </ContentButton>
+            <ContentButton class="glass-button audio-btn-big" onClick="OnModsButtonClicked();" device="desktop">
+              <Image internalId="target" class="translucent flipped-x glass-button" />
+              <Image class="flipped-x glass-button-edge" color="Primary" />
+              <TextMeshPro class="modern menu-row-text-right" text="MOD MANAGER" alignment="Center" fontSize="36" />
+            </ContentButton>
+          </HorizontalLayout>
+          <HorizontalLayout class="menu-row-small">
+            <ContentButton class="glass-button audio-btn-big" onClick="OnExitButtonClicked();" raycastPadding="0 0 -40 -40">
+              <Image internalId="target" class="translucent flipped glass-button" />
+              <Image class="flipped glass-button-edge" color="Primary" />
+              <TextMeshPro class="modern menu-row-text-left" text="EXIT GAME" alignment="Center" fontSize="36" />
+            </ContentButton>
+            <ContentButton class="glass-button audio-btn-big" onClick="OnCreditsButtonClicked()" raycastPadding="0 0 -40 -40">
+              <Image internalId="target" class="translucent flipped-x glass-button" />
+              <Image class="flipped-x glass-button-edge" color="Primary" />
+              <TextMeshPro class="modern menu-row-text-right" text="CREDITS" alignment="Center" fontSize="36" />
+            </ContentButton>
+          </HorizontalLayout>
+        </VerticalLayout>
+      </Panel>
+    </Panel>
+  </RectTransform>
+  <Panel id="notification-panel" active="false" color="DarkPanel" raycastTarget="true">
+    <RectTransform class="safe-area">
+      <RectTransform>
+        <Panel offsetMin="0 60">
+          <VerticalScrollView>
+            <VerticalLayout contentSizeFitter="vertical" childForceExpandHeight="false" childForceExpandWidth="false" pivot="0.5 1" rectAlignment="UpperCenter" childAlignment="UpperCenter" padding="10" spacing="25">
+              <TextMeshPro preferredWidth="700" id="notification-title" fontSize="18" color="White" offsetXY="0 0" height="60" richText="true" />
+              <TextMeshPro preferredWidth="700" id="notification-text" color="LabelText" pivot="0 1" rectAlignment="UpperLeft" alignment="Top" scale="1,1,1" richText="true" />
+              <Image preferredWidth="700" id="notification-image" preserveAspect="true" />
+            </VerticalLayout>
+          </VerticalScrollView>
+        </Panel>
+        <Panel height="60" rectAlignment="LowerCenter" color="Panel">
+          <Button id="notification-okay-button" class="btn btn-primary" rectAlignment="MiddleCenter" width="200" pivot="0 0.5" offsetXY="50 0" height="35">
+            <TextMeshPro id="notification-button-text" text="OKAY" />
+          </Button>
+          <Button id="notification-close-button" class="btn btn-default" rectAlignment="MiddleCenter" width="200" pivot="1 0.5" offsetXY="-50 0" height="35">
+            <TextMeshPro text="CLOSE" />
+          </Button>
+        </Panel>
+      </RectTransform>
+    </RectTransform>
+  </Panel>
+</XmlLayout>
