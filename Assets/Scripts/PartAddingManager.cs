@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Assets.Scripts.Craft;
 using Assets.Scripts.Craft.Parts.Modifiers;
+using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using ModApi.Craft.Parts;
 using ModApi.Craft.Parts.Events;
 using ModApi.Mods;
@@ -57,7 +58,7 @@ namespace Assets.Scripts
                 AddLSGModifier(e.Part);
             }
 
-            if (e.Part.PartType.Name.Contains("Command")||e.Part.PartType.Name.Contains("Capsule")||e.Part.PartType.Name.Contains("Cockpit1"))
+            if (e.Part.PartType.IsCommandPod&&!e.Part.PartType.Name.Contains("Eva"))
             {
                 PatchCommandPod(e.Part);
             }
@@ -142,7 +143,7 @@ namespace Assets.Scripts
             List<PartData> CommandPodParts = new List<PartData>();
             foreach (PartData part in craft.Data.Assembly.Parts)
             {
-                if (part.PartType.Name.Contains("Capsule")||part.PartType.Name.Contains("Command")||part.PartType.Name.Contains("Cockpit1"))
+                if (part.PartType.IsCommandPod&&!part.PartType.Name.Contains("Eva"))
                 {
                     CommandPodParts.Add(part);
                 }

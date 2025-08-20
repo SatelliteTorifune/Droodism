@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 2121057919, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
   m_Name: Science
   m_EditorClassIdentifier: 
-  _careerModeOnly: 0
-  _displayName: 
-  _displayOrder: 0
+  _careerModeOnly: 1
+  _displayName: Science
+  _displayOrder: 2
   _icon: {fileID: 0}
-  _id: 
-  _tooltip: 
+  _id: Science
+  _tooltip: TODO
