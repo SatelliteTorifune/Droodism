@@ -43,6 +43,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         [SerializeField][PartModifierProperty]
         public long MissionStartTime=0;
+        [SerializeField][PartModifierProperty]
+        public long LastLoadTime=0;
         
         public double _oxygenAmountBuffer=1f;
         public double _foodAmountBuffer=1f;

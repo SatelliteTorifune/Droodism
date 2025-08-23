@@ -62,8 +62,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private GrapplingHookScript _grapplingHook;
         
         FlightSceneScript _flightSceneScript;
-
-        public long LastUnloadedTime;
+        
         public long MissionDurationTime;
         
         
@@ -126,7 +125,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 Debug.LogErrorFormat("OnInitialLaunch调用RefreshFuelSource出问题了{0}", e);
             }
 
-            LastUnloadedTime = (long)FlightSceneScript.Instance.FlightState.Time;
+            Data.LastLoadTime = (long)FlightSceneScript.Instance.FlightState.Time;
         }
         /// <summary>
         /// 实现IFlightStart接口，在飞行场景开始时调用。
@@ -167,7 +166,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             UpdateRunningStatus();  
             ConsumptionLogic(frame);
             AutoRefillLogic(frame);
-            Debug.LogFormat("Data.MissionStartTime:{0},MissionDurationTime:{1}", Data.MissionStartTime, MissionDurationTime);
+            //Debug.LogFormat("Data.MissionStartTime:{0},MissionDurationTime:{1}", Data.MissionStartTime, MissionDurationTime);
             MissionDurationTime = (long)Game.Instance.FlightScene.FlightState.Time - Data.MissionStartTime;
         }
         private void UpdateRunningStatus()
@@ -889,7 +888,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             Debug.LogFormat("{0} 调用OnCraftUnloaded",PartScript.Data.Id);
             try
             {
-                LastUnloadedTime = (long)FlightSceneScript.Instance.FlightState.Time;
+                Data.LastLoadTime = (long)FlightSceneScript.Instance.FlightState.Time;
                 SaveFuelAmountBuffer();
                 PartScript.Data.LoadXML(RemoveFuelTankXML(this.PartScript.Data.GenerateXml(this.PartScript.CraftScript.Transform,false)),15);
                 
@@ -932,7 +931,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
                 
             double xishu=360;
-            var time= Game.Instance.FlightScene.FlightState.Time-LastUnloadedTime;
+            var time= Game.Instance.FlightScene.FlightState.Time-Data.LastLoadTime;
             Debug.LogFormat("调用RemoveFuelAmonutInstantly ,间隔{0}",time);
             if (this._oxygenSource == null)
             {
@@ -985,7 +984,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public void AddWastedAmountInstantly()
         {
             double xishu=360;
-            var time= Game.Instance.FlightScene.FlightState.Time-LastUnloadedTime;
+            var time= Game.Instance.FlightScene.FlightState.Time-Data.LastLoadTime;
             Debug.LogFormat("AddWastedAmountInstantly ,间隔{0}",time);
             if (this._co2Source == null)
             {
