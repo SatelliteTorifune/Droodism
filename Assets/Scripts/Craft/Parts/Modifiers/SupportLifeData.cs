@@ -41,6 +41,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         [SerializeField] [DesignerPropertySlider(0.1f, 3f, 30, Label = "<color=red>Water</color> Carry Amount(days)", Tooltip = "How much<color=red> Drink Water</color> Drood himself/herself will carry when Eva.")]
         private float desireWaterCapacity = 0.2f;
         
+        [SerializeField][PartModifierProperty]
+        public long MissionStartTime=0;
+        
         public double _oxygenAmountBuffer=1f;
         public double _foodAmountBuffer=1f;
         public double _waterAmountBuffer = 1f;
@@ -104,5 +107,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             return value>0?value:1;
         }
+        
     }
 }

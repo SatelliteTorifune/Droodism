@@ -26,6 +26,7 @@ using Object = UnityEngine.Object;
 //鸡巴的我自己都看不懂我写的是什么鸡巴玩意了你还指望我给你写注释吗?
 //顺便一提如果真有除了我以外的人在github上或者逆向出来了看到了这行字,那么我只能说一句牛逼,你简直是找屎大王,能闻着味道找到我编程以来拉的最大的一坨
 //2025 7 25 我操你妈我受不了了我怎么还在和这坨我最先拉出来的屎山作斗争啊我操
+//2025 8 24 孩子们我回来了,我是拉屎大王
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
@@ -36,11 +37,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         IFlightUpdate
     {
         /// <summary>
-        /// 引用EvaScript组件
+        /// 引用EvaScript组件,来获取这个小蓝人的一些乱七八糟的狗屎鸡巴数据玩意
         /// Reference to the EvaScript component,get current part's eva data and other stuff
         /// </summary>
         private EvaScript _evaScript;
 
+        //当前小蓝人的CrewCompartment,目前没用到
         private CrewCompartmentScript droodCrewCompartmentScript;
         
         private IFuelSource _oxygenSource, _foodSource, _waterSource,_co2Source,_wastedWaterSource,_solidWasteSource;
@@ -62,6 +64,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         FlightSceneScript _flightSceneScript;
 
         public long LastUnloadedTime;
+        public long MissionDurationTime;
+        
+        
         
         
         /// <summary>
@@ -89,15 +94,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             base.OnInitialized();
         }
         
-        /// <summary>
-        /// 为指定的燃料类型添加具有给定容量的燃料罐。
-        /// Adds a fuel tank for the specified fuel type with the given capacity.
-        /// </summary>
-        /// <param name="FuelCapacity">燃料罐的容量。Capacity of the fuel tank.</param>
+       
         
 
         public override void OnInitialLaunch()
         {
+            base.OnInitialLaunch();
+            Data.MissionStartTime = (long)Game.Instance.FlightScene.FlightState.Time;
             Debug.LogFormat("OnInitialLaunch");
             isFirstTime = true;
             base.OnInitialLaunch();
@@ -131,6 +134,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         void IFlightStart.FlightStart(in FlightFrameData frame)
         {
+            
             Debug.LogFormat("FlightStart");
             Game.Instance.FlightScene.FlightEnded+=OnFlightEnded;
             Game.Instance.FlightScene.CraftNode.ChangedSoI += OnSoiChanged;
@@ -163,6 +167,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             UpdateRunningStatus();  
             ConsumptionLogic(frame);
             AutoRefillLogic(frame);
+            Debug.LogFormat("Data.MissionStartTime:{0},MissionDurationTime:{1}", Data.MissionStartTime, MissionDurationTime);
+            MissionDurationTime = (long)Game.Instance.FlightScene.FlightState.Time - Data.MissionStartTime;
         }
         private void UpdateRunningStatus()
         {
@@ -730,6 +736,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             
         }
+        /// <summary>
+        /// 为指定的燃料类型添加具有给定容量的燃料罐。
+        /// Adds a fuel tank for the specified fuel type with the given capacity.
+        /// </summary>
+        /// <param name="FuelCapacity">燃料罐的容量。Capacity of the fuel tank.</param>
+        /// <param name="FuelType">燃料类型。Type of fuel.</param>
+        /// <param name="FuelAmount">初始燃料量。Initial fuel amount.</param>
         private void AddTank(string fuelType, double fuelCapacity, double fuelAmount)
         {
             if (fuelCapacity<fuelAmount)
@@ -1194,6 +1207,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public override void OnGenerateInspectorModel(PartInspectorModel model) 
         {
             base.OnGenerateInspectorModel(model);
+            //单独看任务时间的
+            model.Add<TextModel>(new TextModel("<color=yellow>Mission Time", (Func<string>) (() =>Mod.GetStopwatchTimeString(MissionDurationTime))));
             GroupModel groupModel = new GroupModel("<color=green><size=115%>Life Support Info");
             model.AddGroup(groupModel);
             groupModel.Add<TextModel>(new TextModel("Remain Oxygen", (Func<string>) (() =>

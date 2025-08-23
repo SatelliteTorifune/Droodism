@@ -54,6 +54,10 @@ ExportedObj/
 *.mdb
 *.opendb
 *.VC.db
+*.meta
+*.manifest
+*.ModAssetBundles/
+*.bytes
 
 # Unity3D generated meta files
 *.pidb.meta
@@ -97,3 +101,5 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+/ModAssetBundles
+ModAssetBundles/StandaloneWindows64/droodism

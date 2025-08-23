@@ -374,6 +374,7 @@ namespace Assets.Scripts
     {
         if (ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Data.PartType.Name.Contains("Eva"))
         {
+            ModApi.Common.Game.Instance.FlightScene.FlightSceneUI.ShowMessage("Cannot set fuel transfer mode to a single Drood.");
             return;
         }
         GetIFuelSourceByID(fuelTypeId).FuelTransferMode = fuelTransferMode;
