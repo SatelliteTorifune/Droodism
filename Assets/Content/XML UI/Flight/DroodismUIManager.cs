@@ -5,6 +5,7 @@ using System.Xml.Linq;
 using System.Xml.Serialization;
 using Assets.Scripts;
 using Assets.Scripts.Craft.Parts.Modifiers;
+using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using Assets.Scripts.Flight.UI;
 using ModApi.Ui;
 using UnityEngine;
@@ -34,6 +35,8 @@ namespace Assets.Scripts
         private InspectorModel inspectorModel;
         public int DroodCountTotal,AstronautCount,TouristCount;
         public readonly string[] _massTypes = { "g", "kg", "t", "kt" };
+        
+        [FormerlySerializedAs("DroodScripts")] public List<EvaScript> DroodScriptsList = new List<EvaScript>();
 
         private Dictionary<string, (double Current, double Previous)> FuelMap = new Dictionary<string, (double, double)>
         {
@@ -279,146 +282,167 @@ namespace Assets.Scripts
         private bool areButtonsVisible = false;
         private Dictionary<string, IconButtonRowModel> FuelButtonRows = new Dictionary<string, IconButtonRowModel>();
         public void CreateInspectorPanel()
-{
-    // 清空 FuelButtonRows 以避免重复添加
-    FuelButtonRows.Clear();
-
-    // 大家好啊,我是分割线
-    inspectorModel = new InspectorModel("Droodism Resources Inspector", "<color=green>Life Support Inspector");
-
-    inspectorModel.Add(new TextModel("Crew Count", () => DroodCountTotal.ToString()));
-    inspectorModel.Add(new TextModel("Astronaut Count", () => AstronautCount.ToString()));
-    inspectorModel.Add(new TextModel("Tourist Count", () => TouristCount.ToString()));
-    GroupModel groupModel = new GroupModel("Resources Inspector");
-
-    // 大家好啊,我是分割线
-    foreach (var fuelTypeId in fuelTypeIDList)
-    {
-        addFuelTypeTemplateItem(fuelTypeId);
-    }
-
-    groupModel.Add(new TextButtonModel("Resources Fill,Waste Drain", b => setAllReciveMode()));
-    groupModel.Add(new TextButtonModel("Resources Drain,Waste Fill", b => setAllSendMode()));
-    groupModel.Add(new TextButtonModel("Reset All Transfer Mode", b => resetAllReciveMode()));
-    groupModel.Add(new TextButtonModel("Toggle Single Type Transfer Mode", b => questionMark()));
-    groupModel.Add(new TextModel("", () => ""));
-
-    inspectorModel.AddGroup(groupModel);
-    // 大家好啊,我是分割线
-    inspectorPanel = Game.Instance.UserInterface.CreateInspectorPanel(inspectorModel, new InspectorPanelCreationInfo()
-    {
-        PanelWidth = 400,
-        Resizable = true,
-    });
-
-    void addFuelTypeTemplateItem(string fuelTypeId)
-    {
-        IFuelSource fuelSource = GetIFuelSourceByID(fuelTypeId);
-        bool isWasted = fuelTypeId.Contains("Wasted") || fuelTypeId == "CO2";
-
-        groupModel.Add(new TextModel("", () => ""));
-        groupModel.Add(new TextModel("", () => ""));
-        // 添加燃料名称和数据（燃料量、消耗率、剩余时间）
-        groupModel.Add(new TextModel(
-            ModApi.Common.Game.Instance.PropulsionData.GetFuelType(fuelTypeId).Name,
-            () => FuelUIDataMap.ContainsKey(fuelTypeId)
-                ? $"{FuelUIDataMap[fuelTypeId].TimeLeft}"
-                : "empty"));
-
-        // 添加进度条
-        groupModel.Add(new ProgressBarModel(
-            () => $"{FuelUIDataMap[fuelTypeId].FuelAmountPercentageStr}",
-            () => FuelUIDataMap.ContainsKey(fuelTypeId) ? FuelUIDataMap[fuelTypeId].FuelPercentage : 0f));
-        groupModel.Add(new TextModel("", () => FuelUIDataMap[fuelTypeId].FuelConsumptionStr));
-
-        // FuelTransferMode 设置按钮
-        IconButtonRowModel iconButtonRowModel = new IconButtonRowModel();
-        IconButtonModel fuelTransferButtonNone = new IconButtonModel(
-            "Ui/Sprites/Flight/IconFuelTransferNone",
-            (Action<IconButtonModel>)(x => SetFuelTransferMode(FuelTransferMode.None, fuelSource.FuelType.Id)),
-            "Disable fuel transfer.");
-        IconButtonModel fuelTransferButtonFill = new IconButtonModel(
-            "Ui/Sprites/Flight/IconFuelTransferFill",
-            (Action<IconButtonModel>)(x => SetFuelTransferMode(FuelTransferMode.Fill, fuelSource.FuelType.Id)),
-            "Fills the tank during fuel transfer. Requires at least one other tank to be set to Drain.");
-        IconButtonModel fuelTransferButtonDrain = new IconButtonModel(
-            "Ui/Sprites/Flight/IconFuelTransferDrain",
-            (Action<IconButtonModel>)(x => SetFuelTransferMode(FuelTransferMode.Drain, fuelSource.FuelType.Id)),
-            "Drains this tank during fuel transfer. Requires at least one other tank to be set to Fill.");
-        iconButtonRowModel.Add(fuelTransferButtonFill);
-        iconButtonRowModel.Add(fuelTransferButtonNone);
-        iconButtonRowModel.Add(fuelTransferButtonDrain);
-
-        iconButtonRowModel.UpdateAction = (Action<ItemModel>)(m =>
         {
-            FuelTransferMode fuelTransferMode = fuelSource.FuelTransferMode;
-            fuelTransferButtonNone.Style = fuelTransferMode == FuelTransferMode.None
-                ? ButtonModel.ButtonStyle.Primary
-                : ButtonModel.ButtonStyle.Default;
-            fuelTransferButtonFill.Style = fuelTransferMode == FuelTransferMode.Fill
-                ? ButtonModel.ButtonStyle.Primary
-                : ButtonModel.ButtonStyle.Default;
-            fuelTransferButtonDrain.Style = fuelTransferMode == FuelTransferMode.Drain
-                ? ButtonModel.ButtonStyle.Warning
-                : ButtonModel.ButtonStyle.Default;
-        });
+            // 清空 FuelButtonRows 以避免重复添加
+            FuelButtonRows.Clear();
+        
+            // 大家好啊,我是分割线
+            inspectorModel = new InspectorModel("Droodism Resources Inspector", "<color=green>Life Support Inspector");
+        
+            inspectorModel.Add(new TextModel("Crew Count", () => DroodCountTotal.ToString()));
+            inspectorModel.Add(new TextModel("Astronaut Count", () => AstronautCount.ToString()));
+            inspectorModel.Add(new TextModel("Tourist Count", () => TouristCount.ToString()));
 
-        // 保存 IconButtonRowModel 到字典
-        FuelButtonRows[fuelTypeId] = iconButtonRowModel;
+            #region FuelSourceManagerGroup
+            
+            GroupModel FuelSourceManagerGroup = new GroupModel("Resources Inspector");
+        
+            // 大家好啊,我是分割线
+            foreach (var fuelTypeId in fuelTypeIDList)
+            {
+                addFuelTypeTemplateItem(fuelTypeId);
+            }
+        
+            FuelSourceManagerGroup.Add(new TextButtonModel("Resources Fill,Waste Drain", b => setAllReciveMode()));
+            FuelSourceManagerGroup.Add(new TextButtonModel("Resources Drain,Waste Fill", b => setAllSendMode()));
+            FuelSourceManagerGroup.Add(new TextButtonModel("Reset All Transfer Mode", b => resetAllReciveMode()));
+            FuelSourceManagerGroup.Add(new TextButtonModel("Toggle Single Type Transfer Mode", b => questionMark()));
+            FuelSourceManagerGroup.Add(new TextModel("", () => ""));
+        
+            
+            
+            inspectorModel.AddGroup(FuelSourceManagerGroup);
+           #endregion
+            GroupModel CrewInspectorGroup  = new GroupModel("Crew Inspector");
+            foreach (EvaScript eva in DroodScriptsList)
+            {
+                SupportLifeScript supportLifeScript = eva.PartScript?.GetModifier<SupportLifeScript>();
+                if (supportLifeScript!= null)
+                {
+                    CrewInspectorGroup.Add<TextModel>(new TextModel("Crew Name", () => eva.Data.CrewName));
+                    CrewInspectorGroup.Add<TextModel>(new TextModel("Mission Time", (Func<string>) (() => Mod.GetStopwatchTimeString(supportLifeScript.MissionDurationTime)), tooltip:  eva.Data.CrewName+";s mission time since launch."));
+                    CrewInspectorGroup.Add<TextModel>(new TextModel("", () => ""));
+                }
+            }
+            
+            
+            inspectorModel.AddGroup(CrewInspectorGroup);
+            inspectorPanel = Game.Instance.UserInterface.CreateInspectorPanel(inspectorModel, new InspectorPanelCreationInfo()
+            {
+                PanelWidth = 400,
+                Resizable = true,
+            });
+        
+            void addFuelTypeTemplateItem(string fuelTypeId)
+            {
+                IFuelSource fuelSource = GetIFuelSourceByID(fuelTypeId);
+                bool isWasted = fuelTypeId.Contains("Wasted") || fuelTypeId == "CO2";
+        
+                FuelSourceManagerGroup.Add(new TextModel("", () => ""));
+                FuelSourceManagerGroup.Add(new TextModel("", () => ""));
+                // 添加燃料名称和数据（燃料量、消耗率、剩余时间）
+                FuelSourceManagerGroup.Add(new TextModel(
+                    ModApi.Common.Game.Instance.PropulsionData.GetFuelType(fuelTypeId).Name,
+                    () => FuelUIDataMap.ContainsKey(fuelTypeId)
+                        ? $"{FuelUIDataMap[fuelTypeId].TimeLeft}"
+                        : "empty"));
+        
+                // 添加进度条
+                FuelSourceManagerGroup.Add(new ProgressBarModel(
+                    () => $"{FuelUIDataMap[fuelTypeId].FuelAmountPercentageStr}",
+                    () => FuelUIDataMap.ContainsKey(fuelTypeId) ? FuelUIDataMap[fuelTypeId].FuelPercentage : 0f));
+                FuelSourceManagerGroup.Add(new TextModel("", () => FuelUIDataMap[fuelTypeId].FuelConsumptionStr));
+        
+                // FuelTransferMode 设置按钮
+                IconButtonRowModel iconButtonRowModel = new IconButtonRowModel();
+                IconButtonModel fuelTransferButtonNone = new IconButtonModel(
+                    "Ui/Sprites/Flight/IconFuelTransferNone",
+                    (Action<IconButtonModel>)(x => SetFuelTransferMode(FuelTransferMode.None, fuelSource.FuelType.Id)),
+                    "Disable fuel transfer.");
+                IconButtonModel fuelTransferButtonFill = new IconButtonModel(
+                    "Ui/Sprites/Flight/IconFuelTransferFill",
+                    (Action<IconButtonModel>)(x => SetFuelTransferMode(FuelTransferMode.Fill, fuelSource.FuelType.Id)),
+                    "Fills the tank during fuel transfer. Requires at least one other tank to be set to Drain.");
+                IconButtonModel fuelTransferButtonDrain = new IconButtonModel(
+                    "Ui/Sprites/Flight/IconFuelTransferDrain",
+                    (Action<IconButtonModel>)(x => SetFuelTransferMode(FuelTransferMode.Drain, fuelSource.FuelType.Id)),
+                    "Drains this tank during fuel transfer. Requires at least one other tank to be set to Fill.");
+                iconButtonRowModel.Add(fuelTransferButtonFill);
+                iconButtonRowModel.Add(fuelTransferButtonNone);
+                iconButtonRowModel.Add(fuelTransferButtonDrain);
+        
+                iconButtonRowModel.UpdateAction = (Action<ItemModel>)(m =>
+                {
+                    FuelTransferMode fuelTransferMode = fuelSource.FuelTransferMode;
+                    fuelTransferButtonNone.Style = fuelTransferMode == FuelTransferMode.None
+                        ? ButtonModel.ButtonStyle.Primary
+                        : ButtonModel.ButtonStyle.Default;
+                    fuelTransferButtonFill.Style = fuelTransferMode == FuelTransferMode.Fill
+                        ? ButtonModel.ButtonStyle.Primary
+                        : ButtonModel.ButtonStyle.Default;
+                    fuelTransferButtonDrain.Style = fuelTransferMode == FuelTransferMode.Drain
+                        ? ButtonModel.ButtonStyle.Warning
+                        : ButtonModel.ButtonStyle.Default;
+                });
+        
+                // 保存 IconButtonRowModel 到字典
+                FuelButtonRows[fuelTypeId] = iconButtonRowModel;
+        
+                FuelSourceManagerGroup.Add<IconButtonRowModel>(iconButtonRowModel);
+                iconButtonRowModel.Visible = areButtonsVisible; // 设置可见性
+            }
 
-        groupModel.Add<IconButtonRowModel>(iconButtonRowModel);
-        iconButtonRowModel.Visible = areButtonsVisible; // 设置可见性
-    }
-
-    void SetFuelTransferMode(FuelTransferMode fuelTransferMode, string fuelTypeId)
-    {
-        if (ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Data.PartType.Name.Contains("Eva"))
-        {
-            ModApi.Common.Game.Instance.FlightScene.FlightSceneUI.ShowMessage("Cannot set fuel transfer mode to a single Drood.");
-            return;
+            #region FuelTransferMode 相关
+            void SetFuelTransferMode(FuelTransferMode fuelTransferMode, string fuelTypeId)
+            {
+                if (ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Data.PartType.Name.Contains("Eva"))
+                {
+                    ModApi.Common.Game.Instance.FlightScene.FlightSceneUI.ShowMessage("Cannot set fuel transfer mode to a single Drood.");
+                    return;
+                }
+                GetIFuelSourceByID(fuelTypeId).FuelTransferMode = fuelTransferMode;
+            }
+        
+            void setAllReciveMode()
+            {
+                SetFuelTransferMode(FuelTransferMode.Fill, "Oxygen");
+                SetFuelTransferMode(FuelTransferMode.Fill, "H2O");
+                SetFuelTransferMode(FuelTransferMode.Fill, "Food");
+                SetFuelTransferMode(FuelTransferMode.Drain, "CO2");
+                SetFuelTransferMode(FuelTransferMode.Drain, "Wasted Water");
+                SetFuelTransferMode(FuelTransferMode.Drain, "Solid Waste");
+            }
+            void setAllSendMode()
+            {
+                SetFuelTransferMode(FuelTransferMode.Drain, "Oxygen");
+                SetFuelTransferMode(FuelTransferMode.Drain, "H2O");
+                SetFuelTransferMode(FuelTransferMode.Drain, "Food");
+                SetFuelTransferMode(FuelTransferMode.Fill, "CO2");
+                SetFuelTransferMode(FuelTransferMode.Fill, "Wasted Water");
+                SetFuelTransferMode(FuelTransferMode.Fill, "Solid Waste");
+            }
+        
+            void resetAllReciveMode()
+            {
+                SetFuelTransferMode(FuelTransferMode.None, "Oxygen");
+                SetFuelTransferMode(FuelTransferMode.None, "H2O");
+                SetFuelTransferMode(FuelTransferMode.None, "Food");
+                SetFuelTransferMode(FuelTransferMode.None, "CO2");
+                SetFuelTransferMode(FuelTransferMode.None, "Wasted Water");
+                SetFuelTransferMode(FuelTransferMode.None, "Solid Waste");
+            }
+        
+            void questionMark()
+            {
+                areButtonsVisible = !areButtonsVisible; // 切换可见状态
+                foreach (var buttonRow in FuelButtonRows.Values)
+                {
+                    buttonRow.Visible = areButtonsVisible; // 设置可见性
+                }
+            }
+            
+            #endregion
         }
-        GetIFuelSourceByID(fuelTypeId).FuelTransferMode = fuelTransferMode;
-    }
-
-    void setAllReciveMode()
-    {
-        SetFuelTransferMode(FuelTransferMode.Fill, "Oxygen");
-        SetFuelTransferMode(FuelTransferMode.Fill, "H2O");
-        SetFuelTransferMode(FuelTransferMode.Fill, "Food");
-        SetFuelTransferMode(FuelTransferMode.Drain, "CO2");
-        SetFuelTransferMode(FuelTransferMode.Drain, "Wasted Water");
-        SetFuelTransferMode(FuelTransferMode.Drain, "Solid Waste");
-    }
-
-    void setAllSendMode()
-    {
-        SetFuelTransferMode(FuelTransferMode.Drain, "Oxygen");
-        SetFuelTransferMode(FuelTransferMode.Drain, "H2O");
-        SetFuelTransferMode(FuelTransferMode.Drain, "Food");
-        SetFuelTransferMode(FuelTransferMode.Fill, "CO2");
-        SetFuelTransferMode(FuelTransferMode.Fill, "Wasted Water");
-        SetFuelTransferMode(FuelTransferMode.Fill, "Solid Waste");
-    }
-
-    void resetAllReciveMode()
-    {
-        SetFuelTransferMode(FuelTransferMode.None, "Oxygen");
-        SetFuelTransferMode(FuelTransferMode.None, "H2O");
-        SetFuelTransferMode(FuelTransferMode.None, "Food");
-        SetFuelTransferMode(FuelTransferMode.None, "CO2");
-        SetFuelTransferMode(FuelTransferMode.None, "Wasted Water");
-        SetFuelTransferMode(FuelTransferMode.None, "Solid Waste");
-    }
-
-    void questionMark()
-    {
-        areButtonsVisible = !areButtonsVisible; // 切换可见状态
-        foreach (var buttonRow in FuelButtonRows.Values)
-        {
-            buttonRow.Visible = areButtonsVisible; // 设置可见性
-        }
-    }
-}
 
         
 
@@ -428,6 +452,7 @@ namespace Assets.Scripts
 
         private void UpdateInfo()
         {
+            DroodScriptsList.Clear();
             DroodCountTotal = AstronautCount = TouristCount = 0;
             UpdateDroodCount();
             void UpdateDroodCount()
@@ -436,6 +461,7 @@ namespace Assets.Scripts
                 {
                     if (pd.PartType.Name=="Eva")
                     {
+                        DroodScriptsList.Add(pd.PartScript.GetModifier<EvaScript>());
                         DroodCountTotal++;
                         AstronautCount++;
                       

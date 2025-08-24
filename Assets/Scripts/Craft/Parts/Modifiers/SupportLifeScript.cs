@@ -166,7 +166,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             UpdateRunningStatus();  
             ConsumptionLogic(frame);
             AutoRefillLogic(frame);
-            //Debug.LogFormat("Data.MissionStartTime:{0},MissionDurationTime:{1}", Data.MissionStartTime, MissionDurationTime);
+            //  Debug.LogFormat("Data.MissionStartTime:{0},MissionDurationTime:{1}", Data.MissionStartTime, MissionDurationTime);
             MissionDurationTime = (long)Game.Instance.FlightScene.FlightState.Time - Data.MissionStartTime;
         }
         private void UpdateRunningStatus()
