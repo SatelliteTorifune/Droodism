@@ -7,11 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using Assets.Scripts.Craft.Fuel;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
-using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
-using ModApi;
-using ModApi.Flight;
 using ModApi.Flight.Events;
 using ModApi.Flight.GameView;
 using ModApi.Planet;
@@ -58,12 +54,26 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// Data interface for the current planet.
         /// </summary>
         private IPlanetData planetData;
-        
+        /// <summary>
+        /// 小蓝人的钩爪
+        /// 本来我想做成类似那种钩爪钩到craft自动补充氧气啥的,但是这个鸡巴script的数学判断啥的弔毛玩意我他妈看不懂一点
+        /// what can i say,Torifune out.
+        /// </summary>
         private GrapplingHookScript _grapplingHook;
         
         FlightSceneScript _flightSceneScript;
+
+        /// <summary>
+        /// 小蓝人目前的任务时长,从初次发射开始算的
+        /// </summary>
+        public long MissionDurationTime{get;private set;}
         
-        public long MissionDurationTime;
+
+        public DroodType CurrentRole
+        {
+            get;
+            private set;
+        }
         
         
         
@@ -93,9 +103,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             base.OnInitialized();
         }
         
-       
-        
-
+        /// <summary>
+        /// 不好意思因为我的代码水平就是一坨屎所以OnInitialLaunch和FlightStart里面的代码很奇异搞笑
+        /// </summary>
         public override void OnInitialLaunch()
         {
             base.OnInitialLaunch();
@@ -151,6 +161,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             UpdateCurrentPlanet();
             Game.Instance.FlightScene.CraftNode.ChangedSoI += OnSoiChanged;
             LoadFuelTanks();
+            //我他妈没在OnInitialLaunch里implent这个函数是为了方便你们这群小逼崽子瞎鸡巴改xml乱搞你们知道吗
+            //SetRole();
             
         }
 
@@ -166,12 +178,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             UpdateRunningStatus();  
             ConsumptionLogic(frame);
             AutoRefillLogic(frame);
-            //  Debug.LogFormat("Data.MissionStartTime:{0},MissionDurationTime:{1}", Data.MissionStartTime, MissionDurationTime);
             MissionDurationTime = (long)Game.Instance.FlightScene.FlightState.Time - Data.MissionStartTime;
         }
+        /// <summary>
+        /// 这b玩意看不懂那你去吃我屎吧
+        /// </summary>
         private void UpdateRunningStatus()
         {
-            if (_evaScript.EvaActive && _evaScript.IsPlayerCraft && !_evaScript.IsWalking && _evaScript.IsGrounded && (this.PartScript.CraftScript.SurfaceVelocity.magnitude >= 0.8))
+            if (_evaScript.EvaActive && _evaScript.IsPlayerCraft && !_evaScript.IsWalking && _evaScript.IsGroundedTerrain && PartScript.CraftScript.SurfaceVelocity.magnitude >= 0.8)
             {
                 isRunning = true;
             }
@@ -188,6 +202,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         /// <param name="fuelType">要查找的燃料类型。Type of fuel to find.</param>
         /// <returns>如果找到则返回燃料源，否则返回null。The fuel source if found, otherwise null.</returns>
+        /// 一般来说这不太可能返回Null,我他妈花了那么多时间写了给小蓝人添加modifier的函数
         private IFuelSource GetLocalFuelSource(string fuelType)
         {
             try
@@ -225,6 +240,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// Handles the consumption logic for oxygen, food, and water.
         /// </summary>
         /// <param name="frame">飞行帧数据。Flight frame data.</param>
+        /// 你可能觉得这个函数也太不优雅了,对,因为氧气这个b玩意比较特殊我要单独处理
         private void ConsumptionLogic(in FlightFrameData frame)
         {
             if (_oxygenSource != null&&UsingInternalOxygen())
@@ -411,7 +427,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
 
         /// <summary>
-        /// 处理不使用内部氧气时的氧气自动补充逻辑。
+        /// 处理不使用自带氧气时的氧气自动补充逻辑。
         /// Handles the auto-refill logic for oxygen when not using internal oxygen.
         /// </summary>
         /// <param name="frame">飞行帧数据。Flight frame data.</param>
@@ -461,6 +477,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// 这个吊毛函数太复杂了我得花点时间说一下这玩意到底原理是什么不然我自己忘了
         /// 这个函数的目的非常简单,调用的时候如果是Eva状态就把各个source设定为本地modifier,如果不是就用craft的fuelsource
         /// 但是后面那一坨就出问题了,目前的逻辑是我管你这哪先用craft的,得到null自然就会切换到设置本地modifier那一坨
+        /// 这个鸡巴卵子函数的trycatch瞎他妈乱飞,但是I don't give a sh1t,反正it works(on my machine)
         private void CraftRefreshFuelSource()
         {
             bool isEva = false;
@@ -634,19 +651,19 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
         }
         
-        private void RemoveWaste(IFuelSource Craft, IFuelSource Eva)
+        private void RemoveWaste(IFuelSource Craft, IFuelSource drood)
         {
-            if (Craft.TotalCapacity-Craft.TotalFuel>Eva.TotalFuel)
+            if (Craft.TotalCapacity-Craft.TotalFuel>drood.TotalFuel)
             {
-                Craft.AddFuel(Eva.TotalFuel);
-                Eva.RemoveFuel(Eva.TotalFuel);
-                Debug.LogFormat($"Remove{Craft.FuelType.Name} 成功:{0}实际{1}",Eva.TotalFuel,Craft.TotalFuel);
+                Craft.AddFuel(drood.TotalFuel);
+                drood.RemoveFuel(drood.TotalFuel);
+                Debug.LogFormat($"Remove{Craft.FuelType.Name} 成功:{0}实际{1}",drood.TotalFuel,Craft.TotalFuel);
             }
             else
             {
-                Eva.RemoveFuel(Craft.TotalCapacity - Craft.TotalFuel);
+                drood.RemoveFuel(Craft.TotalCapacity - Craft.TotalFuel);
                 Craft.AddFuel(Craft.TotalCapacity - Craft.TotalFuel);
-                Debug.LogWarningFormat($"Remove{Craft.FuelType.Name} 满了成功:{0}实际{1}", Eva.TotalFuel, Craft.TotalFuel);
+                Debug.LogWarningFormat($"Remove{Craft.FuelType.Name} 满了成功:{0}实际{1}", drood.TotalFuel, Craft.TotalFuel);
             }
         }
 
@@ -689,7 +706,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (_oxygenSource != null && _waterSource != null && _foodSource != null && _co2Source != null &&
                 _wastedWaterSource != null && _solidWasteSource != null)
             {
-                Debug.Log("有本地燃料源");
+                //Debug.Log("有本地燃料源");
                 return;
             }
 
@@ -1058,12 +1075,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 Debug.Log("OnCraftStructureChanged调用RefreshFuelSource();");
             }
         }
-        
-        /// <summary>
-        /// 飞船燃料源变化时的事件处理程序，刷新燃料源。
-        /// Event handler for when craft fuel sources change, refreshes fuel sources.
-        /// </summary>
-       
 
         /// <summary>
         /// 根据大气条件和行星确定是否使用内部氧气。
@@ -1129,6 +1140,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             UpdateCurrentPlanet();
         }
+
+        private void SetRole(DroodType droodType)
+        {
+            this.CurrentRole=droodType;
+        }
+
         #endregion
 
         /// <summary>
