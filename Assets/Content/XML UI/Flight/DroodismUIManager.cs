@@ -206,6 +206,9 @@ namespace Assets.Scripts
                     "Droodism/Flight/DroodismInspectPanel",
                     (script, controller) => script.OnLayoutRebuilt(controller));
                 UpdateInfo();
+                CreateInspectorPanel();
+                inspectorPanel.Visible = false;
+                inspectorPanel.CloseButtonClicked+=OnCloseButtonClicked;
                 ModApi.Common.Game.Instance.FlightScene.CraftChanged+=OnCraftChanged;
                 ModApi.Common.Game.Instance.FlightScene.CraftStructureChanged += OnCraftStructureChanged;
                 ModApi.Common.Game.Instance.FlightScene.Initialized+=OnSceneInitialized;
@@ -221,6 +224,11 @@ namespace Assets.Scripts
             Game.Instance.FlightScene.Initialized -= OnSceneInitialized;
             Game.Instance.FlightScene.FlightEnded -= FlightSceneEnded;
             ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.ActiveCommandPodChanged-=OnActiveCommandPodChanged;
+        }
+
+        private void OnCloseButtonClicked(IInspectorPanel inspectorPanel)
+        {
+            inspectorPanel.Visible = false;
         }
 
         private void OnActiveCommandPodChanged(ICraftScript a, ICommandPod b, ICommandPod c)
