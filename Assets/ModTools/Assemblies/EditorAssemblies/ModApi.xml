@@ -35907,7 +35907,7 @@
             <param name="eventType">Type of the event.</param>
             <param name="eventData">The event data.</param>
         </member>
-        <member name="P:ModApi.Flight.GameView.GameViewPointerEvent.EventData">
+        <member name="P:ModApi.Flight.GameView.GameViewPointerEvent.CrewData">
             <summary>
             Gets the event data.
             </summary>

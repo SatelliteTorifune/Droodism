@@ -1,4 +1,5 @@
 using System.Xml.Linq;
+using Assets.Packages.DevConsole;
 using Assets.Scripts.Craft;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Flight;
@@ -11,6 +12,7 @@ using ModApi.Math;
 using ModApi.State;
 using static ModApi.Common.Game;
 using static ModApi.Craft.Parts.PartData;
+using Assets.Scripts.State;
 using Assembly = System.Reflection.Assembly;
 
 namespace Assets.Scripts
@@ -48,6 +50,7 @@ namespace Assets.Scripts
             base.OnModLoaded();
             GameObject DroodismUI=new GameObject("DroodismUI");
             DroodismUI.AddComponent<DroodismUIManager>();
+            DroodismUI.AddComponent<DroodismCrewMananger>();
             GameObject.DontDestroyOnLoad(DroodismUI);
             DroodismUI.SetActive(true);
         }
@@ -92,8 +95,16 @@ namespace Assets.Scripts
             Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
             Game.Instance.SceneManager.SceneTransitionCompleted+=OnSceneTransitionCompleted;
             //Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.FlightView,OnBuildFlightViewInspectorPanel);
-            DevConsole.DevConsoleService.Instance.RegisterCommand("RefreshFuelSource",那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花);
+            DevConsoleApi.RegisterCommand("RefreshFuelSource",那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花);
+            DevConsoleApi.RegisterCommand("doIt",要鸡巴干啥);
             
+        }
+
+        void 要鸡巴干啥()
+        {
+            //DroodismCrewMananger.Instance.LoadCrewMembmerDataFromGameStates();
+            //DroodismCrewMananger.Instance.SaveCrewMembersToDatabase();
+            //DroodismCrewMananger.Instance.SaveXMlFile();
         }
 
         public void 那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花()
@@ -234,8 +245,5 @@ namespace Assets.Scripts
                 return (totalFuel * 1e-3).ToString("0.00") + format[1];
             return totalFuel.ToString("0.00") + format[0];
         }    }
-
-        
-
-
+    
 }

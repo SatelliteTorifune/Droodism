@@ -4,6 +4,7 @@ using Assets.Scripts.Flight;
 using ModApi.Mods;
 using System.Linq;
 using System.Xml.Linq;
+using Assets.Scripts.State;
 using Debug = UnityEngine.Debug;
 using HarmonyLib;
 
@@ -88,6 +89,7 @@ namespace Assets.Scripts
         /// </summary>
         public void OnQuickSave()
         {
+            
             string quickSavePath = GetQuickSavePath(Game.Instance.GameState.RootPath);
             Debug.LogFormat("QuickSave: {0},time{1},path{2}", Game.Instance.GameState.RootPath,
                 Game.Instance.GameState.GetCurrentTime(), quickSavePath);
@@ -125,6 +127,7 @@ namespace Assets.Scripts
         [HarmonyPostfix]
         static void Postfix(FlightSceneScript __instance)
         {
+            DroodismCrewMananger.Instance?.OnQuickSave();
             Mod.Inctance.OnQuickSave();
         }
     }
