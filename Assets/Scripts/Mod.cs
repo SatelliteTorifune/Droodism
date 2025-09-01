@@ -97,14 +97,28 @@ namespace Assets.Scripts
             //Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.FlightView,OnBuildFlightViewInspectorPanel);
             DevConsoleApi.RegisterCommand("RefreshFuelSource",那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花);
             DevConsoleApi.RegisterCommand("doIt",要鸡巴干啥);
+            DevConsoleApi.RegisterCommand("CreateCrewDataFromGameStates",要鸡巴干啥2);
+            DevConsoleApi.RegisterCommand("DroodismSave",要鸡巴干啥3);
             
         }
 
         void 要鸡巴干啥()
         {
-            //DroodismCrewMananger.Instance.LoadCrewMembmerDataFromGameStates();
-            //DroodismCrewMananger.Instance.SaveCrewMembersToDatabase();
-            //DroodismCrewMananger.Instance.SaveXMlFile();
+           
+            foreach (var crew in DroodismCrewMananger.Instance._crewDataList)
+            {
+                Debug.LogFormat($"_crewDataList 里面的名字{crew.Name},职位{crew.role},id{crew.id}");
+            }
+        }
+
+        void 要鸡巴干啥2()
+        {
+            DroodismCrewMananger.Instance.CreateCrewDataFromGameStates();
+        }
+        void 要鸡巴干啥3()
+        {
+            DroodismCrewMananger.Instance.SaveCrewDataToDatabase();
+            DroodismCrewMananger.Instance.SaveXml();
         }
 
         public void 那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花()

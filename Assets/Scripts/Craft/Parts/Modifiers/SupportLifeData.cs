@@ -1,6 +1,9 @@
+using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using ModApi.Craft.Propulsion;
 using ModApi.Design.PartProperties;
+using Assets.Scripts.State;
 //去你妈的我要躺在床上对着梅莉的蕾丝边小白袜撸管子,谁他妈想写这东西
+//不是这都他妈啥啊
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
     using System;
@@ -109,6 +112,55 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             return value>0?value:1;
         }
+
+        #region functions
         
+        public CrewData crewData
+        {
+            get;
+            set;
+        }
+        private int _crewId = 0;
+        public int CrewId => this._crewId;
+
+        protected override void OnInitialized()
+        {
+            base.OnInitialized();
+            crewData =new CrewData();
+            
+            
+            Debug.Log("SupportLifeData: OnInitialized,get crewData");
+            if (crewData==null)
+            {
+                Debug.LogWarning("SupportLifeData: OnInitialized,crewData is Null");
+            }
+
+            if (crewData!=null)
+            {
+                crewData.role=DroodismCrewMananger.Instance.GetDroodType(Part.GetModifier<EvaData>().CrewName);
+                Debug.LogFormat("SupportLifeData: OnInitialized,role {0}",crewData.role);
+                DroodismCrewMananger.Instance.CreateCrewData(crewData);
+                Debug.Log("SupportLifeData: OnInitialized,saved crewData");
+            }
+        }
+        
+        public override void OnPartRecovered()
+        {
+            base.OnPartRecovered();
+            this.crewData.MissionTimeTotal += Script.MissionDurationTime;
+            try
+            {
+                DroodismCrewMananger.Instance.EditCrewData(this.Part.GetModifier<EvaData>().CrewId,crewData);
+            }
+            catch (Exception exception)
+            {
+                Debug.LogErrorFormat("我操完蛋了2exception{0}",exception);
+            }
+            
+        }
+
+        
+
+        #endregion
     }
 }

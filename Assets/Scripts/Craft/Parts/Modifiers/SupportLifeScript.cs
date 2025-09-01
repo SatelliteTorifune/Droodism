@@ -1,5 +1,6 @@
 using ModApi.Craft;
 using ModApi.Craft.Parts;
+using Assets.Scripts.State;
 using Assets.Scripts.Flight;
 using ModApi.GameLoop;
 using ModApi.GameLoop.Interfaces;
@@ -23,6 +24,7 @@ using Object = UnityEngine.Object;
 //顺便一提如果真有除了我以外的人在github上或者逆向出来了看到了这行字,那么我只能说一句牛逼,你简直是找屎大王,能闻着味道找到我编程以来拉的最大的一坨
 //2025 7 25 我操你妈我受不了了我怎么还在和这坨我最先拉出来的屎山作斗争啊我操
 //2025 8 24 孩子们我回来了,我是拉屎大王
+//2025 8 31 嗨嗨嗨我又来了嗷
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
@@ -69,13 +71,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public long MissionDurationTime{get;private set;}
         
 
-        public DroodType CurrentRole
-        {
-            get;
-            private set;
-        }
-        
-        
         
         
         /// <summary>
@@ -136,6 +131,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
 
             Data.LastLoadTime = (long)FlightSceneScript.Instance.FlightState.Time;
+            
         }
         /// <summary>
         /// 实现IFlightStart接口，在飞行场景开始时调用。
@@ -193,6 +189,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 isRunning = false;
             }
+        }
+        public override void OnPartDestroyed()
+        {
+            base.OnPartDestroyed();
+            if (!Assets.Scripts.Game.InFlightScene)
+                return;
+            if (this.Data.crewData != null)
+                this.Data.crewData.MissionTimeTotal += 
+            MissionDurationTime;
         }
         
 
@@ -820,13 +825,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 Debug.LogError($"Failed to add FuelTank for {fuelType}: {e}");
             }
+            
         }
-        /// <summary>
-        /// 从飞船中检索指定燃料类型的燃料源。
-        /// Retrieves the fuel source for the specified fuel type from the craft.
-        /// </summary>
-        /// <param name="fuelType">要查找的燃料类型。Type of fuel to find.</param>
-        /// <returns>如果找到则返回燃料源，否则返回null。The fuel source if found, otherwise null.</returns>
+        public override void OnDesignerPullout(Assembly assembly)
+        {
+            base.OnDesignerPullout(assembly);
+        }
+        
         private void OnFlightEnded(object sender, FlightEndedEventArgs e)
         {
             Debug.Log("OnFlightEnded");
@@ -1140,11 +1145,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             UpdateCurrentPlanet();
         }
-
-        private void SetRole(DroodType droodType)
-        {
-            this.CurrentRole=droodType;
-        }
+        
 
         #endregion
 
