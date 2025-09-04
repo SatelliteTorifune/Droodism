@@ -227,11 +227,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if ( subPart.name == strArray[strArray.Length - 1] )
                 this.SetSubPart( subPart );
             else
-                this.SetSubPart( Utilities.FindFirstGameObjectMyselfOrChildren( "Device/ParticleSystem", this.gameObject ) ?.transform );
-            if (_particalSystemTransform!= null)
-            {
-                Debug.Log("Particle System Found");
-            }
+                this.SetSubPart( Utilities.FindFirstGameObjectMyselfOrChildren( "Device/ParticleSystem/", this.gameObject ) ?.transform );
             _particleSystem = _particalSystemTransform.GetComponent<ParticleSystem>();
             this._particleSystemEmission = this._particleSystem.emission;
             this._particleSystemMain = this._particleSystem.main;
