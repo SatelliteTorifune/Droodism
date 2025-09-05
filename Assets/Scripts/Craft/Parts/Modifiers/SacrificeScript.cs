@@ -45,10 +45,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             //_compartment.Crew[0].PartScript.TakeDamage(10f,PartDamageType.Basic);
             //ChunkParticles();
-            if (chunkParticleSystem.isPlaying == false&&this.PartScript.Data.Activated)
+
+            if (PartScript.Data.Activated)
             {
-                chunkParticleSystem.Play();
+                if (!chunkParticleSystem.isPlaying)
+                {
+                    chunkParticleSystem.Play();
+                }
             }
+            
             else
             {
                 chunkParticleSystem.Stop();
