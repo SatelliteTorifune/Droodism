@@ -17,10 +17,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     {
 
         private CrewCompartmentScript _compartment;
-        private ParticleSystem chunkParticleSystem;
+        private ParticleSystem chunkParticleSystem,bloodParticleSystemA,bloodParticleSystemB,bloodParticleSystemC,bloodParticleSystemD,bloodParticleSystemE;
         private ISingleSound _sound;
         
-        private Transform _particalSystemTransform;
+        private Transform _particalSystemTransform,_bloodEffectTransform;
+        private Transform LKBaseTransform;
         
         private IFuelSource highPressureGasSource;
         private IFuelSource lowPressureGasSource;
@@ -44,20 +45,36 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public void FlightUpdate(in FlightFrameData frameData)
         {
             //_compartment.Crew[0].PartScript.TakeDamage(10f,PartDamageType.Basic);
-            //ChunkParticles();
+            
 
             if (PartScript.Data.Activated)
             {
-                if (!chunkParticleSystem.isPlaying)
-                {
-                    chunkParticleSystem.Play();
-                }
+                PlayParticle(chunkParticleSystem);
+                PlayParticle(bloodParticleSystemA);
+                PlayParticle(bloodParticleSystemB);
+                PlayParticle(bloodParticleSystemC);
+                PlayParticle(bloodParticleSystemD);
+                PlayParticle(bloodParticleSystemE);
             }
             
             else
             {
                 chunkParticleSystem.Stop();
+                bloodParticleSystemA.Stop();
+                bloodParticleSystemB.Stop();
+                bloodParticleSystemC.Stop();
+                bloodParticleSystemD.Stop();
+                bloodParticleSystemE.Stop();
                     
+            }
+
+            void PlayParticle(ParticleSystem particleSystem)
+            {
+                if (!particleSystem.isPlaying)
+                {
+                    particleSystem.Play();
+                }
+                
             }
         }
 
@@ -79,19 +96,23 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             foreach ( string n in strArray )
                 subPart = subPart.Find( n ) ?? subPart;
             if ( subPart.name == strArray[strArray.Length - 1] )
-                this.SetSubPart( subPart );
+                _particalSystemTransform =subPart;
             else
-                this.SetSubPart( Utilities.FindFirstGameObjectMyselfOrChildren( "Device/ParticleEffect", this.gameObject ) ?.transform );
-            chunkParticleSystem = _particalSystemTransform.Find("ChunkParticleSystem").GetComponent<ParticleSystem>();
-            if (chunkParticleSystem == null)
+                _particalSystemTransform=( Utilities.FindFirstGameObjectMyselfOrChildren( "Device/ParticleEffect", this.gameObject ) ?.transform );
+            if(_particalSystemTransform != null)
             {
-                Debug.LogFormat("这有问题");
+                chunkParticleSystem = _particalSystemTransform.Find("ChunkParticleSystem").GetComponent<ParticleSystem>();
+                bloodParticleSystemA = _particalSystemTransform.Find("BloodEffect").Find("Particle SystemA").GetComponent<ParticleSystem>();
+                bloodParticleSystemB = _particalSystemTransform.Find("BloodEffect").Find("Particle SystemB").GetComponent<ParticleSystem>();
+                bloodParticleSystemC = _particalSystemTransform.Find("BloodEffect").Find("Particle SystemC").GetComponent<ParticleSystem>();
+                bloodParticleSystemD = _particalSystemTransform.Find("BloodEffect").Find("Particle SystemD").GetComponent<ParticleSystem>();
+                bloodParticleSystemE = _particalSystemTransform.Find("BloodEffect").Find("Particle SystemE").GetComponent<ParticleSystem>();
             }
-           
+
+
+            LKBaseTransform=_particalSystemTransform.parent.Find("LKBase");
+
         }
-        public void SetSubPart( Transform subPart )
-        {
-            this._particalSystemTransform = subPart;
-        }
+        
     }
 }
