@@ -212,5 +212,5 @@ MonoBehaviour:
     _crewExitRotation: {x: 0, y: 0, z: 0}
     _maxPressure: -1
     _minPressure: -1
-    _visibleInCompartment: 0
+    _visibleInCompartment: 1
     _volumePerIndividual: 3
