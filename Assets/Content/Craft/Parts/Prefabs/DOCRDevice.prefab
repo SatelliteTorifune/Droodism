@@ -44168,37 +44168,6 @@ MonoBehaviour:
     _surfaceColliderName: 
     _tag: 
     _upVectorOverride: {x: 0, y: 0, z: 0}
---- !u!1 &7061107863920391789
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3440833053478040308}
-  m_Layer: 0
-  m_Name: Head
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &3440833053478040308
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7061107863920391789}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.674, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 3465801423492657102}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7189330718073176045
 GameObject:
   m_ObjectHideFlags: 0
@@ -49174,7 +49143,6 @@ Transform:
   - {fileID: 4208476353010330872}
   - {fileID: 1009505963389631631}
   - {fileID: 3635516498650929283}
-  - {fileID: 3440833053478040308}
   m_Father: {fileID: 6535173543152244327}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &4291177712707303662

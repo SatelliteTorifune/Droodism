@@ -184,6 +184,8 @@ MonoBehaviour:
     _versionLast: 1
     _versionsAllowed: 
     _foodGenerationScale: 1
+    _waterConsumptionScale: 1
+    _drainRate: 1
 --- !u!114 &8844302300408640722
 MonoBehaviour:
   m_ObjectHideFlags: 0

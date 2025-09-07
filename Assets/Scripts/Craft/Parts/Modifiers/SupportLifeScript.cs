@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
+using ModApi.Craft.Propulsion;
 using ModApi.Flight.Events;
 using ModApi.Flight.GameView;
 using ModApi.Planet;
@@ -42,8 +43,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         //当前小蓝人的CrewCompartment,目前没用到
         private CrewCompartmentScript droodCrewCompartmentScript;
+
+        public IFuelSource _oxygenSource,_waterSource,_foodSource,_co2Source,_wastedWaterSource,_solidWasteSource;
         
-        private IFuelSource _oxygenSource, _foodSource, _waterSource,_co2Source,_wastedWaterSource,_solidWasteSource;
         
         /// <summary>
         /// 当前所在行星的名称。
@@ -176,6 +178,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             AutoRefillLogic(frame);
             MissionDurationTime = (long)Game.Instance.FlightScene.FlightState.Time - Data.MissionStartTime;
         }
+
+        
         /// <summary>
         /// 这b玩意看不懂那你去吃我屎吧
         /// </summary>

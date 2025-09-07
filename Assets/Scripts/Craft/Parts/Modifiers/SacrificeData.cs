@@ -16,10 +16,23 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     {
         [SerializeField][PartModifierProperty]
         private float _foodGenerationScale = 1.0f;
+        [SerializeField][PartModifierProperty]
+        private float _waterConsumptionScale = 1.0f;
+        [SerializeField][PartModifierProperty]
+        private float _drainRate = 1.0f;
 
         public float FoodGenerationScale
         {
-            get => this._foodGenerationScale;
+            get => this._foodGenerationScale*2;
+        }
+
+        public float WaterConsumptionScale
+        {
+            get => this._waterConsumptionScale*2;
+        }
+        public float DrainRate
+        {
+            get => this._drainRate*2.5f;
         }
     }
 }

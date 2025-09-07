@@ -1,7 +1,9 @@
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using ModApi;
 using ModApi.Audio;
+using ModApi.Craft;
 using ModApi.GameLoop;
+using ModApi.Ui;
 using RootMotion.FinalIK;
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
@@ -14,7 +16,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
 
-    public class SacrificeScript : PartModifierScript<SacrificeData>,IFlightStart,IFlightUpdate,IDesignerUpdate,IDesignerStart
+    public class SacrificeScript : PartModifierScript<SacrificeData>,IFlightStart,IFlightUpdate,IDesignerStart
     {
 
         private CrewCompartmentScript _compartment;
@@ -22,19 +24,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private ISingleSound _sound;
         
         private Transform _particalSystemTransform,_bloodEffectTransform;
-        private Transform LKBaseTransform,leftHandTransform,leftElbowTransform,rightHandTransform,rightElbowTransform,bodyTransform,headTransform;
+        private Transform LKBaseTransform,leftHandTransform,leftElbowTransform,rightHandTransform,rightElbowTransform,bodyTransform;
         private FullBodyBipedIK _pilotIK;
         private EvaScript _pilot = (EvaScript) null;
         private AttachPoint _seatAttachPoint;
-        
-        private IFuelSource foodSource;
-        private IFuelSource waterSource;
-        private IFuelSource soildWasteSource;
 
-        protected override void OnInitialized()
-        {
-            base.OnInitialized();
-        }
+        private IFuelSource _oxygenSource, _foodSource, _waterSource, _solidWasteSource, _wastedWaterSource, _co2Source;
+        
         public override void OnModifiersCreated()
         {
              _compartment = this.PartScript.GetModifier<CrewCompartmentScript>();
@@ -45,58 +41,106 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         public void FlightStart(in FlightFrameData frameData)
         {
-          
+            RefreshFuelSource();
             UpdateComponents();
-            _sound.MaxVolume = 0.5f;
+            //_sound.MaxVolume = 0.5f;
+            
+        }
+        public override void OnCraftStructureChanged(ICraftScript craftScript)
+        {
+            RefreshFuelSource();
+            base.OnCraftStructureChanged(craftScript);
+        }
+
+        private void RefreshFuelSource()
+        {
             var patchScript = PartScript?.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
             if (patchScript == null)
             {
-                foodSource = null;
+                _co2Source=_oxygenSource=_foodSource=_waterSource=_solidWasteSource=_wastedWaterSource=null;
             }
 
             if (patchScript != null)
             {
-                foodSource = patchScript.FoodFuelSource;
-
+                _co2Source=patchScript.CO2FuelSource;
+                _oxygenSource = patchScript.OxygenFuelSource;
+                _waterSource=patchScript.WaterFuelSource;
+                _solidWasteSource = patchScript.SolidWasteFuelSource;
+                _wastedWaterSource = patchScript.WastedWaterFuelSource;
+                _foodSource = patchScript.FoodFuelSource;
             }
-
         }
 
         public void DesignerStart(in DesignerFrameData frameData)
         {
             UpdateComponents();
-           
         }
-
-        public void DesignerUpdate(in DesignerFrameData frameData)
-        {
-            
-        }
+        
         public void FlightUpdate(in FlightFrameData frameData)
         {
-            
-            
-
-            if (PartScript.Data.Activated)
+            if (_compartment==null)
             {
-                foodSource.AddFuel(Data.FoodGenerationScale*frameData.DeltaTimeWorld);
-                foreach (var crew in _compartment.Crew)
-                {
-                    crew.PartScript.TakeDamage(Game.Instance.Settings.Game.Flight.ImpactDamageScale*0.1f,PartDamageType.Basic);
-                }
-                this._sound.AddPosition(this.transform.position, 1);
-                PlayParticle(chunkParticleSystem);
-                PlayParticle(bloodParticleSystemA);
-                PlayParticle(bloodParticleSystemB);
-                PlayParticle(bloodParticleSystemC);
-                PlayParticle(bloodParticleSystemD);
-                PlayParticle(bloodParticleSystemE);
-                PlayParticle(bloodParticleSystemF);
-                PlayParticle(bloodParticleSystemG);
-                PlayParticle(bloodParticleSystemH);
-                PlayParticle(bloodParticleSystemI);
+                Debug.Log("_compartment is null");
+                return;
             }
             
+            if (PartScript.Data.Activated)
+            {
+                if (_compartment.Crew.Count==1)
+                {
+                    PlayParticle(chunkParticleSystem);
+                    PlayParticle(bloodParticleSystemA);
+                    PlayParticle(bloodParticleSystemB);
+                    PlayParticle(bloodParticleSystemC);
+                    PlayParticle(bloodParticleSystemD);
+                    PlayParticle(bloodParticleSystemE);
+                    PlayParticle(bloodParticleSystemF);
+                    PlayParticle(bloodParticleSystemG);
+                    PlayParticle(bloodParticleSystemH);
+                    PlayParticle(bloodParticleSystemI);
+                    foreach (var crew in _compartment.Crew)
+                    {
+                        if (true)
+                        {
+                            crew.PartScript.TakeDamage(Game.Instance.Settings.Game.Flight.ImpactDamageScale*0.1f,PartDamageType.Basic);
+                            var ls = crew.PartScript.GetModifier<SupportLifeScript>();
+                    
+                            _oxygenSource?.AddFuel(Data.DrainRate * frameData.DeltaTimeWorld);
+                            _foodSource?.AddFuel((Data.DrainRate+Data.FoodGenerationScale) * frameData.DeltaTimeWorld);
+                            _co2Source?.AddFuel(Data.DrainRate * frameData.DeltaTimeWorld);
+                            _wastedWaterSource?.AddFuel(Data.DrainRate * frameData.DeltaTimeWorld);
+                            _solidWasteSource?.AddFuel(Data.DrainRate * frameData.DeltaTimeWorld);
+                            _waterSource?.AddFuel((Data.DrainRate+Data.WaterConsumptionScale) * frameData.DeltaTimeWorld);
+
+                            ls._oxygenSource.RemoveFuel(Data.DrainRate * frameData.DeltaTimeWorld);
+                            ls._foodSource.RemoveFuel(Data.DrainRate * frameData.DeltaTimeWorld);
+                            ls._waterSource.RemoveFuel(Data.DrainRate+Data.WaterConsumptionScale * frameData.DeltaTimeWorld);
+                            ls._wastedWaterSource.RemoveFuel(Data.DrainRate * frameData.DeltaTimeWorld);
+                            ls._solidWasteSource.RemoveFuel(Data.DrainRate * frameData.DeltaTimeWorld);
+                            ls._co2Source.RemoveFuel(Data.DrainRate * frameData.DeltaTimeWorld);
+                    
+                    
+                            //this._sound.AddPosition(this.transform.position, 1);
+
+                        } 
+                    }
+                }
+                else
+                {
+                    chunkParticleSystem.Stop();
+                    bloodParticleSystemA.Stop();
+                    bloodParticleSystemB.Stop();
+                    bloodParticleSystemC.Stop();
+                    bloodParticleSystemD.Stop();
+                    bloodParticleSystemE.Stop();
+                    bloodParticleSystemF.Stop();
+                    bloodParticleSystemG.Stop();
+                    bloodParticleSystemH.Stop();
+                    bloodParticleSystemI.Stop();
+                }
+               
+                
+            }
             else
             {
                 chunkParticleSystem.Stop();
@@ -125,6 +169,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         private void UpdateComponents()
         {
+            _compartment = this.PartScript.GetModifier<CrewCompartmentScript>();
             string[]	strArray	= "Device/ParticleEffect".Split( '/', StringSplitOptions.None );
             Transform	subPart		= this.transform;
             foreach ( string n in strArray )
@@ -145,23 +190,24 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 bloodParticleSystemG = _particalSystemTransform.Find("BloodEffect").Find("Particle SystemG").GetComponent<ParticleSystem>();
                 bloodParticleSystemH = _particalSystemTransform.Find("BloodEffect").Find("Particle SystemH").GetComponent<ParticleSystem>();
                 bloodParticleSystemI = _particalSystemTransform.Find("BloodEffect").Find("Particle SystemI").GetComponent<ParticleSystem>();
+                
+                LKBaseTransform=_particalSystemTransform.parent.Find("LKBase");
+                bodyTransform=LKBaseTransform.Find("Body");
+                leftElbowTransform=LKBaseTransform.Find("LeftElbow");
+                leftHandTransform=leftElbowTransform.Find("LeftHand");
+                rightElbowTransform=LKBaseTransform.Find("RightElbow");
+                rightHandTransform=rightElbowTransform.Find("RightHand");
             
             }
 
 
-            LKBaseTransform=_particalSystemTransform.parent.Find("LKBase");
-            bodyTransform=LKBaseTransform.Find("Body");
-            headTransform=LKBaseTransform.Find("Head");
-            leftElbowTransform=LKBaseTransform.Find("LeftElbow");
-            leftHandTransform=leftElbowTransform.Find("LeftHand");
-            rightElbowTransform=LKBaseTransform.Find("RightElbow");
-            rightHandTransform=rightElbowTransform.Find("RightHand");
             
-            this._sound =Game.Instance.FlightScene.SingleSoundManager.GetSingleSound("Assets/Content/Craft/Parts/Sacrifice");
+            
+            /*this._sound =Game.Instance.FlightScene.SingleSoundManager.GetSingleSound("Assets/Content/Craft/Parts/Sacrifice.wav");
             if (_sound==null)
             {
                 Debug.Log("Sacrifice sound not found");
-            }
+            }*/
 
         }
         private void OnPilotEnter(EvaScript crew) => this.SetPilot(crew);
@@ -209,14 +255,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         this._pilotIK.solver.leftHandEffector.rotationWeight = 1f;
         this._pilotIK.solver.leftArmChain.bendConstraint.bendGoal = this.leftElbowTransform;
         this._pilotIK.solver.leftArmChain.bendConstraint.weight = 0.8f;
-        /*
-        this._pilotIK.solver.rightFootEffector.target = this._rudderRightFootPosition;
-        this._pilotIK.solver.rightFootEffector.positionWeight = 1f;
-        this._pilotIK.solver.rightFootEffector.rotationWeight = 1f;
-        this._pilotIK.solver.leftFootEffector.target = this._rudderLeftFootPosition;
-        this._pilotIK.solver.leftFootEffector.positionWeight = 1f;
-        this._pilotIK.solver.leftFootEffector.rotationWeight = 1f;
-        */
         this._pilotIK.solver.rightFootEffector.target = (Transform) null;
         this._pilotIK.solver.rightFootEffector.positionWeight = 0.0f;
         this._pilotIK.solver.rightFootEffector.rotationWeight = 0.0f;
