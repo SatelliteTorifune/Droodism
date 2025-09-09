@@ -212,10 +212,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
         }
         public override void OnCraftStructureChanged(ICraftScript craftScript)
-        {
-            RefreshFuelSources();
-            base.OnCraftStructureChanged(craftScript);
-        }
+                 {
+                     RefreshFuelSources();
+                     base.OnCraftStructureChanged(craftScript);
+                 }
         
         #endregion
         private void UpdateComponents()

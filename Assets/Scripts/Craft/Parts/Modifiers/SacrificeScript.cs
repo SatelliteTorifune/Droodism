@@ -103,15 +103,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                         if (true)
                         {
                             crew.PartScript.TakeDamage(Game.Instance.Settings.Game.Flight.ImpactDamageScale*0.1f,PartDamageType.Basic);
-                            var ls = crew.PartScript.GetModifier<SupportLifeScript>();
-                    
                             _oxygenSource?.AddFuel(Data.DrainRate * frameData.DeltaTimeWorld);
-                            _foodSource?.AddFuel((Data.DrainRate+Data.FoodGenerationScale) * frameData.DeltaTimeWorld);
+                            _foodSource?.AddFuel((Data.DrainRate*Data.FoodGenerationScale) * frameData.DeltaTimeWorld);
                             _co2Source?.AddFuel(Data.DrainRate * frameData.DeltaTimeWorld);
                             _wastedWaterSource?.AddFuel(Data.DrainRate * frameData.DeltaTimeWorld);
                             _solidWasteSource?.AddFuel(Data.DrainRate * frameData.DeltaTimeWorld);
-                            _waterSource?.AddFuel((Data.DrainRate+Data.WaterConsumptionScale) * frameData.DeltaTimeWorld);
-
+                            _waterSource?.AddFuel((Data.DrainRate*Data.WaterConsumptionScale) * frameData.DeltaTimeWorld);
+                            
+                            var ls = crew.PartScript.GetModifier<SupportLifeScript>();
                             ls._oxygenSource.RemoveFuel(Data.DrainRate * frameData.DeltaTimeWorld);
                             ls._foodSource.RemoveFuel(Data.DrainRate * frameData.DeltaTimeWorld);
                             ls._waterSource.RemoveFuel(Data.DrainRate+Data.WaterConsumptionScale * frameData.DeltaTimeWorld);

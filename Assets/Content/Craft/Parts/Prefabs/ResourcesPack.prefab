@@ -367,7 +367,7 @@ GameObject:
   - component: {fileID: 5753035378176647943}
   - component: {fileID: 7804033468294450780}
   - component: {fileID: 6250821565011908235}
-  - component: {fileID: 1025601894547468365}
+  - component: {fileID: 899165035070207373}
   m_Layer: 0
   m_Name: pack
   m_TagString: Untagged
@@ -478,8 +478,8 @@ MonoBehaviour:
   _ignoreFirstPersonCollisions: 0
   _isPrimary: 1
   _selectionEnabledInFlight: 1
---- !u!65 &1025601894547468365
-BoxCollider:
+--- !u!136 &899165035070207373
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -496,8 +496,10 @@ BoxCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.010113325, y: 0.013239153, z: 0.01020343}
+  serializedVersion: 2
+  m_Radius: 0.005101715
+  m_Height: 0.013239153
+  m_Direction: 1
   m_Center: {x: -6.9849193e-10, y: -0.000022923807, z: -0.00011798134}
 --- !u!1 &7539912114342339689
 GameObject:

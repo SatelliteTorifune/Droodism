@@ -26,6 +26,7 @@ using Object = UnityEngine.Object;
 //2025 7 25 我操你妈我受不了了我怎么还在和这坨我最先拉出来的屎山作斗争啊我操
 //2025 8 24 孩子们我回来了,我是拉屎大王
 //2025 8 31 嗨嗨嗨我又来了嗷
+//2025 9 8 为什么
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
@@ -40,6 +41,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// Reference to the EvaScript component,get current part's eva data and other stuff
         /// </summary>
         private EvaScript _evaScript;
+        public bool IsHibernating { get; private set; }
 
         //当前小蓝人的CrewCompartment,目前没用到
         private CrewCompartmentScript droodCrewCompartmentScript;
@@ -173,9 +175,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             if (frame.DeltaTimeWorld == 0.0) 
                 return;
-            UpdateRunningStatus();  
-            ConsumptionLogic(frame);
-            AutoRefillLogic(frame);
+            UpdateRunningStatus();
+            if (!IsHibernating)
+            {
+                if (!UsingInternalOxygen())
+                {
+                    AutoRefillLogic(frame);
+                }
+                ConsumptionLogic(frame);
+            }
+            
+
             MissionDurationTime = (long)Game.Instance.FlightScene.FlightState.Time - Data.MissionStartTime;
         }
 
@@ -442,15 +452,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// <param name="frame">飞行帧数据。Flight frame data.</param>
         private void AutoRefillLogic(in FlightFrameData frame)
         {
-            if (_oxygenSource != null)
+            var LocalFuelSource = GetLocalFuelSource("Oxygen");
+
+            if (LocalFuelSource?.TotalCapacity - LocalFuelSource?.TotalFuel >= 0.00001)
             {
-                if (!UsingInternalOxygen())
-                {
-                    if (_oxygenSource.TotalCapacity - _oxygenSource.TotalFuel >= 0.001)
-                    {
-                        _oxygenSource.AddFuel(_oxygenSource.TotalCapacity * frame.DeltaTimeWorld * 0.10000000149011612);
-                    }
-                }
+                LocalFuelSource?.AddFuel(LocalFuelSource.TotalCapacity * frame.DeltaTimeWorld * 0.01f);
             }
         }
 
@@ -494,9 +500,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             //Debug.LogFormat("调用CraftRefeshFuelSource 开始");
             try
             {
-                if (PartScript.CraftScript.ActiveCommandPod.Part.PartScript==PartScript)
+                if (PartScript.CraftScript.ActiveCommandPod.Part.PartScript==PartScript&&!_evaScript.ActiveWhileInCrewCompartment)
                 {
                     isEva = true;
+                    IsHibernating = false;
                     //Debug.LogFormat("这个drood是ActiveCommandPod");
                     _oxygenSource=_waterSource=_foodSource=_co2Source=_wastedWaterSource=_solidWasteSource=null;
                 }
@@ -505,18 +512,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 {
                     if (isEva==false)
                     {
+                        IsHibernating = PartScript.GetModifier<EvaScript>()?.CrewCompartment?.PartScript.Data.PartType.Id == "HibernatingChamber";
                         var stCommandPodPatchScript = PartScript.GetModifier<EvaScript>().CrewCompartment?.PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
-                        if (stCommandPodPatchScript!=null)
-                        {
-                            _oxygenSource = stCommandPodPatchScript.OxygenFuelSource;
-                            _foodSource = stCommandPodPatchScript.FoodFuelSource;
-                            _waterSource = stCommandPodPatchScript.WaterFuelSource;
-                            _co2Source = stCommandPodPatchScript.CO2FuelSource;
-                            _wastedWaterSource = stCommandPodPatchScript.WastedWaterFuelSource;
-                            _solidWasteSource = stCommandPodPatchScript.SolidWasteFuelSource;
-                            //Debug.LogFormat("SupportLifeScript called CraftRefreshFuelSource,STCommandPodPatchScript found,using patch's IFuelSource");
-                        }
-                        
+                        _oxygenSource = stCommandPodPatchScript?.OxygenFuelSource;
+                        _foodSource = stCommandPodPatchScript?.FoodFuelSource;
+                        _waterSource = stCommandPodPatchScript?.WaterFuelSource;
+                        _co2Source = stCommandPodPatchScript?.CO2FuelSource;
+                        _wastedWaterSource = stCommandPodPatchScript?.WastedWaterFuelSource;
+                        _solidWasteSource = stCommandPodPatchScript?.SolidWasteFuelSource;
                     }
                 }
                 catch (Exception e)

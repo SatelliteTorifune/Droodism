@@ -63,8 +63,8 @@ MonoBehaviour:
       _rotationOffsetEuler: {x: 0, y: 0, z: 0}
     _name: Drood Organic Classification and Recycling Device
     _partCollisionHandling: 0
-    _price: 0
-    _unscaledMass: 0
+    _price: 100000
+    _unscaledMass: 1000
     _usePreferredNodeName: 1
 --- !u!114 &2618749169882554922
 MonoBehaviour:

@@ -14,7 +14,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     {
         public void FlightStart(in FlightFrameData frame)
         {
-            
+            Game.Instance.GameState.Career.ReceiveTechPoints(10);
         }
 
         public void FlightUpdate(in FlightFrameData frame)
@@ -26,5 +26,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             
         }
+
+        
     }
 }

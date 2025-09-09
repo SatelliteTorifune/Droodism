@@ -493,7 +493,7 @@ namespace Assets.Scripts
         
         private IFuelSource GetIFuelSourceByID(string fuelTypeId)
         {
-            switch (ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Data.PartType.Name.Contains("Eva") ? "Eva" : "Other")
+            switch (ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Data.PartType.Name.Contains("Eva")&&ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.Data.Assembly.Parts.Count==1 ? "Eva" : "Other")
             {
                 case "Eva": 
                     foreach (var modifier in ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Modifiers)

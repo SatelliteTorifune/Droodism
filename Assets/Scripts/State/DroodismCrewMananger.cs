@@ -253,6 +253,10 @@ namespace Assets.Scripts.State
 
         public void CreateCrewData(CrewData crewData)
         {
+            if (crewData.id==0)
+            {
+                Debug.LogWarning("Droodism DroodismCrewManger.CreateCrewData(): CrewData id =0,Unable to create CrewData,try searching by name");
+            }
             if (crewData.id!=0)
             {
                 _crewDataList.Add(crewData);

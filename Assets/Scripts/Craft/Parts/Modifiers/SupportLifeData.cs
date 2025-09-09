@@ -151,6 +151,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             try
             {
                 DroodismCrewMananger.Instance.EditCrewData(this.Part.GetModifier<EvaData>().CrewId,crewData);
+                Debug.Log("SupportLifeData: OnPartRecovered,saved crewData");
             }
             catch (Exception exception)
             {

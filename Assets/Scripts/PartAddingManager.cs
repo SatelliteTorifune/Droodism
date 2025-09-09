@@ -160,6 +160,13 @@ namespace Assets.Scripts
                 _supportLifeData.PartPropertiesEnabled = false;
                 _supportLifeData.InspectorEnabled = true;
             }
+            Water_DesalinationData _waterDesalinationData = part.GetModifier<Water_DesalinationData>();
+            if (_waterDesalinationData == null)
+            {
+                _waterDesalinationData = PartModifierData.CreateFromDefaultXml<Water_DesalinationData>(part);
+                _waterDesalinationData.PartPropertiesEnabled = true;
+                _waterDesalinationData.InspectorEnabled = true;
+            }
         }
         
         private  void PatchCommandPod(PartData part)

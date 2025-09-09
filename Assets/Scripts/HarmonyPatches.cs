@@ -52,12 +52,11 @@ namespace Assets.Scripts
                         fuelTankField.SetValue(__instance, jetPackFuelTank);
                         if (jetPackFuelTank == null)
                         {
-                            Debug.LogWarning(
-                                "[EvaScriptPatch] No FuelTankScript with fuel type 'JetPack' found. Setting _fuelTank to null.");
+                            //Debug.LogWarning("[EvaScriptPatch] No FuelTankScript with fuel type 'JetPack' found. Setting _fuelTank to null.");
                         }
                         else
                         {
-                            Debug.Log($"[EvaScriptPatch] Successfully set _fuelTank to JetPack fuel tank.");
+                            //Debug.Log($"[EvaScriptPatch] Successfully set _fuelTank to JetPack fuel tank.");
                         }
                     }
                     else

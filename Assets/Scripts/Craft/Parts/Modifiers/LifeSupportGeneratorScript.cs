@@ -157,14 +157,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 return;
             }
+            var patchScript = PartScript?.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
 
-            waterSource = GetCraftFuelSource("H2O");
-            oxygenSource = GetCraftFuelSource("Oxygen");
+            waterSource = patchScript?.WaterFuelSource;
+            oxygenSource = patchScript?.OxygenFuelSource;
             hydroLoxSource = GetCraftFuelSource("LOX/LH2");
-            co2Source = GetCraftFuelSource("CO2");
+            co2Source = patchScript?.CO2FuelSource;
 
 
-            fossilSource = FossilFuelTypeIndex == 0 ? null :
+                fossilSource = FossilFuelTypeIndex == 0 ? null :
                 FossilFuelTypeIndex == 1 ? GetCraftFuelSource("LOX/RP1") :
                 FossilFuelTypeIndex == 2 ? GetCraftFuelSource("LOX/CH4") :
                 FossilFuelTypeIndex == 2 ? GetCraftFuelSource("Jet") : null;

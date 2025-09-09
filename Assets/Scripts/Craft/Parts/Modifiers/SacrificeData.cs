@@ -23,12 +23,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public float FoodGenerationScale
         {
-            get => this._foodGenerationScale*2;
+            get => this._foodGenerationScale*4;
         }
 
         public float WaterConsumptionScale
         {
-            get => this._waterConsumptionScale*2;
+            get => this._waterConsumptionScale*2.5f;
         }
         public float DrainRate
         {
