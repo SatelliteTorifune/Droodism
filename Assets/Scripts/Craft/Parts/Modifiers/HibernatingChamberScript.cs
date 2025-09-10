@@ -67,12 +67,19 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             if (_batterySource.IsEmpty&&_crewCompartment?.Crew.Count!=0)
             {
-                //KickCrew();
+                foreach (var crew in _crewCompartment.Crew)
+                {
+                    crew.PartScript.GetModifier<SupportLifeScript>().SetHibernating(false,this.PartScript.Data.PartType);
+                }
             }
 
             if (!_batterySource.IsEmpty)
             {
                 _batterySource.RemoveFuel(frameData.DeltaTimeWorld * Data.HibernationPowerConsumption); 
+                foreach (var crew in _crewCompartment.Crew)
+                {
+                    crew.PartScript.GetModifier<SupportLifeScript>().SetHibernating(true,this.PartScript.Data.PartType);
+                }
             }
 
 

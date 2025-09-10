@@ -213,6 +213,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 this.Data.crewData.MissionTimeTotal += 
             MissionDurationTime;
         }
+
+        public void SetHibernating(bool hibernatingSatus, PartType partType)
+        {
+            if (partType.Id!="HibernatingChamber")
+            {
+                return;
+            }
+            IsHibernating = hibernatingSatus;
+        }
         
 
         /// <summary>
@@ -512,7 +521,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 {
                     if (isEva==false)
                     {
-                        IsHibernating = PartScript.GetModifier<EvaScript>()?.CrewCompartment?.PartScript.Data.PartType.Id == "HibernatingChamber";
+                        IsHibernating = false;
                         var stCommandPodPatchScript = PartScript.GetModifier<EvaScript>().CrewCompartment?.PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
                         _oxygenSource = stCommandPodPatchScript?.OxygenFuelSource;
                         _foodSource = stCommandPodPatchScript?.FoodFuelSource;
@@ -1228,8 +1237,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// 为零件生成inspector model，添加生命支持信息。
         /// Generates the inspector model for the part, adding life support information.
         /// </summary>
-        public override void OnGenerateInspectorModel(PartInspectorModel model) 
+        public override void OnGenerateInspectorModel(PartInspectorModel model)
         {
+            var localOxygen = GetLocalFuelSource("Oxygen");
+            var localWater = GetLocalFuelSource("H2O");
+            var localFood = GetLocalFuelSource("Food");
+            var localCo2 = GetLocalFuelSource("CO2");
+            var localWastedWater = GetLocalFuelSource("Wasted Water");
+            var localSolidWaste = GetLocalFuelSource("Solid Waste");
             base.OnGenerateInspectorModel(model);
             //单独看任务时间的
             model.Add<TextModel>(new TextModel("<color=yellow>Mission Time", (Func<string>) (() =>Mod.GetStopwatchTimeString(MissionDurationTime))));
@@ -1237,9 +1252,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             model.AddGroup(groupModel);
             groupModel.Add<TextModel>(new TextModel("Remain Oxygen", (Func<string>) (() =>
             {
-                if (UsingInternalOxygen() && _oxygenSource != null && _oxygenSource.TotalCapacity > 0)
+                if (UsingInternalOxygen() && localOxygen != null && localOxygen.TotalCapacity > 0)
                 {
-                    float percentage = (float)(_oxygenSource.TotalFuel / _oxygenSource.TotalCapacity);
+                    float percentage = (float)(localOxygen.TotalFuel / localOxygen.TotalCapacity);
                     string oxygenTextColor = percentage > 0.5 ? "green" : percentage >= 0.25 ? "yellow" : "red";
                     return $"<color={oxygenTextColor}>{Units.GetPercentageString(percentage)}</color>";
                 }
@@ -1252,11 +1267,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             groupModel.Add<TextModel>(new TextModel("Oxygen Supply Time", (Func<string>) (() =>
             {
-                if (UsingInternalOxygen() && _oxygenSource != null && _evaScript != null)
+                if (UsingInternalOxygen() && localOxygen != null && _evaScript != null)
                 {
-                    float percentage = (float)(_oxygenSource.TotalFuel / _oxygenSource.TotalCapacity);
+                    float percentage = (float)(localOxygen.TotalFuel / localOxygen.TotalCapacity);
                     string oxygenTextColor = percentage > 0.5 ? "green" : percentage >= 0.25 ? "yellow" : "red";
-                    return $"<color={oxygenTextColor}>"+Mod.GetStopwatchTimeString(_oxygenSource.TotalFuel / (Data.OxygenComsumeRate * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)));
+                    return $"<color={oxygenTextColor}>"+Mod.GetStopwatchTimeString(localOxygen.TotalFuel / (Data.OxygenComsumeRate * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)));
                 }
                 else if (!UsingInternalOxygen())
                 {
@@ -1267,9 +1282,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             groupModel.Add<TextModel>(new TextModel("Remain Water", (Func<string>) (() =>
             {
-                if (_waterSource != null && _waterSource.TotalCapacity > 0)
+                if (localWater != null && localWater.TotalCapacity > 0)
                 {
-                    float waterPercentage = (float)(_waterSource.TotalFuel / _waterSource.TotalCapacity);
+                    float waterPercentage = (float)(localWater.TotalFuel / localWater.TotalCapacity);
                     string waterTextColor = waterPercentage > 0.5 ? "green" : waterPercentage >= 0.25 ? "yellow" : "red";
                     return $"<color={waterTextColor}>{Units.GetPercentageString(waterPercentage)}</color>";
                 }
@@ -1278,20 +1293,20 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             groupModel.Add<TextModel>(new TextModel("Water Supply Time", (Func<string>) (() =>
             {
-                if (_waterSource != null && _evaScript != null)
+                if (localWater != null && _evaScript != null)
                 {
-                    float waterPercentage = (float)(_waterSource.TotalFuel / _waterSource.TotalCapacity);
+                    float waterPercentage = (float)(localWater.TotalFuel / localWater.TotalCapacity);
                     string waterTextColor = waterPercentage > 0.5 ? "green" : waterPercentage >= 0.25 ? "yellow" : "red";
-                    return $"<color={waterTextColor}>"+Mod.GetStopwatchTimeString(_waterSource.TotalFuel / (Data.WaterComsumeRate * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)));
+                    return $"<color={waterTextColor}>"+Mod.GetStopwatchTimeString(localWater.TotalFuel / (Data.WaterComsumeRate * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)));
                 }
                 return "N/A";
             })));
             
             groupModel.Add<TextModel>(new TextModel("Remain Food", (Func<string>) (() =>
             {
-                if (_foodSource != null && _foodSource.TotalCapacity > 0)
+                if (localFood != null && localFood.TotalCapacity > 0)
                 {
-                    float foodPercentage = (float)(_foodSource.TotalFuel / _foodSource.TotalCapacity);
+                    float foodPercentage = (float)(localFood.TotalFuel / localFood.TotalCapacity);
                     string foodTextColor = foodPercentage > 0.5 ? "green" : foodPercentage >= 0.25 ? "yellow" : "red";
                     return $"<color={foodTextColor}>{Units.GetPercentageString(foodPercentage)}</color>";
                 }
@@ -1300,17 +1315,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
             groupModel.Add<TextModel>(new TextModel("Food Supply Time", (Func<string>) (() =>
             {
-                if (_foodSource != null && _evaScript != null)
+                if (localFood != null && _evaScript != null)
                 {
-                    float foodPercentage = (float)(_foodSource.TotalFuel / _foodSource.TotalCapacity);
+                    float foodPercentage = (float)(localFood.TotalFuel / localFood.TotalCapacity);
                     string foodTextColor = foodPercentage > 0.5 ? "green" : foodPercentage >= 0.25 ? "yellow" : "red";
-                    return $"<color={foodTextColor}>"+Mod.GetStopwatchTimeString(_foodSource.TotalFuel / (Data.FoodComsumeRate * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)));
+                    return $"<color={foodTextColor}>"+Mod.GetStopwatchTimeString(localFood.TotalFuel / (Data.FoodComsumeRate * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)));
                 }
                 return "N/A";
             })));
-            AddGM("CO2 Level",_co2Source);
-            AddGM("Wasted Water Level",_wastedWaterSource);
-            AddGM("Solid Waste Level",_solidWasteSource);
+            AddGM("CO2 Level",localCo2);
+            AddGM("Wasted Water Level",localWastedWater);
+            AddGM("Solid Waste Level",localSolidWaste);
             
             void AddGM(string Title, IFuelSource source)
             {
@@ -1338,7 +1353,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             ICraftScript craftScript = this.PartScript.CraftScript;
             IFlightSceneUI ui = ModApi.Common.Game.Instance.FlightScene.FlightSceneUI;
-            if (!(craftScript.Data.Assembly.Parts.Count == 1 &&craftScript.RootPart.Data.PartType.Name.Contains("Eva")))
+            if (!(craftScript.Data.Assembly.Parts.Count == 1 &&craftScript.RootPart.Data.PartType.Name.Contains("Eva"))&&_evaScript.ActiveWhileInCrewCompartment)
             {
                 ui.ShowMessage("Can Not Plant Flag,Not in Eva",false,10);
             }

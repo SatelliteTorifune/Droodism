@@ -109,18 +109,21 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                             _wastedWaterSource?.AddFuel(Data.DrainRate * frameData.DeltaTimeWorld);
                             _solidWasteSource?.AddFuel(Data.DrainRate * frameData.DeltaTimeWorld);
                             _waterSource?.AddFuel((Data.DrainRate*Data.WaterConsumptionScale) * frameData.DeltaTimeWorld);
-                            
-                            var ls = crew.PartScript.GetModifier<SupportLifeScript>();
-                            ls._oxygenSource.RemoveFuel(Data.DrainRate * frameData.DeltaTimeWorld);
-                            ls._foodSource.RemoveFuel(Data.DrainRate * frameData.DeltaTimeWorld);
-                            ls._waterSource.RemoveFuel(Data.DrainRate+Data.WaterConsumptionScale * frameData.DeltaTimeWorld);
-                            ls._wastedWaterSource.RemoveFuel(Data.DrainRate * frameData.DeltaTimeWorld);
-                            ls._solidWasteSource.RemoveFuel(Data.DrainRate * frameData.DeltaTimeWorld);
-                            ls._co2Source.RemoveFuel(Data.DrainRate * frameData.DeltaTimeWorld);
-                    
-                    
-                            //this._sound.AddPosition(this.transform.position, 1);
 
+                            var craftSources = crew.PartScript.Modifiers;
+                            foreach (var source in craftSources)
+                            {
+                                if (source.GetData().Name.Contains("Tank"))
+                                {
+                                    source.GetData().InspectorEnabled = false;
+                                    FuelTankScript fts = source as FuelTankScript;
+                                    if (fts.FuelType.Id!="Jetpack")
+                                    {
+                                        fts.RemoveFuel(Data.DrainRate * frameData.DeltaTimeWorld);
+                                    }
+                                }
+                            }
+                            
                         } 
                     }
                 }
