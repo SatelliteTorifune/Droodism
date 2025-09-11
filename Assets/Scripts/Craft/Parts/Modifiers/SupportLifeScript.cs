@@ -867,7 +867,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return;
             }
             LoadFuelTanks();
-            if (ModSettings.Instance.ConsumeResourceWhenUnloaded==true)
+            if (ModSettings.Instance.ConsumeResourceWhenUnloaded==true&&!IsHibernating)
             {
                 RemoveFuelAmonutInstantly();
                 AddWastedAmountInstantly();
@@ -965,7 +965,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
         }
 
-        public void RemoveFuelAmonutInstantly()
+        private void RemoveFuelAmonutInstantly()
         {
                 
             double xishu=360;
@@ -1019,7 +1019,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
         }
         
-        public void AddWastedAmountInstantly()
+        private void AddWastedAmountInstantly()
         {
             double xishu=360;
             var time= Game.Instance.FlightScene.FlightState.Time-Data.LastLoadTime;
