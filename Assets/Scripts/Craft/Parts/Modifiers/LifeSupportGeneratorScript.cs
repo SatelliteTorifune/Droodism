@@ -157,7 +157,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 return;
             }
-            var patchScript = PartScript?.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+            var patchScript = PartScript?.CommandPod?.Part.PartScript.GetModifier<STCommandPodPatchScript>();
 
             waterSource = patchScript?.WaterFuelSource;
             oxygenSource = patchScript?.OxygenFuelSource;

@@ -64,7 +64,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public void RefreshFuelSource()
         {
             batterySource = PartScript.BatteryFuelSource;
-            waterFuelSource = PartScript?.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>()
+            waterFuelSource = PartScript?.CommandPod?.Part.PartScript.GetModifier<STCommandPodPatchScript>()
                 .WaterFuelSource;
 
 
