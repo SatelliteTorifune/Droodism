@@ -8,7 +8,7 @@ public abstract class ResourceProcessorPartScript<T> : PartModifierScript<T>, IF
     where T : PartModifierData
 {
     protected IFuelSource BatterySource { get; set; }
-    protected Transform Offset { get; set; }
+    protected Transform Offset { get; private set; }
     protected Vector3 OffsetPositionInverse { get; set; }
 
     public virtual void FlightStart(in FlightFrameData frame)
@@ -39,19 +39,22 @@ public abstract class ResourceProcessorPartScript<T> : PartModifierScript<T>, IF
 
     public override void OnCraftStructureChanged(ICraftScript craftScript)
     {
+        base.OnCraftStructureChanged(craftScript);
         UpdateFuelSources();
     }
 
-    protected abstract void UpdateFuelSources();
+    protected virtual void UpdateFuelSources()
+    {
+        BatterySource = PartScript.BatteryFuelSource;
+    }
 
     protected virtual void WorkingLogic(in FlightFrameData frame)
     {
-        // 子类实现具体的工作逻辑
+      
     }
 
     protected virtual void WorkingAnimation(bool active)
     {
-        // 子类实现具体的动画逻辑（如果需要）
     }
 
     protected IFuelSource GetCraftFuelSource(string fuelType)

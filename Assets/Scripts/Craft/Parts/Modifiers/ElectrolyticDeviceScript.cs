@@ -22,7 +22,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
     protected override void UpdateFuelSources()
     {
-        BatterySource = PartScript.BatteryFuelSource;
+       
+        base.UpdateFuelSources();
         try
         {
             var patchScript = PartScript?.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();

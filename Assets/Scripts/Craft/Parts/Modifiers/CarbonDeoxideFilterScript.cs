@@ -1,6 +1,7 @@
 using ModApi;
 using ModApi.Craft;
 using ModApi.GameLoop;
+using RootMotion.FinalIK;
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
@@ -9,29 +10,29 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 	using ModApi.GameLoop.Interfaces;
 	using UnityEngine;
 
-	public class CarbonDeoxideFilterScript : PartModifierScript<CarbonDeoxideFilterData>,
-		IFlightStart,
-		IFlightUpdate,
+	public class CarbonDeoxideFilterScript : ResourceProcessorPartScript<CarbonDeoxideFilterData>,
 		IDesignerStart
 	{
-		private IFuelSource	co2Source, batterySource;
+		private IFuelSource co2Source;
 		private Transform	_offset, FanA, FanB;
 		private Vector3		_offsetPositionInverse;
-		public void FlightStart( in FlightFrameData frame )
+		
+
+		public override void FlightStart( in FlightFrameData frame )
 		{
 			UpdateFuelSources();
 			UpdateComponents();
 		}
 
 
-		public void FlightUpdate( in FlightFrameData frame )
+		public override void FlightUpdate( in FlightFrameData frame )
 		{
-			if ( co2Source == null || batterySource == null )
+			if ( co2Source == null || BatterySource == null )
 			{
 				return;
 			}
 
-			if ( co2Source.IsEmpty || batterySource.IsEmpty )
+			if ( co2Source.IsEmpty || BatterySource.IsEmpty )
 			{
 				WorkingAnimation( false );
 				return;
@@ -40,24 +41,20 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 			WorkingLogic( frame );
 		}
 
-
-		public void DesignerStart( in DesignerFrameData frame )
-		{
-			UpdateFuelSources();
-		}
+		
 
 
-		private void WorkingLogic( in FlightFrameData frame )
+		protected override void WorkingLogic( in FlightFrameData frame )
 		{
 			if ( PartScript.Data.Activated )
 			{
 				co2Source.RemoveFuel( Data.Co2ConsumptionRate * frame.DeltaTimeWorld );
-				batterySource.RemoveFuel( Data.ElectricityPowerConsumptionRatePerCo2 * Data.Co2ConsumptionRate * frame.DeltaTimeWorld );
+				BatterySource.RemoveFuel( Data.ElectricityPowerConsumptionRatePerCo2 * Data.Co2ConsumptionRate * frame.DeltaTimeWorld );
 			}
 		}
 
 
-		private void WorkingAnimation( bool active )
+		protected override void WorkingAnimation( bool active )
 		{
 			if ( FanA == null )
 			{
@@ -118,9 +115,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
 
 		#region fuelsource related
-		private void UpdateFuelSources()
+		protected override void UpdateFuelSources()
 		{
-			batterySource = PartScript.BatteryFuelSource;
+			base.UpdateFuelSources();
 			try
 			{
 				var patchScript = PartScript?.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
@@ -142,37 +139,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 			
 			
 		}
-
-
-		private void OnCraftFuelSourceChanged( object sender, EventArgs e ) => this.UpdateFuelSources();
-
-
-		public override void OnCraftLoaded( ICraftScript craftScript, bool movedToNewCraft )
-		{
-			this.OnCraftStructureChanged( craftScript );
-			UpdateFuelSources();
-		}
-
-
-		public override void OnCraftStructureChanged( ICraftScript craftScript )
-		{
-			UpdateFuelSources();
-		}
-
-
-		private IFuelSource GetCraftFuelSource( string fuelType )
-		{
-			var craftSources = PartScript.CraftScript.FuelSources.FuelSources;
-
-			foreach ( var source in craftSources )
-			{
-				if ( source.FuelType.Id.Contains( fuelType ) )
-				{
-					return(source);
-				}
-			}
-			return(null);
-		}
+		
 
 
 		#endregion

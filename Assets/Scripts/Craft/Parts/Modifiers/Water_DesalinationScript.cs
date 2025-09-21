@@ -12,13 +12,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
 
-    public class Water_DesalinationScript : PartModifierScript<Water_DesalinationData>,IFlightStart,IFlightUpdate
+    public class Water_DesalinationScript : ResourceProcessorPartScript<Water_DesalinationData>
     {
-        private IFuelSource waterFuelSource,batterySource;
+        private IFuelSource waterFuelSource;
         public bool IsGenerator{get;private set;}
-        public void FlightStart(in FlightFrameData frame)
+        public override void FlightStart(in FlightFrameData frame)
         {
-            RefreshFuelSource();
+            UpdateFuelSources();
             if (this.PartScript.Data.PartType.Name.Contains("Generator"))
             {
                 
@@ -29,41 +29,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 IsGenerator = true;
                 
             }
-            
         }
-
         
-        public void FlightUpdate(in FlightFrameData frame)
+        protected override void UpdateFuelSources()
         {
-            if (IsGenerator)
-            {
-                return;
-            }
-            if (batterySource == null || waterFuelSource == null)
-            {
-                return;
-            }
-
-            if (batterySource.IsEmpty||waterFuelSource.TotalCapacity-waterFuelSource.TotalFuel<=1e-4)
-            {
-                return;
-            }
-            
-            if (PartScript.Data.Activated)
-            {
-                
-                WokringLogic(frame);
-            }
-        }
-
-        public override void OnCraftStructureChanged(ICraftScript craftScript)
-        {
-            RefreshFuelSource();
-            base.OnCraftStructureChanged(craftScript);
-        }
-        public void RefreshFuelSource()
-        {
-            batterySource = PartScript.BatteryFuelSource;
+            base.UpdateFuelSources();
             waterFuelSource = PartScript?.CommandPod?.Part.PartScript.GetModifier<STCommandPodPatchScript>()
                 .WaterFuelSource;
 
@@ -71,11 +41,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         
 
-        private void WokringLogic(in FlightFrameData frame)
+        protected override void WorkingLogic(in FlightFrameData frame)
         {
             if (this.PartScript.WaterPhysics.IsInWater)
             {
-                batterySource.RemoveFuel(Data.PowerConsumption*frame.DeltaTimeWorld);
+                BatterySource.RemoveFuel(Data.PowerConsumption*frame.DeltaTimeWorld);
                 waterFuelSource.AddFuel(Data.WaterGenerationScale*frame.DeltaTimeWorld);
             }
         }

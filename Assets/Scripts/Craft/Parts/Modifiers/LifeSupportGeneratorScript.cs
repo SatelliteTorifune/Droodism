@@ -19,10 +19,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 {
 
 
-    public class LifeSupportGeneratorScript : PartModifierScript<LifeSupportGeneratorData>,
-        IDesignerStart,
-        IFlightStart,
-        IFlightUpdate
+    public class LifeSupportGeneratorScript : ResourceProcessorPartScript<LifeSupportGeneratorData>
+        
     {
 
         private GeneratorScript _generatorScript;
@@ -30,23 +28,19 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private int FossilFuelTypeIndex;
         private IFuelSource waterSource, hydroLoxSource, oxygenSource, co2Source, fossilSource;
 
+        
 
-        void IDesignerStart.DesignerStart(in DesignerFrameData frame)
-        {
-            base.OnInitialized();
-        }
-
-        public void FlightStart(in FlightFrameData frame)
+        public override void FlightStart(in FlightFrameData frame)
         {
             _generatorScript = GetComponent<GeneratorScript>();
             var fuelTypeId = _generatorScript.Data.FuelType.Id;
             IsHydroloxFunctional = fuelTypeId == "LOX/LH2";
             FossilFuelTypeIndex =
                 fuelTypeId == "LOX/RP1" ? 1 : fuelTypeId == "LOX/CH4" ? 2 : fuelTypeId == "Jet" ? 3 : 0;
-            Rechck();
+            UpdateFuelSources();
         }
 
-        public void FlightUpdate(in FlightFrameData frame)
+        public override void FlightUpdate(in FlightFrameData frame)
         {
             if (frame.DeltaTimeWorld == 0)
                 return;
@@ -135,43 +129,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
         }
 
-        private IFuelSource GetCraftFuelSource(string fuelType)
-        {
-            var craftSources = PartScript.CraftScript.FuelSources.FuelSources;
+        
 
-
-            foreach (var source in craftSources)
-            {
-                if (source.FuelType.Id== fuelType)
-                {
-                    return source;
-                }
-            }
-
-            return null;
-        }
-
-        private void Rechck()
-        {
-            if (!Game.InFlightScene)
-            {
-                return;
-            }
-            var patchScript = PartScript?.CommandPod?.Part.PartScript.GetModifier<STCommandPodPatchScript>();
-
-            waterSource = patchScript?.WaterFuelSource;
-            oxygenSource = patchScript?.OxygenFuelSource;
-            hydroLoxSource = GetCraftFuelSource("LOX/LH2");
-            co2Source = patchScript?.CO2FuelSource;
-
-
-                fossilSource = FossilFuelTypeIndex == 0 ? null :
-                FossilFuelTypeIndex == 1 ? GetCraftFuelSource("LOX/RP1") :
-                FossilFuelTypeIndex == 2 ? GetCraftFuelSource("LOX/CH4") :
-                FossilFuelTypeIndex == 2 ? GetCraftFuelSource("Jet") : null;
-
-
-        }
+       
 
         #region 路边一条,无人在意
 
@@ -182,38 +142,32 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             _generatorScript = GetComponent<GeneratorScript>();
 
         }
-
-        public override void OnCraftLoaded(ICraftScript craftScript, bool movedToNewCraft)
+        
+        protected override void UpdateFuelSources()
         {
-            this.OnCraftStructureChanged(craftScript);
+            if (!Game.InFlightScene)
+            {
+                return;
+            }
+            base.UpdateFuelSources();
+            var patchScript = PartScript?.CommandPod?.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+
+            waterSource = patchScript?.WaterFuelSource;
+            oxygenSource = patchScript?.OxygenFuelSource;
+            hydroLoxSource = GetCraftFuelSource("LOX/LH2");
+            co2Source = patchScript?.CO2FuelSource;
+            if (PartScript != null)
+            {
+
+                fossilSource = FossilFuelTypeIndex == 0 ? null :
+                    FossilFuelTypeIndex == 1 ? GetCraftFuelSource("LOX/RP1") :
+                    FossilFuelTypeIndex == 2 ? GetCraftFuelSource("LOX/CH4") :
+                    FossilFuelTypeIndex == 2 ? this.PartScript?.CommandPod?.JetFuelSource : null;
+            }
         }
-
-        public override void OnCraftStructureChanged(ICraftScript craftScript)
-        {
-
-            Rechck();
-        }
-
-        private void OnCraftFuelSourceChanged(object sender, EventArgs e)
-        {
-            Rechck();
-            Debug.LogFormat("OnCraftFuelSourceChanged调用Rechck");
-        }
-
-        public void OnGeneratePerformanceAnalysisModel(GroupModel groupModel)
-        {
-            this.CreateInspectorModel(groupModel, false);
-        }
-
+        
         #endregion
 
 
-        private void CreateInspectorModel(GroupModel model, bool flight)
-        {
-            model.Add<TextModel>(new TextModel("Fuel Flow",
-                (Func<string>)(() =>
-                    Units.GetMassFlowRateString(_generatorScript.Data.FuelFlow * this.Data.WaterConvertEfficiency)),
-                tooltip: "The kilograms of fuel being burnt per second."));
-        }
     }
 }
