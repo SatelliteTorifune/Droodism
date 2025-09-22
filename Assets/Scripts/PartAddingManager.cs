@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Assets.Scripts.Craft;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
@@ -9,176 +10,183 @@ using UnityEngine;
 
 namespace Assets.Scripts
 {
-    public partial class Mod:GameMod
-
+    public partial class Mod : GameMod
     {
+        private static readonly string EvaPartName = "Eva";
+        private static readonly string EvaTouristPartName = "Eva-Tourist";
+        private static readonly string GeneratorPartName = "Generator1";
+        private static readonly string EvaDataModifierName = "EvaData";
+        private static readonly string SupportLifeDataModifierName = "SupportLifeData";
+
         
+
         /// <summary>
-        /// 在加载Craft时使用"CheckDrood"方法遍历所有modifier得到零件并添加SupportLife的modifier
-        /// When load a craft get all Craft's modifier using "CheckDrood" method and adding a "SupportLife"modifie to the part
+        /// Called when a craft is loaded. Adds life support and related modifiers to specific parts.
         /// </summary>
         private void OnCraftLoaded()
         {
-            GetDroodCountInDesigner();
-            foreach (PartData part in CheckDrood(Craft))
+            var craft = Craft;
+            if (craft?.Data?.Assembly?.Parts == null) return;
+
+            // Process Drood parts
+            foreach (var part in GetPartsWithEvaModifier(craft, withoutLifeSupport: true))
             {
-                AddLsModifier(part);
-                //PatchCommandPod(part);
+                AddLifeSupportModifier(part);
             }
 
-            foreach (PartData part in  CheckGenerator(Craft))
+            // Process Generator parts
+            foreach (var part in GetPartsByType(craft, GeneratorPartName))
             {
-                AddLSGModifier(part);
+                AddLifeSupportGeneratorModifiers(part);
             }
 
-            foreach (PartData part in  CheckCommandPod(Craft))
+            // Process Command Pods
+            foreach (var part in GetCommandPods(craft))
             {
                 PatchCommandPod(part);
             }
 
+            // Process Crew Compartments
+            foreach (var part in GetCrewCompartments(craft))
+            {
+                AddCrewCompartmentPatch(part);
+            }
+
+            GetDroodCountInDesigner();
         }
+
         /// <summary>
-        /// 在part添加时检测如果是Drood则添加SupportLife modifier和其他属性
-        /// Adding SupportLife modifier when the added part is Drood
+        /// Called when a part is added to the craft. Adds appropriate modifiers based on part type.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnPartAdded(object sender,CreatedPartEventArgs e)
+        private void OnPartAdded(object sender, CreatedPartEventArgs e)
         {
-            
-            //Debug.LogFormat($"{e.Part.PartType.Name},id{e.Part.Id}有{e.Part.Modifiers.Count}个modifier,1:{e.PartType.Name}");
-            if (e.Part.Name=="Eva"||e.Part.Name == "Eva-Tourist")
-            {
-                AddLsModifier(e.Part);
-                //PatchCommandPod(e.Part);
-            }
-            
-            if (e.Part.Name == "Generator1")
-            {
-                AddLSGModifier(e.Part);
-            }
+            var part = e.Part;
+            if (part == null) return;
 
-            if (e.Part.PartType.IsCommandPod&&!e.Part.PartType.Name.Contains("Eva"))
+            if (part.Name == EvaPartName || part.Name == EvaTouristPartName)
             {
-                PatchCommandPod(e.Part);
+                AddLifeSupportModifier(part);
             }
-            
-            
+            else if (part.Name == GeneratorPartName)
+            {
+                AddLifeSupportGeneratorModifiers(part);
+            }
+            else if (part.PartType.IsCommandPod && !part.PartType.Name.Contains(EvaPartName))
+            {
+                PatchCommandPod(part);
+            }
+            else if (part.GetModifier<CrewCompartmentData>() != null && !part.PartType.Name.Contains(EvaPartName))
+            {
+                AddCrewCompartmentPatch(part);
+            }
         }
+
         /// <summary>
-        /// CheckDrood方法接受CraftScript参数,遍历所有modifier,得到含有Eva Modifier的Part的类型为PartData的列表
-        /// CheckDrood Method receives CraftScript as a parameter,checks all modifier inside the craft,returns with a list (which type is PartData) of Parts with Eva Modifier
+        /// Retrieves parts with EvaData modifier, optionally excluding those with SupportLifeData.
         /// </summary>
-        /// <param name="craft"></param>
-        private List<PartData> CheckDrood(CraftScript craft)
+        private List<PartData> GetPartsWithEvaModifier(CraftScript craft, bool withoutLifeSupport = false)
         {
-            List<PartData> DroodParts = new List<PartData>();
-            var parts = craft.Data.Assembly.Parts;
-            foreach (PartData part in parts)
-            {
-                bool isDrood = false;
-                bool hasLifeSupport = false;
-                List<PartModifierScript> modifiers = part.PartScript.Modifiers;
-                if (modifiers != null)
-                {
-                    foreach (PartModifierScript _pms in modifiers)
-                    {
-
-                        PartModifierData _modifierData = _pms.GetData();
-
-                        if (_modifierData.Name == "EvaData")
-                        {
-                            isDrood = true;
-                        }
-
-                        if (_modifierData.Name == "SupportLifeData")
-                        {
-                            hasLifeSupport = true;
-                        }
-                    }
-                }
-
-                if (isDrood && !hasLifeSupport)
-                {
-                    DroodParts.Add(part);
-                }
-            }
-            return DroodParts;
-
+            return craft.Data.Assembly.Parts.Where(part => part.PartScript.Modifiers.Any(modifier => modifier.GetData().Name == EvaDataModifierName && (!withoutLifeSupport || part.PartScript.Modifiers.All(m =>m.GetData().Name != SupportLifeDataModifierName)))).ToList();
         }
-        
+
         /// <summary>
-        /// AddLSModifier方法接受PartData参数,为此part添加SupportLife和FuelTank的modifier
-        /// AddLSModifier Method receive ParaData as a parameter,adding this part with SupportLife and FuelTank Modifier
+        /// Retrieves parts of a specific type by name.
         /// </summary>
-        /// <param name="part"></param>
-        private static void AddLsModifier(PartData part)
+        private List<PartData> GetPartsByType(CraftScript craft, string partTypeName)
         {
-            if (!(part != null))
-                return;
-            SupportLifeData _supportLifeData = part.GetModifier<SupportLifeData>();
-            if (_supportLifeData==null)
-            {
-                _supportLifeData = PartModifierData.CreateFromDefaultXml<SupportLifeData>(part);
-                _supportLifeData.PartPropertiesEnabled = true;
-                _supportLifeData.InspectorEnabled = true;
-            }
-            
+            return craft.Data.Assembly.Parts.Where(part => part.PartType.Name == partTypeName).ToList();
         }
-        
-        private List<PartData> CheckGenerator(CraftScript craft)
+
+        /// <summary>
+        /// Retrieves command pod parts, excluding those containing "Eva" in their name.
+        /// </summary>
+        private List<PartData> GetCommandPods(CraftScript craft)
         {
-            List<PartData> GeneratorParts = new List<PartData>();
-            foreach (PartData part in craft.Data.Assembly.Parts)
-            {
-                if ( part.PartType.Name=="Generator1")
-                {
-                    GeneratorParts.Add(part);
-                }
-            }
-            return GeneratorParts;
+            return craft.Data.Assembly.Parts.Where(part => part.PartType.IsCommandPod && !part.PartType.Name.Contains(EvaPartName)).ToList();
         }
-        private List<PartData> CheckCommandPod(CraftScript craft)
+
+        /// <summary>
+        /// Retrieves crew compartment parts, excluding those containing "Eva" in their name.
+        /// </summary>
+        private List<PartData> GetCrewCompartments(CraftScript craft)
         {
-            List<PartData> CommandPodParts = new List<PartData>();
-            foreach (PartData part in craft.Data.Assembly.Parts)
-            {
-                if (part.PartType.IsCommandPod&&!part.PartType.Name.Contains("Eva"))
-                {
-                    CommandPodParts.Add(part);
-                }
-            } return CommandPodParts;
+            return craft.Data.Assembly.Parts.Where(part => part.GetModifier<CrewCompartmentData>() != null && !part.PartType.Name.Contains(EvaPartName)).ToList();
         }
-        private static void AddLSGModifier(PartData part)
+
+        /// <summary>
+        /// Adds a SupportLife modifier to the specified part if it doesn't already exist.
+        /// </summary>
+        private static void AddLifeSupportModifier(PartData part)
         {
-            if (part==null)
-                return;
-            LifeSupportGeneratorData _supportLifeData = part.GetModifier<LifeSupportGeneratorData>();
-            if (_supportLifeData==null)
+            if (part == null) return;
+
+            var supportLifeData = part.GetModifier<SupportLifeData>();
+            if (supportLifeData == null)
             {
-                _supportLifeData = PartModifierData.CreateFromDefaultXml<LifeSupportGeneratorData>(part);
-                _supportLifeData.PartPropertiesEnabled = false;
-                _supportLifeData.InspectorEnabled = true;
-            }
-            Water_DesalinationData _waterDesalinationData = part.GetModifier<Water_DesalinationData>();
-            if (_waterDesalinationData == null)
-            {
-                _waterDesalinationData = PartModifierData.CreateFromDefaultXml<Water_DesalinationData>(part);
-                _waterDesalinationData.PartPropertiesEnabled = true;
-                _waterDesalinationData.InspectorEnabled = true;
+                supportLifeData = PartModifierData.CreateFromDefaultXml<SupportLifeData>(part);
+                supportLifeData.PartPropertiesEnabled = true;
+                supportLifeData.InspectorEnabled = true;
+                //Debug.Log($"Added SupportLifeData to part {part.Name}");
             }
         }
-        
-        private  void PatchCommandPod(PartData part)
+
+        /// <summary>
+        /// Adds LifeSupportGeneratorData and Water_DesalinationData modifiers to the specified part.
+        /// </summary>
+        private static void AddLifeSupportGeneratorModifiers(PartData part)
         {
-            if (part==null)
-                return;
-            STCommandPodPatchData targetScript = part.GetModifier<STCommandPodPatchData>();
-            if (targetScript==null)
+            if (part == null) return;
+
+            var lsgData = part.GetModifier<LifeSupportGeneratorData>();
+            if (lsgData == null)
+            {
+                lsgData = PartModifierData.CreateFromDefaultXml<LifeSupportGeneratorData>(part);
+                lsgData.PartPropertiesEnabled = false;
+                lsgData.InspectorEnabled = true;
+                //Debug.Log($"Added LifeSupportGeneratorData to part {part.Name}");
+            }
+
+            var waterData = part.GetModifier<Water_DesalinationData>();
+            if (waterData == null)
+            {
+                waterData = PartModifierData.CreateFromDefaultXml<Water_DesalinationData>(part);
+                waterData.PartPropertiesEnabled = true;
+                waterData.InspectorEnabled = true;
+                //Debug.Log($"Added Water_DesalinationData to part {part.Name}");
+            }
+        }
+
+        /// <summary>
+        /// Patches a command pod part with STCommandPodPatchData if not already present.
+        /// </summary>
+        private static void PatchCommandPod(PartData part)
+        {
+            if (part == null) return;
+
+            var targetScript = part.GetModifier<STCommandPodPatchData>();
+            if (targetScript == null)
             {
                 targetScript = PartModifierData.CreateFromDefaultXml<STCommandPodPatchData>(part);
                 targetScript.PartPropertiesEnabled = false;
                 targetScript.InspectorEnabled = false;
+                //Debug.Log($"Patched CommandPod {part.Name} with STCommandPodPatchData");
+            }
+        }
+
+        /// <summary>
+        /// Adds a CrewCabinData modifier to the specified crew compartment part.
+        /// </summary>
+        private static void AddCrewCompartmentPatch(PartData part)
+        {
+            if (part == null) return;
+
+            var targetScript = part.GetModifier<CrewCabinData>();
+            if (targetScript == null)
+            {
+                targetScript = PartModifierData.CreateFromDefaultXml<CrewCabinData>(part);
+                targetScript.PartPropertiesEnabled = false;
+                targetScript.InspectorEnabled = false;
+                //Debug.Log($"Added CrewCabinData to part {part.Name}");
             }
         }
     }

@@ -46,11 +46,12 @@ MonoBehaviour:
   _steamTitle: 
   _steamVisibility: 0
   _versionMajor: 0
-  _versionMinor: 31
+  _versionMinor: 32
   _partCategories:
   - {fileID: 11400000, guid: 7d2b6f557b8767544a162f30e61d22b6, type: 2}
   - {fileID: 11400000, guid: 05c2cf017b5bdba44b9f571f2c06bfb4, type: 2}
   _parts:
+  - {fileID: 4900000, guid: 5292d75e4a1ffe2499d9f89dbff145c7, type: 3}
   - {fileID: 4900000, guid: 31490106fb7b35346a5dd4a598ffc6da, type: 3}
   - {fileID: 4900000, guid: 35946ff673f76024ea53a2e9a2f907d3, type: 3}
   - {fileID: 4900000, guid: 14776ff5d3403f64eba601b94451442d, type: 3}
