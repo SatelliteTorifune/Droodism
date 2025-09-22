@@ -147,6 +147,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public override void OnPartRecovered()
         {
             base.OnPartRecovered();
+            return;
             this.crewData.MissionTimeTotal += Script.MissionDurationTime;
             try
             {
