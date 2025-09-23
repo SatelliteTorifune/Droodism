@@ -10,18 +10,22 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
 
-    public class balloonScript : PartModifierScript<balloonData>,IFlightUpdate,IFlightStart
+    public class balloonScript : PartModifierScript<balloonData>,IFlightFixedUpdate,IFlightStart
     {
-        public void FlightUpdate(in FlightFrameData frame)
+
+        public void FlightStart(in FlightFrameData frame)
         {
            
         }
 
-        public void FlightStart(in FlightFrameData frame)
+        public void FlightFixedUpdate(in FlightFrameData frame)
         {
             if (PartScript.Data.Activated)
             {
-                this.PartScript.BodyScript.RigidBody.AddForce(Data.FloatingForceMultiplier * PartScript.Transform.up);
+                float floatingFocrce = Game.Instance.FlightScene.CraftNode.CraftScript.FlightData.AtmosphereSample
+                    .AirDensity;
+               
+                this.PartScript.BodyScript.RigidBody.AddForceAtPosition(Data.FloatingForceMultiplier * floatingFocrce*PartScript.CraftScript.FlightData.GravityFrameNormalized*-1, PartScript.Transform.position);
             }
         }
     }
