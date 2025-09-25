@@ -24,7 +24,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private ParticleSystem _particleSystem;
         private ParticleSystem.EmissionModule _particleSystemEmission;
         private ParticleSystem.MainModule _particleSystemMain;
-        private ISingleSound _sound;
+       
         
         private Transform _particalSystemTransform;
         
@@ -50,10 +50,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 UpdateComponents();
             }
-            //TODO:Adding Sound Effects
-            /*
-            this._sound = Assets.Scripts.Game.Instance.FlightScene.SingleSoundManager.GetSingleSound("Audio/Sounds/RCSNozzle");
-            this._sound.MaxVolume = 0.04f;*/
+            
         }
 
         public void FlightUpdate(in FlightFrameData frame)
