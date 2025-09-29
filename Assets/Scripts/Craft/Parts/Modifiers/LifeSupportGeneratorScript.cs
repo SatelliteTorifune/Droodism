@@ -27,8 +27,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private bool IsHydroloxFunctional;
         private int FossilFuelTypeIndex;
         private IFuelSource waterSource, hydroLoxSource, oxygenSource, co2Source, fossilSource;
+       
 
-        
+
 
         public override void FlightStart(in FlightFrameData frame)
         {
@@ -107,7 +108,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return;
             }
 
-            if (co2Source != null)
+            if (co2Source != null&&!Data.IsPollution)
             {
                 if (co2Source.TotalCapacity - co2Source.TotalFuel >= 0.00001)
                 {
@@ -129,9 +130,18 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
         }
 
-        
+        public override void OnGenerateInspectorModel(PartInspectorModel model)
+        {
+            base.OnGenerateInspectorModel(model);
+            if (FossilFuelTypeIndex != 0)
+            {
+                var changePollution = new ToggleModel("Release CO2 Externally", () => Data.IsPollution, (Action<bool>)(b => { Data.IsPollution = b; }),
+                    "Determines whether release CO2 externally or internally to the craft. ");
+                model.Add(changePollution);
+            }
+        }
 
-       
+
 
         #region 路边一条,无人在意
 
