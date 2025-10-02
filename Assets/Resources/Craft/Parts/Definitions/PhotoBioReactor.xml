@@ -13,7 +13,7 @@
     </SubpartTypes>
   </PartType>
   <DesignerParts>
-    <DesignerPart name="PhotoBio Reactor" category="LifeSupport" description="When&lt;color=green&gt;Active&lt;/color&gt;,turning CO2/Water to Oxygen and Food,powered by solar&#xA;&#xA;When&lt;color=red&gt;Deactive&lt;/color&gt;,and enabled function of working on fold,turning CO2/Water to Oxygen and Food,Consuming Electricity charge&#xA;&#xA;Solid Waste Will boost the food generation" order="0" showInDesigner="true" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
+    <DesignerPart name="PhotoBio Reactor" category="LifeSupport" description="When&lt;color=green&gt;Active&lt;/color&gt;,turning CO2/Water to Oxygen and Food,powered by solar or electricity&#xA;&#xA;Solid Waste Will boost the food generation" order="0" showInDesigner="true" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
       <Assembly>
         <Parts>
           <Part id="1" partType="PhotoBioReactor" position="0,0,0" rotation="0,0,0">

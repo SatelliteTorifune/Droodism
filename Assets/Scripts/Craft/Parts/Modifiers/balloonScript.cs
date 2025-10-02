@@ -26,7 +26,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public void FlightFixedUpdate(in FlightFrameData frame)
         {
-            UpdateScale(PartScript.Data.Activated ? 5:1);
+            //UpdateScale(PartScript.Data.Activated ? 5:1);
             if (PartScript.Data.Activated)
             {
                 float floatingFocrce = Game.Instance.FlightScene.CraftNode.CraftScript.FlightData.AtmosphereSample
