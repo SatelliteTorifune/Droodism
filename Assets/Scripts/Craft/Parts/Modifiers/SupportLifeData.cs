@@ -126,6 +126,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         protected override void OnInitialized()
         {
             base.OnInitialized();
+            return;
             crewData =new CrewData();
             
             

@@ -50,7 +50,7 @@ namespace Assets.Scripts
             base.OnModLoaded();
             GameObject DroodismUI=new GameObject("DroodismUI");
             DroodismUI.AddComponent<DroodismUIManager>();
-            DroodismUI.AddComponent<DroodismCrewMananger>();
+            //DroodismUI.AddComponent<DroodismCrewMananger>();
             GameObject.DontDestroyOnLoad(DroodismUI);
             DroodismUI.SetActive(true);
         }

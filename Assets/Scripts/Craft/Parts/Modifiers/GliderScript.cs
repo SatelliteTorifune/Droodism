@@ -1,8 +1,7 @@
-using RootMotion.FinalIK;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using ModApi;
 using ModApi.Craft;
-using ModApi.GameLoop;
+using RootMotion.FinalIK;
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
@@ -14,25 +13,30 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
 
-    public class HibernatingChamberScript : PartModifierScript<HibernatingChamberData>,IFlightUpdate,IFlightStart
+    public class GliderScript : PartModifierScript<GliderData>
     {
-        private Transform LeftHandTransform,
+        public Transform 
+            LeftHandTransform,
             RightHandTransform,
             LeftElbowTransform,
             RightElbowTransform,
             BaseLKTransform;
-         private FullBodyBipedIK _pilotIK;
-         private EvaScript _pilot = (EvaScript) null;
+        private FullBodyBipedIK _pilotIK;
+        private EvaScript _pilot = (EvaScript) null;
         private CrewCompartmentScript _crewCompartment;
         private AttachPoint _seatAttachPoint;
-        private IFuelSource _batterySource;
-
+        protected override void OnInitialized()
+        {
+            this._seatAttachPoint = this.PartScript.Data.GetAttachPoint("AttachPointSeat");
+            UpdateComponents();
+        }
         private void UpdateComponents()
         {
+            
             BaseLKTransform = Utilities.FindFirstGameObjectMyselfOrChildren("BodyBase", this.gameObject).transform;
             if (BaseLKTransform == null)
             {
-                Debug.LogError("HibernatingChamberScript: Could not find BodyBase transform");
+                Debug.LogError("GliderScript: Could not find BodyBase transform");
             }
 
             RightElbowTransform = BaseLKTransform.Find("RightElbow");
@@ -40,7 +44,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             LeftElbowTransform = BaseLKTransform.Find("LeftElbow");
             LeftHandTransform = LeftElbowTransform.Find("LeftHand");
         }
-
         public override void OnModifiersCreated()
         {
             _crewCompartment = PartScript.GetModifier<CrewCompartmentScript>();
@@ -48,47 +51,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             this._crewCompartment.CrewEnter += new CrewCompartmentScript.CrewEnterExitHandler(this.OnPilotEnter);
             this._crewCompartment.CrewExit += new CrewCompartmentScript.CrewEnterExitHandler(this.OnPilotExit);
         }
-
-        protected override void OnInitialized()
-        {
-            this._seatAttachPoint = this.PartScript.Data.GetAttachPoint("AttachPointSeat");
-            UpdateComponents();
-        }
-
-        public void FlightStart(in FlightFrameData frameData)
-        {
-            _batterySource = this.PartScript.BatteryFuelSource;
-            _crewCompartment = PartScript.GetModifier<CrewCompartmentScript>();
-        }
-
-        public void FlightUpdate(in FlightFrameData frameData)
-        {
-            if (_crewCompartment?.Crew.Count==0||_batterySource==null)
-            {
-                return;
-            }
-            if (_batterySource.IsEmpty&&_crewCompartment?.Crew.Count!=0)
-            {
-                foreach (var crew in _crewCompartment.Crew)
-                {
-                    crew.PartScript.GetModifier<SupportLifeScript>().SetHibernating(false,this.PartScript.Data.PartType);
-                }
-            }
-
-            if (!_batterySource.IsEmpty)
-            {
-                _batterySource.RemoveFuel(frameData.DeltaTimeWorld * Data.HibernationPowerConsumption); 
-                foreach (var crew in _crewCompartment.Crew)
-                {
-                    crew.PartScript.GetModifier<SupportLifeScript>().SetHibernating(true,this.PartScript.Data.PartType);
-                }
-            }
-        }
-        
-
         public override void OnCraftStructureChanged(ICraftScript craftScript)
         {
-            _batterySource = this.PartScript.BatteryFuelSource;
             _crewCompartment = PartScript.GetModifier<CrewCompartmentScript>();
         }
          private void OnPilotEnter(EvaScript crew) => this.SetPilot(crew);
@@ -175,6 +139,5 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             base.OnPartDestroyed();
             this.SetPilot((EvaScript) null);
         }
-                
     }
 }
