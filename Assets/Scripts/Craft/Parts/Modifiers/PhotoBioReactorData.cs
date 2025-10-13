@@ -42,7 +42,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         [SerializeField] [PartModifierProperty(true, false)]
         private float _wastedWaterGenerationRate = 1f;
         [SerializeField] [PartModifierProperty(true, false)]
-        private float _boosteScale = 1.5f;
+        private float _boosteScale = 2.5f;
         
         private Vector3 _positionOffset1 = new Vector3(0f, 0f, 0.65f);
         public SubPartRotatorData.AngleLerpType AngleLerp => SubPartRotatorData.AngleLerpType.Euler;
@@ -80,7 +80,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public float RotationRate => this._rotationRate * this._rotationSpeed;
         public float FoodGeneratedScale
         {
-            get=>this._foodGeneratedScale*10f;
+            get=>this._foodGeneratedScale*4f;
         }
 
         public float Efficiency
@@ -90,7 +90,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public float GrowProgressTotal
         {
-            get=>this._growProgressTotal*4000f;
+            get=>this._growProgressTotal*7000f;
         }
 
         public float GrowSpeed
@@ -110,7 +110,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public float OxygenGenerationRate
         {
-            get=>this._oxygenGenerationRate*0.008f;
+            get=>this._oxygenGenerationRate*0.012f;
         }
         public float WaterConsumptionRate
         {
@@ -119,7 +119,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public float PowerConsumptionRate
         {
-            get=>this._powerConsumptionRate*0.5f;
+            get=>this._powerConsumptionRate*5f;
         }
 
         public float WastedWaterGenerationRate
@@ -128,7 +128,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         public float SolidWasteConsumptionRate
         {
-            get=>this._solidWasteConsumptionRate*2E-05f;
+            get=>this._solidWasteConsumptionRate*1E-05f;
         }
         public float BoosteScale
         {

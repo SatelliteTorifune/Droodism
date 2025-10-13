@@ -1,0 +1,218 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1531858487302695872
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4068924326625386249}
+  - component: {fileID: 8484750100452425759}
+  - component: {fileID: 2618749169882554922}
+  - component: {fileID: 4656059851199969392}
+  - component: {fileID: 6535460294903376525}
+  - component: {fileID: 8844302300408640722}
+  m_Layer: 0
+  m_Name: DOCRDevice
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4068924326625386249
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1531858487302695872}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8484750100452425759
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1531858487302695872}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1298369543, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Data:
+    _allowDesignerReorientationOnPullout: 1
+    _allowIndividualPartRemoval: 0
+    _defaultColorIndexPrimary: 0
+    _defaultColorIndexTrim1: 1
+    _defaultColorIndexTrim2: 2
+    _defaultColorIndexTrim3: 3
+    _defaultColorIndexTrim4: 4
+    _id: DOCRDevice
+    _includeInBodyDrag: 1
+    _mirrorConfig:
+      _hasRotationOffset: 0
+      _rotationOffsetEuler: {x: 0, y: 0, z: 0}
+    _name: Drood Organic Classification and Recycling Device
+    _partCollisionHandling: 0
+    _price: 100000
+    _unscaledMass: 1000
+    _usePreferredNodeName: 1
+--- !u!114 &2618749169882554922
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1531858487302695872}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -631517893, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Data:
+    _activationGroup: 0
+    _category: {fileID: 11400000, guid: 7d2b6f557b8767544a162f30e61d22b6, type: 2}
+    _description: <color=red><size=150%>Sometime, for the greater good ,your crew
+      need to SACRIFICE themselves......
+    _displayOrder: 0
+    _iconPath: 
+    _iconType: 0
+    _name: Drood Organic Classification and Recycling Device
+    _partTypeOverrides: []
+    _position: {x: 0, y: 0, z: 0}
+    _rotation: {x: 0, y: 0, z: 0}
+    _showInDesigner: 1
+    _snapshotDistanceScaler: 1
+    _snapshotPartOffset: {x: 0, y: 0, z: 0}
+    _snapshotPartRotation: {x: 0, y: 0, z: 0}
+    _snapshotRotation: {x: 30, y: 30, z: 0}
+--- !u!114 &4656059851199969392
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1531858487302695872}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -841283480, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Data:
+    _id: 
+    _inputId: 
+    _inspectorEnabled: 1
+    _partPropertiesEnabled: 1
+    _staticPriceAndMass: 0
+    _version: 1
+    _versionLast: 1
+    _versionsAllowed: 
+    _autoActivateIfNoStageOrActivationGroup: 0
+    _buoyancyBaseScale: 1
+    _buoyancyUserScale: 1
+    _castShadows: 1
+    _centerOfMass: {x: 0, y: 0, z: 0}
+    _collisionDisconnectImpulse: 1000
+    _collisionDisconnectVelocity: 15
+    _collisionExplodeImpulse: 2000
+    _collisionExplodeVelocity: 30
+    _collisionPreventExternalDisconnections: 0
+    _collisionVelocityMode: 2
+    _dragScale: 1
+    _dragScaleActive: 1
+    _dragScaleAngular: 1
+    _explosiveness: 0
+    _fuelLine: 0
+    _heatShield: 0
+    _heatShieldBaseScale: 1
+    _heatShieldMass: 0
+    _heatShieldScale: -1
+    _heatShieldValidation: 1
+    _ignoreValidation: 0
+    _includeInDrag: 1
+    _inertiaTensorBaseScale: 1
+    _inertiaTensorMin: 0.05
+    _inertiaTensorUserScale: 1
+    _initialCraftNodeId: -1
+    _massScale: 1
+    _maxDamage: 100
+    _maxDrag: 0
+    _maxDragActive: 0
+    _maxTemperature: 1500
+    _occlusion: 0
+    _partCollisionHandling: 0
+    _partCollisionResponse: 2
+    _partScale: {x: 1, y: 1, z: 1}
+    _partSelectionEnabled: 1
+    _preventDebris: 0
+    _priceScale: 1
+    _raiseWaterEventsEvenIfNotBuoyant: 0
+    _renderQueue: 0
+    _stageActivationType: 0
+    _supportsActivation: 1
+    _supportsTransparency: 1
+    _thermalMassRatio: 1
+    _tutorialId: 
+--- !u!114 &6535460294903376525
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1531858487302695872}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0657c240d5bace4bb10a1a639b644f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Data:
+    _id: 
+    _inputId: 
+    _inspectorEnabled: 1
+    _partPropertiesEnabled: 1
+    _staticPriceAndMass: 0
+    _version: 1
+    _versionLast: 1
+    _versionsAllowed: 
+    _foodGenerationScale: 1
+    _waterConsumptionScale: 1
+    _drainRate: 1
+--- !u!114 &8844302300408640722
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1531858487302695872}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1264219031, guid: 55a7c5278766598448d9083b0de0861d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Data:
+    _id: 
+    _inputId: 
+    _inspectorEnabled: 1
+    _partPropertiesEnabled: 1
+    _staticPriceAndMass: 0
+    _version: 1
+    _versionLast: 1
+    _versionsAllowed: 
+    _capacity: 1
+    _capacityLabel: 
+    _commandPodEnabledInCompartment: 0
+    _crewExitPosition: {x: 0, y: 0, z: 0}
+    _crewExitRotation: {x: 0, y: 0, z: 0}
+    _maxPressure: -1
+    _minPressure: -1
+    _visibleInCompartment: 1
+    _volumePerIndividual: 3

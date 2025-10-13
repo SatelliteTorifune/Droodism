@@ -24,7 +24,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private ParticleSystem _particleSystem;
         private ParticleSystem.EmissionModule _particleSystemEmission;
         private ParticleSystem.MainModule _particleSystemMain;
-        private ISingleSound _sound;
+       
         
         private Transform _particalSystemTransform;
         
@@ -50,10 +50,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 UpdateComponents();
             }
-            //TODO:Adding Sound Effects
-            /*
-            this._sound = Assets.Scripts.Game.Instance.FlightScene.SingleSoundManager.GetSingleSound("Audio/Sounds/RCSNozzle");
-            this._sound.MaxVolume = 0.04f;*/
+            
         }
 
         public void FlightUpdate(in FlightFrameData frame)
@@ -212,10 +209,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
         }
         public override void OnCraftStructureChanged(ICraftScript craftScript)
-        {
-            RefreshFuelSources();
-            base.OnCraftStructureChanged(craftScript);
-        }
+                 {
+                     RefreshFuelSources();
+                     base.OnCraftStructureChanged(craftScript);
+                 }
         
         #endregion
         private void UpdateComponents()
@@ -227,11 +224,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if ( subPart.name == strArray[strArray.Length - 1] )
                 this.SetSubPart( subPart );
             else
-                this.SetSubPart( Utilities.FindFirstGameObjectMyselfOrChildren( "Device/ParticleSystem", this.gameObject ) ?.transform );
-            if (_particalSystemTransform!= null)
-            {
-                Debug.Log("Particle System Found");
-            }
+                this.SetSubPart( Utilities.FindFirstGameObjectMyselfOrChildren( "Device/ParticleSystem/", this.gameObject ) ?.transform );
             _particleSystem = _particalSystemTransform.GetComponent<ParticleSystem>();
             this._particleSystemEmission = this._particleSystem.emission;
             this._particleSystemMain = this._particleSystem.main;

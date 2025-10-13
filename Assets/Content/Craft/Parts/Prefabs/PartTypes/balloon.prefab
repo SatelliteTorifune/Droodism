@@ -1,0 +1,184 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6607551228943373865
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 826609067369787299}
+  - component: {fileID: 8803176026901775430}
+  - component: {fileID: 4946629962059106045}
+  - component: {fileID: 6346052337566883466}
+  - component: {fileID: 8862151048190904254}
+  m_Layer: 0
+  m_Name: balloon
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &826609067369787299
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6607551228943373865}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8803176026901775430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6607551228943373865}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1298369543, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Data:
+    _allowDesignerReorientationOnPullout: 1
+    _allowIndividualPartRemoval: 0
+    _defaultColorIndexPrimary: 0
+    _defaultColorIndexTrim1: 1
+    _defaultColorIndexTrim2: 2
+    _defaultColorIndexTrim3: 3
+    _defaultColorIndexTrim4: 4
+    _id: balloon
+    _includeInBodyDrag: 1
+    _mirrorConfig:
+      _hasRotationOffset: 0
+      _rotationOffsetEuler: {x: 0, y: 0, z: 0}
+    _name: balloon
+    _partCollisionHandling: 0
+    _price: 1
+    _unscaledMass: 100
+    _usePreferredNodeName: 1
+--- !u!114 &4946629962059106045
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6607551228943373865}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -631517893, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Data:
+    _activationGroup: 0
+    _category: {fileID: 11400000, guid: ecbbe6463f66a254d931cedada392e33, type: 2}
+    _description: 
+    _displayOrder: 0
+    _iconPath: 
+    _iconType: 0
+    _name: balloon
+    _partTypeOverrides: []
+    _position: {x: 0, y: 0, z: 0}
+    _rotation: {x: 0, y: 0, z: 0}
+    _showInDesigner: 1
+    _snapshotDistanceScaler: 1
+    _snapshotPartOffset: {x: 0, y: 0, z: 0}
+    _snapshotPartRotation: {x: 0, y: 0, z: 0}
+    _snapshotRotation: {x: 30, y: 30, z: 0}
+--- !u!114 &6346052337566883466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6607551228943373865}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -841283480, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Data:
+    _id: 
+    _inputId: 
+    _inspectorEnabled: 1
+    _partPropertiesEnabled: 1
+    _staticPriceAndMass: 0
+    _version: 1
+    _versionLast: 1
+    _versionsAllowed: 
+    _autoActivateIfNoStageOrActivationGroup: 0
+    _buoyancyBaseScale: 1
+    _buoyancyUserScale: 1
+    _castShadows: 1
+    _centerOfMass: {x: 0, y: 0, z: 0}
+    _collisionDisconnectImpulse: 1000
+    _collisionDisconnectVelocity: 15
+    _collisionExplodeImpulse: 2000
+    _collisionExplodeVelocity: 30
+    _collisionPreventExternalDisconnections: 0
+    _collisionVelocityMode: 2
+    _dragScale: 1
+    _dragScaleActive: 1
+    _dragScaleAngular: 1
+    _explosiveness: 0
+    _fuelLine: 0
+    _heatShield: 0
+    _heatShieldBaseScale: 1
+    _heatShieldMass: 0
+    _heatShieldScale: -1
+    _heatShieldValidation: 1
+    _ignoreValidation: 0
+    _includeInDrag: 1
+    _inertiaTensorBaseScale: 1
+    _inertiaTensorMin: 0.05
+    _inertiaTensorUserScale: 1
+    _initialCraftNodeId: -1
+    _massScale: 1
+    _maxDamage: 100
+    _maxDrag: 0
+    _maxDragActive: 0
+    _maxTemperature: 1500
+    _occlusion: 0
+    _partCollisionHandling: 0
+    _partCollisionResponse: 2
+    _partScale: {x: 1, y: 1, z: 1}
+    _partSelectionEnabled: 1
+    _preventDebris: 0
+    _priceScale: 1
+    _raiseWaterEventsEvenIfNotBuoyant: 0
+    _renderQueue: 0
+    _stageActivationType: 0
+    _supportsActivation: 1
+    _supportsTransparency: 1
+    _thermalMassRatio: 1
+    _tutorialId: 
+--- !u!114 &8862151048190904254
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6607551228943373865}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82a20f3f42e3619498e0310be7a8a76e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Data:
+    _id: 
+    _inputId: 
+    _inspectorEnabled: 1
+    _partPropertiesEnabled: 1
+    _staticPriceAndMass: 0
+    _version: 1
+    _versionLast: 1
+    _versionsAllowed: 
+    floatingForceMultiplier: 100

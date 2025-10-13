@@ -81,15 +81,11 @@ MonoBehaviour:
     _activationGroup: 0
     _category: {fileID: 11400000, guid: 7d2b6f557b8767544a162f30e61d22b6, type: 2}
     _description: 'When<color=green>Active</color>,turning CO2/Water to Oxygen and
-      Food,powered by solar
+      Food,powered by solar or electricity
 
 
-      When<color=red>Deactive</color>,and enabled function
-      of working on fold,turning CO2/Water to Oxygen and Food,Consuming Electricity
-      charge
-
-
-      Solid Waste Will boost the food generation'
+      Solid Waste Will boost the food
+      generation'
     _displayOrder: 0
     _iconPath: 
     _iconType: 0

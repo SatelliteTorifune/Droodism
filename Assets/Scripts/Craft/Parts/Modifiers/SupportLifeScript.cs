@@ -1,5 +1,6 @@
 using ModApi.Craft;
 using ModApi.Craft.Parts;
+using Assets.Scripts.State;
 using Assets.Scripts.Flight;
 using ModApi.GameLoop;
 using ModApi.GameLoop.Interfaces;
@@ -7,11 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using Assets.Scripts.Craft.Fuel;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
-using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
-using ModApi;
-using ModApi.Flight;
+using ModApi.Craft.Propulsion;
 using ModApi.Flight.Events;
 using ModApi.Flight.GameView;
 using ModApi.Planet;
@@ -26,6 +24,9 @@ using Object = UnityEngine.Object;
 //鸡巴的我自己都看不懂我写的是什么鸡巴玩意了你还指望我给你写注释吗?
 //顺便一提如果真有除了我以外的人在github上或者逆向出来了看到了这行字,那么我只能说一句牛逼,你简直是找屎大王,能闻着味道找到我编程以来拉的最大的一坨
 //2025 7 25 我操你妈我受不了了我怎么还在和这坨我最先拉出来的屎山作斗争啊我操
+//2025 8 24 孩子们我回来了,我是拉屎大王
+//2025 8 31 嗨嗨嗨我又来了嗷
+//2025 9 8 为什么
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
@@ -36,14 +37,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         IFlightUpdate
     {
         /// <summary>
-        /// 引用EvaScript组件
+        /// 引用EvaScript组件,来获取这个小蓝人的一些乱七八糟的狗屎鸡巴数据玩意
         /// Reference to the EvaScript component,get current part's eva data and other stuff
         /// </summary>
         private EvaScript _evaScript;
+        public bool IsHibernating { get; private set; }
 
+        //当前小蓝人的CrewCompartment,目前没用到
         private CrewCompartmentScript droodCrewCompartmentScript;
+
+        public IFuelSource _oxygenSource,_waterSource,_foodSource,_co2Source,_wastedWaterSource,_solidWasteSource;
         
-        private IFuelSource _oxygenSource, _foodSource, _waterSource,_co2Source,_wastedWaterSource,_solidWasteSource;
         
         /// <summary>
         /// 当前所在行星的名称。
@@ -56,12 +60,21 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// Data interface for the current planet.
         /// </summary>
         private IPlanetData planetData;
-        
+        /// <summary>
+        /// 小蓝人的钩爪
+        /// 本来我想做成类似那种钩爪钩到craft自动补充氧气啥的,但是这个鸡巴script的数学判断啥的弔毛玩意我他妈看不懂一点
+        /// what can i say,Torifune out.
+        /// </summary>
         private GrapplingHookScript _grapplingHook;
         
         FlightSceneScript _flightSceneScript;
 
-        public long LastUnloadedTime;
+        /// <summary>
+        /// 小蓝人目前的任务时长,从初次发射开始算的
+        /// </summary>
+        public long MissionDurationTime{get;private set;}
+        
+
         
         
         /// <summary>
@@ -90,14 +103,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         
         /// <summary>
-        /// 为指定的燃料类型添加具有给定容量的燃料罐。
-        /// Adds a fuel tank for the specified fuel type with the given capacity.
+        /// 不好意思因为我的代码水平就是一坨屎所以OnInitialLaunch和FlightStart里面的代码很奇异搞笑
         /// </summary>
-        /// <param name="FuelCapacity">燃料罐的容量。Capacity of the fuel tank.</param>
-        
-
         public override void OnInitialLaunch()
         {
+            base.OnInitialLaunch();
+            Data.MissionStartTime = (long)Game.Instance.FlightScene.FlightState.Time;
             Debug.LogFormat("OnInitialLaunch");
             isFirstTime = true;
             base.OnInitialLaunch();
@@ -123,7 +134,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 Debug.LogErrorFormat("OnInitialLaunch调用RefreshFuelSource出问题了{0}", e);
             }
 
-            LastUnloadedTime = (long)FlightSceneScript.Instance.FlightState.Time;
+            Data.LastLoadTime = (long)FlightSceneScript.Instance.FlightState.Time;
+            
         }
         /// <summary>
         /// 实现IFlightStart接口，在飞行场景开始时调用。
@@ -131,6 +143,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         void IFlightStart.FlightStart(in FlightFrameData frame)
         {
+            
             Debug.LogFormat("FlightStart");
             Game.Instance.FlightScene.FlightEnded+=OnFlightEnded;
             Game.Instance.FlightScene.CraftNode.ChangedSoI += OnSoiChanged;
@@ -148,6 +161,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             UpdateCurrentPlanet();
             Game.Instance.FlightScene.CraftNode.ChangedSoI += OnSoiChanged;
             LoadFuelTanks();
+            //我他妈没在OnInitialLaunch里implent这个函数是为了方便你们这群小逼崽子瞎鸡巴改xml乱搞你们知道吗
+            //SetRole();
             
         }
 
@@ -160,13 +175,27 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             if (frame.DeltaTimeWorld == 0.0) 
                 return;
-            UpdateRunningStatus();  
-            ConsumptionLogic(frame);
-            AutoRefillLogic(frame);
+            UpdateRunningStatus();
+            if (!IsHibernating)
+            {
+                if (!UsingInternalOxygen())
+                {
+                    AutoRefillLogic(frame);
+                }
+                ConsumptionLogic(frame);
+            }
+            
+
+            MissionDurationTime = (long)Game.Instance.FlightScene.FlightState.Time - Data.MissionStartTime;
         }
+
+        
+        /// <summary>
+        /// 这b玩意看不懂那你去吃我屎吧
+        /// </summary>
         private void UpdateRunningStatus()
         {
-            if (_evaScript.EvaActive && _evaScript.IsPlayerCraft && !_evaScript.IsWalking && _evaScript.IsGrounded && (this.PartScript.CraftScript.SurfaceVelocity.magnitude >= 0.8))
+            if (_evaScript.EvaActive && _evaScript.IsPlayerCraft && !_evaScript.IsWalking && _evaScript.IsGroundedTerrain && PartScript.CraftScript.SurfaceVelocity.magnitude >= 0.8)
             {
                 isRunning = true;
             }
@@ -174,6 +203,24 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 isRunning = false;
             }
+        }
+        public override void OnPartDestroyed()
+        {
+            base.OnPartDestroyed();
+            if (!Assets.Scripts.Game.InFlightScene)
+                return;
+            if (this.Data.crewData != null)
+                this.Data.crewData.MissionTimeTotal += 
+            MissionDurationTime;
+        }
+
+        public void SetHibernating(bool hibernatingSatus, PartType partType)
+        {
+            if (partType.Id!="HibernatingChamber")
+            {
+                return;
+            }
+            IsHibernating = hibernatingSatus;
         }
         
 
@@ -183,6 +230,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         /// <param name="fuelType">要查找的燃料类型。Type of fuel to find.</param>
         /// <returns>如果找到则返回燃料源，否则返回null。The fuel source if found, otherwise null.</returns>
+        /// 一般来说这不太可能返回Null,我他妈花了那么多时间写了给小蓝人添加modifier的函数
         private IFuelSource GetLocalFuelSource(string fuelType)
         {
             try
@@ -220,6 +268,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// Handles the consumption logic for oxygen, food, and water.
         /// </summary>
         /// <param name="frame">飞行帧数据。Flight frame data.</param>
+        /// 你可能觉得这个函数也太不优雅了,对,因为氧气这个b玩意比较特殊我要单独处理
         private void ConsumptionLogic(in FlightFrameData frame)
         {
             if (_oxygenSource != null&&UsingInternalOxygen())
@@ -406,21 +455,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
 
         /// <summary>
-        /// 处理不使用内部氧气时的氧气自动补充逻辑。
+        /// 处理不使用自带氧气时的氧气自动补充逻辑。
         /// Handles the auto-refill logic for oxygen when not using internal oxygen.
         /// </summary>
         /// <param name="frame">飞行帧数据。Flight frame data.</param>
         private void AutoRefillLogic(in FlightFrameData frame)
         {
-            if (_oxygenSource != null)
+            var LocalFuelSource = GetLocalFuelSource("Oxygen");
+
+            if (LocalFuelSource?.TotalCapacity - LocalFuelSource?.TotalFuel >= 0.00001)
             {
-                if (!UsingInternalOxygen())
-                {
-                    if (_oxygenSource.TotalCapacity - _oxygenSource.TotalFuel >= 0.001)
-                    {
-                        _oxygenSource.AddFuel(_oxygenSource.TotalCapacity * frame.DeltaTimeWorld * 0.10000000149011612);
-                    }
-                }
+                LocalFuelSource?.AddFuel(LocalFuelSource.TotalCapacity * frame.DeltaTimeWorld * 0.01f);
             }
         }
 
@@ -456,6 +501,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// 这个吊毛函数太复杂了我得花点时间说一下这玩意到底原理是什么不然我自己忘了
         /// 这个函数的目的非常简单,调用的时候如果是Eva状态就把各个source设定为本地modifier,如果不是就用craft的fuelsource
         /// 但是后面那一坨就出问题了,目前的逻辑是我管你这哪先用craft的,得到null自然就会切换到设置本地modifier那一坨
+        /// 这个鸡巴卵子函数的trycatch瞎他妈乱飞,但是I don't give a sh1t,反正it works(on my machine)
         private void CraftRefreshFuelSource()
         {
             bool isEva = false;
@@ -463,9 +509,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             //Debug.LogFormat("调用CraftRefeshFuelSource 开始");
             try
             {
-                if (PartScript.CraftScript.ActiveCommandPod.Part.PartScript==PartScript)
+                if (PartScript.CraftScript.ActiveCommandPod.Part.PartScript==PartScript&&!_evaScript.ActiveWhileInCrewCompartment)
                 {
                     isEva = true;
+                    IsHibernating = false;
                     //Debug.LogFormat("这个drood是ActiveCommandPod");
                     _oxygenSource=_waterSource=_foodSource=_co2Source=_wastedWaterSource=_solidWasteSource=null;
                 }
@@ -474,18 +521,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 {
                     if (isEva==false)
                     {
+                        IsHibernating = false;
                         var stCommandPodPatchScript = PartScript.GetModifier<EvaScript>().CrewCompartment?.PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
-                        if (stCommandPodPatchScript!=null)
-                        {
-                            _oxygenSource = stCommandPodPatchScript.OxygenFuelSource;
-                            _foodSource = stCommandPodPatchScript.FoodFuelSource;
-                            _waterSource = stCommandPodPatchScript.WaterFuelSource;
-                            _co2Source = stCommandPodPatchScript.CO2FuelSource;
-                            _wastedWaterSource = stCommandPodPatchScript.WastedWaterFuelSource;
-                            _solidWasteSource = stCommandPodPatchScript.SolidWasteFuelSource;
-                            //Debug.LogFormat("SupportLifeScript called CraftRefreshFuelSource,STCommandPodPatchScript found,using patch's IFuelSource");
-                        }
-                        
+                        _oxygenSource = stCommandPodPatchScript?.OxygenFuelSource;
+                        _foodSource = stCommandPodPatchScript?.FoodFuelSource;
+                        _waterSource = stCommandPodPatchScript?.WaterFuelSource;
+                        _co2Source = stCommandPodPatchScript?.CO2FuelSource;
+                        _wastedWaterSource = stCommandPodPatchScript?.WastedWaterFuelSource;
+                        _solidWasteSource = stCommandPodPatchScript?.SolidWasteFuelSource;
                     }
                 }
                 catch (Exception e)
@@ -629,19 +672,19 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
         }
         
-        private void RemoveWaste(IFuelSource Craft, IFuelSource Eva)
+        private void RemoveWaste(IFuelSource Craft, IFuelSource drood)
         {
-            if (Craft.TotalCapacity-Craft.TotalFuel>Eva.TotalFuel)
+            if (Craft.TotalCapacity-Craft.TotalFuel>drood.TotalFuel)
             {
-                Craft.AddFuel(Eva.TotalFuel);
-                Eva.RemoveFuel(Eva.TotalFuel);
-                Debug.LogFormat($"Remove{Craft.FuelType.Name} 成功:{0}实际{1}",Eva.TotalFuel,Craft.TotalFuel);
+                Craft.AddFuel(drood.TotalFuel);
+                drood.RemoveFuel(drood.TotalFuel);
+                Debug.LogFormat($"Remove{Craft.FuelType.Name} 成功:{0}实际{1}",drood.TotalFuel,Craft.TotalFuel);
             }
             else
             {
-                Eva.RemoveFuel(Craft.TotalCapacity - Craft.TotalFuel);
+                drood.RemoveFuel(Craft.TotalCapacity - Craft.TotalFuel);
                 Craft.AddFuel(Craft.TotalCapacity - Craft.TotalFuel);
-                Debug.LogWarningFormat($"Remove{Craft.FuelType.Name} 满了成功:{0}实际{1}", Eva.TotalFuel, Craft.TotalFuel);
+                Debug.LogWarningFormat($"Remove{Craft.FuelType.Name} 满了成功:{0}实际{1}", drood.TotalFuel, Craft.TotalFuel);
             }
         }
 
@@ -684,7 +727,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (_oxygenSource != null && _waterSource != null && _foodSource != null && _co2Source != null &&
                 _wastedWaterSource != null && _solidWasteSource != null)
             {
-                Debug.Log("有本地燃料源");
+                //Debug.Log("有本地燃料源");
                 return;
             }
 
@@ -730,6 +773,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             
         }
+        /// <summary>
+        /// 为指定的燃料类型添加具有给定容量的燃料罐。
+        /// Adds a fuel tank for the specified fuel type with the given capacity.
+        /// </summary>
+        /// <param name="FuelCapacity">燃料罐的容量。Capacity of the fuel tank.</param>
+        /// <param name="FuelType">燃料类型。Type of fuel.</param>
+        /// <param name="FuelAmount">初始燃料量。Initial fuel amount.</param>
         private void AddTank(string fuelType, double fuelCapacity, double fuelAmount)
         {
             if (fuelCapacity<fuelAmount)
@@ -791,13 +841,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 Debug.LogError($"Failed to add FuelTank for {fuelType}: {e}");
             }
+            
         }
-        /// <summary>
-        /// 从飞船中检索指定燃料类型的燃料源。
-        /// Retrieves the fuel source for the specified fuel type from the craft.
-        /// </summary>
-        /// <param name="fuelType">要查找的燃料类型。Type of fuel to find.</param>
-        /// <returns>如果找到则返回燃料源，否则返回null。The fuel source if found, otherwise null.</returns>
+        public override void OnDesignerPullout(Assembly assembly)
+        {
+            base.OnDesignerPullout(assembly);
+        }
+        
         private void OnFlightEnded(object sender, FlightEndedEventArgs e)
         {
             Debug.Log("OnFlightEnded");
@@ -817,7 +867,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return;
             }
             LoadFuelTanks();
-            if (ModSettings.Instance.ConsumeResourceWhenUnloaded==true)
+            if (ModSettings.Instance.ConsumeResourceWhenUnloaded==true&&!IsHibernating)
             {
                 RemoveFuelAmonutInstantly();
                 AddWastedAmountInstantly();
@@ -876,7 +926,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             Debug.LogFormat("{0} 调用OnCraftUnloaded",PartScript.Data.Id);
             try
             {
-                LastUnloadedTime = (long)FlightSceneScript.Instance.FlightState.Time;
+                Data.LastLoadTime = (long)FlightSceneScript.Instance.FlightState.Time;
                 SaveFuelAmountBuffer();
                 PartScript.Data.LoadXML(RemoveFuelTankXML(this.PartScript.Data.GenerateXml(this.PartScript.CraftScript.Transform,false)),15);
                 
@@ -915,11 +965,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
         }
 
-        public void RemoveFuelAmonutInstantly()
+        private void RemoveFuelAmonutInstantly()
         {
                 
             double xishu=360;
-            var time= Game.Instance.FlightScene.FlightState.Time-LastUnloadedTime;
+            var time= Game.Instance.FlightScene.FlightState.Time-Data.LastLoadTime;
             Debug.LogFormat("调用RemoveFuelAmonutInstantly ,间隔{0}",time);
             if (this._oxygenSource == null)
             {
@@ -969,10 +1019,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
         }
         
-        public void AddWastedAmountInstantly()
+        private void AddWastedAmountInstantly()
         {
             double xishu=360;
-            var time= Game.Instance.FlightScene.FlightState.Time-LastUnloadedTime;
+            var time= Game.Instance.FlightScene.FlightState.Time-Data.LastLoadTime;
             Debug.LogFormat("AddWastedAmountInstantly ,间隔{0}",time);
             if (this._co2Source == null)
             {
@@ -1046,12 +1096,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 Debug.Log("OnCraftStructureChanged调用RefreshFuelSource();");
             }
         }
-        
-        /// <summary>
-        /// 飞船燃料源变化时的事件处理程序，刷新燃料源。
-        /// Event handler for when craft fuel sources change, refreshes fuel sources.
-        /// </summary>
-       
 
         /// <summary>
         /// 根据大气条件和行星确定是否使用内部氧气。
@@ -1117,6 +1161,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             UpdateCurrentPlanet();
         }
+        
+
         #endregion
 
         /// <summary>
@@ -1191,16 +1237,24 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// 为零件生成inspector model，添加生命支持信息。
         /// Generates the inspector model for the part, adding life support information.
         /// </summary>
-        public override void OnGenerateInspectorModel(PartInspectorModel model) 
+        public override void OnGenerateInspectorModel(PartInspectorModel model)
         {
+            var localOxygen = GetLocalFuelSource("Oxygen");
+            var localWater = GetLocalFuelSource("H2O");
+            var localFood = GetLocalFuelSource("Food");
+            var localCo2 = GetLocalFuelSource("CO2");
+            var localWastedWater = GetLocalFuelSource("Wasted Water");
+            var localSolidWaste = GetLocalFuelSource("Solid Waste");
             base.OnGenerateInspectorModel(model);
+            //单独看任务时间的
+            model.Add<TextModel>(new TextModel("<color=yellow>Mission Time", (Func<string>) (() =>Mod.GetStopwatchTimeString(MissionDurationTime))));
             GroupModel groupModel = new GroupModel("<color=green><size=115%>Life Support Info");
             model.AddGroup(groupModel);
             groupModel.Add<TextModel>(new TextModel("Remain Oxygen", (Func<string>) (() =>
             {
-                if (UsingInternalOxygen() && _oxygenSource != null && _oxygenSource.TotalCapacity > 0)
+                if (UsingInternalOxygen() && localOxygen != null && localOxygen.TotalCapacity > 0)
                 {
-                    float percentage = (float)(_oxygenSource.TotalFuel / _oxygenSource.TotalCapacity);
+                    float percentage = (float)(localOxygen.TotalFuel / localOxygen.TotalCapacity);
                     string oxygenTextColor = percentage > 0.5 ? "green" : percentage >= 0.25 ? "yellow" : "red";
                     return $"<color={oxygenTextColor}>{Units.GetPercentageString(percentage)}</color>";
                 }
@@ -1213,11 +1267,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             groupModel.Add<TextModel>(new TextModel("Oxygen Supply Time", (Func<string>) (() =>
             {
-                if (UsingInternalOxygen() && _oxygenSource != null && _evaScript != null)
+                if (UsingInternalOxygen() && localOxygen != null && _evaScript != null)
                 {
-                    float percentage = (float)(_oxygenSource.TotalFuel / _oxygenSource.TotalCapacity);
+                    float percentage = (float)(localOxygen.TotalFuel / localOxygen.TotalCapacity);
                     string oxygenTextColor = percentage > 0.5 ? "green" : percentage >= 0.25 ? "yellow" : "red";
-                    return $"<color={oxygenTextColor}>"+Mod.GetStopwatchTimeString(_oxygenSource.TotalFuel / (Data.OxygenComsumeRate * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)));
+                    return $"<color={oxygenTextColor}>"+Mod.GetStopwatchTimeString(localOxygen.TotalFuel / (Data.OxygenComsumeRate * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)));
                 }
                 else if (!UsingInternalOxygen())
                 {
@@ -1228,9 +1282,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             groupModel.Add<TextModel>(new TextModel("Remain Water", (Func<string>) (() =>
             {
-                if (_waterSource != null && _waterSource.TotalCapacity > 0)
+                if (localWater != null && localWater.TotalCapacity > 0)
                 {
-                    float waterPercentage = (float)(_waterSource.TotalFuel / _waterSource.TotalCapacity);
+                    float waterPercentage = (float)(localWater.TotalFuel / localWater.TotalCapacity);
                     string waterTextColor = waterPercentage > 0.5 ? "green" : waterPercentage >= 0.25 ? "yellow" : "red";
                     return $"<color={waterTextColor}>{Units.GetPercentageString(waterPercentage)}</color>";
                 }
@@ -1239,20 +1293,20 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             groupModel.Add<TextModel>(new TextModel("Water Supply Time", (Func<string>) (() =>
             {
-                if (_waterSource != null && _evaScript != null)
+                if (localWater != null && _evaScript != null)
                 {
-                    float waterPercentage = (float)(_waterSource.TotalFuel / _waterSource.TotalCapacity);
+                    float waterPercentage = (float)(localWater.TotalFuel / localWater.TotalCapacity);
                     string waterTextColor = waterPercentage > 0.5 ? "green" : waterPercentage >= 0.25 ? "yellow" : "red";
-                    return $"<color={waterTextColor}>"+Mod.GetStopwatchTimeString(_waterSource.TotalFuel / (Data.WaterComsumeRate * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)));
+                    return $"<color={waterTextColor}>"+Mod.GetStopwatchTimeString(localWater.TotalFuel / (Data.WaterComsumeRate * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)));
                 }
                 return "N/A";
             })));
             
             groupModel.Add<TextModel>(new TextModel("Remain Food", (Func<string>) (() =>
             {
-                if (_foodSource != null && _foodSource.TotalCapacity > 0)
+                if (localFood != null && localFood.TotalCapacity > 0)
                 {
-                    float foodPercentage = (float)(_foodSource.TotalFuel / _foodSource.TotalCapacity);
+                    float foodPercentage = (float)(localFood.TotalFuel / localFood.TotalCapacity);
                     string foodTextColor = foodPercentage > 0.5 ? "green" : foodPercentage >= 0.25 ? "yellow" : "red";
                     return $"<color={foodTextColor}>{Units.GetPercentageString(foodPercentage)}</color>";
                 }
@@ -1261,17 +1315,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
             groupModel.Add<TextModel>(new TextModel("Food Supply Time", (Func<string>) (() =>
             {
-                if (_foodSource != null && _evaScript != null)
+                if (localFood != null && _evaScript != null)
                 {
-                    float foodPercentage = (float)(_foodSource.TotalFuel / _foodSource.TotalCapacity);
+                    float foodPercentage = (float)(localFood.TotalFuel / localFood.TotalCapacity);
                     string foodTextColor = foodPercentage > 0.5 ? "green" : foodPercentage >= 0.25 ? "yellow" : "red";
-                    return $"<color={foodTextColor}>"+Mod.GetStopwatchTimeString(_foodSource.TotalFuel / (Data.FoodComsumeRate * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)));
+                    return $"<color={foodTextColor}>"+Mod.GetStopwatchTimeString(localFood.TotalFuel / (Data.FoodComsumeRate * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)));
                 }
                 return "N/A";
             })));
-            AddGM("CO2 Level",_co2Source);
-            AddGM("Wasted Water Level",_wastedWaterSource);
-            AddGM("Solid Waste Level",_solidWasteSource);
+            AddGM("CO2 Level",localCo2);
+            AddGM("Wasted Water Level",localWastedWater);
+            AddGM("Solid Waste Level",localSolidWaste);
             
             void AddGM(string Title, IFuelSource source)
             {
@@ -1299,7 +1353,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             ICraftScript craftScript = this.PartScript.CraftScript;
             IFlightSceneUI ui = ModApi.Common.Game.Instance.FlightScene.FlightSceneUI;
-            if (!(craftScript.Data.Assembly.Parts.Count == 1 &&craftScript.RootPart.Data.PartType.Name.Contains("Eva")))
+            if (!(craftScript.Data.Assembly.Parts.Count == 1 &&craftScript.RootPart.Data.PartType.Name.Contains("Eva"))&&_evaScript.ActiveWhileInCrewCompartment)
             {
                 ui.ShowMessage("Can Not Plant Flag,Not in Eva",false,10);
             }
