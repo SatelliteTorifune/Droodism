@@ -1,6 +1,7 @@
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using ModApi;
 using ModApi.Craft;
+using ModApi.GameLoop;
 using RootMotion.FinalIK;
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
@@ -13,9 +14,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
 
-    public class GliderScript : PartModifierScript<GliderData>
+    public class GliderScript : PartModifierScript<GliderData>,IFlightUpdate
     {
-        public Transform 
+        private Transform 
             LeftHandTransform,
             RightHandTransform,
             LeftElbowTransform,
@@ -25,6 +26,29 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private EvaScript _pilot = (EvaScript) null;
         private CrewCompartmentScript _crewCompartment;
         private AttachPoint _seatAttachPoint;
+
+        private bool isKill;
+
+        public void FlightUpdate(in FlightFrameData frame)
+        {
+            WorkingLogic(frame);
+            if (PartScript.CraftScript.FlightData.AltitudeAboveTerrain<5)
+            {
+                this.SetPilot((EvaScript) null);
+                this.PartScript.CraftScript.DestroyPart(this.PartScript.Data,true);
+            }
+
+            if (this.isKill)
+            {
+                this.PartScript.TakeDamage((float)(1e4f*frame.DeltaTimeWorld),PartDamageType.Basic);
+            }
+        }
+
+        private void WorkingLogic(in FlightFrameData frame)
+        {
+            
+        }
+        #region 傻逼
         protected override void OnInitialized()
         {
             this._seatAttachPoint = this.PartScript.Data.GetAttachPoint("AttachPointSeat");
@@ -55,15 +79,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             _crewCompartment = PartScript.GetModifier<CrewCompartmentScript>();
         }
-         private void OnPilotEnter(EvaScript crew) => this.SetPilot(crew);
-
-        /// <summary>Called when [pilot exit].</summary>
-        /// <param name="crew">The crew.</param>
+        private void OnPilotEnter(EvaScript crew) => this.SetPilot(crew);
         private void OnPilotExit(EvaScript crew)
         {
             if (!((UnityEngine.Object) crew == (UnityEngine.Object) this._pilot))
                 return;
             this.SetPilot((EvaScript) null);
+            isKill = true;
+
+
         }
         private void SetPilot(EvaScript pilot)
         {
@@ -92,45 +116,45 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
           this._pilotIK.solver.bodyEffector.target = BaseLKTransform;
           this._pilotIK.solver.bodyEffector.positionWeight = 1f;
           this._pilotIK.solver.bodyEffector.rotationWeight = 1f;
-        this._pilotIK.solver.rightHandEffector.target = this.RightHandTransform;
-        this._pilotIK.solver.rightHandEffector.positionWeight = 1f;
-        this._pilotIK.solver.rightHandEffector.rotationWeight = 1f;
-        this._pilotIK.solver.leftHandEffector.target = this.LeftHandTransform;
-        this._pilotIK.solver.leftHandEffector.positionWeight = 1f;
-        this._pilotIK.solver.leftHandEffector.rotationWeight = 1f;
-        this._pilotIK.solver.leftArmChain.bendConstraint.bendGoal = this.LeftElbowTransform;
-        this._pilotIK.solver.leftArmChain.bendConstraint.weight = 1f;
-        this._pilotIK.solver.rightArmChain.bendConstraint.bendGoal = this.RightElbowTransform;
-        this._pilotIK.solver.rightArmChain.bendConstraint.weight = 1f;
-        this._pilotIK.solver.rightFootEffector.target = (Transform) null;
-        this._pilotIK.solver.rightFootEffector.positionWeight = 0.0f;
-        this._pilotIK.solver.rightFootEffector.rotationWeight = 0.0f;
-        this._pilotIK.solver.leftFootEffector.target = (Transform) null;
-        this._pilotIK.solver.leftFootEffector.positionWeight = 0.0f;
-        this._pilotIK.solver.leftFootEffector.rotationWeight = 0.0f;
+          this._pilotIK.solver.rightHandEffector.target = this.RightHandTransform;
+          this._pilotIK.solver.rightHandEffector.positionWeight = 1f;
+          this._pilotIK.solver.rightHandEffector.rotationWeight = 1f;
+          this._pilotIK.solver.leftHandEffector.target = this.LeftHandTransform;
+          this._pilotIK.solver.leftHandEffector.positionWeight = 1f;
+          this._pilotIK.solver.leftHandEffector.rotationWeight = 1f;
+          this._pilotIK.solver.leftArmChain.bendConstraint.bendGoal = this.LeftElbowTransform;
+          this._pilotIK.solver.leftArmChain.bendConstraint.weight = 1f;
+          this._pilotIK.solver.rightArmChain.bendConstraint.bendGoal = this.RightElbowTransform;
+          this._pilotIK.solver.rightArmChain.bendConstraint.weight = 1f;
+          this._pilotIK.solver.rightFootEffector.target = (Transform) null;
+          this._pilotIK.solver.rightFootEffector.positionWeight = 0.0f;
+          this._pilotIK.solver.rightFootEffector.rotationWeight = 0.0f;
+          this._pilotIK.solver.leftFootEffector.target = (Transform) null;
+          this._pilotIK.solver.leftFootEffector.positionWeight = 0.0f;
+          this._pilotIK.solver.leftFootEffector.rotationWeight = 0.0f;
         
       }
       else
       {
-        this._pilotIK.solver.rightHandEffector.target = (Transform) null;
-        this._pilotIK.solver.rightHandEffector.positionWeight = 0.0f;
-        this._pilotIK.solver.rightHandEffector.rotationWeight = 0.0f;
-        this._pilotIK.solver.leftHandEffector.target = (Transform) null;
-        this._pilotIK.solver.leftHandEffector.positionWeight = 0.0f;
-        this._pilotIK.solver.leftHandEffector.rotationWeight = 0.0f;
-        this._pilotIK.solver.leftArmChain.bendConstraint.bendGoal = (Transform) null;
-        this._pilotIK.solver.leftArmChain.bendConstraint.weight = 0.0f;
-        this._pilotIK.solver.rightArmChain.bendConstraint.bendGoal = (Transform) null;
-        this._pilotIK.solver.rightArmChain.bendConstraint.weight = 0.0f;
-        this._pilotIK.solver.rightFootEffector.target = (Transform) null;
-        this._pilotIK.solver.rightFootEffector.positionWeight = 0.0f;
-        this._pilotIK.solver.rightFootEffector.rotationWeight = 0.0f;
-        this._pilotIK.solver.leftFootEffector.target = (Transform) null;
-        this._pilotIK.solver.leftFootEffector.positionWeight = 0.0f;
-        this._pilotIK.solver.leftFootEffector.rotationWeight = 0.0f;
-        this._pilotIK.solver.bodyEffector.target = (Transform) null;
-        this._pilotIK.solver.bodyEffector.positionWeight = 0.0f;
-        this._pilotIK.solver.bodyEffector.rotationWeight = 0.0f;
+          this._pilotIK.solver.rightHandEffector.target = (Transform) null;
+          this._pilotIK.solver.rightHandEffector.positionWeight = 0.0f;
+          this._pilotIK.solver.rightHandEffector.rotationWeight = 0.0f;
+          this._pilotIK.solver.leftHandEffector.target = (Transform) null;
+          this._pilotIK.solver.leftHandEffector.positionWeight = 0.0f;
+          this._pilotIK.solver.leftHandEffector.rotationWeight = 0.0f;
+          this._pilotIK.solver.leftArmChain.bendConstraint.bendGoal = (Transform) null;
+          this._pilotIK.solver.leftArmChain.bendConstraint.weight = 0.0f;
+          this._pilotIK.solver.rightArmChain.bendConstraint.bendGoal = (Transform) null;
+          this._pilotIK.solver.rightArmChain.bendConstraint.weight = 0.0f;
+          this._pilotIK.solver.rightFootEffector.target = (Transform) null;
+          this._pilotIK.solver.rightFootEffector.positionWeight = 0.0f;
+          this._pilotIK.solver.rightFootEffector.rotationWeight = 0.0f;
+          this._pilotIK.solver.leftFootEffector.target = (Transform) null;
+          this._pilotIK.solver.leftFootEffector.positionWeight = 0.0f;
+          this._pilotIK.solver.leftFootEffector.rotationWeight = 0.0f;
+          this._pilotIK.solver.bodyEffector.target = (Transform) null;
+          this._pilotIK.solver.bodyEffector.positionWeight = 0.0f;
+          this._pilotIK.solver.bodyEffector.rotationWeight = 0.0f;
         
       }
         }
@@ -139,5 +163,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             base.OnPartDestroyed();
             this.SetPilot((EvaScript) null);
         }
+        #endregion
     }
 }

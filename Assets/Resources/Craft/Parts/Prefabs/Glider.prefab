@@ -44,8 +44,8 @@ GameObject:
   - component: {fileID: 2358086874089621472}
   - component: {fileID: 613451024069947649}
   - component: {fileID: 2612147327014737352}
-  - component: {fileID: 743558240496946398}
   - component: {fileID: 4713960948068747653}
+  - component: {fileID: 8960151834311374169}
   m_Layer: 0
   m_Name: ParachuteMesh
   m_TagString: Untagged
@@ -137,8 +137,24 @@ MonoBehaviour:
   _usesAlphaOverride: 0
   _usesEmissiveOverride: 0
   _isDepthMask: 0
---- !u!64 &743558240496946398
-MeshCollider:
+--- !u!114 &4713960948068747653
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 857046463327740354}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -468989955, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _ignoreDesignerCollisions: 0
+  _ignoreFirstPersonCollisions: 0
+  _isPrimary: 1
+  _selectionEnabledInFlight: 1
+--- !u!65 &8960151834311374169
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -155,26 +171,9 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -2905926540806903199, guid: c2c688a52c7ff234cb7423ea27194158, type: 3}
---- !u!114 &4713960948068747653
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 857046463327740354}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -468989955, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _ignoreDesignerCollisions: 0
-  _ignoreFirstPersonCollisions: 1
-  _isPrimary: 1
-  _selectionEnabledInFlight: 1
+  serializedVersion: 3
+  m_Size: {x: 0.0068734293, y: 0.011942026, z: 0.0056054727}
+  m_Center: {x: 0, y: 0.0022999188, z: 0}
 --- !u!1 &2362601004938115366
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,12 +1,14 @@
 using System.Xml.Linq;
 using Assets.Packages.DevConsole;
 using Assets.Scripts.Craft;
+using Assets.Scripts.Craft.Parts;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Flight;
 using ModApi.Scenes.Events;
 using HarmonyLib;
 using ModApi.Craft;
 using ModApi.Craft.Parts;
+using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using ModApi.Flight.Sim;
 using ModApi.Math;
 using ModApi.State;

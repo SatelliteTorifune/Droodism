@@ -64,7 +64,7 @@ MonoBehaviour:
     _name: Glider
     _partCollisionHandling: 0
     _price: 0
-    _unscaledMass: 0
+    _unscaledMass: 1
     _usePreferredNodeName: 1
 --- !u!114 &5838884186843980589
 MonoBehaviour:
@@ -148,8 +148,8 @@ MonoBehaviour:
     _maxDragActive: 0
     _maxTemperature: 1500
     _occlusion: 0
-    _partCollisionHandling: 0
-    _partCollisionResponse: 2
+    _partCollisionHandling: 3
+    _partCollisionResponse: 0
     _partScale: {x: 1, y: 1, z: 1}
     _partSelectionEnabled: 1
     _preventDebris: 0
@@ -157,7 +157,7 @@ MonoBehaviour:
     _raiseWaterEventsEvenIfNotBuoyant: 0
     _renderQueue: 0
     _stageActivationType: 0
-    _supportsActivation: 1
+    _supportsActivation: 0
     _supportsTransparency: 1
     _thermalMassRatio: 1
     _tutorialId: 

@@ -19,6 +19,7 @@ using ModApi.Flight.UI;
 using ModApi.Math;
 using ModApi.Settings.Core;
 using ModApi.Ui.Inspector;
+using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
 
 //鸡巴的我自己都看不懂我写的是什么鸡巴玩意了你还指望我给你写注释吗?
@@ -1345,7 +1346,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 TextButtonModel textButtonModel1 =
                     new TextButtonModel("Plant Flag", (Action<TextButtonModel>)(b => this.PlantFlagClick()));
-                groupModel.Add<TextButtonModel>(textButtonModel1);
+                model.Add<TextButtonModel>(textButtonModel1);
+                TextButtonModel textButtonModel2 =
+                    new TextButtonModel("Deploy Parachute", (Action<TextButtonModel>)(b => this.DeployParachute()));
+                model.Add<TextButtonModel>(textButtonModel2);
+                
             }
             
         }   
@@ -1374,6 +1379,105 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return;
             }
             Mod.Inctance.SpawnFlag();
+        }
+
+        private void DeployParachute()
+        {
+            ICraftScript craftScript = this.PartScript.CraftScript;
+            IFlightSceneUI ui = ModApi.Common.Game.Instance.FlightScene.FlightSceneUI;
+
+            bool isEva()
+            {
+               return craftScript.Data.Assembly.Parts.Count == 1 && craftScript.RootPart.Data.PartType.Name.Contains("Eva") && !_evaScript.ActiveWhileInCrewCompartment;
+            }
+            if (!isEva())
+            {
+                ui.ShowMessage("Can Not Deploy Parachute,Not in Eva",false,10);
+                return;
+            }
+            if (craftScript.FlightData.Grounded)
+            {
+                ui.ShowMessage("Can Not Deploy Parachute,Drood is Grounded",false,10);
+                return;
+            }
+            if (craftScript.FlightData.AtmosphereSample.AirDensity<=0.01)
+            {
+                ui.ShowMessage("Can Not Deploy Parachute,Air Density is too thin",false,10);
+                return;
+            }
+            
+            if (_evaScript.IsInWater)
+            {
+                ui.ShowMessage("Can Not Deploy Parachute,Drood is in water",false,10);
+                return;
+            }
+
+            你去吃粑粑去吧();
+           
+        }
+
+        /// <summary>
+        /// 情况太鸡巴诡异了你知道吗?
+        /// </summary>
+        private void 你去吃粑粑去吧()
+        {
+            var script = CreateParachutePartScript();
+            BodyData body = CraftBuilder.CreateBodyData(new List<PartData>(){script.Data}, PartScript.CraftScript.Transform);
+            CraftScript craftScript = PartScript.CraftScript as CraftScript;
+            craftScript.Data.Assembly.AddBody(body);
+            BodyScript bodyScript = CraftBuilder.CreateBodyScript(craftScript, body);
+            bodyScript.MoveToCraft(craftScript);
+            bodyScript.OnInitialized();
+            //Debug.Log($"Body is disconnected {body.BodyScript.Disconnected}");
+            bodyScript.PartGroups.Add(CreatePopPartGroup(bodyScript, script, this.PartScript.Data.Id+1));
+            /*
+            this.PartScript.BodyScript.RigidBody.isKinematic = script.BodyScript.RigidBody.isKinematic = false;
+            script.BodyScript.RigidBody.position = this.PartScript.BodyScript.RigidBody.position;
+            script.BodyScript.RigidBody.velocity=this.PartScript.BodyScript.RigidBody.velocity;
+            script.BodyScript.RigidBody.angularVelocity=this.PartScript.BodyScript.RigidBody.angularVelocity;*/
+            CraftBuilder.CalculateInertiaTensors(bodyScript, true);
+            _evaScript.OnPreNodeLoaded();
+            _evaScript.OnNodeLoaded();
+            _evaScript.LoadIntoCrewCompartment(script.GetModifier<CrewCompartmentScript>(), null, announceBoarding : false);
+            return;
+        }
+        
+        private PartScript CreateParachutePartScript()
+        {
+            Assembly assembly=new Assembly(ParachutePartElement(), 15, Game.Instance.PartTypes);
+            CraftBuilder.CreatePartGameObjects(assembly.Parts, PartScript.CraftScript);
+            PartData part = assembly.Parts[0];
+            PartScript partScript = part.PartScript as PartScript;
+            partScript.UpdateAttachPoints();
+            PartScript.CraftScript.Data.Assembly.Absorb(assembly);
+            //pop.Attach(partScript.GetModifier<PopulationScript>());
+            return partScript;
+        }
+        private XElement ParachutePartElement()
+        {
+            
+            DesignerPart designerpart = Game.Instance.CachedDesignerParts.Parts.First(d => d.Name == "Glider");
+            XElement assembly = new XElement("Assembly", designerpart.AssemblyElement.Element("Parts"));
+            
+            return assembly;
+        }
+        private PartGroupScript CreatePopPartGroup(BodyScript bodyScript, PartScript partScript, int id)
+        {
+            GameObject gameObject = new GameObject("PartGroup");
+            PartGroupScript partGroupScript = gameObject.AddComponent<PartGroupScript>();
+            partGroupScript.gameObject.name = $"PartGroup-{id}";
+            partGroupScript.Id = id;
+            partGroupScript.BodyScript = bodyScript;
+            partGroupScript.transform.parent = bodyScript.transform;
+            partGroupScript.transform.localPosition = Vector3.zero;
+            partGroupScript.transform.localScale = Vector3.one;
+            partGroupScript.transform.rotation = Quaternion.identity;
+            //worldPositionStays: true before 
+            
+            partScript.transform.SetParent(partGroupScript.transform, worldPositionStays: true);
+            partScript.AssignToPartGroup(partGroupScript);
+            partGroupScript.Data.Parts.Add(partScript.Data);
+            return partGroupScript;
         }
     }
 }
