@@ -34,14 +34,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             WorkingLogic(frame);
             if (PartScript.CraftScript.FlightData.AltitudeAboveTerrain<5)
             {
-                this.SetPilot((EvaScript) null);
-                this.PartScript.CraftScript.DestroyPart(this.PartScript.Data,true);
+                
+                foreach (var eva in _crewCompartment.Crew)
+                {
+                    _crewCompartment.UnloadCrewMember(eva,true);
+                }
             }
-
-            if (this.isKill)
-            {
-                this.PartScript.TakeDamage((float)(1e4f*frame.DeltaTimeWorld),PartDamageType.Basic);
-            }
+            
         }
 
         private void WorkingLogic(in FlightFrameData frame)
@@ -85,7 +84,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (!((UnityEngine.Object) crew == (UnityEngine.Object) this._pilot))
                 return;
             this.SetPilot((EvaScript) null);
-            isKill = true;
+           this.PartScript.BodyScript.ExplodePart(this.PartScript, -1);
 
 
         }
@@ -163,6 +162,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             base.OnPartDestroyed();
             this.SetPilot((EvaScript) null);
         }
+        
         #endregion
     }
 }

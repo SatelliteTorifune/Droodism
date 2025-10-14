@@ -1361,6 +1361,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (!(craftScript.Data.Assembly.Parts.Count == 1 &&craftScript.RootPart.Data.PartType.Name.Contains("Eva"))&&_evaScript.ActiveWhileInCrewCompartment)
             {
                 ui.ShowMessage("Can Not Plant Flag,Not in Eva",false,10);
+                return;
             }
             if (craftScript.FlightData.Grounded==false)
             {
@@ -1388,7 +1389,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
             bool isEva()
             {
-               return craftScript.Data.Assembly.Parts.Count == 1 && craftScript.RootPart.Data.PartType.Name.Contains("Eva") && !_evaScript.ActiveWhileInCrewCompartment;
+                if (_evaScript.EvaActive)
+                {
+                    return !_evaScript.ActiveWhileInCrewCompartment;
+                }
+               return craftScript.Data.Assembly.Parts.Count == 1 && craftScript.RootPart.Data.PartType.Name.Contains("Eva");
             }
             if (!isEva())
             {
@@ -1430,12 +1435,16 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             bodyScript.OnInitialized();
             //Debug.Log($"Body is disconnected {body.BodyScript.Disconnected}");
             bodyScript.PartGroups.Add(CreatePopPartGroup(bodyScript, script, this.PartScript.Data.Id+1));
+            
+           
             /*
-            this.PartScript.BodyScript.RigidBody.isKinematic = script.BodyScript.RigidBody.isKinematic = false;
             script.BodyScript.RigidBody.position = this.PartScript.BodyScript.RigidBody.position;
             script.BodyScript.RigidBody.velocity=this.PartScript.BodyScript.RigidBody.velocity;
             script.BodyScript.RigidBody.angularVelocity=this.PartScript.BodyScript.RigidBody.angularVelocity;*/
-            CraftBuilder.CalculateInertiaTensors(bodyScript, true);
+            //必须保持false
+            //this.PartScript.BodyScript.RigidBody.isKinematic = script.BodyScript.RigidBody.isKinematic = true;
+            //CalculateInertiaTensors必须保持false
+            CraftBuilder.CalculateInertiaTensors(bodyScript, false);
             _evaScript.OnPreNodeLoaded();
             _evaScript.OnNodeLoaded();
             _evaScript.LoadIntoCrewCompartment(script.GetModifier<CrewCompartmentScript>(), null, announceBoarding : false);
