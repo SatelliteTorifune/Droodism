@@ -141,7 +141,7 @@ namespace Assets.Scripts
                 GroupModel textGroup = new GroupModel("<color=green>Life Support Resources Info");
 
                 textGroup.Add<TextModel>(new TextModel("Drood Count",
-                    () => Scripts.Mod.Inctance.GetDroodCountInDesigner()));
+                    () => Scripts.Mod.Instance.GetDroodCountInDesigner()));
                 foreach (var var in fuelTypes)
                 {
                     AddStuff(var);
@@ -177,6 +177,16 @@ namespace Assets.Scripts
 
                 // 将新组添加到 InspectorModel
                 inspectorModel.AddGroup(textGroup);
+            }
+        }
+        
+        [HarmonyPatch(typeof(EvaScript), "LoadIntoCrewCompartment")]
+        class LoadCompartmentPatch
+        {
+            [HarmonyPrefix]
+            static bool LoadIntoCrewCompartment(EvaScript __instance, CrewCompartmentScript crewCompartment)
+            {
+                return true;
             }
         }
     }

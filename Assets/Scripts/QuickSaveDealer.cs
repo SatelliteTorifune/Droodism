@@ -128,7 +128,7 @@ namespace Assets.Scripts
         static void Postfix(FlightSceneScript __instance)
         {
             DroodismCrewMananger.Instance?.OnQuickSave();
-            Mod.Inctance.OnQuickSave();
+            Mod.Instance.OnQuickSave();
         }
     }
     

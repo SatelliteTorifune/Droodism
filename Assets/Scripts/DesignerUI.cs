@@ -18,7 +18,7 @@ namespace Assets.Scripts
             {
                 if (fuelSource.FuelType.Id == fuelId)
                 {
-                    return isWaste?Inctance.FormatFuel(fuelSource.TotalCapacity*fuelSource.FuelType.Density,_massTypes):Inctance.FormatFuel(fuelSource.TotalFuel*fuelSource.FuelType.Density,_massTypes);
+                    return isWaste?Instance.FormatFuel(fuelSource.TotalCapacity*fuelSource.FuelType.Density,_massTypes):Instance.FormatFuel(fuelSource.TotalFuel*fuelSource.FuelType.Density,_massTypes);
                 }
             }
             return "NaN";

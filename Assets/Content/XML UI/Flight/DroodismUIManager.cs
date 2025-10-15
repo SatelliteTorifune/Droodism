@@ -123,9 +123,9 @@ namespace Assets.Scripts
             }
             double fuelPercentage = (currentFuel / fuelSource.TotalCapacity);
             bool isWasted = (fuelTypeId.Contains("Waste") || fuelTypeId.Contains("CO2"));
-            string FuelAmountPercentagestr = Mod.Inctance.FormatFuel(fuelSource.TotalFuel * fuelDensity, _massTypes) + "/" + Mod.Inctance.FormatFuel(fuelSource.TotalCapacity * fuelDensity, _massTypes);
+            string FuelAmountPercentagestr = Mod.Instance.FormatFuel(fuelSource.TotalFuel * fuelDensity, _massTypes) + "/" + Mod.Instance.FormatFuel(fuelSource.TotalCapacity * fuelDensity, _massTypes);
             double fuelConsumption = (currentFuel - previousFuel) / Game.Instance.FlightScene.TimeManager.DeltaTime;
-            string fuelConsumptionStr = Mod.Inctance.FormatFuel(fuelConsumption * fuelDensity, _massTypes) + "/s";
+            string fuelConsumptionStr = Mod.Instance.FormatFuel(fuelConsumption * fuelDensity, _massTypes) + "/s";
 
             string timeLeft = isWasted
                 ? (fuelConsumption >= 0

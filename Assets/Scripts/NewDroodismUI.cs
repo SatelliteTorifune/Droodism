@@ -106,7 +106,7 @@ namespace Assets.Scripts
             
             fuelPercentXMLItems.Add(component);
             //Debug.LogFormat("NewDroodismUI:AddFuelListItem:{0}", fuelType);
-            //Mod.Inctance.那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花();
+            //Mod.Instance.那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花();
         }
         private void AddFuelTransferModeItem(FuelTransferMode mode)
         {
@@ -127,7 +127,7 @@ namespace Assets.Scripts
             
             fuelPercentXMLItems.Add(component);
             Debug.LogFormat("NewDroodismUI:AddFuelTransferListItem:{0}", mode.ToString());
-            //Mod.Inctance.那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花();
+            //Mod.Instance.那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花();
         }
         /// <summary>
         /// 更新UpdateFuelTemplate项目用的,属于是我拉的第二坨屎山,纯纯恶臭,我也不知道为什么要这么写,本来是为了解决性能问题的,但是这函数在Upddate()里面调用,而且还有贼鸡巴多的别的函数和foreach调用,你说这能要是能优化性能我给你嗦几把.
@@ -157,10 +157,10 @@ namespace Assets.Scripts
             double percentage = fuelSource.TotalFuel / fuelSource.TotalCapacity;
             
             bool isWasted = (fuelTypeId.Contains("Waste") ||fuelTypeId.Contains("CO2"));
-            string FuelAmountPercentage=Mod.Inctance.FormatFuel(fuelSource.TotalFuel*fuelDensity, _massTypes) + "/" + Mod.Inctance.FormatFuel(fuelSource.TotalCapacity*fuelDensity, _massTypes);
+            string FuelAmountPercentage=Mod.Instance.FormatFuel(fuelSource.TotalFuel*fuelDensity, _massTypes) + "/" + Mod.Instance.FormatFuel(fuelSource.TotalCapacity*fuelDensity, _massTypes);
             Color progressColor = GetProgressBarColor(percentage,isWasted);
             double fuelConsumption=(currentFuel-previousFuel)/Game.Instance.FlightScene.TimeManager.DeltaTime;
-            string fuelConsumptionStr=Mod.Inctance.FormatFuel(fuelConsumption*fuelDensity, _massTypes)+"/s";
+            string fuelConsumptionStr=Mod.Instance.FormatFuel(fuelConsumption*fuelDensity, _massTypes)+"/s";
             
             string timeLeft =isWasted?(fuelConsumption >= 0 ?  $"<color=#E05D6A>{Mod.GetStopwatchTimeString(Math.Abs((fuelSource.TotalCapacity-fuelSource.TotalFuel)/fuelConsumption))}</color>" : $"<color=#81EE80>{Mod.GetStopwatchTimeString(Math.Abs(fuelSource.TotalFuel/fuelConsumption))}</color>"): (fuelConsumption >= 0 ?  $"<color=#81EE80>{Mod.GetStopwatchTimeString(Math.Abs((fuelSource.TotalCapacity-fuelSource.TotalFuel)/fuelConsumption))}</color>" : $"<color=#E05D6A>{Mod.GetStopwatchTimeString(Math.Abs(fuelSource.TotalFuel/fuelConsumption))}</color>");
             ;

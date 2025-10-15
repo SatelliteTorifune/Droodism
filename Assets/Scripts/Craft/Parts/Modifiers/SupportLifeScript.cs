@@ -192,7 +192,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         
         /// <summary>
-        /// 这b玩意看不懂那你去吃我屎吧
+        /// 这b玩意看不懂那你去吃我屎吧,你不会百度翻译吗?
         /// </summary>
         private void UpdateRunningStatus()
         {
@@ -215,13 +215,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             MissionDurationTime;
         }
 
-        public void SetHibernating(bool hibernatingSatus, PartType partType)
+        public void SetHibernating(bool hibernatingState, PartType partType)
         {
             if (partType.Id!="HibernatingChamber")
             {
+                IsHibernating = false;
                 return;
             }
-            IsHibernating = hibernatingSatus;
+            IsHibernating = hibernatingState;
         }
         
 
@@ -267,9 +268,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// <summary>
         /// 处理氧气、食物和水的消耗逻辑。
         /// Handles the consumption logic for oxygen, food, and water.
-        /// </summary>
-        /// <param name="frame">飞行帧数据。Flight frame data.</param>
         /// 你可能觉得这个函数也太不优雅了,对,因为氧气这个b玩意比较特殊我要单独处理
+        /// /// </summary>
+        /// <param name="frame">飞行帧数据。Flight frame data.</param>
         private void ConsumptionLogic(in FlightFrameData frame)
         {
             if (_oxygenSource != null&&UsingInternalOxygen())
@@ -1089,12 +1090,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             if(!Game.InFlightScene)
                 return;
-            Debug.Log("OnCraftStructureChanged调用RefreshFuelSource();");
             base.OnCraftStructureChanged(craftScript);
             if (Game.InFlightScene)
             {
                 RefreshFuelSource();
-                Debug.Log("OnCraftStructureChanged调用RefreshFuelSource();");
+                //Debug.Log("OnCraftStructureChanged调用RefreshFuelSource();");
             }
         }
 
@@ -1379,7 +1379,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 ui.ShowMessage("Can Not Plant Flag,Drood is in water",false,10);
                 return;
             }
-            Mod.Inctance.SpawnFlag();
+            Mod.Instance.SpawnFlag();
         }
 
         private void DeployParachute()
@@ -1447,10 +1447,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             CraftBuilder.CalculateInertiaTensors(bodyScript, false);
             _evaScript.OnPreNodeLoaded();
             _evaScript.OnNodeLoaded();
+           //Mod.LoadIntoCrewCompartmentWithBringSpeed2(_evaScript, script.GetModifier<CrewCompartmentScript>(),null, announceBoarding : false);
             _evaScript.LoadIntoCrewCompartment(script.GetModifier<CrewCompartmentScript>(), null, announceBoarding : false);
+            //_evaScript.LoadIntoCrewCompartmentWithBringSpeed2(script.GetModifier<CrewCompartmentScript>(), ()=> {Debug.Log("LoadIntoCrewCompartmentWithBringSpeed");},announceBoarding : false);
             return;
         }
-        
+
+        #region Paraglider
         private PartScript CreateParachutePartScript()
         {
             Assembly assembly=new Assembly(ParachutePartElement(), 15, Game.Instance.PartTypes);
@@ -1483,10 +1486,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             partGroupScript.transform.rotation = Quaternion.identity;
             //worldPositionStays: true before 
             
-            partScript.transform.SetParent(partGroupScript.transform, worldPositionStays: true);
+            partScript.transform.SetParent(partGroupScript.transform, worldPositionStays: false);
             partScript.AssignToPartGroup(partGroupScript);
             partGroupScript.Data.Parts.Add(partScript.Data);
             return partGroupScript;
         }
+        #endregion
+        
     }
 }

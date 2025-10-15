@@ -44,8 +44,8 @@ namespace Assets.Scripts
 
         }
 
-        public static Mod Inctance { get; } = GetModInstance<Mod>();
-        private CraftScript Craft => Instance.Designer.CraftScript as CraftScript;
+        public static Mod Instance { get; } = GetModInstance<Mod>();
+        private CraftScript Craft => ModApi.Common.Game.Instance.Designer.CraftScript as CraftScript;
 
         public override void OnModLoaded()
         {
@@ -57,14 +57,14 @@ namespace Assets.Scripts
             DroodismUI.SetActive(true);
         }
 
-        public void OnSceneLoaded(object sender, SceneEventArgs e)
+        private void OnSceneLoaded(object sender, SceneEventArgs e)
         {
             subPlus();
 
             if (InDesignerScene)
             {
-                Instance.Designer.CraftLoaded += OnCraftLoaded;
-                Instance.Designer.CraftStructureChanged+=OnCraftStructureChanged;
+                ModApi.Common.Game.Instance.Designer.CraftLoaded += OnCraftLoaded;
+                ModApi.Common.Game.Instance.Designer.CraftStructureChanged+=OnCraftStructureChanged;
                 Created += OnPartAdded;
             }
 
@@ -151,15 +151,15 @@ namespace Assets.Scripts
         {
             try
             {
-                Instance.FlightScene.Initialized += OnInitialized;
+                ModApi.Common.Game.Instance.FlightScene.Initialized += OnInitialized;
                 Debug.LogFormat(" Initialized订阅OnInitialized");
-                Instance.FlightScene.CraftChanged += OnCraftChanged;
+                ModApi.Common.Game.Instance.FlightScene.CraftChanged += OnCraftChanged;
                 Debug.LogFormat(" CraftChanged订阅OnCraftChanged");
-                Instance.FlightScene.CraftStructureChanged += OnCraftStructureChangedUI;
+                ModApi.Common.Game.Instance.FlightScene.CraftStructureChanged += OnCraftStructureChangedUI;
                 Debug.LogFormat(" CraftStructureChanged订阅OnCraftStructureChangedUI");
-                Instance.FlightScene.ActiveCommandPodChanged += OnCraftChanged;
+                ModApi.Common.Game.Instance.FlightScene.ActiveCommandPodChanged += OnCraftChanged;
                 Debug.LogFormat(" ActiveCommandPodChanged订阅OnCraftChanged");
-                Instance.FlightScene.ActiveCommandPodStateChanged += OnCraftChanged;
+                ModApi.Common.Game.Instance.FlightScene.ActiveCommandPodStateChanged += OnCraftChanged;
                 Debug.LogFormat(" ActiveCommandPodStateChanged订阅OnCraftChanged");
 
             }
@@ -172,11 +172,11 @@ namespace Assets.Scripts
         //这个函数懒得调用
         private void subMinus()
         {
-            Instance.FlightScene.Initialized -= OnInitialized;
-            Instance.FlightScene.CraftChanged -= OnCraftChanged;
-            Instance.FlightScene.CraftStructureChanged -= OnCraftStructureChangedUI;
-            Instance.FlightScene.ActiveCommandPodChanged -= OnCraftChanged;
-            Instance.FlightScene.ActiveCommandPodStateChanged -= OnCraftChanged;
+            ModApi.Common.Game.Instance.FlightScene.Initialized -= OnInitialized;
+            ModApi.Common.Game.Instance.FlightScene.CraftChanged -= OnCraftChanged;
+            ModApi.Common.Game.Instance.FlightScene.CraftStructureChanged -= OnCraftStructureChangedUI;
+            ModApi.Common.Game.Instance.FlightScene.ActiveCommandPodChanged -= OnCraftChanged;
+            ModApi.Common.Game.Instance.FlightScene.ActiveCommandPodStateChanged -= OnCraftChanged;
         }
         public void SpawnFlag() 
         {

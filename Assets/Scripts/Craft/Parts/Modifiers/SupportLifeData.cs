@@ -127,38 +127,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             base.OnInitialized();
             return;
-            crewData =new CrewData();
-            
-            
-            Debug.Log("SupportLifeData: OnInitialized,get crewData");
-            if (crewData==null)
-            {
-                Debug.LogWarning("SupportLifeData: OnInitialized,crewData is Null");
-            }
-
-            if (crewData!=null)
-            {
-                crewData.role=DroodismCrewMananger.Instance.GetDroodType(Part.GetModifier<EvaData>().CrewName);
-                Debug.LogFormat("SupportLifeData: OnInitialized,role {0}",crewData.role);
-                DroodismCrewMananger.Instance.CreateCrewData(crewData);
-                Debug.Log("SupportLifeData: OnInitialized,saved crewData");
-            }
+          
         }
         
         public override void OnPartRecovered()
         {
             base.OnPartRecovered();
             return;
-            this.crewData.MissionTimeTotal += Script.MissionDurationTime;
-            try
-            {
-                DroodismCrewMananger.Instance.EditCrewData(this.Part.GetModifier<EvaData>().CrewId,crewData);
-                Debug.Log("SupportLifeData: OnPartRecovered,saved crewData");
-            }
-            catch (Exception exception)
-            {
-                Debug.LogErrorFormat("我操完蛋了2exception{0}",exception);
-            }
             
         }
 
