@@ -7,8 +7,12 @@ using ModApi.GameLoop.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Xml.Linq;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
+using Assets.Scripts.Flight.GameView;
+using Assets.Scripts.Vizzy.Craft;
+using ModApi.Craft.Program;
 using ModApi.Craft.Propulsion;
 using ModApi.Flight.Events;
 using ModApi.Flight.GameView;
@@ -19,8 +23,7 @@ using ModApi.Flight.UI;
 using ModApi.Math;
 using ModApi.Settings.Core;
 using ModApi.Ui.Inspector;
-using UnityEngine.TestTools;
-using Object = UnityEngine.Object;
+using Assembly = ModApi.Craft.Assembly;
 
 //鸡巴的我自己都看不懂我写的是什么鸡巴玩意了你还指望我给你写注释吗?
 //顺便一提如果真有除了我以外的人在github上或者逆向出来了看到了这行字,那么我只能说一句牛逼,你简直是找屎大王,能闻着味道找到我编程以来拉的最大的一坨
@@ -28,6 +31,7 @@ using Object = UnityEngine.Object;
 //2025 8 24 孩子们我回来了,我是拉屎大王
 //2025 8 31 嗨嗨嗨我又来了嗷
 //2025 9 8 为什么
+//2025 10 17一想到我还在这个Modifier苦战,往上面喷屎山我就忍不住轻哼起来.
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
@@ -1426,37 +1430,80 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         private void 你去吃粑粑去吧()
         {
-            var script = CreateParachutePartScript();
-            BodyData body = CraftBuilder.CreateBodyData(new List<PartData>(){script.Data}, PartScript.CraftScript.Transform);
+            Vector3 orgVelocity = this.PartScript.BodyScript.RigidBody.velocity;
+            Quaternion orgRotation = this.PartScript.BodyScript.RigidBody.rotation;
+            Vector3 orgAngularVelocity = this.PartScript.BodyScript.RigidBody.angularVelocity; // 修正这里！
+        
+            // Step 1: 用临时 localPosition (Vector3.zero) 创建 Part
+            // 这会设置 XML position="0,0,0"，创建后 Transform.localPosition = zero
+            var parachutePartScript = CreateParachutePartScript(Vector3.zero); // 临时零
+        
+            // Step 2: 计算正确 localPosition (PCI 位置转 B 的 local)
+            // 注意：新 Part 的 local 是相对其未来 parent (partGroupScript.transform)
+            // 但计算时用 Craft 的 CenterOfMass 或临时 Transform（创建后 script.Transform 存在，但未 parent）
+            Vector3d originalCraftPciPos = PartScript.CraftScript.FlightData.Position; // A 的 PCI
+            Debug.LogFormat($"原来的{PartScript.Transform.position}, local {PartScript.Transform.localPosition},pci{originalCraftPciPos}");
+            Vector3 correctLocalPos = ConvertPCIToLocal(parachutePartScript,PartScript.Transform.position);
+            Debug.LogFormat($"计算出的修正后的local{correctLocalPos}");
+            #region 我不想看
+            //ConvertPciFromAToBLocal(this.PartScript as PartScript, script, originalCraftPciPos); // 自定义函数，见下
+        
+            // Step 3: 创建 Body 和 Group（此时 script 存在）
+            BodyData body = CraftBuilder.CreateBodyData(new List<PartData>(){parachutePartScript.Data}, PartScript.CraftScript.Transform);
             CraftScript craftScript = PartScript.CraftScript as CraftScript;
-            craftScript.Data.Assembly.AddBody(body);
+            craftScript?.Data.Assembly.AddBody(body);
             BodyScript bodyScript = CraftBuilder.CreateBodyScript(craftScript, body);
             bodyScript.MoveToCraft(craftScript);
             bodyScript.OnInitialized();
-            //Debug.Log($"Body is disconnected {body.BodyScript.Disconnected}");
-            bodyScript.PartGroups.Add(CreatePopPartGroup(bodyScript, script, this.PartScript.Data.Id+1));
-            
+        
+            // 创建 Group 并设置 parent
+            PartGroupScript groupScript = CreatePopPartGroup(bodyScript, parachutePartScript, this.PartScript.Data.Id + 1);
+        
+            // Step 4: 现在设置正确 localPosition（相对 group）
+            // 因为 SetParent(worldPositionStays: false)，localPosition 会基于世界重新计算
+            // 所以先设世界位置（如果需），或直接设 local（如果 group 是 zero）
+            //就是这里
+
+            #endregion
            
-            /*
-            script.BodyScript.RigidBody.position = this.PartScript.BodyScript.RigidBody.position;
-            script.BodyScript.RigidBody.velocity=this.PartScript.BodyScript.RigidBody.velocity;
-            script.BodyScript.RigidBody.angularVelocity=this.PartScript.BodyScript.RigidBody.angularVelocity;*/
-            //必须保持false
-            //this.PartScript.BodyScript.RigidBody.isKinematic = script.BodyScript.RigidBody.isKinematic = true;
-            //CalculateInertiaTensors必须保持false
+            parachutePartScript.Transform.position = new Vector3(20, 0, 0); 
+            Debug.LogFormat($"script 的 local pos: {parachutePartScript.Transform.localPosition}, world: {parachutePartScript.Transform.position},PCI{parachutePartScript.CraftScript.FlightData.Position}");
+        
+            // 速度等同步（新 Body 创建后）
             CraftBuilder.CalculateInertiaTensors(bodyScript, false);
             _evaScript.OnPreNodeLoaded();
             _evaScript.OnNodeLoaded();
-           //Mod.LoadIntoCrewCompartmentWithBringSpeed2(_evaScript, script.GetModifier<CrewCompartmentScript>(),null, announceBoarding : false);
-            _evaScript.LoadIntoCrewCompartment(script.GetModifier<CrewCompartmentScript>(), null, announceBoarding : false);
-            //_evaScript.LoadIntoCrewCompartmentWithBringSpeed2(script.GetModifier<CrewCompartmentScript>(), ()=> {Debug.Log("LoadIntoCrewCompartmentWithBringSpeed");},announceBoarding : false);
-            return;
+        
+            parachutePartScript.BodyScript.RigidBody.velocity = orgVelocity;
+            parachutePartScript.BodyScript.RigidBody.rotation = orgRotation;
+            parachutePartScript.BodyScript.RigidBody.angularVelocity = orgAngularVelocity; // 用修正的
+        
+            // Step 5: Load（位置已设）
+            _evaScript.LoadIntoCrewCompartment(parachutePartScript.GetModifier<CrewCompartmentScript>(), null, announceBoarding: false);
+            
         }
 
-        #region Paraglider
-        private PartScript CreateParachutePartScript()
+        #region  这他妈又是什么玩意我操
+        private Vector3 ConvertPCIToLocal(IPartScript part, Vector3d pci)
         {
-            Assembly assembly=new Assembly(ParachutePartElement(), 15, Game.Instance.PartTypes);
+            Vector3 vector = this.PartScript.CraftScript.ReferenceFrame.PlanetToFrameVector(pci);
+            bool flag = part != null;
+            Vector3 result;
+            if (flag)
+            {
+                result = part.Transform.InverseTransformDirection(vector);
+            }
+            else
+            {
+                result = this.PartScript.CraftScript.CenterOfMass.InverseTransformDirection(vector);
+            }
+            return result;
+        }
+        #endregion
+        #region Paraglider
+        private PartScript CreateParachutePartScript(Vector3 orgPosition)
+        {
+            Assembly assembly=new Assembly(ParachutePartElement(orgPosition), 15, Game.Instance.PartTypes);
             CraftBuilder.CreatePartGameObjects(assembly.Parts, PartScript.CraftScript);
             PartData part = assembly.Parts[0];
             PartScript partScript = part.PartScript as PartScript;
@@ -1465,13 +1512,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             //pop.Attach(partScript.GetModifier<PopulationScript>());
             return partScript;
         }
-        private XElement ParachutePartElement()
+        private XElement ParachutePartElement(Vector3 position)
         {
             
             DesignerPart designerpart = Game.Instance.CachedDesignerParts.Parts.First(d => d.Name == "Glider");
             XElement assembly = new XElement("Assembly", designerpart.AssemblyElement.Element("Parts"));
-            
+            assembly.Element("Parts").Element("Part").SetAttributeValue("position", position);
+            Debug.LogFormat($"看这里:{assembly.ToString()}");
             return assembly;
+            
+
+            
         }
         private PartGroupScript CreatePopPartGroup(BodyScript bodyScript, PartScript partScript, int id)
         {
@@ -1481,7 +1532,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             partGroupScript.Id = id;
             partGroupScript.BodyScript = bodyScript;
             partGroupScript.transform.parent = bodyScript.transform;
-            partGroupScript.transform.localPosition = Vector3.zero;
+            //partGroupScript.transform.localPosition = Vector3.zero;
+            partGroupScript.transform.localPosition = bodyScript.transform.localPosition;
             partGroupScript.transform.localScale = Vector3.one;
             partGroupScript.transform.rotation = Quaternion.identity;
             //worldPositionStays: true before 

@@ -84,7 +84,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (!((UnityEngine.Object) crew == (UnityEngine.Object) this._pilot))
                 return;
             this.SetPilot((EvaScript) null);
-           this.PartScript.BodyScript.ExplodePart(this.PartScript, -1);
+            if (Game.InFlightScene) 
+            {
+                this.PartScript.BodyScript.ExplodePart(this.PartScript, -1);
+            }
+               
 
 
         }
