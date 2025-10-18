@@ -51,5 +51,6 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Droodism.sln"
+    "dotnet.defaultSolution": "Droodism.sln",
+    "dotnet.preferCSharpExtension": true
 }
