@@ -98,31 +98,8 @@ namespace Assets.Scripts
             Game.Instance.SceneManager.SceneTransitionCompleted+=OnSceneTransitionCompleted;
             //Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.FlightView,OnBuildFlightViewInspectorPanel);
             DevConsoleApi.RegisterCommand("RefreshFuelSource",那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花);
-            DevConsoleApi.RegisterCommand("doIt",要鸡巴干啥);
-            DevConsoleApi.RegisterCommand("CreateCrewDataFromGameStates",要鸡巴干啥2);
-            DevConsoleApi.RegisterCommand("DroodismSave",要鸡巴干啥3);
             
         }
-
-        void 要鸡巴干啥()
-        {
-           
-            foreach (var crew in DroodismCrewMananger.Instance._crewDataList)
-            {
-                Debug.LogFormat($"_crewDataList 里面的名字{crew.Name},职位{crew.role},id{crew.id}");
-            }
-        }
-
-        void 要鸡巴干啥2()
-        {
-            DroodismCrewMananger.Instance.CreateCrewDataFromGameStates();
-        }
-        void 要鸡巴干啥3()
-        {
-            DroodismCrewMananger.Instance.SaveCrewDataToDatabase();
-            DroodismCrewMananger.Instance.SaveXml();
-        }
-
         public void 那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花()
         {
             
@@ -198,6 +175,27 @@ namespace Assets.Scripts
             var flag = ((FlightSceneScript)Game.Instance.FlightScene).SpawnCraft($"Flag at {Game.Instance.FlightScene.CraftNode.Parent.Name},{(ConvertPlanetPositionToLatLongAgl(position).x)} ,{(ConvertPlanetPositionToLatLongAgl(position).y)}", craftData, location, xml);
             flag.AllowPlayerControl = false;
             Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Planted Flag at <color=green> {Game.Instance.FlightScene.CraftNode.Parent.Name} </color>'s surface,at {(ConvertPlanetPositionToLatLongAgl(position).x)}° , {(ConvertPlanetPositionToLatLongAgl(position).y)}° ",true,120f);
+        }
+
+        public void SpawnParaGlider(CraftScript craft)
+        {
+            var templateText = Mod.ResourceLoader.LoadAsset<TextAsset>("Assets/Content/Resources/para.xml");
+            var craftData = Game.Instance.CraftLoader.LoadCraftImmediate(XDocument.Parse(templateText.text).Root);
+            var xml = craftData.GenerateXml((Transform)null, false, true);
+            Vector3d position = craft.FlightData.Position;
+            double latitude = ConvertPlanetPositionToLatLongAgl(position).x;
+            double longitude=ConvertPlanetPositionToLatLongAgl(position).y;
+            var location = new LaunchLocation(
+                "",
+                LaunchLocationType.SurfaceLockedGround,
+                Game.Instance.FlightScene.CraftNode.Parent.PlanetData.Name,
+                latitude,
+                longitude,
+                craft.FlightData.Velocity,
+                0,
+                craft.FlightData.AltitudeAboveGroundLevel);
+            var chute = ((FlightSceneScript)Game.Instance.FlightScene).SpawnCraft($"", craftData, location, xml);
+            chute.AllowPlayerControl = false;
         }
 
         

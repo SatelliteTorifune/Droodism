@@ -88,8 +88,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 this.PartScript.BodyScript.ExplodePart(this.PartScript, -1);
             }
-               
-
 
         }
         private void SetPilot(EvaScript pilot)

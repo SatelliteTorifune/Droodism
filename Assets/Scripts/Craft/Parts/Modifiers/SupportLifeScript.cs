@@ -180,6 +180,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             if (frame.DeltaTimeWorld == 0.0) 
                 return;
+            //remove before release
+            Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"第一个{PartScript.BodyScript.Transform.position},第二个{PartScript.BodyScript.RigidBody.position},reference frame{PartScript.CraftScript.FramePosition}");
             UpdateRunningStatus();
             if (!IsHibernating)
             {
@@ -1421,8 +1423,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return;
             }
 
+            Debug.LogFormat($"调用前world{PartScript.Transform.position},localPosition{PartScript.Transform.localPosition} ,PCI{craftScript.FlightData.Position}");
+            //PartScript.BodyScript.RigidBody.ResetCenterOfMass();
+            CraftScript craftScript1 = this.PartScript.CraftScript as CraftScript;
+            craftScript1.RecenterTransformOnCoM(true);
+            Debug.LogFormat($"recenter后 world{PartScript.Transform.position},localPosition{PartScript.Transform.localPosition} ,PCI{craftScript.FlightData.Position}");
+            //Mod.Instance.SpawnParaGlider(PartScript.CraftScript as CraftScript);
             你去吃粑粑去吧();
-           
+
         }
 
         /// <summary>
@@ -1430,20 +1438,21 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         private void 你去吃粑粑去吧()
         {
+            
+           
+            //PartScript.CraftScript.
             Vector3 orgVelocity = this.PartScript.BodyScript.RigidBody.velocity;
             Quaternion orgRotation = this.PartScript.BodyScript.RigidBody.rotation;
             Vector3 orgAngularVelocity = this.PartScript.BodyScript.RigidBody.angularVelocity; // 修正这里！
+
+            var temp = PartScript.BodyScript.Transform.position;
+            //看看这里
+            var parachutePartScript = CreateParachutePartScript(temp); 
         
-            // Step 1: 用临时 localPosition (Vector3.zero) 创建 Part
-            // 这会设置 XML position="0,0,0"，创建后 Transform.localPosition = zero
-            var parachutePartScript = CreateParachutePartScript(Vector3.zero); // 临时零
-        
-            // Step 2: 计算正确 localPosition (PCI 位置转 B 的 local)
-            // 注意：新 Part 的 local 是相对其未来 parent (partGroupScript.transform)
-            // 但计算时用 Craft 的 CenterOfMass 或临时 Transform（创建后 script.Transform 存在，但未 parent）
-            Vector3d originalCraftPciPos = PartScript.CraftScript.FlightData.Position; // A 的 PCI
-            Debug.LogFormat($"原来的{PartScript.Transform.position}, local {PartScript.Transform.localPosition},pci{originalCraftPciPos}");
-            Vector3 correctLocalPos = ConvertPCIToLocal(parachutePartScript,PartScript.Transform.position);
+            //我说我真的燃尽了
+            Vector3d originalCraftPciPos = PartScript.CraftScript.FlightData.Position; 
+            Debug.LogFormat($"Drood的原来的world{PartScript.Transform.position}, local {PartScript.Transform.localPosition},pci{originalCraftPciPos}");
+            Vector3 correctLocalPos = ConvertPCIToLocal(parachutePartScript,originalCraftPciPos);
             Debug.LogFormat($"计算出的修正后的local{correctLocalPos}");
             #region 我不想看
             //ConvertPciFromAToBLocal(this.PartScript as PartScript, script, originalCraftPciPos); // 自定义函数，见下
@@ -1465,9 +1474,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             //就是这里
 
             #endregion
-           
-            parachutePartScript.Transform.position = new Vector3(20, 0, 0); 
-            Debug.LogFormat($"script 的 local pos: {parachutePartScript.Transform.localPosition}, world: {parachutePartScript.Transform.position},PCI{parachutePartScript.CraftScript.FlightData.Position}");
+
+            //看这
+            
+            parachutePartScript.BodyScript.Transform.position = Vector3.zero;
+            Debug.LogFormat($"script, world: {parachutePartScript.Transform.position}, local pos: {parachutePartScript.Transform.localPosition},PCI{parachutePartScript.CraftScript.FlightData.Position}");
         
             // 速度等同步（新 Body 创建后）
             CraftBuilder.CalculateInertiaTensors(bodyScript, false);
