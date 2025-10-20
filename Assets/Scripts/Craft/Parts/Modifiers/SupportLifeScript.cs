@@ -10,10 +10,6 @@ using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
-using Assets.Scripts.Flight.GameView;
-using Assets.Scripts.Vizzy.Craft;
-using ModApi.Craft.Program;
-using ModApi.Craft.Propulsion;
 using ModApi.Flight.Events;
 using ModApi.Flight.GameView;
 using ModApi.Planet;
@@ -181,7 +177,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (frame.DeltaTimeWorld == 0.0) 
                 return;
             //remove before release
-            Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"第一个{PartScript.BodyScript.Transform.position},第二个{PartScript.BodyScript.RigidBody.position},reference frame{PartScript.CraftScript.FramePosition}");
+            //Debug.LogFormat($"几把的{PartScript.CraftScript.ReferenceFrame.Center},reference frame{PartScript.CraftScript.FramePosition}");
+            //Drood的PartScript.CraftScript.ReferenceFrame.Center一直在变
             UpdateRunningStatus();
             if (!IsHibernating)
             {
@@ -1427,7 +1424,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             //PartScript.BodyScript.RigidBody.ResetCenterOfMass();
             CraftScript craftScript1 = this.PartScript.CraftScript as CraftScript;
             craftScript1.RecenterTransformOnCoM(true);
-            Debug.LogFormat($"recenter后 world{PartScript.Transform.position},localPosition{PartScript.Transform.localPosition} ,PCI{craftScript.FlightData.Position}");
+            //Debug.LogFormat($"recenter后 world{PartScript.Transform.position},localPosition{PartScript.Transform.localPosition} ,PCI{craftScript.FlightData.Position}");
             //Mod.Instance.SpawnParaGlider(PartScript.CraftScript as CraftScript);
             你去吃粑粑去吧();
 
@@ -1438,25 +1435,23 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         private void 你去吃粑粑去吧()
         {
-            
            
-            //PartScript.CraftScript.
             Vector3 orgVelocity = this.PartScript.BodyScript.RigidBody.velocity;
             Quaternion orgRotation = this.PartScript.BodyScript.RigidBody.rotation;
             Vector3 orgAngularVelocity = this.PartScript.BodyScript.RigidBody.angularVelocity; // 修正这里！
-
-            var temp = PartScript.BodyScript.Transform.position;
+            
             //看看这里
-            var parachutePartScript = CreateParachutePartScript(temp); 
+            var parachutePartScript = CreateParachutePartScript();
         
             //我说我真的燃尽了
             Vector3d originalCraftPciPos = PartScript.CraftScript.FlightData.Position; 
-            Debug.LogFormat($"Drood的原来的world{PartScript.Transform.position}, local {PartScript.Transform.localPosition},pci{originalCraftPciPos}");
-            Vector3 correctLocalPos = ConvertPCIToLocal(parachutePartScript,originalCraftPciPos);
-            Debug.LogFormat($"计算出的修正后的local{correctLocalPos}");
+            //Debug.LogFormat($"Drood的原来的world{PartScript.Transform.position}, local {PartScript.Transform.localPosition},pci{originalCraftPciPos}");
+            Vector3 correctLocalPos = ConvertPCIToLocal(null,PartScript.CraftScript.ReferenceFrame.Center);
+            //Debug.LogFormat($"计算出的修正后的local{correctLocalPos}");
             #region 我不想看
             //ConvertPciFromAToBLocal(this.PartScript as PartScript, script, originalCraftPciPos); // 自定义函数，见下
         
+            
             // Step 3: 创建 Body 和 Group（此时 script 存在）
             BodyData body = CraftBuilder.CreateBodyData(new List<PartData>(){parachutePartScript.Data}, PartScript.CraftScript.Transform);
             CraftScript craftScript = PartScript.CraftScript as CraftScript;
@@ -1468,6 +1463,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             // 创建 Group 并设置 parent
             PartGroupScript groupScript = CreatePopPartGroup(bodyScript, parachutePartScript, this.PartScript.Data.Id + 1);
         
+            
             // Step 4: 现在设置正确 localPosition（相对 group）
             // 因为 SetParent(worldPositionStays: false)，localPosition 会基于世界重新计算
             // 所以先设世界位置（如果需），或直接设 local（如果 group 是 zero）
@@ -1477,19 +1473,19 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
             //看这
             
-            parachutePartScript.BodyScript.Transform.position = Vector3.zero;
-            Debug.LogFormat($"script, world: {parachutePartScript.Transform.position}, local pos: {parachutePartScript.Transform.localPosition},PCI{parachutePartScript.CraftScript.FlightData.Position}");
-        
-            // 速度等同步（新 Body 创建后）
+            //parachutePartScript.BodyScript.Transform.position = correctLocalPos;
+            //Debug.LogFormat($"script, world: {parachutePartScript.Transform.position}, local pos: {parachutePartScript.Transform.localPosition},PCI{parachutePartScript.CraftScript.FlightData.Position}");
+            
             CraftBuilder.CalculateInertiaTensors(bodyScript, false);
-            _evaScript.OnPreNodeLoaded();
             _evaScript.OnNodeLoaded();
         
             parachutePartScript.BodyScript.RigidBody.velocity = orgVelocity;
             parachutePartScript.BodyScript.RigidBody.rotation = orgRotation;
-            parachutePartScript.BodyScript.RigidBody.angularVelocity = orgAngularVelocity; // 用修正的
-        
-            // Step 5: Load（位置已设）
+            parachutePartScript.BodyScript.RigidBody.angularVelocity = orgAngularVelocity;
+            
+            //试试看
+            //parachutePartScript.BodyScript.Transform.position = correctLocalPos;
+            
             _evaScript.LoadIntoCrewCompartment(parachutePartScript.GetModifier<CrewCompartmentScript>(), null, announceBoarding: false);
             
         }
@@ -1512,9 +1508,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         #endregion
         #region Paraglider
-        private PartScript CreateParachutePartScript(Vector3 orgPosition)
+        private PartScript CreateParachutePartScript()
         {
-            Assembly assembly=new Assembly(ParachutePartElement(orgPosition), 15, Game.Instance.PartTypes);
+            //Assembly assembly=new Assembly(ParachutePartElementWithPosition(orgPosition), 15, Game.Instance.PartTypes);
+            Assembly assembly=new Assembly(ParachutePartElement(), 15, Game.Instance.PartTypes);
             CraftBuilder.CreatePartGameObjects(assembly.Parts, PartScript.CraftScript);
             PartData part = assembly.Parts[0];
             PartScript partScript = part.PartScript as PartScript;
@@ -1523,7 +1520,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             //pop.Attach(partScript.GetModifier<PopulationScript>());
             return partScript;
         }
-        private XElement ParachutePartElement(Vector3 position)
+        private XElement ParachutePartElementWithPosition(Vector3 position)
         {
             
             DesignerPart designerpart = Game.Instance.CachedDesignerParts.Parts.First(d => d.Name == "Glider");
@@ -1531,9 +1528,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             assembly.Element("Parts").Element("Part").SetAttributeValue("position", position);
             Debug.LogFormat($"看这里:{assembly.ToString()}");
             return assembly;
+        }
+        private XElement ParachutePartElement()
+        {
             
-
-            
+            DesignerPart designerpart = Game.Instance.CachedDesignerParts.Parts.First(d => d.Name == "Glider");
+            XElement assembly = new XElement("Assembly", designerpart.AssemblyElement.Element("Parts"));
+            Debug.LogFormat($"看这里:{assembly.ToString()}");
+            return assembly;
         }
         private PartGroupScript CreatePopPartGroup(BodyScript bodyScript, PartScript partScript, int id)
         {
@@ -1548,7 +1550,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             partGroupScript.transform.localScale = Vector3.one;
             partGroupScript.transform.rotation = Quaternion.identity;
             //worldPositionStays: true before 
-            
             partScript.transform.SetParent(partGroupScript.transform, worldPositionStays: false);
             partScript.AssignToPartGroup(partGroupScript);
             partGroupScript.Data.Parts.Add(partScript.Data);

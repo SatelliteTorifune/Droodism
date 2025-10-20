@@ -31,6 +31,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public void FlightUpdate(in FlightFrameData frame)
         {
+            Debug.LogFormat($"PartScript.CraftScript.ReferenceFrame.Center{PartScript.CraftScript.ReferenceFrame.Center},again{PartScript.CraftScript.Transform.position},pci{PartScript.CraftScript.FlightData.Position}");
             WorkingLogic(frame);
             if (PartScript.CraftScript.FlightData.AltitudeAboveTerrain<5)
             {
