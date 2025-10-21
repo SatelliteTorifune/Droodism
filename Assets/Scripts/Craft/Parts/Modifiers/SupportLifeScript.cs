@@ -1403,9 +1403,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 ui.ShowMessage("Can Not Deploy Parachute,Not in Eva",false,10);
                 return;
             }
-            if (craftScript.FlightData.Grounded)
+            if (_evaScript.IsGrounded)
             {
                 ui.ShowMessage("Can Not Deploy Parachute,Drood is Grounded",false,10);
+                return;
+            }
+
+            if (craftScript.FlightData.AltitudeAboveGroundLevel<=10)
+            {
+                ui.ShowMessage("Can Not Deploy Parachute Here",false,10);
                 return;
             }
             if (craftScript.FlightData.AtmosphereSample.AirDensity<=0.01)
@@ -1420,7 +1426,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return;
             }
 
-            Debug.LogFormat($"调用前world{PartScript.Transform.position},localPosition{PartScript.Transform.localPosition} ,PCI{craftScript.FlightData.Position}");
+            //Debug.LogFormat($"调用前world{PartScript.Transform.position},localPosition{PartScript.Transform.localPosition} ,PCI{craftScript.FlightData.Position}");
             //PartScript.BodyScript.RigidBody.ResetCenterOfMass();
             CraftScript craftScript1 = this.PartScript.CraftScript as CraftScript;
             craftScript1.RecenterTransformOnCoM(true);
@@ -1478,7 +1484,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             CraftBuilder.CalculateInertiaTensors(bodyScript, false);
             _evaScript.OnNodeLoaded();
-        
+            
             parachutePartScript.BodyScript.RigidBody.velocity = orgVelocity;
             parachutePartScript.BodyScript.RigidBody.rotation = orgRotation;
             parachutePartScript.BodyScript.RigidBody.angularVelocity = orgAngularVelocity;
@@ -1526,7 +1532,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             DesignerPart designerpart = Game.Instance.CachedDesignerParts.Parts.First(d => d.Name == "Glider");
             XElement assembly = new XElement("Assembly", designerpart.AssemblyElement.Element("Parts"));
             assembly.Element("Parts").Element("Part").SetAttributeValue("position", position);
-            Debug.LogFormat($"看这里:{assembly.ToString()}");
+            //Debug.LogFormat($"看这里:{assembly.ToString()}");
             return assembly;
         }
         private XElement ParachutePartElement()
@@ -1534,7 +1540,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             DesignerPart designerpart = Game.Instance.CachedDesignerParts.Parts.First(d => d.Name == "Glider");
             XElement assembly = new XElement("Assembly", designerpart.AssemblyElement.Element("Parts"));
-            Debug.LogFormat($"看这里:{assembly.ToString()}");
+            //Debug.LogFormat($"看这里:{assembly.ToString()}");
             return assembly;
         }
         private PartGroupScript CreatePopPartGroup(BodyScript bodyScript, PartScript partScript, int id)

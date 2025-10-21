@@ -1,6 +1,9 @@
+using System.Linq.Expressions;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
+using Assets.Scripts.Craft.Parts.Modifiers.Input;
 using ModApi;
 using ModApi.Craft;
+using ModApi.Craft.Parts.Input;
 using ModApi.GameLoop;
 using RootMotion.FinalIK;
 
@@ -14,7 +17,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
 
-    public class GliderScript : PartModifierScript<GliderData>,IFlightUpdate
+    public class GliderScript : PartModifierScript<GliderData>,IFlightUpdate,IFlightStart
     {
         private Transform 
             LeftHandTransform,
@@ -27,27 +30,57 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private CrewCompartmentScript _crewCompartment;
         private AttachPoint _seatAttachPoint;
 
+        private IInputController pitchInput;
+        
+
         private bool isKill;
+
+        public void FlightStart(in FlightFrameData frame)
+        {
+            
+        }
+        
 
         public void FlightUpdate(in FlightFrameData frame)
         {
-            Debug.LogFormat($"PartScript.CraftScript.ReferenceFrame.Center{PartScript.CraftScript.ReferenceFrame.Center},again{PartScript.CraftScript.Transform.position},pci{PartScript.CraftScript.FlightData.Position}");
-            WorkingLogic(frame);
-            if (PartScript.CraftScript.FlightData.AltitudeAboveTerrain<5)
+            //Debug.LogFormat($"PartScript.CraftScript.ReferenceFrame.Center{PartScript.CraftScript.ReferenceFrame.Center},again{PartScript.CraftScript.Transform.position},pci{PartScript.CraftScript.FlightData.Position}");
+            try
             {
-                
-                foreach (var eva in _crewCompartment.Crew)
+                if (this.PartScript.CraftScript.FlightData.AltitudeAboveTerrain<5)
                 {
-                    _crewCompartment.UnloadCrewMember(eva,true);
+                    foreach (var eva in _crewCompartment.Crew)
+                    {
+                        _crewCompartment.UnloadCrewMember(eva,true);
+                    }
+                }
+                
+                if (_crewCompartment.Crew.Count==0)
+                {
+                    this.PartScript.BodyScript.ExplodePart(this.PartScript, -1);
                 }
             }
+            catch (Exception e)
+            {
+                //since this shit is called every frame,so, when the part kills itself, it will throw an exception,so, i just ignore it.
+            }
             
+            WorkingLogic(frame);
         }
 
         private void WorkingLogic(in FlightFrameData frame)
         {
-            
+           UpdateIC();
         }
+
+        private void UpdateIC()
+        {
+            pitchInput=this.GetInputController((Expression<Func<CraftControls, float>>) (x => x.Pitch));
+            if (pitchInput!=null)
+            {
+                Debug.LogFormat("pitchInput={0}", pitchInput.Value);
+            }
+        }
+        
         #region 傻逼
         protected override void OnInitialized()
         {
@@ -85,11 +118,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (!((UnityEngine.Object) crew == (UnityEngine.Object) this._pilot))
                 return;
             this.SetPilot((EvaScript) null);
-            if (Game.InFlightScene) 
-            {
-                this.PartScript.BodyScript.ExplodePart(this.PartScript, -1);
-            }
-
         }
         private void SetPilot(EvaScript pilot)
         {

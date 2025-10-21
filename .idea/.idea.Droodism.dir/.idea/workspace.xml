@@ -5,7 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="16108207-b648-471a-9188-8c1ca9c77f7a" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Assets/ModData.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/ModData.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Droodism.dir/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Droodism.dir/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Craft/Parts/Modifiers/GliderScript.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Craft/Parts/Modifiers/GliderScript.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Craft/Parts/Modifiers/SupportLifeScript.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Craft/Parts/Modifiers/SupportLifeScript.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -80,6 +81,8 @@
       <workItem from="1760769680618" duration="2000" />
       <workItem from="1760769723744" duration="605000" />
       <workItem from="1760803305835" duration="7051000" />
+      <workItem from="1760935933354" duration="14512000" />
+      <workItem from="1761051799572" duration="6000" />
     </task>
     <servers />
   </component>
