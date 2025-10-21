@@ -30,8 +30,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private CrewCompartmentScript _crewCompartment;
         private AttachPoint _seatAttachPoint;
 
-        private IInputController pitchInput;
+        //private IInputController pitchInput;
         
+        private InputControllerScript pitchInput;
+        private BodyCollisionHandler _bodyCollisionHandler;
 
         private bool isKill;
 
@@ -44,19 +46,19 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public void FlightUpdate(in FlightFrameData frame)
         {
             //Debug.LogFormat($"PartScript.CraftScript.ReferenceFrame.Center{PartScript.CraftScript.ReferenceFrame.Center},again{PartScript.CraftScript.Transform.position},pci{PartScript.CraftScript.FlightData.Position}");
+            bool isGround()
+            {
+                return this.PartScript.CraftScript.FlightData.AltitudeAboveTerrain < 5;
+            }
+            
             try
             {
-                if (this.PartScript.CraftScript.FlightData.AltitudeAboveTerrain<5)
+                if (isGround())
                 {
                     foreach (var eva in _crewCompartment.Crew)
                     {
                         _crewCompartment.UnloadCrewMember(eva,true);
                     }
-                }
-                
-                if (_crewCompartment.Crew.Count==0)
-                {
-                    this.PartScript.BodyScript.ExplodePart(this.PartScript, -1);
                 }
             }
             catch (Exception e)
@@ -69,16 +71,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private void WorkingLogic(in FlightFrameData frame)
         {
-           UpdateIC();
+           //UpdateIC();
         }
 
         private void UpdateIC()
         {
-            pitchInput=this.GetInputController((Expression<Func<CraftControls, float>>) (x => x.Pitch));
-            if (pitchInput!=null)
+            var jiba = this.PartScript.GetModifier<InputControllerScript>();// this.GetInputController((Expression<Func<CraftControls, float>>) (x => x.Pitch));
+            if (jiba!=null)
             {
-                Debug.LogFormat("pitchInput={0}", pitchInput.Value);
+                Debug.Log(jiba.Value);
             }
+            
         }
         
         #region 傻逼
@@ -112,12 +115,23 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             _crewCompartment = PartScript.GetModifier<CrewCompartmentScript>();
         }
-        private void OnPilotEnter(EvaScript crew) => this.SetPilot(crew);
+
+        private void OnPilotEnter(EvaScript crew)
+        {
+            this.SetPilot(crew);
+        }
+
         private void OnPilotExit(EvaScript crew)
         {
             if (!((UnityEngine.Object) crew == (UnityEngine.Object) this._pilot))
                 return;
+            var craftScript = this.PartScript.CraftScript as CraftScript;
+            craftScript.Data.Assembly.RemovePart(this.PartScript.Data);
             this.SetPilot((EvaScript) null);
+            this.PartScript.BodyScript.ExplodePart(this.PartScript, -1);
+            
+            
+           
         }
         private void SetPilot(EvaScript pilot)
         {

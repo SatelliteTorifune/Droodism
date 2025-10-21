@@ -1483,7 +1483,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             //Debug.LogFormat($"script, world: {parachutePartScript.Transform.position}, local pos: {parachutePartScript.Transform.localPosition},PCI{parachutePartScript.CraftScript.FlightData.Position}");
             
             CraftBuilder.CalculateInertiaTensors(bodyScript, false);
-            _evaScript.OnNodeLoaded();
+            //_evaScript.OnNodeLoaded();
+            _evaScript.OnPreNodeLoaded();
             
             parachutePartScript.BodyScript.RigidBody.velocity = orgVelocity;
             parachutePartScript.BodyScript.RigidBody.rotation = orgRotation;
@@ -1525,15 +1526,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             PartScript.CraftScript.Data.Assembly.Absorb(assembly);
             //pop.Attach(partScript.GetModifier<PopulationScript>());
             return partScript;
-        }
-        private XElement ParachutePartElementWithPosition(Vector3 position)
-        {
-            
-            DesignerPart designerpart = Game.Instance.CachedDesignerParts.Parts.First(d => d.Name == "Glider");
-            XElement assembly = new XElement("Assembly", designerpart.AssemblyElement.Element("Parts"));
-            assembly.Element("Parts").Element("Part").SetAttributeValue("position", position);
-            //Debug.LogFormat($"看这里:{assembly.ToString()}");
-            return assembly;
         }
         private XElement ParachutePartElement()
         {

@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 487888362035035393}
   - component: {fileID: 2754284542459182745}
   - component: {fileID: 1068914864283971010}
+  - component: {fileID: 2030863488292301850}
   m_Layer: 0
   m_Name: Glider
   m_TagString: Untagged
@@ -212,3 +213,51 @@ MonoBehaviour:
     _version: 1
     _versionLast: 1
     _versionsAllowed: 
+--- !u!114 &2030863488292301850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5778950574174646614}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1938718678, guid: 55a7c5278766598448d9083b0de0861d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Data:
+    _id: 
+    _inputId: 
+    _inspectorEnabled: 1
+    _partPropertiesEnabled: 1
+    _staticPriceAndMass: 0
+    _version: 1
+    _versionLast: 1
+    _versionsAllowed: 
+    _activationGroup: 0
+    _currentValue: 0
+    _designerInputOptions: 
+    _ignorePartActivationState: 0
+    _input: Pitch
+    _inputAxisRange:
+      _maxValue: 0
+      _minValue: 0
+      _zeroValue: 0
+    _inputAxisRangeDesigner: 
+    _invert: 0
+    _invertOnMirror: 0
+    _invertType: 1
+    _max: 1
+    _min: -1
+    _outputCurveAmplitude: 1
+    _outputCurveFrequency: 1
+    _outputCurveKeyframes: 
+    _outputCurveOffset: 0
+    _outputCurveStyle: 4
+    _outputCurveWrapMode: 8
+    _overrideInput: 
+    _showActivationGroup: 0
+    _showInputAxis: 1
+    _showInvert: 1
+    _type: 0
+    _zeroOnDeactivate: 1
