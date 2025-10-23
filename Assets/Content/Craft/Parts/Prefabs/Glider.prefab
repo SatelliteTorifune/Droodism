@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1887315765961462810}
   - component: {fileID: 1944097261473080420}
   - component: {fileID: 1581653151770015500}
-  - component: {fileID: 3469010571238766436}
+  - component: {fileID: 2649282451865329655}
   m_Layer: 0
   m_Name: ParachuteMesh
   m_TagString: Untagged
@@ -121,8 +121,8 @@ MonoBehaviour:
   _ignoreFirstPersonCollisions: 0
   _isPrimary: 1
   _selectionEnabledInFlight: 1
---- !u!65 &3469010571238766436
-BoxCollider:
+--- !u!136 &2649282451865329655
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -139,9 +139,11 @@ BoxCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.0068734293, y: 0.0037960922, z: 0.0056054727}
-  m_Center: {x: 0, y: 0.0025294805, z: 0}
+  serializedVersion: 2
+  m_Radius: 0.0035721085
+  m_Height: 0.016430054
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.0025364303, z: 0}
 --- !u!1 &133574513294678722
 GameObject:
   m_ObjectHideFlags: 0

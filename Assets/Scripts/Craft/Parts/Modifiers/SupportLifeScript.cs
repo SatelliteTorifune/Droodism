@@ -28,6 +28,7 @@ using Assembly = ModApi.Craft.Assembly;
 //2025 8 31 嗨嗨嗨我又来了嗷
 //2025 9 8 为什么
 //2025 10 17一想到我还在这个Modifier苦战,往上面喷屎山我就忍不住轻哼起来.
+//2025 10 22 我希望这是我最后一次碰这个class
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
@@ -1395,8 +1396,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 if (_evaScript.EvaActive)
                 {
                     return !_evaScript.ActiveWhileInCrewCompartment;
-                }
-               return craftScript.Data.Assembly.Parts.Count == 1 && craftScript.RootPart.Data.PartType.Name.Contains("Eva");
+                }return craftScript.Data.Assembly.Parts.Count == 1 && craftScript.RootPart.Data.PartType.Name.Contains("Eva");
+                
             }
             if (!isEva())
             {
@@ -1425,13 +1426,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 ui.ShowMessage("Can Not Deploy Parachute,Drood is in water",false,10);
                 return;
             }
-
-            //Debug.LogFormat($"调用前world{PartScript.Transform.position},localPosition{PartScript.Transform.localPosition} ,PCI{craftScript.FlightData.Position}");
-            //PartScript.BodyScript.RigidBody.ResetCenterOfMass();
+            
             CraftScript craftScript1 = this.PartScript.CraftScript as CraftScript;
             craftScript1.RecenterTransformOnCoM(true);
-            //Debug.LogFormat($"recenter后 world{PartScript.Transform.position},localPosition{PartScript.Transform.localPosition} ,PCI{craftScript.FlightData.Position}");
-            //Mod.Instance.SpawnParaGlider(PartScript.CraftScript as CraftScript);
             你去吃粑粑去吧();
 
         }
@@ -1448,14 +1445,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             //看看这里
             var parachutePartScript = CreateParachutePartScript();
-        
-            //我说我真的燃尽了
-            Vector3d originalCraftPciPos = PartScript.CraftScript.FlightData.Position; 
-            //Debug.LogFormat($"Drood的原来的world{PartScript.Transform.position}, local {PartScript.Transform.localPosition},pci{originalCraftPciPos}");
-            Vector3 correctLocalPos = ConvertPCIToLocal(null,PartScript.CraftScript.ReferenceFrame.Center);
-            //Debug.LogFormat($"计算出的修正后的local{correctLocalPos}");
             #region 我不想看
-            //ConvertPciFromAToBLocal(this.PartScript as PartScript, script, originalCraftPciPos); // 自定义函数，见下
         
             
             // Step 3: 创建 Body 和 Group（此时 script 存在）
@@ -1468,20 +1458,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
             // 创建 Group 并设置 parent
             PartGroupScript groupScript = CreatePopPartGroup(bodyScript, parachutePartScript, this.PartScript.Data.Id + 1);
-        
-            
-            // Step 4: 现在设置正确 localPosition（相对 group）
-            // 因为 SetParent(worldPositionStays: false)，localPosition 会基于世界重新计算
-            // 所以先设世界位置（如果需），或直接设 local（如果 group 是 zero）
-            //就是这里
-
             #endregion
 
             //看这
-            
-            //parachutePartScript.BodyScript.Transform.position = correctLocalPos;
-            //Debug.LogFormat($"script, world: {parachutePartScript.Transform.position}, local pos: {parachutePartScript.Transform.localPosition},PCI{parachutePartScript.CraftScript.FlightData.Position}");
-            
             CraftBuilder.CalculateInertiaTensors(bodyScript, false);
             //_evaScript.OnNodeLoaded();
             _evaScript.OnPreNodeLoaded();
@@ -1489,31 +1468,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             parachutePartScript.BodyScript.RigidBody.velocity = orgVelocity;
             parachutePartScript.BodyScript.RigidBody.rotation = orgRotation;
             parachutePartScript.BodyScript.RigidBody.angularVelocity = orgAngularVelocity;
-            
-            //试试看
-            //parachutePartScript.BodyScript.Transform.position = correctLocalPos;
-            
             _evaScript.LoadIntoCrewCompartment(parachutePartScript.GetModifier<CrewCompartmentScript>(), null, announceBoarding: false);
             
         }
-
-        #region  这他妈又是什么玩意我操
-        private Vector3 ConvertPCIToLocal(IPartScript part, Vector3d pci)
-        {
-            Vector3 vector = this.PartScript.CraftScript.ReferenceFrame.PlanetToFrameVector(pci);
-            bool flag = part != null;
-            Vector3 result;
-            if (flag)
-            {
-                result = part.Transform.InverseTransformDirection(vector);
-            }
-            else
-            {
-                result = this.PartScript.CraftScript.CenterOfMass.InverseTransformDirection(vector);
-            }
-            return result;
-        }
-        #endregion
         #region Paraglider
         private PartScript CreateParachutePartScript()
         {

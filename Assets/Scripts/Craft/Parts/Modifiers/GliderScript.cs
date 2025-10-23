@@ -5,7 +5,9 @@ using ModApi;
 using ModApi.Craft;
 using ModApi.Craft.Parts.Input;
 using ModApi.GameLoop;
+using ModApi.Input;
 using RootMotion.FinalIK;
+using UnityEditor;
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
@@ -17,7 +19,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
 
-    public class GliderScript : PartModifierScript<GliderData>,IFlightUpdate,IFlightStart
+    public class GliderScript : PartModifierScript<GliderData>,IFlightUpdate,IFlightStart,IFlightFixedUpdate
     {
         private Transform 
             LeftHandTransform,
@@ -30,34 +32,37 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private CrewCompartmentScript _crewCompartment;
         private AttachPoint _seatAttachPoint;
 
-        //private IInputController pitchInput;
-        
-        private InputControllerScript pitchInput;
-        private BodyCollisionHandler _bodyCollisionHandler;
+        private CraftControls controls;
+        private Rigidbody chuteRigidBody;
 
+        private Vector3 _oldForward;
+        
+        float stallAngle = 45f;
         private bool isKill;
+        
+
+        
 
         public void FlightStart(in FlightFrameData frame)
         {
             
         }
-        
-
+        private bool isGround()
+        {
+            return this.PartScript.CraftScript.FlightData.AltitudeAboveGroundLevel<1.5||PartScript.CraftScript.FlightData.Grounded; // &&this.PartScript.CraftScript.FlightData.SurfaceVelocityMagnitude < 0.5;
+        }
         public void FlightUpdate(in FlightFrameData frame)
         {
-            //Debug.LogFormat($"PartScript.CraftScript.ReferenceFrame.Center{PartScript.CraftScript.ReferenceFrame.Center},again{PartScript.CraftScript.Transform.position},pci{PartScript.CraftScript.FlightData.Position}");
-            bool isGround()
-            {
-                return this.PartScript.CraftScript.FlightData.AltitudeAboveTerrain < 5;
-            }
-            
             try
             {
                 if (isGround())
                 {
                     foreach (var eva in _crewCompartment.Crew)
                     {
-                        _crewCompartment.UnloadCrewMember(eva,true);
+                        if (_crewCompartment.Crew != null)
+                        {
+                            eva.CrewCompartment.UnloadCrewMember(eva, true);
+                        }
                     }
                 }
             }
@@ -65,24 +70,31 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 //since this shit is called every frame,so, when the part kills itself, it will throw an exception,so, i just ignore it.
             }
-            
-            WorkingLogic(frame);
+        }
+
+        public void FlightFixedUpdate(in FlightFrameData frame)
+        {
+           
+            if (!isGround())
+            {
+                WorkingLogic(frame);
+            } 
         }
 
         private void WorkingLogic(in FlightFrameData frame)
-        {
-           //UpdateIC();
-        }
-
-        private void UpdateIC()
-        {
-            var jiba = this.PartScript.GetModifier<InputControllerScript>();// this.GetInputController((Expression<Func<CraftControls, float>>) (x => x.Pitch));
-            if (jiba!=null)
+        { 
+            void UpdateIC()
             {
-                Debug.Log(jiba.Value);
+                foreach (var eva in _crewCompartment.Crew)
+                {
+                    controls = eva.PartScript.CommandPod.Controls;
+                }
             }
-            
+           UpdateIC();
+           var floatingFocrce = this.PartScript.CraftScript.FlightData.CurrentMass * PartScript.CraftScript.FlightData.GravityMagnitude *1.025f;//*(float)PartScript.CraftScript.FlightData.SurfaceVelocityMagnitude;
+           this.PartScript.BodyScript.RigidBody.AddForceAtPosition(floatingFocrce*PartScript.CraftScript.FlightData.SurfaceVelocity.normalized.ToVector3()*-1, PartScript.Transform.position);
         }
+        
         
         #region 傻逼
         protected override void OnInitialized()
@@ -119,7 +131,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private void OnPilotEnter(EvaScript crew)
         {
             this.SetPilot(crew);
+            //Deploy();
         }
+
+        
 
         private void OnPilotExit(EvaScript crew)
         {
@@ -129,9 +144,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             craftScript.Data.Assembly.RemovePart(this.PartScript.Data);
             this.SetPilot((EvaScript) null);
             this.PartScript.BodyScript.ExplodePart(this.PartScript, -1);
-            
-            
-           
         }
         private void SetPilot(EvaScript pilot)
         {

@@ -5,7 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="16108207-b648-471a-9188-8c1ca9c77f7a" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Droodism.dir/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Droodism.dir/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Content/Craft/Parts/Prefabs/Glider.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Content/Craft/Parts/Prefabs/Glider.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Content/Craft/Parts/Prefabs/PartTypes/Glider.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Content/Craft/Parts/Prefabs/PartTypes/Glider.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Craft/Parts/Definitions/Glider.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Craft/Parts/Definitions/Glider.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Craft/Parts/Prefabs/Glider.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Craft/Parts/Prefabs/Glider.prefab" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Craft/Parts/Modifiers/GliderScript.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Craft/Parts/Modifiers/GliderScript.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Craft/Parts/Modifiers/SupportLifeScript.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Craft/Parts/Modifiers/SupportLifeScript.cs" afterDir="false" />
     </list>
@@ -17,6 +22,23 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/23601e36ecf544c3a7bcdd12b7361cd41fe00/b8/c97cac7e/Rigidbody.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4eef4af0ac0d4a848f675966ff5b1153201c00/5d/774d7adb/IInputControllerInput.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4eef4af0ac0d4a848f675966ff5b1153201c00/8f/4217cc13/ICraftFlightData.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4eef4af0ac0d4a848f675966ff5b1153201c00/e4/c81acebb/PartModifierScript.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4eef4af0ac0d4a848f675966ff5b1153201c00/fe/2f7fe3bc/IInputController.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/dd782cd4885f414694f60bcb419130374fca00/1a/d4dc9475/InputControllerScript.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/dd782cd4885f414694f60bcb419130374fca00/29/e85f8679/ControlSurfaceScript.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/dd782cd4885f414694f60bcb419130374fca00/48/542437ba/CraftService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/dd782cd4885f414694f60bcb419130374fca00/ad/9b14c142/CrewCompartmentScript.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/dd782cd4885f414694f60bcb419130374fca00/bb/88f4fcc6/ParachuteScript.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/dd782cd4885f414694f60bcb419130374fca00/ec/af2b3a40/InputControllerType.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/dd782cd4885f414694f60bcb419130374fca00/ed/b4c20930/EvaScript.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/ee16c2cb688d4766af955c0ec92acd90573638/ed/0fa05f01/List`1.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Craft/Parts/Modifiers/GliderScript.cs" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 6
 }</component>
@@ -35,6 +57,7 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -83,12 +106,18 @@
       <workItem from="1760803305835" duration="7051000" />
       <workItem from="1760935933354" duration="14512000" />
       <workItem from="1761051799572" duration="6000" />
+      <workItem from="1761051964715" duration="20830000" />
+      <workItem from="1761144491306" duration="65000" />
+      <workItem from="1761144881006" duration="2947000" />
+      <workItem from="1761214864675" duration="5818000" />
+      <workItem from="1761235549490" duration="1309000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
   <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
   <component name="UnityProjectDiscoverer">
     <option name="hasUnityReference" value="true" />
