@@ -28,7 +28,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             RightElbowTransform,
             BaseLKTransform;
         private FullBodyBipedIK _pilotIK;
-        private EvaScript _pilot = (EvaScript) null;
+        private EvaScript currentEvaScript = (EvaScript) null;
         private CrewCompartmentScript _crewCompartment;
         private AttachPoint _seatAttachPoint;
 
@@ -39,6 +39,21 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         float stallAngle = 45f;
         private bool isKill;
+
+        public Vector3 _worldTorque;
+        
+        public float chuteYawRateAtMaxSpeed = 0.5f;
+        public float chuteMaxSpeedForYawRate = 50f;
+        public float chuteYawRateAtMinSpeed = 0.5f;
+        public float chuteMinSpeedForYawRate = 10f;
+        public float chuteRollRate = 2f;
+        public float chutePitchRate = 2f;
+        public float chuteDefaultForwardPitch = 15f;
+        public float chuteYawRateDivisorWhenPitching = 1.5f;
+        public float chuteRollRateDivisorWhenPitching = 2f;
+        public float chutePitchRateDivisorWhenTurning = 3f;
+        public Quaternion lastRot;
+        public float spreadAngle = 7f;
         
 
         
@@ -91,10 +106,87 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
             }
            UpdateIC();
-           var floatingFocrce = this.PartScript.CraftScript.FlightData.CurrentMass * PartScript.CraftScript.FlightData.GravityMagnitude *1.025f;//*(float)PartScript.CraftScript.FlightData.SurfaceVelocityMagnitude;
-           this.PartScript.BodyScript.RigidBody.AddForceAtPosition(floatingFocrce*PartScript.CraftScript.FlightData.SurfaceVelocity.normalized.ToVector3()*-1, PartScript.Transform.position);
+               Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"{this.PartScript.CraftScript.FlightData.AngleOfAttack} bankAngle{this.PartScript.CraftScript.FlightData.BankAngle}");
+           //UpdateFullyDeployedParachuteMovement(controls.Pitch, controls.Roll, this.PartScript.BodyScript.RigidBody);
+           Vector3 direction = new Vector3(controls.Pitch, controls.Yaw,-controls.Roll);
+           direction.Scale(Vector3.one);
+           Vector3 b = this.PartScript.CraftScript.CenterOfMass.TransformDirection(direction);
+           this._worldTorque = 0f <= 0.0 ? Vector3.Lerp(this._worldTorque, b, 2.5f * frame.DeltaTime) : b;
+           
+           this.PartScript.BodyScript.RigidBody.AddTorque(_worldTorque*3f);
+           //this.PartScript.BodyScript.RigidBody.AddForceAtPosition(PartScript.CraftScript.FlightData.CurrentMass * PartScript.CraftScript.FlightData.GravityMagnitude *1.025f*PartScript.CraftScript.FlightData.SurfaceVelocity.normalized.ToVector3()*-1, PartScript.Transform.position);
+           _worldTorque = Vector3.zero;
+
+
+        }
+        /*
+        private void TransformRotation(in FlightFrameData frame)
+        {
+            if (dragVectorDir == Vector3.zero) return;
+
+            if (true)
+            {
+                Vector3 upwards = this.PartScript.CraftScript != null 
+                    ? Vector3.Normalize(this.PartScript.CraftScript.CenterOfMass.localPosition - this.PartScript.BodyScript.Transform.transform.localPosition) 
+                    : base.transform.forward;
+
+                float caonima = -1f;
+                this.PartScript.Transform.rotation = Quaternion.LookRotation(caonima * dragVectorDir, upwards);
+
+                if (symmetryCount > 0 && spreadAngle > 0f)
+                {
+                    float angle = Mathf.Clamp(spreadAngle * symmetryCount, 0f, 45f);
+                    if (deploymentState == deploymentStates.SEMIDEPLOYED || IsAnimationPlaying())
+                    {
+                        angle /= (deploymentState == deploymentStates.SEMIDEPLOYED ? 3f : 
+                            3f - 2f * Anim[fullyDeployedAnimation].normalizedTime);
+                    }
+                    this.PartScript.Transform.Rotate(angle, 0f, 0f, Space.Self);
+                }
+
+                float x = Time.time + this.PartScript.CraftScript.CraftNode.NodeId % 32U;
+                this.PartScript.Transform.Rotate(new Vector3(
+                    10f * (Mathf.PerlinNoise(x, 0f) - 0.5f),
+                    10f * (Mathf.PerlinNoise(x, 8f) - 0.5f),
+                    10f * (Mathf.PerlinNoise(x, 16f) - 0.5f)));
+
+                Quaternion dragRotation = Quaternion.LookRotation(this.PartScript.partTransform.InverseTransformDirection(this.PartScript.Transform.forward));
+                this.PartScript.DragCubes.SetDragVectorRotation(dragRotation);
+                this.PartScript.Transform.rotation = Quaternion.RotateTowards(lastRot, this.PartScript.Transform.rotation, rotationSpeedDPS * frame.DeltaTimeWorld);
+            }
+            lastRot = this.PartScript.Transform.rotation;
+        }*/
+        
+        public virtual void UpdateFullyDeployedParachuteMovement(float pitchInput,float rollInput, Rigidbody evaRigidbody)
+        {
+            
+            Vector3 zero = Vector3.zero;
+            float d = 0f;
+            Vector3 vector = -this.PartScript.CraftScript.FlightData.Gravity.normalized.ToVector3();
+            vector = Quaternion.AngleAxis(this.chuteDefaultForwardPitch, base.transform.right) * vector;
+            Quaternion.FromToRotation(base.transform.up, vector).ToAngleAxis(out d, out zero);
+            float num = (Mathf.Clamp((float)PartScript.CraftScript.FlightData.SurfaceVelocityMagnitude, this.chuteMinSpeedForYawRate, this.chuteMaxSpeedForYawRate) - this.chuteMinSpeedForYawRate) / (this.chuteMaxSpeedForYawRate - this.chuteMinSpeedForYawRate) * (this.chuteYawRateAtMaxSpeed - this.chuteYawRateAtMinSpeed) + this.chuteYawRateAtMinSpeed;
+            //这很诡异
+            bool flag = rollInput != 0f;
+            bool flag2 = pitchInput != 0f;
+            float num2 = flag2 ? this.chuteRollRate / this.chuteRollRateDivisorWhenPitching : this.chuteRollRate;
+            float num3 = flag ? this.chutePitchRate / this.chutePitchRateDivisorWhenTurning : this.chutePitchRate;
+            float num4 = flag2 ? num / this.chuteYawRateDivisorWhenPitching : num;
+            Vector3 vector2 = Vector3.zero;
+            vector2 += transform.right * pitchInput * num3;
+            vector2 += transform.up * rollInput * num4;
+            vector2 += transform.forward * -1f * rollInput * num2;
+            if (IsInvalid(zero))
+            {
+                evaRigidbody.angularVelocity = zero * d * 0.17453292f + vector2;
+            }
+            
         }
         
+        public static bool IsInvalid(Vector3 v)
+        {
+            return float.IsNaN(v.x) || float.IsNaN(v.y) || float.IsNaN(v.z) || float.IsInfinity(v.x) || float.IsInfinity(v.y) || float.IsInfinity(v.z);
+        }
         
         #region 傻逼
         protected override void OnInitialized()
@@ -138,7 +230,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private void OnPilotExit(EvaScript crew)
         {
-            if (!((UnityEngine.Object) crew == (UnityEngine.Object) this._pilot))
+            if (!((UnityEngine.Object) crew == (UnityEngine.Object) this.currentEvaScript))
                 return;
             var craftScript = this.PartScript.CraftScript as CraftScript;
             craftScript.Data.Assembly.RemovePart(this.PartScript.Data);
@@ -147,7 +239,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         private void SetPilot(EvaScript pilot)
         {
-            this._pilot = pilot;
+            this.currentEvaScript = pilot;
             if ((UnityEngine.Object) pilot == (UnityEngine.Object) null)
             {
                 this.SetIKEnabled(false);
@@ -155,7 +247,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             else
             {
-                this._pilotIK = this._pilot.GetComponentInChildren<FullBodyBipedIK>();
+                this._pilotIK = this.currentEvaScript.GetComponentInChildren<FullBodyBipedIK>();
                 this.SetIKEnabled(true);
                 
             }

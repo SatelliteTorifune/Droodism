@@ -178,8 +178,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (frame.DeltaTimeWorld == 0.0) 
                 return;
             //remove before release
-            //Debug.LogFormat($"几把的{PartScript.CraftScript.ReferenceFrame.Center},reference frame{PartScript.CraftScript.FramePosition}");
-            //Drood的PartScript.CraftScript.ReferenceFrame.Center一直在变
+            //Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"{this.PartScript.Transform.eulerAngles}\\{this.PartScript.Transform.rotation}");
             UpdateRunningStatus();
             if (!IsHibernating)
             {
@@ -1398,6 +1397,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     return !_evaScript.ActiveWhileInCrewCompartment;
                 }return craftScript.Data.Assembly.Parts.Count == 1 && craftScript.RootPart.Data.PartType.Name.Contains("Eva");
                 
+                
             }
             if (!isEva())
             {
@@ -1443,6 +1443,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             Quaternion orgRotation = this.PartScript.BodyScript.RigidBody.rotation;
             Vector3 orgAngularVelocity = this.PartScript.BodyScript.RigidBody.angularVelocity; // 修正这里！
             
+            Vector3 orgEularAngle=this.PartScript.Transform.eulerAngles;
             //看看这里
             var parachutePartScript = CreateParachutePartScript();
             #region 我不想看
@@ -1466,7 +1467,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             _evaScript.OnPreNodeLoaded();
             
             parachutePartScript.BodyScript.RigidBody.velocity = orgVelocity;
-            parachutePartScript.BodyScript.RigidBody.rotation = orgRotation;
+            //parachutePartScript.BodyScript.RigidBody.rotation = orgRotation;
+            parachutePartScript.Transform.eulerAngles = orgEularAngle;
             parachutePartScript.BodyScript.RigidBody.angularVelocity = orgAngularVelocity;
             _evaScript.LoadIntoCrewCompartment(parachutePartScript.GetModifier<CrewCompartmentScript>(), null, announceBoarding: false);
             
