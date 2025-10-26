@@ -14,7 +14,7 @@ using ModApi.Flight.UI;
 namespace Assets.Scripts
 {
     //骗你的,其实这个所谓的New管的是LegacyUI,new是相对于远古版本的纯用flightInspectorPanel的版本的
-    public class NewDroodismUI:MonoBehaviour
+    public class LegacyDroodismUI:MonoBehaviour
     {
         private XmlLayoutController controller;
         private XmlElement mainPanel,FuelPercentageItemTemplate,fuelPercentageList,FuelTransferItemList,FuelTransferItemModeTemplet;
@@ -105,7 +105,7 @@ namespace Assets.Scripts
             component.GetElementByInternalId("FuelTypeName").SetText(Game.Instance.PropulsionData.GetFuelType(fuelType).Name);
             
             fuelPercentXMLItems.Add(component);
-            //Debug.LogFormat("NewDroodismUI:AddFuelListItem:{0}", fuelType);
+            //Debug.LogFormat("LegacyDroodismUI:AddFuelListItem:{0}", fuelType);
             //Mod.Instance.那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花();
         }
         private void AddFuelTransferModeItem(FuelTransferMode mode)
@@ -126,7 +126,7 @@ namespace Assets.Scripts
             component.GetElementByInternalId("FuelTransferTypeName").SetText(mode.ToString());
             
             fuelPercentXMLItems.Add(component);
-            Debug.LogFormat("NewDroodismUI:AddFuelTransferListItem:{0}", mode.ToString());
+            Debug.LogFormat("LegacyDroodismUI:AddFuelTransferListItem:{0}", mode.ToString());
             //Mod.Instance.那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花();
         }
         /// <summary>
@@ -275,7 +275,7 @@ namespace Assets.Scripts
 #endregion
         private void OnFuelItemInspectorToggle(XmlElement item)
         {
-            Debug.LogFormat("NewDroodismUI:OnFuelItemInspectorToggle:item:{0}", item);
+            Debug.LogFormat("LegacyDroodismUI:OnFuelItemInspectorToggle:item:{0}", item);
         }
         #region UI数据更新相关函数
         public void UpdateFuelPercentageItemTemplate()

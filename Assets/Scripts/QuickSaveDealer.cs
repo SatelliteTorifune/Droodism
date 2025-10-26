@@ -80,7 +80,7 @@ namespace Assets.Scripts
             }
             catch (Exception ex)
             {
-              Debug.LogFormat($"Error processing file {filePath}: {ex.Message}");
+              LOG($"Error processing file {filePath}: {ex.Message}");
             }
         }
         /// <summary>
@@ -91,7 +91,7 @@ namespace Assets.Scripts
         {
             
             string quickSavePath = GetQuickSavePath(Game.Instance.GameState.RootPath);
-            Debug.LogFormat("QuickSave: {0},time{1},path{2}", Game.Instance.GameState.RootPath,
+            LOG("QuickSave: {0},time{1},path{2}", Game.Instance.GameState.RootPath,
                 Game.Instance.GameState.GetCurrentTime(), quickSavePath);
             try
             {

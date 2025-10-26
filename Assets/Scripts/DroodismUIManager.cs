@@ -28,7 +28,7 @@ namespace Assets.Scripts
     {
         
         public const string droodismBottomId = "toggle-droodism-ui-bottom";
-        public NewDroodismUI newDroodismUIIntance;
+        public LegacyDroodismUI LegacyDroodismUIIntance;
         public static DroodismUIManager Instance;
         
         private IInspectorPanel inspectorPanel;
@@ -154,23 +154,23 @@ namespace Assets.Scripts
         }
         private void UpdateDroodismUIPanel() 
         {
-            if (newDroodismUIIntance == null) 
+            if (LegacyDroodismUIIntance == null) 
             {
                 return;
             }
 
             if (ModSettings.Instance.UseLegacyUI)
             {
-                newDroodismUIIntance.SetMainUIVisibility(Game.Instance.FlightScene.FlightSceneUI.Visible);
-                if (newDroodismUIIntance.mainPanelVisible)
+                LegacyDroodismUIIntance.SetMainUIVisibility(Game.Instance.FlightScene.FlightSceneUI.Visible);
+                if (LegacyDroodismUIIntance.mainPanelVisible)
                 {
-                    newDroodismUIIntance.UpdateFuelPercentageItemTemplate();
+                    LegacyDroodismUIIntance.UpdateFuelPercentageItemTemplate();
                 }
             }
 
             if (!ModSettings.Instance.UseLegacyUI)
             {
-                newDroodismUIIntance.SetMainUIVisibility(false);
+                LegacyDroodismUIIntance.SetMainUIVisibility(false);
             }
             
         }
@@ -202,7 +202,7 @@ namespace Assets.Scripts
             if (e.Scene == "Flight")
             {
                 
-                newDroodismUIIntance = Game.Instance.UserInterface.BuildUserInterfaceFromResource<NewDroodismUI>(
+                LegacyDroodismUIIntance = Game.Instance.UserInterface.BuildUserInterfaceFromResource<LegacyDroodismUI>(
                     "Droodism/Flight/DroodismInspectPanel",
                     (script, controller) => script.OnLayoutRebuilt(controller));
                 UpdateInfo();
@@ -267,7 +267,7 @@ namespace Assets.Scripts
            
             if (ModSettings.Instance.UseLegacyUI)
             {
-                newDroodismUIIntance.OnTogglePanelState();
+                LegacyDroodismUIIntance.OnTogglePanelState();
             }
 
             if (!ModSettings.Instance.UseLegacyUI)
@@ -545,7 +545,7 @@ namespace Assets.Scripts
         }
         private static void log(string message)
         {
-            Debug.LogFormat("DroodismUIManager:"+message);
+            Mod.LOG("DroodismUIManager:"+message);
         }
 
     }

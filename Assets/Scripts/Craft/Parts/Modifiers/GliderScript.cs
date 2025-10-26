@@ -73,7 +73,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public void FlightFixedUpdate(in FlightFrameData frame)
         {
-           
             if (!isGround())
             {
                 WorkingLogic(frame);
@@ -82,6 +81,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private void WorkingLogic(in FlightFrameData frame)
         { 
+            Rigidbody rigidBody = PartScript.BodyScript.RigidBody;
             void UpdateIC()
             {
                 foreach (var eva in _crewCompartment.Crew)
@@ -96,22 +96,85 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
            direction.Scale(Vector3.one);
            Vector3 b = this.PartScript.CraftScript.CenterOfMass.TransformDirection(direction);
            this._worldTorque = 0f <= 0.0 ? Vector3.Lerp(this._worldTorque, b, 2.5f * frame.DeltaTime) : b;
-
+           rigidBody.AddTorque(_worldTorque*20f,ForceMode.Force);
            
-           this.PartScript.BodyScript.RigidBody.AddTorque(_worldTorque*20f,ForceMode.Force);
            
-          this.PartScript.BodyScript.RigidBody.AddForce(GetDragMangitude(frame),ForceMode.Force);
+           
+          //this.PartScript.BodyScript.RigidBody.AddForce(GetDragMangitude(frame),ForceMode.Force);
            //this.PartScript.BodyScript.RigidBody.AddForceAtPosition(PartScript.CraftScript.FlightData.CurrentMass * PartScript.CraftScript.FlightData.GravityMagnitude *1.025f*PartScript.CraftScript.FlightData.SurfaceVelocity.normalized.ToVector3()*-1, PartScript.Transform.position);
            _worldTorque = Vector3.zero;
+           
+           
+           
+          
+            Vector3 surfaceVelocity = PartScript.CraftScript.FlightData.SurfaceVelocity.ToVector3();
+            Vector3 centerOfMass = rigidBody.worldCenterOfMass;
+            Vector3 angularVelocity = rigidBody.angularVelocity;
+            float airDensity = PartScript.CraftScript.AtmosphereSample.AirDensity;
+            Vector3 right = transform.right; // 滑翔伞右向量
+            Vector3 chordLine = transform.forward; // 滑翔伞弦线
+            Vector3 up = transform.up; // 滑翔伞上向量
+        
+            // 计算相对速度（考虑角速度）
+            Vector3 relativeVelocity = -surfaceVelocity; // 反向速度
+            Vector3 aeroCenter = BaseLKTransform.position; // 空气动力中心
+            Vector3 toCenter = aeroCenter - centerOfMass; // 中心到质心的向量
+            float angularMag = Mathf.Clamp(angularVelocity.magnitude, 0f, 100f); // 限制角速度
+            Vector3 angularDir = angularVelocity.normalized;
+            Vector3 angularEffect = Vector3.Cross(angularDir, toCenter.normalized) * (-angularMag * toCenter.magnitude);
+            relativeVelocity += angularEffect; // 加上角速度分量
+            relativeVelocity -= right * Vector3.Dot(right, relativeVelocity); // 移除横向分量
+            Vector3 dragDirection = -relativeVelocity.normalized; // 阻力方向（反向速度）
+        
+            // 计算迎角
+            float angleOfAttack = (float)PartScript.CraftScript.FlightData.AngleOfAttack;
+        
+            // 计算升力和阻力
+            float area = 1f; // 滑翔伞面积（需在 GliderData 中定义）
+            float speedSqr = relativeVelocity.sqrMagnitude;
+            if (speedSqr > 122500f) // 限制最大速度（350 m/s）
+                relativeVelocity = relativeVelocity.normalized * 350f;
+            float baseForce = 0.645f * area * speedSqr; // 基础空气动力
+            float liftCoefficient = 6.283185f * (angleOfAttack * Mathf.Deg2Rad); // 简化升力系数
+            float dragCoefficient = 0.045f; // 简化阻力系数
+            float fluidDensity = 0.01f * airDensity;
+            float liftMagnitude = baseForce * liftCoefficient * fluidDensity;
+            float dragMagnitude = baseForce * dragCoefficient * fluidDensity;
+        
+            // 限制力大小
+            float maxForce = 50000000f; // 单片机翼最大力
+            liftMagnitude = Mathf.Clamp(liftMagnitude, -maxForce, maxForce);
+            dragMagnitude = Mathf.Clamp(dragMagnitude, 0f, maxForce);
+        
+            // 施加升力和阻力
+            Vector3 liftDirection = Vector3.Cross(right, relativeVelocity).normalized; // 升力方向
+            rigidBody.AddForceAtPosition(liftDirection * liftMagnitude, PartScript.CraftScript.CenterOfMass.position,ForceMode.Force);
+            //rigidBody.AddForce(dragDirection * dragMagnitude, ForceMode.Force);
+        
+            /*
+            // 玩家控制（扭矩）
+            Vector3 input = new Vector3(controls.Pitch, controls.Yaw, -controls.Roll);
+            input = Vector3.ClampMagnitude(input, 1f); // 归一化输入
+            Vector3 torque = PartScript.CraftScript.CenterOfMass.TransformDirection(input);
+            _worldTorque = torque.magnitude <= 0f ? Vector3.Lerp(_worldTorque, torque, 2.5f * frame.DeltaTime) : torque;
+            rigidBody.AddTorque(_worldTorque * 20f, ForceMode.Force);
+            _worldTorque = Vector3.zero;
+        
+            // 更新滑翔伞朝向
+            transform.rotation = Quaternion.LookRotation(chordLine, up);
+            */
+
 
            Vector3 GetDragMangitude(in FlightFrameData frame)
            {
                float airDensity = this.PartScript.CraftScript.AtmosphereSample.AirDensity;
                float surfaceVelocityMagnitude = (float)this.PartScript.CraftScript.FlightData.SurfaceVelocityMagnitude;
-               Vector3 dragDirection = PartScript.BodyScript.Transform.up;//-PartScript.CraftScript.FlightData.SurfaceVelocity.normalized.ToVector3();
-               return dragDirection *Mathf.MoveTowards(0f,2f * airDensity * surfaceVelocityMagnitude,1e3f);
+               Vector3
+                   dragDirection =
+                       PartScript.BodyScript.Transform
+                           .up; //-PartScript.CraftScript.FlightData.SurfaceVelocity.normalized.ToVector3();
+               return dragDirection * Mathf.MoveTowards(0f, 2f * airDensity * surfaceVelocityMagnitude, 1e3f);
            }
-           
 
         }
         private Quaternion GetFullyDeployedCanopyRotation()

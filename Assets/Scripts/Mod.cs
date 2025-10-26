@@ -176,28 +176,6 @@ namespace Assets.Scripts
             flag.AllowPlayerControl = false;
             Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Planted Flag at <color=green> {Game.Instance.FlightScene.CraftNode.Parent.Name} </color>'s surface,at {(ConvertPlanetPositionToLatLongAgl(position).x)}° , {(ConvertPlanetPositionToLatLongAgl(position).y)}° ",true,120f);
         }
-
-        public void SpawnParaGlider(CraftScript craft)
-        {
-            var templateText = Mod.ResourceLoader.LoadAsset<TextAsset>("Assets/Content/Resources/para.xml");
-            var craftData = Game.Instance.CraftLoader.LoadCraftImmediate(XDocument.Parse(templateText.text).Root);
-            var xml = craftData.GenerateXml((Transform)null, false, true);
-            Vector3d position = craft.FlightData.Position;
-            double latitude = ConvertPlanetPositionToLatLongAgl(position).x;
-            double longitude=ConvertPlanetPositionToLatLongAgl(position).y;
-            var location = new LaunchLocation(
-                "",
-                LaunchLocationType.SurfaceLockedGround,
-                Game.Instance.FlightScene.CraftNode.Parent.PlanetData.Name,
-                latitude,
-                longitude,
-                craft.FlightData.Velocity,
-                0,
-                craft.FlightData.AltitudeAboveGroundLevel);
-            var chute = ((FlightSceneScript)Game.Instance.FlightScene).SpawnCraft($"", craftData, location, xml);
-            chute.AllowPlayerControl = false;
-        }
-
         
         
         public Vector3d ConvertPlanetPositionToLatLongAgl(Vector3d position)
@@ -258,6 +236,29 @@ namespace Assets.Scripts
             else if (Math.Abs(totalFuel) > 1e3)
                 return (totalFuel * 1e-3).ToString("0.00") + format[1];
             return totalFuel.ToString("0.00") + format[0];
-        }    }
+        }
+
+        public static void LOG(string message)
+        {
+            if (ModSettings.Instance.ShowDevLog)
+            {
+                Debug.LogFormat(message);
+            }
+        }
+        public static void LOG(string format, params object[] args)
+        {
+            if (ModSettings.Instance.ShowDevLog)
+            {
+                Debug.unityLogger.LogFormat(LogType.Log, format, args);
+            }
+        }
+        public static void LOG(UnityEngine.Object context, string format, params object[] args)
+        {
+            if (ModSettings.Instance.ShowDevLog)
+            {
+                Debug.unityLogger.LogFormat(LogType.Log, context, format, args);
+            }
+        }
+    }
     
 }
