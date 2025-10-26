@@ -5,19 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="16108207-b648-471a-9188-8c1ca9c77f7a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/LegacyDroodismUI.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Droodism.dir/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Droodism.dir/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Content/XML UI/Flight/DroodismUIManager.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Content/XML UI/Flight/DroodismUIManager.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Craft/Parts/Modifiers/GliderData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Craft/Parts/Modifiers/GliderData.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Craft/Parts/Modifiers/GliderScript.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Craft/Parts/Modifiers/GliderScript.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Craft/Parts/Modifiers/SupportLifeScript.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Craft/Parts/Modifiers/SupportLifeScript.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Mod.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Mod.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/ModSettings.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/ModSettings.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NewDroodismUI.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NewDroodismUI.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/PartAddingManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/PartAddingManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/QuickSaveDealer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/QuickSaveDealer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UserInterface.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UserInterface.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -134,6 +124,7 @@
       <workItem from="1761310837232" duration="1517000" />
       <workItem from="1761312661286" duration="2724000" />
       <workItem from="1761461243820" duration="3991000" />
+      <workItem from="1761475286312" duration="10400000" />
     </task>
     <servers />
   </component>
