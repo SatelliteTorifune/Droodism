@@ -1420,6 +1420,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 ui.ShowMessage("Can Not Deploy Parachute,Air Density is too thin",false,10);
                 return;
             }
+
+            if (craftScript.FlightData.SurfaceVelocityMagnitude >=
+                craftScript.FlightData.AtmosphereSample.SpeedOfSound)
+            {
+                ui.ShowMessage("Can Not Deploy Parachute,Speed is too high",false,10);
+                return;
+            }
             
             if (_evaScript.IsInWater)
             {

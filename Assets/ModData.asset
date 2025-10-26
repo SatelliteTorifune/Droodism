@@ -37,7 +37,6 @@ MonoBehaviour:
   - {fileID: 4900000, guid: 2f28744980bce6a46b09955e6f949278, type: 3}
   - {fileID: 2800000, guid: c837144b5a2a3cf49bc0d20fadf51828, type: 3}
   - {fileID: 2800000, guid: da089e9f8ceab6c49854baaa5ddce7c6, type: 3}
-  - {fileID: 4900000, guid: 31335466051aa9e4995bf9cc0c2b86af, type: 3}
   - {fileID: 2800000, guid: 3f4d05df030de054c89ccb84352006ed, type: 3}
   _prefabs: []
   _steamDescription: 

@@ -5,7 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="16108207-b648-471a-9188-8c1ca9c77f7a" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Droodism.dir/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Droodism.dir/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Content/Resources/para.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/ModData.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/ModData.asset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Craft/Parts/Modifiers/GliderScript.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Craft/Parts/Modifiers/GliderScript.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Craft/Parts/Modifiers/SupportLifeScript.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Craft/Parts/Modifiers/SupportLifeScript.cs" afterDir="false" />
     </list>
@@ -25,6 +28,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4eef4af0ac0d4a848f675966ff5b1153201c00/e4/c81acebb/PartModifierScript.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4eef4af0ac0d4a848f675966ff5b1153201c00/fe/2f7fe3bc/IInputController.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/880d0decab764136918c677520316d08175600/97/479edee3/Quaternion.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/880d0decab764136918c677520316d08175600/dc/3ad261cc/Mathf.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/dd782cd4885f414694f60bcb419130374fca00/12/f69d66a3/GyroscopeData.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/dd782cd4885f414694f60bcb419130374fca00/1a/d4dc9475/InputControllerScript.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/dd782cd4885f414694f60bcb419130374fca00/28/e1d15325/WingScript.cs" root0="FORCE_HIGHLIGHTING" />
