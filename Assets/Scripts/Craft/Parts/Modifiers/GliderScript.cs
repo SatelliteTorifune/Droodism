@@ -92,37 +92,37 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     new Vector3(
                         Mathf.Clamp(
                             PitchPID(controls.Pitch * targetMaxPitch * -1,
-                                (float)PartScript.CraftScript.FlightData.Pitch, 0.01f), -1, 1), controls.Yaw, 0);// -Mathf.Clamp(MaxRollPID(controls.Roll*targetMaxRoll, (float)PartScript.CraftScript.FlightData.BankAngle, 0.01f),-1,1));
+                                (float)PartScript.CraftScript.FlightData.Pitch, 0.01f), -1, 1), controls.Yaw,  Mathf.Clamp(RollPID(controls.Roll*targetRoll, (float)PartScript.CraftScript.FlightData.BankAngle, 0.01f),-1,1));
                 Vector3 torque = this.PartScript.CraftScript.CenterOfMass.TransformDirection(direction);
                 _worldTorque = Vector3.Lerp(_worldTorque, torque, 2.5f * frame.DeltaTime);
-                PartScript.BodyScript.RigidBody.AddTorque(_worldTorque * 0.5f, ForceMode.Force);
+                PartScript.BodyScript.RigidBody.AddTorque(_worldTorque * .5f, ForceMode.Force);
             }
             SupportLifeScript supportLifeScript = this._pilot.PartScript.GetModifier<SupportLifeScript>();
-            //kpPitch = supportLifeScript.kp;
-            //kiPitch = supportLifeScript.ki;
-            //kdPitch = supportLifeScript.kd;
+            //kpRoll = supportLifeScript.kp;
+            //kiRoll = supportLifeScript.ki;
+            //kdRoll = supportLifeScript.kd;
             UpdateIC(frame);
             PartScript.BodyScript.RigidBody.AddForceAtPosition(this.PartScript.CraftScript.FlightData.CurrentMass*1.025f*PartScript.CraftScript.FlightData.GravityMagnitude*PartScript.CraftScript.FlightData.SurfaceVelocity.normalized.ToVector3()*-1,this.PartScript.CraftScript.CenterOfMass.position,ForceMode.Force);
-            ui.ShowMessage($"FlightData.pitch{PartScript.CraftScript.FlightData.Pitch} ,输入:{PartScript.CraftScript.ActiveCommandPod.Controls.Pitch},输出:{ Mathf.Clamp(PitchPID(controls.Pitch * targetMaxPitch * -1, (float)PartScript.CraftScript.FlightData.Pitch, 0.01f), -1, 1)}");
-            //ui.ShowMessage($"FlightData.roll{PartScript.CraftScript.FlightData.BankAngle} ,input:{PartScript.CraftScript.ActiveCommandPod.Controls.Roll} output:{MaxRollPID(controls.Roll*targetMaxRoll*-1, (float)PartScript.CraftScript.FlightData.BankAngle, 0.01f)}");
+            //ui.ShowMessage($"FlightData.pitch{PartScript.CraftScript.FlightData.Pitch} ,输入:{PartScript.CraftScript.ActiveCommandPod.Controls.Pitch},输出:{ Mathf.Clamp(PitchPID(controls.Pitch * targetMaxPitch * -1, (float)PartScript.CraftScript.FlightData.Pitch, 0.01f), -1, 1)}");
+            ui.ShowMessage($"FlightData.roll{PartScript.CraftScript.FlightData.BankAngle} ,input:{PartScript.CraftScript.ActiveCommandPod.Controls.Roll} output:{RollPID(controls.Roll*targetRoll, (float)PartScript.CraftScript.FlightData.BankAngle, 0.01f)}");
             
         }
         #region RollPID
         
-        private float targetMaxRoll = 35;
-        private float kpMaxRoll=0.8f;
-        private float kiMaxRoll=0f;
-        private float kdMaxRoll=0.4f;
-        private float prevErrorMaxRoll;
-        private float interalMaxRoll;
-        private float MaxRollPID(float targetRoll, float currentRoll, float deltaTime)
+        private float targetRoll = 35;
+        private float kpRoll=1.2f;
+        private float kiRoll=0f;
+        private float kdRoll=0.4f;
+        private float prevErrorRoll;
+        private float interalRoll;
+        private float RollPID(float targetRoll, float currentRoll, float deltaTime)
         {
             //Game.Instance.FlightScene.CraftNode.CraftScript.ActiveCommandPod.AutoPilot.
             float error = deltaTime * (currentRoll - targetRoll);
             interalRoll+=error*deltaTime;
-            float derivative = (error - prevErrorPitch) / deltaTime;
-            float output = kpMaxRoll * error + kiMaxRoll * interalRoll + kdMaxRoll * derivative;
-            prevErrorPitch = error;
+            float derivative = (error - prevErrorRoll) / deltaTime;
+            float output = kpRoll * error + kiRoll * interalRoll + kdRoll * derivative;
+            prevErrorRoll = error;
             return output;
         }
         #endregion
@@ -134,14 +134,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private float kiPitch=0f;
         private float kdPitch=0.4f;
         private float prevErrorPitch;
-        private float interalRoll;
+        private float interPitch;
         private float PitchPID(float targetPitch, float currentPitch, float deltaTime)
         {
             //Game.Instance.FlightScene.CraftNode.CraftScript.ActiveCommandPod.AutoPilot.
             float error = deltaTime * (currentPitch - targetPitch);
-            interalRoll+=error*deltaTime;
+            interPitch+=error*deltaTime;
             float derivative = (error - prevErrorPitch) / deltaTime;
-            float output = kpPitch * error + kiPitch * interalRoll + kdPitch * derivative;
+            float output = kpPitch * error + kiPitch * interPitch + kdPitch * derivative;
             prevErrorPitch = error;
             return output;
         }
