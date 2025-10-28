@@ -92,10 +92,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     new Vector3(
                         Mathf.Clamp(
                             PitchPID(controls.Pitch * targetMaxPitch * -1,
-                                (float)PartScript.CraftScript.FlightData.Pitch, 0.01f), -1, 1), controls.Yaw,  Mathf.Clamp(RollPID(controls.Roll*targetRoll, (float)PartScript.CraftScript.FlightData.BankAngle, 0.01f),-1,1));
+                                (float)PartScript.CraftScript.FlightData.Pitch, 0.01f), -3, 3), controls.Roll,  Mathf.Clamp(RollPID(controls.Roll*targetRoll, (float)PartScript.CraftScript.FlightData.BankAngle, 0.01f),-1,1));
                 Vector3 torque = this.PartScript.CraftScript.CenterOfMass.TransformDirection(direction);
                 _worldTorque = Vector3.Lerp(_worldTorque, torque, 2.5f * frame.DeltaTime);
-                PartScript.BodyScript.RigidBody.AddTorque(_worldTorque * .5f, ForceMode.Force);
+                PartScript.BodyScript.RigidBody.AddTorque(_worldTorque * 2.5f, ForceMode.Force);
             }
             SupportLifeScript supportLifeScript = this._pilot.PartScript.GetModifier<SupportLifeScript>();
             //kpRoll = supportLifeScript.kp;
@@ -129,8 +129,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         #region PitchPID
         
-        private float targetMaxPitch = 30;
-        private float kpPitch=0.8f;
+        private float targetMaxPitch = 45;
+        private float kpPitch= 0.8f;
         private float kiPitch=0f;
         private float kdPitch=0.4f;
         private float prevErrorPitch;
