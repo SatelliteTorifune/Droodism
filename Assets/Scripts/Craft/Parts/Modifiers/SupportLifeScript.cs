@@ -1355,8 +1355,26 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 model.Add<TextButtonModel>(textButtonModel2);
                 
             }
+
+            #region 临时调参用
+
+            var groupModel1 = new GroupModel("<color=red><size=115%>ParachutePID Settings");
+            var sliderModel1 = new SliderModel("Kp", (Func<float>) (() => kp), (Action<float>) (v => kp = v), -2, 2, false);
+            var sliderModel2 = new SliderModel("Ki", (Func<float>) (() => ki), (Action<float>) (v => ki = v), -2, 2, false);
+            var sliderModel3 = new SliderModel("Kd", (Func<float>) (() => kd), (Action<float>) (v => kd = v), -2, 2, false);
+            groupModel1.Add(sliderModel1);
+            groupModel1.Add(sliderModel2);
+            groupModel1.Add(sliderModel3);
+            model.Add(groupModel1);
+
+            #endregion
             
-        }   
+        }
+
+        public float kp;
+        public float ki;
+        public float kd;
+        
         private void PlantFlagClick()
         {
             ICraftScript craftScript = this.PartScript.CraftScript;

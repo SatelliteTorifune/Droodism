@@ -6,6 +6,7 @@ using ModApi.Craft;
 using ModApi.Craft.Parts.Input;
 using ModApi.GameLoop;
 using RootMotion.FinalIK;
+using ModApi.Flight.UI;
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
@@ -36,10 +37,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
 
         private bool isKill;
+        private IFlightSceneUI ui;
 
         public void FlightStart(in FlightFrameData frame)
         {
-            
+            ui = Game.Instance.FlightScene.FlightSceneUI;
         }
         
 
@@ -66,7 +68,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 //since this shit is called every frame,so, when the part kills itself, it will throw an exception,so, i just ignore it.
             }
             
-            WorkingLogic(frame);
         }
 
         private bool isGround()
@@ -82,26 +83,69 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         private void WorkingLogic(in FlightFrameData frame)
         {
+            
             void UpdateIC(in FlightFrameData frame)
             {
                 foreach (var eva in _crewCompartment.Crew)
                     controls = eva.PartScript.CommandPod.Controls;
-
-                // 只在 BankAngle ≤ 45° 时允许翻滚，否则会把升力直接反向
-                float rollInput = Mathf.Abs((float)this.PartScript.CraftScript.FlightData.BankAngle) <= 45f
-                    ? controls.Roll : 0f;
-                Vector3 direction = new Vector3(controls.Pitch, rollInput, -rollInput);
+                Vector3 direction =
+                    new Vector3(
+                        Mathf.Clamp(
+                            PitchPID(controls.Pitch * targetMaxPitch * -1,
+                                (float)PartScript.CraftScript.FlightData.Pitch, 0.01f), -1, 1), controls.Yaw, 0);// -Mathf.Clamp(MaxRollPID(controls.Roll*targetMaxRoll, (float)PartScript.CraftScript.FlightData.BankAngle, 0.01f),-1,1));
                 Vector3 torque = this.PartScript.CraftScript.CenterOfMass.TransformDirection(direction);
-
-                // 插值平滑 torque，防止一次性大冲击
                 _worldTorque = Vector3.Lerp(_worldTorque, torque, 2.5f * frame.DeltaTime);
-                PartScript.BodyScript.RigidBody.AddTorque(_worldTorque * 2f, ForceMode.Force);
+                PartScript.BodyScript.RigidBody.AddTorque(_worldTorque * 0.5f, ForceMode.Force);
             }
+            SupportLifeScript supportLifeScript = this._pilot.PartScript.GetModifier<SupportLifeScript>();
+            //kpPitch = supportLifeScript.kp;
+            //kiPitch = supportLifeScript.ki;
+            //kdPitch = supportLifeScript.kd;
             UpdateIC(frame);
+            PartScript.BodyScript.RigidBody.AddForceAtPosition(this.PartScript.CraftScript.FlightData.CurrentMass*1.025f*PartScript.CraftScript.FlightData.GravityMagnitude*PartScript.CraftScript.FlightData.SurfaceVelocity.normalized.ToVector3()*-1,this.PartScript.CraftScript.CenterOfMass.position,ForceMode.Force);
+            ui.ShowMessage($"FlightData.pitch{PartScript.CraftScript.FlightData.Pitch} ,输入:{PartScript.CraftScript.ActiveCommandPod.Controls.Pitch},输出:{ Mathf.Clamp(PitchPID(controls.Pitch * targetMaxPitch * -1, (float)PartScript.CraftScript.FlightData.Pitch, 0.01f), -1, 1)}");
+            //ui.ShowMessage($"FlightData.roll{PartScript.CraftScript.FlightData.BankAngle} ,input:{PartScript.CraftScript.ActiveCommandPod.Controls.Roll} output:{MaxRollPID(controls.Roll*targetMaxRoll*-1, (float)PartScript.CraftScript.FlightData.BankAngle, 0.01f)}");
+            
         }
+        #region RollPID
+        
+        private float targetMaxRoll = 35;
+        private float kpMaxRoll=0.8f;
+        private float kiMaxRoll=0f;
+        private float kdMaxRoll=0.4f;
+        private float prevErrorMaxRoll;
+        private float interalMaxRoll;
+        private float MaxRollPID(float targetRoll, float currentRoll, float deltaTime)
+        {
+            //Game.Instance.FlightScene.CraftNode.CraftScript.ActiveCommandPod.AutoPilot.
+            float error = deltaTime * (currentRoll - targetRoll);
+            interalRoll+=error*deltaTime;
+            float derivative = (error - prevErrorPitch) / deltaTime;
+            float output = kpMaxRoll * error + kiMaxRoll * interalRoll + kdMaxRoll * derivative;
+            prevErrorPitch = error;
+            return output;
+        }
+        #endregion
 
+        #region PitchPID
         
-        
+        private float targetMaxPitch = 30;
+        private float kpPitch=0.8f;
+        private float kiPitch=0f;
+        private float kdPitch=0.4f;
+        private float prevErrorPitch;
+        private float interalRoll;
+        private float PitchPID(float targetPitch, float currentPitch, float deltaTime)
+        {
+            //Game.Instance.FlightScene.CraftNode.CraftScript.ActiveCommandPod.AutoPilot.
+            float error = deltaTime * (currentPitch - targetPitch);
+            interalRoll+=error*deltaTime;
+            float derivative = (error - prevErrorPitch) / deltaTime;
+            float output = kpPitch * error + kiPitch * interalRoll + kdPitch * derivative;
+            prevErrorPitch = error;
+            return output;
+        }
+        #endregion
         #region 傻逼
         protected override void OnInitialized()
         {
