@@ -1357,23 +1357,33 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
 
             #region 临时调参用
-/*
+
             var groupModel1 = new GroupModel("<color=red><size=115%>ParachutePID Settings");
-            var sliderModel1 = new SliderModel("Kp", (Func<float>) (() => kp), (Action<float>) (v => kp = v), -2, 2, false);
-            var sliderModel2 = new SliderModel("Ki", (Func<float>) (() => ki), (Action<float>) (v => ki = v), -2, 2, false);
-            var sliderModel3 = new SliderModel("Kd", (Func<float>) (() => kd), (Action<float>) (v => kd = v), -2, 2, false);
+            var sliderModel1 = new SliderModel("kForward", (Func<float>) (() => a), (Action<float>) (v => a = v), -2, 2, false);
+            var sliderModel2 = new SliderModel("kDrag", (Func<float>) (() => b), (Action<float>) (v => b = v), -2, 2, false);
+            var sliderModel3 = new SliderModel("maxLiftForce", (Func<float>) (() => c), (Action<float>) (v => c = v), -2, 2, false);
+            var sliderModel4 = new SliderModel("liftBaseCoeff", (Func<float>) (() => d), (Action<float>) (v => d = v), -2, 2, false);
+            var sliderModel5 = new SliderModel("sideSlipDamping", (Func<float>) (() => e), (Action<float>) (v => e = v), -2, 2, false);
+            var sliderModel6 = new SliderModel("maxSideForce", (Func<float>) (() => f), (Action<float>) (v => f = v), -2, 2, false);
             groupModel1.Add(sliderModel1);
             groupModel1.Add(sliderModel2);
             groupModel1.Add(sliderModel3);
-            model.Add(groupModel1);
-*/
+            groupModel1.Add(sliderModel4);
+            groupModel1.Add(sliderModel5);
+            
+            //remove before release
+            //model.Add(groupModel1);
+
             #endregion
             
         }
 
-        public float kp;
-        public float ki;
-        public float kd;
+        public float a;
+        public float b;
+        public float c;
+        public float d;
+        public float e;
+        public float f;
         
         private void PlantFlagClick()
         {

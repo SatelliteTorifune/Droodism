@@ -50,7 +50,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             //Debug.LogFormat($"PartScript.CraftScript.ReferenceFrame.Center{PartScript.CraftScript.ReferenceFrame.Center},again{PartScript.CraftScript.Transform.position},pci{PartScript.CraftScript.FlightData.Position}");
             try
             {
-                if (this.PartScript.CraftScript.FlightData.AltitudeAboveTerrain<1.5)
+                if (isGround())
                 {
                     foreach (var eva in _crewCompartment.Crew)
                     {
@@ -72,42 +72,130 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private bool isGround()
         {
-            return this.PartScript.CraftScript.FlightData.AltitudeAboveGroundLevel<1.5||PartScript.CraftScript.FlightData.Grounded&&this.PartScript.CraftScript.FlightData.SurfaceVelocityMagnitude < 0.5;
+            return this.PartScript.CraftScript.FlightData.AltitudeAboveGroundLevel<1.5||PartScript.CraftScript.FlightData.Grounded||this.PartScript.CraftScript.FlightData.SurfaceVelocityMagnitude < 0.5;
         }
         public void FlightFixedUpdate(in FlightFrameData frame)
         {
             if (!isGround())
             {
-                WorkingLogic(frame);
+                //UpdateParameters();
+                UpdateInput(frame);
+                UpdateForces(frame);
+                
             }
         }
-        private void WorkingLogic(in FlightFrameData frame)
+        private void UpdateInput(in FlightFrameData frame)
+        {
+            foreach (var eva in _crewCompartment.Crew)
+                controls = eva.PartScript.CommandPod.Controls;
+            Vector3 direction = new Vector3(Mathf.Clamp(PitchPID(controls.Pitch * targetMaxPitch * -1, (float)PartScript.CraftScript.FlightData.Pitch, 0.01f), -3, 3), controls.Roll*0.04f,  Mathf.Clamp(RollPID(controls.Roll*targetRoll, (float)PartScript.CraftScript.FlightData.BankAngle, 0.01f),-1,1));
+            Vector3 torque = this.PartScript.CraftScript.CenterOfMass.TransformDirection(direction);
+            _worldTorque = Vector3.Lerp(_worldTorque, torque, 2.5f * frame.DeltaTime);
+            PartScript.BodyScript.RigidBody.AddTorque(_worldTorque * 10f, ForceMode.Force);
+        }
+
+        private void UpdateParameters()
+        {
+            SupportLifeScript supportLifeScript = _pilot.PartScript.GetModifier<SupportLifeScript>();
+            kForward = supportLifeScript.a;
+            kDrag = supportLifeScript.b;
+            maxLiftForce = supportLifeScript.c;
+            liftBaseCoeff = supportLifeScript.d;
+            sideSlipDamping = supportLifeScript.e;
+        }
+        public float kForward = 10f;
+        public float kDrag = 0.15f;
+        public float maxLiftForce = 3f;
+        public float liftBaseCoeff = 20f;   
+        public float sideSlipDamping = 1.75f;
+        public float maxSideForce = 3f;
+        private void UpdateForces(in FlightFrameData frame)
         {
             
-            void UpdateIC(in FlightFrameData frame)
-            {
-                foreach (var eva in _crewCompartment.Crew)
-                    controls = eva.PartScript.CommandPod.Controls;
-                Vector3 direction =
-                    new Vector3(
-                        Mathf.Clamp(
-                            PitchPID(controls.Pitch * targetMaxPitch * -1,
-                                (float)PartScript.CraftScript.FlightData.Pitch, 0.01f), -3, 3), controls.Roll*0.01f,  Mathf.Clamp(RollPID(controls.Roll*targetRoll, (float)PartScript.CraftScript.FlightData.BankAngle, 0.01f),-1,1));
-                Vector3 torque = this.PartScript.CraftScript.CenterOfMass.TransformDirection(direction);
-                _worldTorque = Vector3.Lerp(_worldTorque, torque, 2.5f * frame.DeltaTime);
-                PartScript.BodyScript.RigidBody.AddTorque(_worldTorque * 10f, ForceMode.Force);
-            }
-            /*
-            SupportLifeScript supportLifeScript = this._pilot.PartScript.GetModifier<SupportLifeScript>();
-            kpRoll = supportLifeScript.kp;
-            kiRoll = supportLifeScript.ki;
-            kdRoll = supportLifeScript.kd;
-            */
-            UpdateIC(frame);
-            PartScript.BodyScript.RigidBody.AddForceAtPosition(this.PartScript.CraftScript.FlightData.CurrentMass*1.025f*PartScript.CraftScript.FlightData.GravityMagnitude*PartScript.CraftScript.FlightData.SurfaceVelocity.normalized.ToVector3()*-1,this.PartScript.CraftScript.CenterOfMass.position,ForceMode.Force);
-            //ui.ShowMessage($"FlightData.pitch{PartScript.CraftScript.FlightData.Pitch} ,输入:{PartScript.CraftScript.ActiveCommandPod.Controls.Pitch},输出:{ Mathf.Clamp(PitchPID(controls.Pitch * targetMaxPitch * -1, (float)PartScript.CraftScript.FlightData.Pitch, 0.01f), -3, 3)}");
-            //ui.ShowMessage($"FlightData.roll{PartScript.CraftScript.FlightData.BankAngle} ,input:{PartScript.CraftScript.ActiveCommandPod.Controls.Roll} output:{RollPID(controls.Roll*targetRoll, (float)PartScript.CraftScript.FlightData.BankAngle, 0.01f)}");
+            Rigidbody rb = PartScript.BodyScript.RigidBody;
+             if (rb == null) return;
+             Vector3 worldVel = this.PartScript.CraftScript.FlightData.SurfaceVelocity.ToVector3();
+             Vector3 forwardDir = rb.transform.forward;   // 机体前向（本地 +Z）
+             Vector3 rightDir   = rb.transform.right;     // 机体右向（本地 +X）
+             Vector3 upDir      = rb.transform.up;        // 机体上向（本地 +Y）
             
+             float speed = worldVel.magnitude; 
+             
+             float aoaDeg = (float)PartScript.CraftScript.FlightData.AngleOfAttack;  
+             float sideslip = (float)-PartScript.CraftScript.FlightData.SideSlip; 
+            
+             // -------------------------------------------------
+             // 前进推力（由下沉产生的水平加速）——保持原逻辑
+             // -------------------------------------------------
+             float verticalSpeed = (float)PartScript.CraftScript.FlightData.VerticalSurfaceVelocity;
+             if (verticalSpeed < -0.1f)
+             {
+                 // 把下沉的垂直分量转化为前进推力
+                 float forwardForceMag = kForward * -verticalSpeed;
+                 Vector3 forwardForce = forwardForceMag * forwardDir;
+                 rb.AddForceAtPosition(forwardForce,PartScript.CraftScript.CenterOfMass.position, ForceMode.Force);
+             }
+            
+             // -------------------------------------------------
+             // 4基于 AOA 的升力
+             // -------------------------------------------------
+             float cl = liftCurve.Evaluate(Mathf.Abs(aoaDeg));
+             float liftForceMag = liftBaseCoeff * cl * Data.Area * speed * speed;
+             liftForceMag = Mathf.Min(liftForceMag, maxLiftForce);
+             Vector3 liftDir = Vector3.Cross(forwardDir, rightDir).normalized; 
+             if (Vector3.Dot(liftDir, upDir) > 0)
+             {
+                 liftDir = -liftDir;
+             }
+             Vector3 liftForce = liftForceMag * liftDir;
+             rb.AddForceAtPosition(liftForce, PartScript.CraftScript.CenterOfMass.position, ForceMode.Force);
+             
+             
+             if (Mathf.Abs(sideslip) > 1f) // 小于 1° 时可以忽略
+             {
+                 float sideForceMag = sideSlipDamping *
+                                      Mathf.Sin(Mathf.Deg2Rad * sideslip) *
+                                      speed * speed;
+                 sideForceMag = Mathf.Clamp(sideForceMag, -maxSideForce, maxSideForce);
+                 
+                 Vector3 sideForce = -Mathf.Sign(sideslip) * Mathf.Abs(sideForceMag) * rightDir;
+                 rb.AddForceAtPosition(sideForce, PartScript.CraftScript.CenterOfMass.position,ForceMode.Force);
+             }
+             
+             if (worldVel.sqrMagnitude > 0.0001f)
+             {
+                 Vector3 dragForce = -kDrag * worldVel * worldVel.magnitude;
+                 rb.AddForceAtPosition(dragForce, PartScript.CraftScript.CenterOfMass.position,ForceMode.Force);
+             }
+            
+        }
+        
+        public AnimationCurve liftCurve = CreateDefaultLiftCurve();
+
+        private static AnimationCurve CreateDefaultLiftCurve()
+        {
+            Keyframe[] keys = new Keyframe[]
+            {
+                new Keyframe( 0f, 0.15f),
+                new Keyframe( 2f, 0.30f),
+                new Keyframe( 5f, 0.70f),
+                new Keyframe( 8f, 1.10f),
+                new Keyframe(12f, 1.55f),
+                new Keyframe(15f, 1.60f),
+                new Keyframe(18f, 1.40f),
+                new Keyframe(22f, 1.00f),
+                new Keyframe(26f, 0.55f),
+                new Keyframe(30f, 0.20f)
+            };
+            
+            AnimationCurve curve = new AnimationCurve(keys);
+            for (int i = 0; i < curve.length; i++)
+            {
+                curve.SmoothTangents(i, 0.5f);
+            }
+            curve.preWrapMode  = WrapMode.Clamp;
+            curve.postWrapMode = WrapMode.Clamp;
+            return curve;
         }
         #region RollPID
         
@@ -128,7 +216,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             return output;
         }
         #endregion
-
         #region PitchPID
         
         private float targetMaxPitch = 45;
