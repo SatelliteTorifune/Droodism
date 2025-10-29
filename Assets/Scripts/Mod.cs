@@ -73,13 +73,13 @@ namespace Assets.Scripts
                 try
                 {
                     UpdateDroodCount();
-                    Debug.LogFormat("OnSceneLoaded更新Drood数量");
+                    LOG("OnSceneLoaded更新Drood数量");
                     那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花();
-                    Debug.LogFormat("OnSceneLoaded执行doShit");
+                    LOG("OnSceneLoaded执行doShit");
                 }
                 catch (Exception e1)
                 {
-                    Debug.LogFormat("你要干啥{0}", e1);
+                    LOG("你要干啥{0}", e1);
                 }
             }
 
@@ -129,20 +129,20 @@ namespace Assets.Scripts
             try
             {
                 ModApi.Common.Game.Instance.FlightScene.Initialized += OnInitialized;
-                Debug.LogFormat(" Initialized订阅OnInitialized");
+                LOG(" Initialized订阅OnInitialized");
                 ModApi.Common.Game.Instance.FlightScene.CraftChanged += OnCraftChanged;
-                Debug.LogFormat(" CraftChanged订阅OnCraftChanged");
+                LOG(" CraftChanged订阅OnCraftChanged");
                 ModApi.Common.Game.Instance.FlightScene.CraftStructureChanged += OnCraftStructureChangedUI;
-                Debug.LogFormat(" CraftStructureChanged订阅OnCraftStructureChangedUI");
+                LOG(" CraftStructureChanged订阅OnCraftStructureChangedUI");
                 ModApi.Common.Game.Instance.FlightScene.ActiveCommandPodChanged += OnCraftChanged;
-                Debug.LogFormat(" ActiveCommandPodChanged订阅OnCraftChanged");
+                LOG(" ActiveCommandPodChanged订阅OnCraftChanged");
                 ModApi.Common.Game.Instance.FlightScene.ActiveCommandPodStateChanged += OnCraftChanged;
-                Debug.LogFormat(" ActiveCommandPodStateChanged订阅OnCraftChanged");
+                LOG(" ActiveCommandPodStateChanged订阅OnCraftChanged");
 
             }
             catch (Exception e)
             {
-                Debug.LogWarningFormat($"订阅有问题,我不知道哪里有问题,但是反正这玩意加个try-catch也能跑{e}");
+                LOG($"订阅有问题,我不知道哪里有问题,但是反正这玩意加个try-catch也能跑{e}");
             }
 
         }
@@ -242,7 +242,7 @@ namespace Assets.Scripts
         {
             if (ModSettings.Instance.ShowDevLog)
             {
-                Debug.LogFormat(message);
+                LOG(message);
             }
         }
         public static void LOG(string format, params object[] args)

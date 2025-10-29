@@ -50,7 +50,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             //Debug.LogFormat($"PartScript.CraftScript.ReferenceFrame.Center{PartScript.CraftScript.ReferenceFrame.Center},again{PartScript.CraftScript.Transform.position},pci{PartScript.CraftScript.FlightData.Position}");
             try
             {
-                if (this.PartScript.CraftScript.FlightData.AltitudeAboveTerrain<5)
+                if (this.PartScript.CraftScript.FlightData.AltitudeAboveTerrain<1.5)
                 {
                     foreach (var eva in _crewCompartment.Crew)
                     {
@@ -92,27 +92,29 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     new Vector3(
                         Mathf.Clamp(
                             PitchPID(controls.Pitch * targetMaxPitch * -1,
-                                (float)PartScript.CraftScript.FlightData.Pitch, 0.01f), -3, 3), controls.Roll,  Mathf.Clamp(RollPID(controls.Roll*targetRoll, (float)PartScript.CraftScript.FlightData.BankAngle, 0.01f),-1,1));
+                                (float)PartScript.CraftScript.FlightData.Pitch, 0.01f), -3, 3), controls.Roll*0.01f,  Mathf.Clamp(RollPID(controls.Roll*targetRoll, (float)PartScript.CraftScript.FlightData.BankAngle, 0.01f),-1,1));
                 Vector3 torque = this.PartScript.CraftScript.CenterOfMass.TransformDirection(direction);
                 _worldTorque = Vector3.Lerp(_worldTorque, torque, 2.5f * frame.DeltaTime);
-                PartScript.BodyScript.RigidBody.AddTorque(_worldTorque * 2.5f, ForceMode.Force);
+                PartScript.BodyScript.RigidBody.AddTorque(_worldTorque * 10f, ForceMode.Force);
             }
+            /*
             SupportLifeScript supportLifeScript = this._pilot.PartScript.GetModifier<SupportLifeScript>();
-            //kpRoll = supportLifeScript.kp;
-            //kiRoll = supportLifeScript.ki;
-            //kdRoll = supportLifeScript.kd;
+            kpRoll = supportLifeScript.kp;
+            kiRoll = supportLifeScript.ki;
+            kdRoll = supportLifeScript.kd;
+            */
             UpdateIC(frame);
             PartScript.BodyScript.RigidBody.AddForceAtPosition(this.PartScript.CraftScript.FlightData.CurrentMass*1.025f*PartScript.CraftScript.FlightData.GravityMagnitude*PartScript.CraftScript.FlightData.SurfaceVelocity.normalized.ToVector3()*-1,this.PartScript.CraftScript.CenterOfMass.position,ForceMode.Force);
-            //ui.ShowMessage($"FlightData.pitch{PartScript.CraftScript.FlightData.Pitch} ,输入:{PartScript.CraftScript.ActiveCommandPod.Controls.Pitch},输出:{ Mathf.Clamp(PitchPID(controls.Pitch * targetMaxPitch * -1, (float)PartScript.CraftScript.FlightData.Pitch, 0.01f), -1, 1)}");
-            ui.ShowMessage($"FlightData.roll{PartScript.CraftScript.FlightData.BankAngle} ,input:{PartScript.CraftScript.ActiveCommandPod.Controls.Roll} output:{RollPID(controls.Roll*targetRoll, (float)PartScript.CraftScript.FlightData.BankAngle, 0.01f)}");
+            //ui.ShowMessage($"FlightData.pitch{PartScript.CraftScript.FlightData.Pitch} ,输入:{PartScript.CraftScript.ActiveCommandPod.Controls.Pitch},输出:{ Mathf.Clamp(PitchPID(controls.Pitch * targetMaxPitch * -1, (float)PartScript.CraftScript.FlightData.Pitch, 0.01f), -3, 3)}");
+            //ui.ShowMessage($"FlightData.roll{PartScript.CraftScript.FlightData.BankAngle} ,input:{PartScript.CraftScript.ActiveCommandPod.Controls.Roll} output:{RollPID(controls.Roll*targetRoll, (float)PartScript.CraftScript.FlightData.BankAngle, 0.01f)}");
             
         }
         #region RollPID
         
-        private float targetRoll = 35;
-        private float kpRoll=1.2f;
-        private float kiRoll=0f;
-        private float kdRoll=0.4f;
+        private float targetRoll = 45;
+        private float kpRoll = 0.75f;
+        private float kiRoll=0.2f;
+        private float kdRoll=0.65f;
         private float prevErrorRoll;
         private float interalRoll;
         private float RollPID(float targetRoll, float currentRoll, float deltaTime)
@@ -131,8 +133,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         private float targetMaxPitch = 45;
         private float kpPitch= 0.8f;
-        private float kiPitch=0f;
-        private float kdPitch=0.4f;
+        private float kiPitch=0.01f;
+        private float kdPitch=1.2f;
         private float prevErrorPitch;
         private float interPitch;
         private float PitchPID(float targetPitch, float currentPitch, float deltaTime)
@@ -183,6 +185,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (!((UnityEngine.Object) crew == (UnityEngine.Object) this._pilot))
                 return;
             this.SetPilot((EvaScript) null);
+            var craftScript = this.PartScript.CraftScript as CraftScript;
+            craftScript?.Data.Assembly.RemovePart(this.PartScript.Data);
+            craftScript?.Data.Assembly.RemoveBody(this.PartScript.BodyScript.Data);
+            this.PartScript.BodyScript.ExplodePart(this.PartScript, -1);
+            
         }
         private void SetPilot(EvaScript pilot)
         {

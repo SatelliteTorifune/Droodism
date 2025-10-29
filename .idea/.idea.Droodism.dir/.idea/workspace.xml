@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="16108207-b648-471a-9188-8c1ca9c77f7a" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Droodism.dir/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Droodism.dir/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Craft/Parts/Modifiers/GliderScript.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Craft/Parts/Modifiers/GliderScript.cs" afterDir="false" />
-    </list>
+    <list default="true" id="16108207-b648-471a-9188-8c1ca9c77f7a" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -21,6 +18,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4eef4af0ac0d4a848f675966ff5b1153201c00/57/60fa30ab/CraftControls.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4eef4af0ac0d4a848f675966ff5b1153201c00/5d/774d7adb/IInputControllerInput.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4eef4af0ac0d4a848f675966ff5b1153201c00/8f/4217cc13/ICraftFlightData.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4eef4af0ac0d4a848f675966ff5b1153201c00/90/7240bca9/IFlightScene.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4eef4af0ac0d4a848f675966ff5b1153201c00/e4/c81acebb/PartModifierScript.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4eef4af0ac0d4a848f675966ff5b1153201c00/fe/2f7fe3bc/IInputController.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/880d0decab764136918c677520316d08175600/2c/3bbfbf09/Debug.cs" root0="FORCE_HIGHLIGHTING" />
@@ -124,6 +122,7 @@
       <workItem from="1761312661286" duration="2724000" />
       <workItem from="1761461243820" duration="3991000" />
       <workItem from="1761475286312" duration="10752000" />
+      <workItem from="1761541106857" duration="17024000" />
     </task>
     <servers />
   </component>

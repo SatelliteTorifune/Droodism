@@ -1357,7 +1357,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
 
             #region 临时调参用
-
+/*
             var groupModel1 = new GroupModel("<color=red><size=115%>ParachutePID Settings");
             var sliderModel1 = new SliderModel("Kp", (Func<float>) (() => kp), (Action<float>) (v => kp = v), -2, 2, false);
             var sliderModel2 = new SliderModel("Ki", (Func<float>) (() => ki), (Action<float>) (v => ki = v), -2, 2, false);
@@ -1366,7 +1366,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             groupModel1.Add(sliderModel2);
             groupModel1.Add(sliderModel3);
             model.Add(groupModel1);
-
+*/
             #endregion
             
         }
