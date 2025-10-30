@@ -1464,6 +1464,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             CraftScript craftScript1 = this.PartScript.CraftScript as CraftScript;
             craftScript1.RecenterTransformOnCoM(true);
+            //this.PartScript.CommandPod.SetPilotSeatRotation(this.PartScript.Data.Rotation,true);
             你去吃粑粑去吧();
 
         }

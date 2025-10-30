@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 156340404
+CRC: 779988081
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 60825f488a8fed95376ff25e85839e79
+    Hash: 2b6b6d178fe803905c092daebfd2f670
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 648aa2347db9316d826f2b155c8a29c3
+    Hash: 9df4ebb39d20af61b70b3e2e83e1c9d1
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 60825f488a8fed95376ff25e85839e79
+    Hash: 2b6b6d178fe803905c092daebfd2f670
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -50,6 +50,8 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 134
   Script: {instanceID: 0}
+- Class: 135
+  Script: {instanceID: 0}
 - Class: 136
   Script: {instanceID: 0}
 - Class: 198
@@ -62,43 +64,47 @@ SerializeReferenceClassIdentifiers:
 - AssemblyName: XmlLayout
   ClassName: UI.Xml.XmlLayoutResourceEntry
 Assets:
-- Assets/Resources/Craft/Parts/Prefabs/ResourcesPack.prefab
-- Assets/Resources/Craft/Parts/Prefabs/WaterPump.prefab
-- Assets/Resources/Craft/Parts/Prefabs/WaterTank.prefab
+- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/Resources/Craft/Parts/Prefabs/GravityRing.prefab
-- Assets/Resources/Craft/Parts/Definitions/WaterTank.xml
-- Assets/Resources/Craft/Parts/Definitions/HibernatingChamber.xml
-- Assets/Content/Craft/Parts/GasDepressure.png
-- Assets/Content/XML UI/Sprites/White.png
 - Assets/Content/Craft/Parts/Categories/Science.asset
-- Assets/Resources/Craft/Parts/Definitions/CarbonDioxideFilter.xml
+- Assets/Resources/Craft/Parts/Prefabs/balloon.prefab
 - Assets/Resources/Craft/Parts/Definitions/GasDepressurizeDevice.xml
 - Assets/Resources/Craft/Parts/Definitions/GasPressurizeDevice.xml
-- Assets/Resources/Craft/Parts/Prefabs/FoodTank.prefab
 - Assets/Content/Resources/flag.xml
 - Assets/Resources/Craft/Parts/Prefabs/ElectrolyticDevice.prefab
+- Assets/Resources/Craft/Parts/Definitions/Glider.xml
+- Assets/Resources/Craft/Parts/Definitions/balloon.xml
 - Assets/Resources/Craft/Parts/Definitions/FoodTank.xml
-- Assets/Resources/Craft/Parts/Definitions/Sodium Peroxide Container.xml
 - Assets/Content/Craft/Parts/RocketEngines/Propulsion.xml
 - Assets/Resources/Craft/Parts/Prefabs/HibernatingChamber.prefab
 - Assets/Content/Craft/Parts/Categories/LifeSupport.asset
-- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/Resources/Craft/Parts/Definitions/ElectrolyticDevice.xml
-- Assets/Resources/Craft/Parts/Prefabs/CarbonDioxideFilter.prefab
 - Assets/Resources/Craft/Parts/Definitions/GravityRing.xml
-- Assets/Content/XML UI/Sprites/DroodsimUIIcon.png
-- Assets/Resources/Craft/Parts/Prefabs/SewageTreatDevice.prefab
-- Assets/Resources/Craft/Parts/Prefabs/Sodium Peroxide Container.prefab
 - Assets/Resources/Craft/Parts/Definitions/PhotoBioReactor.xml
-- Assets/Resources/Craft/Parts/Definitions/ResourcesPack.xml
-- Assets/Content/XML UI/UIResourceDatabase.asset
-- Assets/Resources/Craft/Parts/Prefabs/GasPressurizeDevice.prefab
 - Assets/Resources/Craft/Parts/Prefabs/GasDepressurizeDevice.prefab
 - Assets/Resources/Craft/Parts/Definitions/SewageTreatDevice.xml
 - Assets/Resources/Craft/Parts/Prefabs/DOCRDevice.prefab
-- Assets/Resources/Craft/Parts/Definitions/WaterPump.xml
+- Assets/Resources/Craft/Parts/Prefabs/ResourcesPack.prefab
+- Assets/Content/Craft/Parts/GravityRingIcon.png
+- Assets/Resources/Craft/Parts/Prefabs/WaterTank.prefab
+- Assets/Resources/Craft/Parts/Definitions/HibernatingChamber.xml
+- Assets/Content/Craft/Parts/GasDepressure.png
+- Assets/Content/XML UI/Sprites/White.png
+- Assets/Resources/Craft/Parts/Definitions/CarbonDioxideFilter.xml
+- Assets/Resources/Craft/Parts/Prefabs/Glider.prefab
+- Assets/Resources/Craft/Parts/Prefabs/FoodTank.prefab
+- Assets/Resources/Craft/Parts/Definitions/Sodium Peroxide Container.xml
+- Assets/Resources/Craft/Parts/Prefabs/CarbonDioxideFilter.prefab
+- Assets/Content/XML UI/Sprites/DroodsimUIIcon.png
 - Assets/_ModAssets_/Droodism.dll.bytes
+- Assets/Resources/Craft/Parts/Prefabs/SewageTreatDevice.prefab
+- Assets/Resources/Craft/Parts/Prefabs/Sodium Peroxide Container.prefab
+- Assets/Resources/Craft/Parts/Definitions/ResourcesPack.xml
+- Assets/Content/XML UI/UIResourceDatabase.asset
+- Assets/Resources/Craft/Parts/Prefabs/GasPressurizeDevice.prefab
+- Assets/Resources/Craft/Parts/Definitions/WaterPump.xml
+- Assets/Resources/Craft/Parts/Prefabs/WaterPump.prefab
 - Assets/Resources/Craft/Parts/Definitions/DOCRDevice.xml
 - Assets/Resources/Craft/Parts/Prefabs/PhotoBioReactor.prefab
-- Assets/Content/Craft/Parts/GravityRingIcon.png
+- Assets/Resources/Craft/Parts/Definitions/WaterTank.xml
 Dependencies: []
