@@ -213,6 +213,7 @@ MonoBehaviour:
     _version: 1
     _versionLast: 1
     _versionsAllowed: 
+    Area: 20
 --- !u!114 &2030863488292301850
 MonoBehaviour:
   m_ObjectHideFlags: 0
