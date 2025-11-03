@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &5778950574174646614
+--- !u!1 &6056256837016314745
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,27 +8,26 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5708343385096818481}
-  - component: {fileID: 5474010810463333757}
-  - component: {fileID: 5838884186843980589}
-  - component: {fileID: 487888362035035393}
-  - component: {fileID: 2754284542459182745}
-  - component: {fileID: 1068914864283971010}
-  - component: {fileID: 2030863488292301850}
+  - component: {fileID: 3090688900584331759}
+  - component: {fileID: 4253462458067980579}
+  - component: {fileID: 6259830838488073454}
+  - component: {fileID: 5419092461239236781}
+  - component: {fileID: 7009389806431832989}
+  - component: {fileID: 7364038871243718601}
   m_Layer: 0
-  m_Name: Glider
+  m_Name: DroodParachute
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5708343385096818481
+--- !u!4 &3090688900584331759
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5778950574174646614}
+  m_GameObject: {fileID: 6056256837016314745}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -37,13 +36,13 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5474010810463333757
+--- !u!114 &4253462458067980579
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5778950574174646614}
+  m_GameObject: {fileID: 6056256837016314745}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 1298369543, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
@@ -57,23 +56,23 @@ MonoBehaviour:
     _defaultColorIndexTrim2: 2
     _defaultColorIndexTrim3: 3
     _defaultColorIndexTrim4: 4
-    _id: Glider
+    _id: DroodParachute
     _includeInBodyDrag: 1
     _mirrorConfig:
       _hasRotationOffset: 0
       _rotationOffsetEuler: {x: 0, y: 0, z: 0}
-    _name: Glider
+    _name: DroodParachute
     _partCollisionHandling: 0
     _price: 0
-    _unscaledMass: 1
+    _unscaledMass: 0
     _usePreferredNodeName: 1
---- !u!114 &5838884186843980589
+--- !u!114 &6259830838488073454
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5778950574174646614}
+  m_GameObject: {fileID: 6056256837016314745}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: -631517893, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
@@ -81,12 +80,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Data:
     _activationGroup: 0
-    _category: {fileID: 11400000, guid: 86569480e674f294aa1d7e52bfbf599c, type: 2}
+    _category: {fileID: 0}
     _description: 
     _displayOrder: 0
     _iconPath: 
     _iconType: 0
-    _name: Glider
+    _name: DroodParachute
     _partTypeOverrides: []
     _position: {x: 0, y: 0, z: 0}
     _rotation: {x: 0, y: 0, z: 0}
@@ -95,13 +94,13 @@ MonoBehaviour:
     _snapshotPartOffset: {x: 0, y: 0, z: 0}
     _snapshotPartRotation: {x: 0, y: 0, z: 0}
     _snapshotRotation: {x: 30, y: 30, z: 0}
---- !u!114 &487888362035035393
+--- !u!114 &5419092461239236781
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5778950574174646614}
+  m_GameObject: {fileID: 6056256837016314745}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: -841283480, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
@@ -116,7 +115,7 @@ MonoBehaviour:
     _version: 1
     _versionLast: 1
     _versionsAllowed: 
-    _autoActivateIfNoStageOrActivationGroup: 0
+    _autoActivateIfNoStageOrActivationGroup: 1
     _buoyancyBaseScale: 1
     _buoyancyUserScale: 1
     _castShadows: 1
@@ -162,13 +161,35 @@ MonoBehaviour:
     _supportsTransparency: 1
     _thermalMassRatio: 1
     _tutorialId: 
---- !u!114 &2754284542459182745
+--- !u!114 &7009389806431832989
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5778950574174646614}
+  m_GameObject: {fileID: 6056256837016314745}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 811163669f62ec941ab1d7a75a1f8ac6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Data:
+    _id: 
+    _inputId: 
+    _inspectorEnabled: 1
+    _partPropertiesEnabled: 1
+    _staticPriceAndMass: 0
+    _version: 1
+    _versionLast: 1
+    _versionsAllowed: 
+    Area: 20
+--- !u!114 &7364038871243718601
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6056256837016314745}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: -1264219031, guid: 55a7c5278766598448d9083b0de0861d, type: 3}
@@ -192,73 +213,3 @@ MonoBehaviour:
     _minPressure: -1
     _visibleInCompartment: 1
     _volumePerIndividual: 3
---- !u!114 &1068914864283971010
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5778950574174646614}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 811163669f62ec941ab1d7a75a1f8ac6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Data:
-    _id: 
-    _inputId: 
-    _inspectorEnabled: 1
-    _partPropertiesEnabled: 1
-    _staticPriceAndMass: 0
-    _version: 1
-    _versionLast: 1
-    _versionsAllowed: 
-    Area: 20
---- !u!114 &2030863488292301850
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5778950574174646614}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1938718678, guid: 55a7c5278766598448d9083b0de0861d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Data:
-    _id: 
-    _inputId: 
-    _inspectorEnabled: 1
-    _partPropertiesEnabled: 1
-    _staticPriceAndMass: 0
-    _version: 1
-    _versionLast: 1
-    _versionsAllowed: 
-    _activationGroup: 0
-    _currentValue: 0
-    _designerInputOptions: 
-    _ignorePartActivationState: 0
-    _input: Pitch
-    _inputAxisRange:
-      _maxValue: 0
-      _minValue: 0
-      _zeroValue: 0
-    _inputAxisRangeDesigner: 
-    _invert: 0
-    _invertOnMirror: 0
-    _invertType: 1
-    _max: 1
-    _min: -1
-    _outputCurveAmplitude: 1
-    _outputCurveFrequency: 1
-    _outputCurveKeyframes: 
-    _outputCurveOffset: 0
-    _outputCurveStyle: 4
-    _outputCurveWrapMode: 8
-    _overrideInput: 
-    _showActivationGroup: 0
-    _showInputAxis: 1
-    _showInvert: 1
-    _type: 0
-    _zeroOnDeactivate: 1

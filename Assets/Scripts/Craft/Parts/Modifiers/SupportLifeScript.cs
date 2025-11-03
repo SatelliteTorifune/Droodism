@@ -51,6 +51,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public IFuelSource _oxygenSource,_waterSource,_foodSource,_co2Source,_wastedWaterSource,_solidWasteSource;
         
         
+        
         /// <summary>
         /// 当前所在行星的名称。
         /// Name of the current planet the craft is on.
@@ -75,9 +76,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// 小蓝人目前的任务时长,从初次发射开始算的
         /// </summary>
         public long MissionDurationTime{get;private set;}
-        
 
-        
+
+        /// <summary>
+        /// 开伞的最小高度。
+        /// </summary>
+        public float MinDelpoyHeight { get; private set; } = 250;
         
         /// <summary>
         /// 指示小蓝人是否在跑或是否为游客。
@@ -227,7 +231,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             IsHibernating = hibernatingState;
         }
-        
+
+       
 
         /// <summary>
         /// 从零件的modifiers中检索指定燃料类型的本地燃料源。
@@ -1350,10 +1355,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 TextButtonModel textButtonModel1 =
                     new TextButtonModel("Plant Flag", (Action<TextButtonModel>)(b => this.PlantFlagClick()));
                 model.Add<TextButtonModel>(textButtonModel1);
-                TextButtonModel textButtonModel2 =
-                    new TextButtonModel("Deploy Parachute", (Action<TextButtonModel>)(b => this.DeployParachute()));
-                model.Add<TextButtonModel>(textButtonModel2);
-                
+                if (Data.ParachuteTypes=="ParaGlider")
+                {
+                    model.Add<TextButtonModel>(new TextButtonModel("Deploy ParaGlider", (Action<TextButtonModel>)(b => this.DeployParaglider())));
+                    model.Add(new SliderModel("Fully Deploy Height", (Func<float>) (() => this.MinDelpoyHeight), (Action<float>) (x => this.MinDelpoyHeight = x), 50, 3000, true,true));
+                }
+
+                if (Data.ParachuteTypes=="Parachute")
+                {
+                    model.Add<TextButtonModel>(new TextButtonModel("Deploy Parachute", (Action<TextButtonModel>)(b => this.DeployParaglider())));
+                    model.Add(new SliderModel("Fully Deploy Height", (Func<float>) (() => this.MinDelpoyHeight), (Action<float>) (x => this.MinDelpoyHeight = x), 50, 3000, true,true));
+                }
             }
 
             #region 临时调参用
@@ -1378,12 +1390,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
         }
 
+        #region 这一坨也是临时调参用
+        
         public float a;
         public float b;
         public float c;
         public float d;
         public float e;
         public float f;
+        #endregion
         
         private void PlantFlagClick()
         {
@@ -1412,8 +1427,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             Mod.Instance.SpawnFlag();
         }
-
-        private void DeployParachute()
+        
+        private void DeployParaglider()
         {
             ICraftScript craftScript = this.PartScript.CraftScript;
             IFlightSceneUI ui = ModApi.Common.Game.Instance.FlightScene.FlightSceneUI;
@@ -1525,7 +1540,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private XElement ParachutePartElement()
         {
             
-            DesignerPart designerpart = Game.Instance.CachedDesignerParts.Parts.First(d => d.Name == "Glider");
+            DesignerPart designerpart = Game.Instance.CachedDesignerParts.Parts.First(d => d.Name == (Data.ParachuteTypes=="ParaGlider"?"Glider":"DroodParachute"));
             XElement assembly = new XElement("Assembly", designerpart.AssemblyElement.Element("Parts"));
             //Mod.LOG($"看这里:{assembly.ToString()}");
             return assembly;

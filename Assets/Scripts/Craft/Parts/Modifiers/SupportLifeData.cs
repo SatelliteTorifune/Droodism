@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using ModApi.Craft.Propulsion;
 using ModApi.Design.PartProperties;
@@ -43,6 +44,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private float desireFoodCapacity = 0.2f;
         [SerializeField] [DesignerPropertySlider(0.1f, 3f, 30, Label = "<color=red>Water</color> Carry Amount(days)", Tooltip = "How much<color=red> Drink Water</color> Drood himself/herself will carry when Eva.")]
         private float desireWaterCapacity = 0.2f;
+        
+        [SerializeField]
+        [DesignerPropertySpinner(Label = "<color=yellow>Parachute Type", Order = 0, Tooltip = "The type of parachute this drood brings.")]
+        private string _parachuteType = "Parachute";
+
+      
         
         [SerializeField][PartModifierProperty]
         public long MissionStartTime=0;
@@ -108,9 +115,29 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             set=>this.desireWaterCapacity = value;
         }
 
+        public string ParachuteTypes
+        {
+            get => this._parachuteType;
+        }
+
         private float IsLegal(float value)
         {
             return value>0?value:1;
+        }
+
+        protected override void OnDesignerInitialization(IDesignerPartPropertiesModifierInterface d)
+        {
+            base.OnDesignerInitialization(d);
+            d.OnValueLabelRequested<string>((Expression<Func<string>>) (() => this._parachuteType), (Func<string, string>) (x => this._parachuteType));
+            d.OnSpinnerValuesRequested<string>((Expression<Func<string>>) (() => this._parachuteType), new Action<List<string>>(this.GetSpinnerValues));
+        }
+
+        private void GetSpinnerValues(List<string> chuteTypes)
+        {
+            chuteTypes.Clear();
+            chuteTypes.Add("None");
+            chuteTypes.Add("ParaGlider");
+            chuteTypes.Add("Parachute");
         }
 
         #region functions

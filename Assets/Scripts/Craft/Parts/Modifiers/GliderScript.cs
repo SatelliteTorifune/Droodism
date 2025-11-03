@@ -1,4 +1,6 @@
 using System.Linq.Expressions;
+using System.Runtime.InteropServices.ComTypes;
+using System.Windows.Forms;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using Assets.Scripts.Craft.Parts.Modifiers.Input;
 using ModApi;
@@ -7,6 +9,7 @@ using ModApi.Craft.Parts.Input;
 using ModApi.GameLoop;
 using RootMotion.FinalIK;
 using ModApi.Flight.UI;
+using Panteleymonov;
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
@@ -39,12 +42,20 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private bool isKill;
         private IFlightSceneUI ui;
 
+        private float MinFullDeployHeight;
+
+        private Transform parachuteMeshTransform;
+
+        private ChuteState currentState = ChuteState.None;
+        
+        public float OpenPercent { get; private set; } = 0.0f;
         public void FlightStart(in FlightFrameData frame)
         {
             ui = Game.Instance.FlightScene.FlightSceneUI;
+            this.parachuteMeshTransform.transform.localScale =new Vector3(10, 100, 10);
+
         }
         
-
         public void FlightUpdate(in FlightFrameData frame)
         {
             //Debug.LogFormat($"PartScript.CraftScript.ReferenceFrame.Center{PartScript.CraftScript.ReferenceFrame.Center},again{PartScript.CraftScript.Transform.position},pci{PartScript.CraftScript.FlightData.Position}");
@@ -72,19 +83,89 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private bool isGround()
         {
-            return this.PartScript.CraftScript.FlightData.AltitudeAboveGroundLevel<1.5||PartScript.CraftScript.FlightData.Grounded||this.PartScript.CraftScript.FlightData.SurfaceVelocityMagnitude < 0.5;
+            return this.PartScript.CraftScript.FlightData.AltitudeAboveGroundLevel<1.5||PartScript.CraftScript.FlightData.Grounded||(this.PartScript.CraftScript.FlightData.SurfaceVelocityMagnitude < 0.1&&PartScript.CraftScript.FlightData.AccelerationMagnitude < 0.1);
         }
         public void FlightFixedUpdate(in FlightFrameData frame)
         {
-            if (!isGround())
+            if (_pilot == null)
             {
-                //UpdateParameters();
-                UpdateInput(frame);
-                UpdateForces(frame);
+                return;
+            }
+            MinFullDeployHeight = this._pilot.PartScript.GetModifier<SupportLifeScript>().MinDelpoyHeight;
+            if (isGround())
+            {
+                return;
+            }
+
+            OpenPercent = (parachuteMeshTransform.transform.localScale.x * parachuteMeshTransform.transform.localScale.y)/ 1e4f;
+            
+            if (PartScript.CraftScript.FlightData.AltitudeAboveGroundLevel > MinFullDeployHeight)
+            {
+                if (currentState==ChuteState.None)
+                {
+                    currentState = ChuteState.HalfDeploy;
+                }
+            }
+
+            if (PartScript.CraftScript.FlightData.AltitudeAboveGroundLevel < MinFullDeployHeight)
+            {
+                if (currentState==ChuteState.HalfDeploy)
+                {
+                    currentState = ChuteState.HalfDeploying;
+                }
+
+                if (currentState==ChuteState.HalfDeploying)
+                {
+                    DeployGlider(frame);
+                }
                 
             }
+            if (currentState == ChuteState.HalfDeploy)
+            {
+                UpdateHalfDeployForces(frame); 
+            }
+            if (currentState==ChuteState.FullyDeployed)
+            {
+                if (Data.Part.PartType.Id == "Glider")
+                {
+                    UpdateParaGliderInput(frame);
+                    UpdateForceForFullyDeployedGlider(frame);
+                }
+                if (Data.Part.PartType.Id == "DroodParachute")
+                {
+                    UpdateForceForFullyDeployedParachute(frame);
+                }
+            }
+
+            void DeployGlider(in FlightFrameData frame)
+            {
+                if (parachuteMeshTransform.transform.localScale.x>=100)
+                {
+                    currentState = ChuteState.FullyDeployed;
+                    return;
+                }
+                this.parachuteMeshTransform.transform.localScale = new Vector3(
+                    this.parachuteMeshTransform.transform.localScale.x+1f,
+                    this.parachuteMeshTransform.transform.localScale.y,
+                    this.parachuteMeshTransform.transform.localScale.z+1f);
+            }
         }
-        private void UpdateInput(in FlightFrameData frame)
+        
+
+        /// <summary>
+        /// Glider和Parachute共用的,半展开的受力函数
+        /// </summary>
+        /// <param name="frame"></param>
+        private void UpdateHalfDeployForces(in FlightFrameData frame)
+        {
+            
+        }
+        private void UpdateForceForFullyDeployedParachute(in FlightFrameData frameData)
+        {
+            
+        }
+        #region 滑翔伞
+        private void UpdateParaGliderInput(in FlightFrameData frame)
         {
             foreach (var eva in _crewCompartment.Crew)
                 controls = eva.PartScript.CommandPod.Controls;
@@ -94,6 +175,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             PartScript.BodyScript.RigidBody.AddTorque(_worldTorque * 10f, ForceMode.Force);
         }
 
+        #region 调参和参数
         private void UpdateParameters()
         {
             SupportLifeScript supportLifeScript = _pilot.PartScript.GetModifier<SupportLifeScript>();
@@ -109,7 +191,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public float liftBaseCoeff = 20f;   
         public float sideSlipDamping = 1.75f;
         public float maxSideForce = 3f;
-        private void UpdateForces(in FlightFrameData frame)
+        #endregion
+        public virtual void UpdateForceForFullyDeployedGlider(in FlightFrameData frame)
         {
             
             Rigidbody rb = PartScript.BodyScript.RigidBody;
@@ -132,7 +215,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
              {
                  // 把下沉的垂直分量转化为前进推力
                  float forwardForceMag = kForward * -verticalSpeed;
-                 Vector3 forwardForce = forwardForceMag * forwardDir;
+                 Vector3 forwardForce = OpenPercent*forwardForceMag * forwardDir;
                  rb.AddForceAtPosition(forwardForce,PartScript.CraftScript.CenterOfMass.position, ForceMode.Force);
              }
             
@@ -147,7 +230,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
              {
                  liftDir = -liftDir;
              }
-             Vector3 liftForce = liftForceMag * liftDir;
+             Vector3 liftForce =OpenPercent* liftForceMag * liftDir;
              rb.AddForceAtPosition(liftForce, PartScript.CraftScript.CenterOfMass.position, ForceMode.Force);
              
              
@@ -164,7 +247,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
              
              if (worldVel.sqrMagnitude > 0.0001f)
              {
-                 Vector3 dragForce = -kDrag * worldVel * worldVel.magnitude;
+                 Vector3 dragForce =OpenPercent* -kDrag * worldVel * worldVel.magnitude;
                  rb.AddForceAtPosition(dragForce, PartScript.CraftScript.CenterOfMass.position,ForceMode.Force);
              }
             
@@ -235,6 +318,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             return output;
         }
         #endregion
+        #endregion
+        
         #region 傻逼
         protected override void OnInitialized()
         {
@@ -245,6 +330,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             
             BaseLKTransform = Utilities.FindFirstGameObjectMyselfOrChildren("BodyBase", this.gameObject).transform;
+            parachuteMeshTransform=Utilities.FindFirstGameObjectMyselfOrChildren("ParachuteMesh", this.gameObject).transform;
             if (BaseLKTransform == null)
             {
                 Debug.LogError("GliderScript: Could not find BodyBase transform");
@@ -269,6 +355,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private void OnPilotEnter(EvaScript crew) => this.SetPilot(crew);
         private void OnPilotExit(EvaScript crew)
         {
+            currentState = ChuteState.None;
             if (!((UnityEngine.Object) crew == (UnityEngine.Object) this._pilot))
                 return;
             this.SetPilot((EvaScript) null);
@@ -355,4 +442,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         #endregion
     }
+     enum ChuteState
+    {
+        None,
+        HalfDeploy,
+        HalfDeploying,
+        FullyDeployed,
+    }
 }
+
