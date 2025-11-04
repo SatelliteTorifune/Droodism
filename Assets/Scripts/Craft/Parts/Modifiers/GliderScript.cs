@@ -53,6 +53,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             ui = Game.Instance.FlightScene.FlightSceneUI;
             this.parachuteMeshTransform.transform.localScale =new Vector3(10, 100, 10);
+            if (Data.Part.PartType.Id=="DroodParachute")
+            {
+                this.LeftHandTransform.transform.localPosition = new Vector3(0.3f,LeftHandTransform.transform.localPosition.y,LeftHandTransform.transform.localPosition.z);
+                this.RightHandTransform.transform.localPosition = new Vector3(-0.3f,RightHandTransform.transform.localPosition.y,RightHandTransform.transform.localPosition.z);
+            }
 
         }
         
@@ -121,6 +126,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 if (currentState==ChuteState.HalfDeploying)
                 {
                     DeployGlider(frame);
+                    if (Data.Part.PartType.Id == "DroodParachute")
+                    {
+                        UpdateHandPositions();
+                    }
                 }
                 
             }
@@ -128,7 +137,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 UpdateHalfDeployForces(frame); 
             }
-            if (currentState==ChuteState.FullyDeployed)
+            if (currentState==ChuteState.FullyDeployed||currentState==ChuteState.HalfDeploying)
             {
                 if (Data.Part.PartType.Id == "Glider")
                 {
@@ -152,6 +161,19 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     this.parachuteMeshTransform.transform.localScale.x+1f,
                     this.parachuteMeshTransform.transform.localScale.y,
                     this.parachuteMeshTransform.transform.localScale.z+1f);
+            }
+
+            void UpdateHandPositions()
+            {
+                if (LeftHandTransform.transform.localPosition.x>0.2)
+                {
+                    LeftHandTransform.transform.localPosition = new Vector3(LeftHandTransform.transform.localPosition.x-0.002f,LeftHandTransform.transform.localPosition.y,LeftHandTransform.transform.localPosition.z);
+                }
+
+                if (RightHandTransform.transform.localPosition.x< -0.2)
+                {
+                    RightHandTransform.transform.localPosition = new Vector3(RightHandTransform.transform.localPosition.x+0.002f,RightHandTransform.transform.localPosition.y,RightHandTransform.transform.localPosition.z);
+                }
             }
         }
         
