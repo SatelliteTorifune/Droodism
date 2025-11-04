@@ -91,7 +91,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 return;
             }
-            MinFullDeployHeight = this._pilot.PartScript.GetModifier<SupportLifeScript>().MinDelpoyHeight;
+            MinFullDeployHeight = this._pilot.PartScript.GetModifier<SupportLifeScript>().Data.MinDelpoyHeight;
             if (isGround())
             {
                 return;
@@ -106,9 +106,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     currentState = ChuteState.HalfDeploy;
                 }
             }
-
             if (PartScript.CraftScript.FlightData.AltitudeAboveGroundLevel < MinFullDeployHeight)
             {
+                if (currentState==ChuteState.None)
+                {
+                    currentState = ChuteState.HalfDeploying;
+                }
+                
                 if (currentState==ChuteState.HalfDeploy)
                 {
                     currentState = ChuteState.HalfDeploying;

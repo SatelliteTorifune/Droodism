@@ -3,6 +3,8 @@ using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using ModApi.Craft.Propulsion;
 using ModApi.Design.PartProperties;
 using Assets.Scripts.State;
+using ModApi.Math;
+
 //去你妈的我要躺在床上对着梅莉的蕾丝边小白袜撸管子,谁他妈想写这东西
 //不是这都他妈啥啊
 namespace Assets.Scripts.Craft.Parts.Modifiers
@@ -49,7 +51,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         [DesignerPropertySpinner(Label = "<color=yellow>Parachute Type", Order = 0, Tooltip = "The type of parachute this drood brings.")]
         private string _parachuteType = "Parachute";
 
-      
+        [SerializeField] [PartModifierProperty(true, false)]
+        private float minDeployHeight = 250f;
+       
         
         [SerializeField][PartModifierProperty]
         public long MissionStartTime=0;
@@ -125,11 +129,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             return value>0?value:1;
         }
 
+        public float MinDelpoyHeight
+        {
+            get=>this.minDeployHeight;
+            set=>this.minDeployHeight=value;
+        }
         protected override void OnDesignerInitialization(IDesignerPartPropertiesModifierInterface d)
         {
             base.OnDesignerInitialization(d);
             d.OnValueLabelRequested<string>((Expression<Func<string>>) (() => this._parachuteType), (Func<string, string>) (x => this._parachuteType));
             d.OnSpinnerValuesRequested<string>((Expression<Func<string>>) (() => this._parachuteType), new Action<List<string>>(this.GetSpinnerValues));
+            d.OnValueLabelRequested(() => this.MinDelpoyHeight, (s)=>Units.GetDistanceString(s));
         }
 
         private void GetSpinnerValues(List<string> chuteTypes)

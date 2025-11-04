@@ -81,7 +81,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// <summary>
         /// 开伞的最小高度。
         /// </summary>
-        public float MinDelpoyHeight { get; private set; } = 250;
+       
         
         /// <summary>
         /// 指示小蓝人是否在跑或是否为游客。
@@ -1358,13 +1358,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 if (Data.ParachuteTypes=="ParaGlider")
                 {
                     model.Add<TextButtonModel>(new TextButtonModel("Deploy ParaGlider", (Action<TextButtonModel>)(b => this.DeployParaglider())));
-                    model.Add(new SliderModel("Fully Deploy Height", (Func<float>) (() => this.MinDelpoyHeight), (Action<float>) (x => this.MinDelpoyHeight = x), 50, 3000, true,true));
+                    model.Add(new SliderModel("Fully Deploy Height", (Func<float>) (() => this.Data.MinDelpoyHeight), (Action<float>) (s => this.Data.MinDelpoyHeight = s), 100, 3000, true,true)).ValueFormatter = (Func<float, string>) (x => Units.GetDistanceString(x));
                 }
 
                 if (Data.ParachuteTypes=="Parachute")
                 {
                     model.Add<TextButtonModel>(new TextButtonModel("Deploy Parachute", (Action<TextButtonModel>)(b => this.DeployParaglider())));
-                    model.Add(new SliderModel("Fully Deploy Height", (Func<float>) (() => this.MinDelpoyHeight), (Action<float>) (x => this.MinDelpoyHeight = x), 50, 3000, true,true));
+                    model.Add(new SliderModel("Fully Deploy Height", (Func<float>) (() => this.Data.MinDelpoyHeight), (Action<float>) (s => this.Data.MinDelpoyHeight = s), 100, 3000, true,true)).ValueFormatter = (Func<float, string>) (x => Units.GetDistanceString(x));
                 }
             }
 
@@ -1566,4 +1566,5 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         #endregion
         
     }
+   
 }
