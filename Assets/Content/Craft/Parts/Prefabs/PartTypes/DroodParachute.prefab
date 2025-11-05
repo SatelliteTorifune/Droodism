@@ -207,7 +207,7 @@ MonoBehaviour:
     _capacity: 1
     _capacityLabel: 
     _commandPodEnabledInCompartment: 1
-    _crewExitPosition: {x: 0, y: 0, z: 0}
+    _crewExitPosition: {x: 0, y: -2, z: 0}
     _crewExitRotation: {x: 0, y: 0, z: 0}
     _maxPressure: -1
     _minPressure: -1

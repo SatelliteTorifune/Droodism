@@ -184,11 +184,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// <param name="frame"></param>
         private void UpdateHalfDeployForces(in FlightFrameData frame)
         {
-            
+            Rigidbody rb = PartScript.BodyScript.RigidBody;
+            Vector3 worldVel = this.PartScript.CraftScript.FlightData.SurfaceVelocity.ToVector3();
+            Vector3 dragForce =OpenPercent* -kDrag * worldVel * worldVel.magnitude*0.4f;
+            rb.AddForceAtPosition(dragForce, PartScript.Transform.position,ForceMode.Force);
         }
         private void UpdateForceForFullyDeployedParachute(in FlightFrameData frameData)
         {
-            
+            Rigidbody rb = PartScript.BodyScript.RigidBody;
+            Vector3 worldVel = this.PartScript.CraftScript.FlightData.SurfaceVelocity.ToVector3();
+            Vector3 dragForce =OpenPercent* -kDrag * worldVel * worldVel.magnitude*4f;
+            rb.AddForceAtPosition(dragForce, PartScript.Transform.position,ForceMode.Force);
         }
         #region 滑翔伞
         private void UpdateParaGliderInput(in FlightFrameData frame)
@@ -218,36 +224,33 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public float sideSlipDamping = 1.75f;
         public float maxSideForce = 3f;
         #endregion
-        public virtual void UpdateForceForFullyDeployedGlider(in FlightFrameData frame)
+        private void UpdateForceForFullyDeployedGlider(in FlightFrameData frame)
         {
             
             Rigidbody rb = PartScript.BodyScript.RigidBody;
              if (rb == null) return;
              Vector3 worldVel = this.PartScript.CraftScript.FlightData.SurfaceVelocity.ToVector3();
-             Vector3 forwardDir = rb.transform.forward;   // 机体前向（本地 +Z）
-             Vector3 rightDir   = rb.transform.right;     // 机体右向（本地 +X）
-             Vector3 upDir      = rb.transform.up;        // 机体上向（本地 +Y）
+             Vector3 forwardDir = rb.transform.forward;   
+             Vector3 rightDir   = rb.transform.right;     
+             Vector3 upDir      = rb.transform.up;        
             
              float speed = worldVel.magnitude; 
              
              float aoaDeg = (float)PartScript.CraftScript.FlightData.AngleOfAttack;  
              float sideslip = (float)-PartScript.CraftScript.FlightData.SideSlip; 
-            
-             // -------------------------------------------------
-             // 前进推力（由下沉产生的水平加速）——保持原逻辑
-             // -------------------------------------------------
+             
+             //前进推力（由下沉产生的水平加速）
              float verticalSpeed = (float)PartScript.CraftScript.FlightData.VerticalSurfaceVelocity;
              if (verticalSpeed < -0.1f)
              {
-                 // 把下沉的垂直分量转化为前进推力
+                 //把下沉的垂直分量转化为前进推力
                  float forwardForceMag = kForward * -verticalSpeed;
                  Vector3 forwardForce = OpenPercent*forwardForceMag * forwardDir;
                  rb.AddForceAtPosition(forwardForce,PartScript.CraftScript.CenterOfMass.position, ForceMode.Force);
              }
             
-             // -------------------------------------------------
-             // 4基于 AOA 的升力
-             // -------------------------------------------------
+            
+             //基于 AOA 的升力
              float cl = liftCurve.Evaluate(Mathf.Abs(aoaDeg));
              float liftForceMag = liftBaseCoeff * cl * Data.Area * speed * speed;
              liftForceMag = Mathf.Min(liftForceMag, maxLiftForce);
@@ -260,7 +263,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
              rb.AddForceAtPosition(liftForce, PartScript.CraftScript.CenterOfMass.position, ForceMode.Force);
              
              
-             if (Mathf.Abs(sideslip) > 1f) // 小于 1° 时可以忽略
+             if (Mathf.Abs(sideslip) > 1f)
              {
                  float sideForceMag = sideSlipDamping *
                                       Mathf.Sin(Mathf.Deg2Rad * sideslip) *
@@ -345,7 +348,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         #endregion
         #endregion
-        
         #region 傻逼
         protected override void OnInitialized()
         {
@@ -473,7 +475,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         None,
         HalfDeploy,
         HalfDeploying,
-        FullyDeployed,
+        FullyDeployed
     }
 }
 
