@@ -1,7 +1,15 @@
+using System.Linq.Expressions;
+using System.Runtime.InteropServices.ComTypes;
+using System.Windows.Forms;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
+using Assets.Scripts.Craft.Parts.Modifiers.Input;
 using ModApi;
 using ModApi.Craft;
+using ModApi.Craft.Parts.Input;
+using ModApi.GameLoop;
 using RootMotion.FinalIK;
+using ModApi.Flight.UI;
+using Panteleymonov;
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
@@ -13,9 +21,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
 
-    public class GliderScript : PartModifierScript<GliderData>
+    public class GliderScript : PartModifierScript<GliderData>,IFlightUpdate,IFlightStart,IFlightFixedUpdate
     {
-        public Transform 
+        private Transform 
             LeftHandTransform,
             RightHandTransform,
             LeftElbowTransform,
@@ -25,6 +33,322 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private EvaScript _pilot = (EvaScript) null;
         private CrewCompartmentScript _crewCompartment;
         private AttachPoint _seatAttachPoint;
+
+        private IInputController pitchInput;
+        private CraftControls controls;
+        public Vector3 _worldTorque;
+        
+
+        private bool isKill;
+        private IFlightSceneUI ui;
+
+        private float MinFullDeployHeight;
+
+        private Transform parachuteMeshTransform;
+
+        private ChuteState currentState = ChuteState.None;
+        
+        public float OpenPercent { get; private set; } = 0.0f;
+        public void FlightStart(in FlightFrameData frame)
+        {
+            ui = Game.Instance.FlightScene.FlightSceneUI;
+            this.parachuteMeshTransform.transform.localScale =new Vector3(10, 100, 10);
+            if (Data.Part.PartType.Id=="DroodParachute")
+            {
+                this.LeftHandTransform.transform.localPosition = new Vector3(0.3f,LeftHandTransform.transform.localPosition.y,LeftHandTransform.transform.localPosition.z);
+                this.RightHandTransform.transform.localPosition = new Vector3(-0.3f,RightHandTransform.transform.localPosition.y,RightHandTransform.transform.localPosition.z);
+            }
+
+        }
+        
+        public void FlightUpdate(in FlightFrameData frame)
+        {
+            //Debug.LogFormat($"PartScript.CraftScript.ReferenceFrame.Center{PartScript.CraftScript.ReferenceFrame.Center},again{PartScript.CraftScript.Transform.position},pci{PartScript.CraftScript.FlightData.Position}");
+            try
+            {
+                if (isGround())
+                {
+                    foreach (var eva in _crewCompartment.Crew)
+                    {
+                        _crewCompartment.UnloadCrewMember(eva,true);
+                    }
+                }
+                
+                if (_crewCompartment.Crew.Count==0)
+                {
+                    this.PartScript.BodyScript.ExplodePart(this.PartScript, -1);
+                }
+            }
+            catch (Exception e)
+            {
+                //since this shit is called every frame,so, when the part kills itself, it will throw an exception,so, i just ignore it.
+            }
+            
+        }
+
+        private bool isGround()
+        {
+            return this.PartScript.CraftScript.FlightData.AltitudeAboveGroundLevel<1.5||PartScript.CraftScript.FlightData.Grounded||(this.PartScript.CraftScript.FlightData.SurfaceVelocityMagnitude < 0.1&&PartScript.CraftScript.FlightData.AccelerationMagnitude < 0.1);
+        }
+        public void FlightFixedUpdate(in FlightFrameData frame)
+        {
+            if (_pilot == null)
+            {
+                return;
+            }
+            MinFullDeployHeight = this._pilot.PartScript.GetModifier<SupportLifeScript>().Data.MinDelpoyHeight;
+            if (isGround())
+            {
+                return;
+            }
+
+            OpenPercent = (parachuteMeshTransform.transform.localScale.x * parachuteMeshTransform.transform.localScale.y)/ 1e4f;
+            
+            if (PartScript.CraftScript.FlightData.AltitudeAboveGroundLevel > MinFullDeployHeight)
+            {
+                if (currentState==ChuteState.None)
+                {
+                    currentState = ChuteState.HalfDeploy;
+                }
+            }
+            if (PartScript.CraftScript.FlightData.AltitudeAboveGroundLevel < MinFullDeployHeight)
+            {
+                if (currentState==ChuteState.None)
+                {
+                    currentState = ChuteState.HalfDeploying;
+                }
+                
+                if (currentState==ChuteState.HalfDeploy)
+                {
+                    currentState = ChuteState.HalfDeploying;
+                }
+
+                if (currentState==ChuteState.HalfDeploying)
+                {
+                    DeployGlider(frame);
+                    if (Data.Part.PartType.Id == "DroodParachute")
+                    {
+                        UpdateHandPositions();
+                    }
+                }
+                
+            }
+            if (currentState == ChuteState.HalfDeploy)
+            {
+                UpdateHalfDeployForces(frame); 
+            }
+            if (currentState==ChuteState.FullyDeployed||currentState==ChuteState.HalfDeploying)
+            {
+                if (Data.Part.PartType.Id == "Glider")
+                {
+                    UpdateParaGliderInput(frame);
+                    UpdateForceForFullyDeployedGlider(frame);
+                }
+                if (Data.Part.PartType.Id == "DroodParachute")
+                {
+                    UpdateForceForFullyDeployedParachute(frame);
+                }
+            }
+
+            void DeployGlider(in FlightFrameData frame)
+            {
+                if (parachuteMeshTransform.transform.localScale.x>=100)
+                {
+                    currentState = ChuteState.FullyDeployed;
+                    return;
+                }
+                this.parachuteMeshTransform.transform.localScale = new Vector3(
+                    this.parachuteMeshTransform.transform.localScale.x+1f,
+                    this.parachuteMeshTransform.transform.localScale.y,
+                    this.parachuteMeshTransform.transform.localScale.z+1f);
+            }
+
+            void UpdateHandPositions()
+            {
+                if (LeftHandTransform.transform.localPosition.x>0.2)
+                {
+                    LeftHandTransform.transform.localPosition = new Vector3(LeftHandTransform.transform.localPosition.x-0.002f,LeftHandTransform.transform.localPosition.y,LeftHandTransform.transform.localPosition.z);
+                }
+
+                if (RightHandTransform.transform.localPosition.x< -0.2)
+                {
+                    RightHandTransform.transform.localPosition = new Vector3(RightHandTransform.transform.localPosition.x+0.002f,RightHandTransform.transform.localPosition.y,RightHandTransform.transform.localPosition.z);
+                }
+            }
+        }
+        
+
+        /// <summary>
+        /// Glider和Parachute共用的,半展开的受力函数
+        /// </summary>
+        /// <param name="frame"></param>
+        private void UpdateHalfDeployForces(in FlightFrameData frame)
+        {
+            Rigidbody rb = PartScript.BodyScript.RigidBody;
+            Vector3 worldVel = this.PartScript.CraftScript.FlightData.SurfaceVelocity.ToVector3();
+            Vector3 dragForce =OpenPercent* -kDrag * worldVel * worldVel.magnitude*0.4f;
+            rb.AddForceAtPosition(dragForce, PartScript.Transform.position,ForceMode.Force);
+        }
+        private void UpdateForceForFullyDeployedParachute(in FlightFrameData frameData)
+        {
+            Rigidbody rb = PartScript.BodyScript.RigidBody;
+            Vector3 worldVel = this.PartScript.CraftScript.FlightData.SurfaceVelocity.ToVector3();
+            Vector3 dragForce =OpenPercent* -kDrag * worldVel * worldVel.magnitude*4f;
+            rb.AddForceAtPosition(dragForce, PartScript.Transform.position,ForceMode.Force);
+        }
+        #region 滑翔伞
+        private void UpdateParaGliderInput(in FlightFrameData frame)
+        {
+            foreach (var eva in _crewCompartment.Crew)
+                controls = eva.PartScript.CommandPod.Controls;
+            Vector3 direction = new Vector3(Mathf.Clamp(PitchPID(controls.Pitch * targetMaxPitch * -1, (float)PartScript.CraftScript.FlightData.Pitch, 0.01f), -3, 3), controls.Roll*0.04f,  Mathf.Clamp(RollPID(controls.Roll*targetRoll, (float)PartScript.CraftScript.FlightData.BankAngle, 0.01f),-1,1));
+            Vector3 torque = this.PartScript.CraftScript.CenterOfMass.TransformDirection(direction);
+            _worldTorque = Vector3.Lerp(_worldTorque, torque, 2.5f * frame.DeltaTime);
+            PartScript.BodyScript.RigidBody.AddTorque(_worldTorque * 10f, ForceMode.Force);
+        }
+
+        #region 调参和参数
+        private void UpdateParameters()
+        {
+            SupportLifeScript supportLifeScript = _pilot.PartScript.GetModifier<SupportLifeScript>();
+            kForward = supportLifeScript.a;
+            kDrag = supportLifeScript.b;
+            maxLiftForce = supportLifeScript.c;
+            liftBaseCoeff = supportLifeScript.d;
+            sideSlipDamping = supportLifeScript.e;
+        }
+        public float kForward = 10f;
+        public float kDrag = 0.15f;
+        public float maxLiftForce = 3f;
+        public float liftBaseCoeff = 20f;   
+        public float sideSlipDamping = 1.75f;
+        public float maxSideForce = 3f;
+        #endregion
+        private void UpdateForceForFullyDeployedGlider(in FlightFrameData frame)
+        {
+            
+            Rigidbody rb = PartScript.BodyScript.RigidBody;
+             if (rb == null) return;
+             Vector3 worldVel = this.PartScript.CraftScript.FlightData.SurfaceVelocity.ToVector3();
+             Vector3 forwardDir = rb.transform.forward;   
+             Vector3 rightDir   = rb.transform.right;     
+             Vector3 upDir      = rb.transform.up;        
+            
+             float speed = worldVel.magnitude; 
+             
+             float aoaDeg = (float)PartScript.CraftScript.FlightData.AngleOfAttack;  
+             float sideslip = (float)-PartScript.CraftScript.FlightData.SideSlip; 
+             
+             //前进推力（由下沉产生的水平加速）
+             float verticalSpeed = (float)PartScript.CraftScript.FlightData.VerticalSurfaceVelocity;
+             if (verticalSpeed < -0.1f)
+             {
+                 //把下沉的垂直分量转化为前进推力
+                 float forwardForceMag = kForward * -verticalSpeed;
+                 Vector3 forwardForce = OpenPercent*forwardForceMag * forwardDir;
+                 rb.AddForceAtPosition(forwardForce,PartScript.CraftScript.CenterOfMass.position, ForceMode.Force);
+             }
+            
+            
+             //基于 AOA 的升力
+             float cl = liftCurve.Evaluate(Mathf.Abs(aoaDeg));
+             float liftForceMag = liftBaseCoeff * cl * Data.Area * speed * speed;
+             liftForceMag = Mathf.Min(liftForceMag, maxLiftForce);
+             Vector3 liftDir = Vector3.Cross(forwardDir, rightDir).normalized; 
+             if (Vector3.Dot(liftDir, upDir) > 0)
+             {
+                 liftDir = -liftDir;
+             }
+             Vector3 liftForce =OpenPercent* liftForceMag * liftDir;
+             rb.AddForceAtPosition(liftForce, PartScript.CraftScript.CenterOfMass.position, ForceMode.Force);
+             
+             
+             if (Mathf.Abs(sideslip) > 1f)
+             {
+                 float sideForceMag = sideSlipDamping *
+                                      Mathf.Sin(Mathf.Deg2Rad * sideslip) *
+                                      speed * speed;
+                 sideForceMag = Mathf.Clamp(sideForceMag, -maxSideForce, maxSideForce);
+                 
+                 Vector3 sideForce = -Mathf.Sign(sideslip) * Mathf.Abs(sideForceMag) * rightDir;
+                 rb.AddForceAtPosition(sideForce, PartScript.CraftScript.CenterOfMass.position,ForceMode.Force);
+             }
+             
+             if (worldVel.sqrMagnitude > 0.0001f)
+             {
+                 Vector3 dragForce =OpenPercent* -kDrag * worldVel * worldVel.magnitude;
+                 rb.AddForceAtPosition(dragForce, PartScript.CraftScript.CenterOfMass.position,ForceMode.Force);
+             }
+            
+        }
+        
+        public AnimationCurve liftCurve = CreateDefaultLiftCurve();
+
+        private static AnimationCurve CreateDefaultLiftCurve()
+        {
+            Keyframe[] keys = new Keyframe[]
+            {
+                new Keyframe( 0f, 0.15f),
+                new Keyframe( 2f, 0.30f),
+                new Keyframe( 5f, 0.70f),
+                new Keyframe( 8f, 1.10f),
+                new Keyframe(12f, 1.55f),
+                new Keyframe(15f, 1.60f),
+                new Keyframe(18f, 1.40f),
+                new Keyframe(22f, 1.00f),
+                new Keyframe(26f, 0.55f),
+                new Keyframe(30f, 0.20f)
+            };
+            
+            AnimationCurve curve = new AnimationCurve(keys);
+            for (int i = 0; i < curve.length; i++)
+            {
+                curve.SmoothTangents(i, 0.5f);
+            }
+            curve.preWrapMode  = WrapMode.Clamp;
+            curve.postWrapMode = WrapMode.Clamp;
+            return curve;
+        }
+        #region RollPID
+        
+        private float targetRoll = 45;
+        private float kpRoll = 0.75f;
+        private float kiRoll=0.2f;
+        private float kdRoll=0.65f;
+        private float prevErrorRoll;
+        private float interalRoll;
+        private float RollPID(float targetRoll, float currentRoll, float deltaTime)
+        {
+            //Game.Instance.FlightScene.CraftNode.CraftScript.ActiveCommandPod.AutoPilot.
+            float error = deltaTime * (currentRoll - targetRoll);
+            interalRoll+=error*deltaTime;
+            float derivative = (error - prevErrorRoll) / deltaTime;
+            float output = kpRoll * error + kiRoll * interalRoll + kdRoll * derivative;
+            prevErrorRoll = error;
+            return output;
+        }
+        #endregion
+        #region PitchPID
+        
+        private float targetMaxPitch = 45;
+        private float kpPitch= 0.8f;
+        private float kiPitch=0.01f;
+        private float kdPitch=1.2f;
+        private float prevErrorPitch;
+        private float interPitch;
+        private float PitchPID(float targetPitch, float currentPitch, float deltaTime)
+        {
+            //Game.Instance.FlightScene.CraftNode.CraftScript.ActiveCommandPod.AutoPilot.
+            float error = deltaTime * (currentPitch - targetPitch);
+            interPitch+=error*deltaTime;
+            float derivative = (error - prevErrorPitch) / deltaTime;
+            float output = kpPitch * error + kiPitch * interPitch + kdPitch * derivative;
+            prevErrorPitch = error;
+            return output;
+        }
+        #endregion
+        #endregion
+        #region 傻逼
         protected override void OnInitialized()
         {
             this._seatAttachPoint = this.PartScript.Data.GetAttachPoint("AttachPointSeat");
@@ -34,6 +358,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             
             BaseLKTransform = Utilities.FindFirstGameObjectMyselfOrChildren("BodyBase", this.gameObject).transform;
+            parachuteMeshTransform=Utilities.FindFirstGameObjectMyselfOrChildren("ParachuteMesh", this.gameObject).transform;
             if (BaseLKTransform == null)
             {
                 Debug.LogError("GliderScript: Could not find BodyBase transform");
@@ -55,15 +380,18 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             _crewCompartment = PartScript.GetModifier<CrewCompartmentScript>();
         }
-         private void OnPilotEnter(EvaScript crew) => this.SetPilot(crew);
-
-        /// <summary>Called when [pilot exit].</summary>
-        /// <param name="crew">The crew.</param>
+        private void OnPilotEnter(EvaScript crew) => this.SetPilot(crew);
         private void OnPilotExit(EvaScript crew)
         {
+            currentState = ChuteState.None;
             if (!((UnityEngine.Object) crew == (UnityEngine.Object) this._pilot))
                 return;
             this.SetPilot((EvaScript) null);
+            var craftScript = this.PartScript.CraftScript as CraftScript;
+            craftScript?.Data.Assembly.RemovePart(this.PartScript.Data);
+            craftScript?.Data.Assembly.RemoveBody(this.PartScript.BodyScript.Data);
+            this.PartScript.BodyScript.ExplodePart(this.PartScript, -1);
+            
         }
         private void SetPilot(EvaScript pilot)
         {
@@ -92,45 +420,45 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
           this._pilotIK.solver.bodyEffector.target = BaseLKTransform;
           this._pilotIK.solver.bodyEffector.positionWeight = 1f;
           this._pilotIK.solver.bodyEffector.rotationWeight = 1f;
-        this._pilotIK.solver.rightHandEffector.target = this.RightHandTransform;
-        this._pilotIK.solver.rightHandEffector.positionWeight = 1f;
-        this._pilotIK.solver.rightHandEffector.rotationWeight = 1f;
-        this._pilotIK.solver.leftHandEffector.target = this.LeftHandTransform;
-        this._pilotIK.solver.leftHandEffector.positionWeight = 1f;
-        this._pilotIK.solver.leftHandEffector.rotationWeight = 1f;
-        this._pilotIK.solver.leftArmChain.bendConstraint.bendGoal = this.LeftElbowTransform;
-        this._pilotIK.solver.leftArmChain.bendConstraint.weight = 1f;
-        this._pilotIK.solver.rightArmChain.bendConstraint.bendGoal = this.RightElbowTransform;
-        this._pilotIK.solver.rightArmChain.bendConstraint.weight = 1f;
-        this._pilotIK.solver.rightFootEffector.target = (Transform) null;
-        this._pilotIK.solver.rightFootEffector.positionWeight = 0.0f;
-        this._pilotIK.solver.rightFootEffector.rotationWeight = 0.0f;
-        this._pilotIK.solver.leftFootEffector.target = (Transform) null;
-        this._pilotIK.solver.leftFootEffector.positionWeight = 0.0f;
-        this._pilotIK.solver.leftFootEffector.rotationWeight = 0.0f;
+          this._pilotIK.solver.rightHandEffector.target = this.RightHandTransform;
+          this._pilotIK.solver.rightHandEffector.positionWeight = 1f;
+          this._pilotIK.solver.rightHandEffector.rotationWeight = 1f;
+          this._pilotIK.solver.leftHandEffector.target = this.LeftHandTransform;
+          this._pilotIK.solver.leftHandEffector.positionWeight = 1f;
+          this._pilotIK.solver.leftHandEffector.rotationWeight = 1f;
+          this._pilotIK.solver.leftArmChain.bendConstraint.bendGoal = this.LeftElbowTransform;
+          this._pilotIK.solver.leftArmChain.bendConstraint.weight = 1f;
+          this._pilotIK.solver.rightArmChain.bendConstraint.bendGoal = this.RightElbowTransform;
+          this._pilotIK.solver.rightArmChain.bendConstraint.weight = 1f;
+          this._pilotIK.solver.rightFootEffector.target = (Transform) null;
+          this._pilotIK.solver.rightFootEffector.positionWeight = 0.0f;
+          this._pilotIK.solver.rightFootEffector.rotationWeight = 0.0f;
+          this._pilotIK.solver.leftFootEffector.target = (Transform) null;
+          this._pilotIK.solver.leftFootEffector.positionWeight = 0.0f;
+          this._pilotIK.solver.leftFootEffector.rotationWeight = 0.0f;
         
       }
       else
       {
-        this._pilotIK.solver.rightHandEffector.target = (Transform) null;
-        this._pilotIK.solver.rightHandEffector.positionWeight = 0.0f;
-        this._pilotIK.solver.rightHandEffector.rotationWeight = 0.0f;
-        this._pilotIK.solver.leftHandEffector.target = (Transform) null;
-        this._pilotIK.solver.leftHandEffector.positionWeight = 0.0f;
-        this._pilotIK.solver.leftHandEffector.rotationWeight = 0.0f;
-        this._pilotIK.solver.leftArmChain.bendConstraint.bendGoal = (Transform) null;
-        this._pilotIK.solver.leftArmChain.bendConstraint.weight = 0.0f;
-        this._pilotIK.solver.rightArmChain.bendConstraint.bendGoal = (Transform) null;
-        this._pilotIK.solver.rightArmChain.bendConstraint.weight = 0.0f;
-        this._pilotIK.solver.rightFootEffector.target = (Transform) null;
-        this._pilotIK.solver.rightFootEffector.positionWeight = 0.0f;
-        this._pilotIK.solver.rightFootEffector.rotationWeight = 0.0f;
-        this._pilotIK.solver.leftFootEffector.target = (Transform) null;
-        this._pilotIK.solver.leftFootEffector.positionWeight = 0.0f;
-        this._pilotIK.solver.leftFootEffector.rotationWeight = 0.0f;
-        this._pilotIK.solver.bodyEffector.target = (Transform) null;
-        this._pilotIK.solver.bodyEffector.positionWeight = 0.0f;
-        this._pilotIK.solver.bodyEffector.rotationWeight = 0.0f;
+          this._pilotIK.solver.rightHandEffector.target = (Transform) null;
+          this._pilotIK.solver.rightHandEffector.positionWeight = 0.0f;
+          this._pilotIK.solver.rightHandEffector.rotationWeight = 0.0f;
+          this._pilotIK.solver.leftHandEffector.target = (Transform) null;
+          this._pilotIK.solver.leftHandEffector.positionWeight = 0.0f;
+          this._pilotIK.solver.leftHandEffector.rotationWeight = 0.0f;
+          this._pilotIK.solver.leftArmChain.bendConstraint.bendGoal = (Transform) null;
+          this._pilotIK.solver.leftArmChain.bendConstraint.weight = 0.0f;
+          this._pilotIK.solver.rightArmChain.bendConstraint.bendGoal = (Transform) null;
+          this._pilotIK.solver.rightArmChain.bendConstraint.weight = 0.0f;
+          this._pilotIK.solver.rightFootEffector.target = (Transform) null;
+          this._pilotIK.solver.rightFootEffector.positionWeight = 0.0f;
+          this._pilotIK.solver.rightFootEffector.rotationWeight = 0.0f;
+          this._pilotIK.solver.leftFootEffector.target = (Transform) null;
+          this._pilotIK.solver.leftFootEffector.positionWeight = 0.0f;
+          this._pilotIK.solver.leftFootEffector.rotationWeight = 0.0f;
+          this._pilotIK.solver.bodyEffector.target = (Transform) null;
+          this._pilotIK.solver.bodyEffector.positionWeight = 0.0f;
+          this._pilotIK.solver.bodyEffector.rotationWeight = 0.0f;
         
       }
         }
@@ -139,5 +467,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             base.OnPartDestroyed();
             this.SetPilot((EvaScript) null);
         }
+        
+        #endregion
+    }
+     enum ChuteState
+    {
+        None,
+        HalfDeploy,
+        HalfDeploying,
+        FullyDeployed
     }
 }
+

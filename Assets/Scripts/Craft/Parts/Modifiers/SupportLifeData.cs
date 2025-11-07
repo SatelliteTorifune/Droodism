@@ -1,7 +1,10 @@
+using System.Linq.Expressions;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using ModApi.Craft.Propulsion;
 using ModApi.Design.PartProperties;
 using Assets.Scripts.State;
+using ModApi.Math;
+
 //去你妈的我要躺在床上对着梅莉的蕾丝边小白袜撸管子,谁他妈想写这东西
 //不是这都他妈啥啊
 namespace Assets.Scripts.Craft.Parts.Modifiers
@@ -43,6 +46,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private float desireFoodCapacity = 0.2f;
         [SerializeField] [DesignerPropertySlider(0.1f, 3f, 30, Label = "<color=red>Water</color> Carry Amount(days)", Tooltip = "How much<color=red> Drink Water</color> Drood himself/herself will carry when Eva.")]
         private float desireWaterCapacity = 0.2f;
+        
+        [SerializeField]
+        [DesignerPropertySpinner(Label = "<color=yellow>Parachute Type", Order = 0, Tooltip = "The type of parachute this drood brings.")]
+        private string _parachuteType = "Parachute";
+
+        [SerializeField] [PartModifierProperty(true, false)]
+        private float minDeployHeight = 250f;
+       
         
         [SerializeField][PartModifierProperty]
         public long MissionStartTime=0;
@@ -108,9 +119,35 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             set=>this.desireWaterCapacity = value;
         }
 
+        public string ParachuteTypes
+        {
+            get => this._parachuteType;
+        }
+
         private float IsLegal(float value)
         {
             return value>0?value:1;
+        }
+
+        public float MinDelpoyHeight
+        {
+            get=>this.minDeployHeight;
+            set=>this.minDeployHeight=value;
+        }
+        protected override void OnDesignerInitialization(IDesignerPartPropertiesModifierInterface d)
+        {
+            base.OnDesignerInitialization(d);
+            d.OnValueLabelRequested<string>((Expression<Func<string>>) (() => this._parachuteType), (Func<string, string>) (x => this._parachuteType));
+            d.OnSpinnerValuesRequested<string>((Expression<Func<string>>) (() => this._parachuteType), new Action<List<string>>(this.GetSpinnerValues));
+            d.OnValueLabelRequested(() => this.MinDelpoyHeight, (s)=>Units.GetDistanceString(s));
+        }
+
+        private void GetSpinnerValues(List<string> chuteTypes)
+        {
+            chuteTypes.Clear();
+            chuteTypes.Add("None");
+            chuteTypes.Add("ParaGlider");
+            chuteTypes.Add("Parachute");
         }
 
         #region functions
@@ -127,38 +164,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             base.OnInitialized();
             return;
-            crewData =new CrewData();
-            
-            
-            Debug.Log("SupportLifeData: OnInitialized,get crewData");
-            if (crewData==null)
-            {
-                Debug.LogWarning("SupportLifeData: OnInitialized,crewData is Null");
-            }
-
-            if (crewData!=null)
-            {
-                crewData.role=DroodismCrewMananger.Instance.GetDroodType(Part.GetModifier<EvaData>().CrewName);
-                Debug.LogFormat("SupportLifeData: OnInitialized,role {0}",crewData.role);
-                DroodismCrewMananger.Instance.CreateCrewData(crewData);
-                Debug.Log("SupportLifeData: OnInitialized,saved crewData");
-            }
+          
         }
         
         public override void OnPartRecovered()
         {
             base.OnPartRecovered();
             return;
-            this.crewData.MissionTimeTotal += Script.MissionDurationTime;
-            try
-            {
-                DroodismCrewMananger.Instance.EditCrewData(this.Part.GetModifier<EvaData>().CrewId,crewData);
-                Debug.Log("SupportLifeData: OnPartRecovered,saved crewData");
-            }
-            catch (Exception exception)
-            {
-                Debug.LogErrorFormat("我操完蛋了2exception{0}",exception);
-            }
             
         }
 

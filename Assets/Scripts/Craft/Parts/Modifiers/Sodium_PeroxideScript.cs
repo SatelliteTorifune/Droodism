@@ -65,7 +65,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             ReCheck();
             _rotatorScript = GetComponent<SubPartRotatorScript>();
-            Mod.Inctance.UpdateDroodCount();
+            Mod.Instance.UpdateDroodCount();
             oxygenGeneratedAmount = 0;
             isUsedUp = false;
             isActive = false;

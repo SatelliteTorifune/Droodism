@@ -23,7 +23,7 @@ namespace Assets.Scripts
             那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花();
             // Update the drood count when the mod is initialized
             UpdateDroodCount();
-            Debug.Log("OnInitialized called UpdateDroodCount");
+            LOG("OnInitialized called UpdateDroodCount");
             那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花();
         }
 
@@ -33,7 +33,7 @@ namespace Assets.Scripts
             
             /* Update the drood count when the craft changes
             UpdateDroodCount();
-            Debug.Log("OnCraftChanged called UpdateDroodCount");*/
+            Mod.LOG("OnCraftChanged called UpdateDroodCount");*/
         }
 
         // Method called when the craft structure changes in the UI
@@ -41,7 +41,7 @@ namespace Assets.Scripts
         {
             /* Update the drood count when the craft structure changes in the UI
             UpdateDroodCount();
-            Debug.Log("OnCraftStructureChangedUI calledUpdateDroodCount");*/
+            Mod.LOG("OnCraftStructureChangedUI calledUpdateDroodCount");*/
         }
 
         // Method to update the count of droods, astronauts, and tourists on the craft

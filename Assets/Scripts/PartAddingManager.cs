@@ -126,7 +126,7 @@ namespace Assets.Scripts
                 supportLifeData = PartModifierData.CreateFromDefaultXml<SupportLifeData>(part);
                 supportLifeData.PartPropertiesEnabled = true;
                 supportLifeData.InspectorEnabled = true;
-                //Debug.Log($"Added SupportLifeData to part {part.Name}");
+                //LOG($"Added SupportLifeData to part {part.Name}");
             }
         }
 
@@ -143,7 +143,7 @@ namespace Assets.Scripts
                 lsgData = PartModifierData.CreateFromDefaultXml<LifeSupportGeneratorData>(part);
                 lsgData.PartPropertiesEnabled = false;
                 lsgData.InspectorEnabled = true;
-                //Debug.Log($"Added LifeSupportGeneratorData to part {part.Name}");
+                //LOG($"Added LifeSupportGeneratorData to part {part.Name}");
             }
 
             var waterData = part.GetModifier<Water_DesalinationData>();
@@ -152,7 +152,7 @@ namespace Assets.Scripts
                 waterData = PartModifierData.CreateFromDefaultXml<Water_DesalinationData>(part);
                 waterData.PartPropertiesEnabled = true;
                 waterData.InspectorEnabled = true;
-                //Debug.Log($"Added Water_DesalinationData to part {part.Name}");
+                //LOG($"Added Water_DesalinationData to part {part.Name}");
             }
         }
 
@@ -169,7 +169,7 @@ namespace Assets.Scripts
                 targetScript = PartModifierData.CreateFromDefaultXml<STCommandPodPatchData>(part);
                 targetScript.PartPropertiesEnabled = false;
                 targetScript.InspectorEnabled = false;
-                //Debug.Log($"Patched CommandPod {part.Name} with STCommandPodPatchData");
+                //LOG($"Patched CommandPod {part.Name} with STCommandPodPatchData");
             }
         }
 
@@ -186,7 +186,7 @@ namespace Assets.Scripts
                 targetScript = PartModifierData.CreateFromDefaultXml<CrewCabinData>(part);
                 targetScript.PartPropertiesEnabled = false;
                 targetScript.InspectorEnabled = false;
-                //Debug.Log($"Added CrewCabinData to part {part.Name}");
+                //LOG($"Added CrewCabinData to part {part.Name}");
             }
         }
     }

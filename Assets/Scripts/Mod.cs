@@ -1,12 +1,14 @@
 using System.Xml.Linq;
 using Assets.Packages.DevConsole;
 using Assets.Scripts.Craft;
+using Assets.Scripts.Craft.Parts;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Flight;
 using ModApi.Scenes.Events;
 using HarmonyLib;
 using ModApi.Craft;
 using ModApi.Craft.Parts;
+using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using ModApi.Flight.Sim;
 using ModApi.Math;
 using ModApi.State;
@@ -42,8 +44,8 @@ namespace Assets.Scripts
 
         }
 
-        public static Mod Inctance { get; } = GetModInstance<Mod>();
-        private CraftScript Craft => Instance.Designer.CraftScript as CraftScript;
+        public static Mod Instance { get; } = GetModInstance<Mod>();
+        private CraftScript Craft => ModApi.Common.Game.Instance.Designer.CraftScript as CraftScript;
 
         public override void OnModLoaded()
         {
@@ -55,14 +57,14 @@ namespace Assets.Scripts
             DroodismUI.SetActive(true);
         }
 
-        public void OnSceneLoaded(object sender, SceneEventArgs e)
+        private void OnSceneLoaded(object sender, SceneEventArgs e)
         {
             subPlus();
 
             if (InDesignerScene)
             {
-                Instance.Designer.CraftLoaded += OnCraftLoaded;
-                Instance.Designer.CraftStructureChanged+=OnCraftStructureChanged;
+                ModApi.Common.Game.Instance.Designer.CraftLoaded += OnCraftLoaded;
+                ModApi.Common.Game.Instance.Designer.CraftStructureChanged+=OnCraftStructureChanged;
                 Created += OnPartAdded;
             }
 
@@ -71,13 +73,13 @@ namespace Assets.Scripts
                 try
                 {
                     UpdateDroodCount();
-                    Debug.LogFormat("OnSceneLoaded更新Drood数量");
+                    LOG("OnSceneLoaded更新Drood数量");
                     那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花();
-                    Debug.LogFormat("OnSceneLoaded执行doShit");
+                    LOG("OnSceneLoaded执行doShit");
                 }
                 catch (Exception e1)
                 {
-                    Debug.LogFormat("你要干啥{0}", e1);
+                    LOG("你要干啥{0}", e1);
                 }
             }
 
@@ -96,31 +98,8 @@ namespace Assets.Scripts
             Game.Instance.SceneManager.SceneTransitionCompleted+=OnSceneTransitionCompleted;
             //Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.FlightView,OnBuildFlightViewInspectorPanel);
             DevConsoleApi.RegisterCommand("RefreshFuelSource",那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花);
-            DevConsoleApi.RegisterCommand("doIt",要鸡巴干啥);
-            DevConsoleApi.RegisterCommand("CreateCrewDataFromGameStates",要鸡巴干啥2);
-            DevConsoleApi.RegisterCommand("DroodismSave",要鸡巴干啥3);
             
         }
-
-        void 要鸡巴干啥()
-        {
-           
-            foreach (var crew in DroodismCrewMananger.Instance._crewDataList)
-            {
-                Debug.LogFormat($"_crewDataList 里面的名字{crew.Name},职位{crew.role},id{crew.id}");
-            }
-        }
-
-        void 要鸡巴干啥2()
-        {
-            DroodismCrewMananger.Instance.CreateCrewDataFromGameStates();
-        }
-        void 要鸡巴干啥3()
-        {
-            DroodismCrewMananger.Instance.SaveCrewDataToDatabase();
-            DroodismCrewMananger.Instance.SaveXml();
-        }
-
         public void 那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花()
         {
             
@@ -149,32 +128,32 @@ namespace Assets.Scripts
         {
             try
             {
-                Instance.FlightScene.Initialized += OnInitialized;
-                Debug.LogFormat(" Initialized订阅OnInitialized");
-                Instance.FlightScene.CraftChanged += OnCraftChanged;
-                Debug.LogFormat(" CraftChanged订阅OnCraftChanged");
-                Instance.FlightScene.CraftStructureChanged += OnCraftStructureChangedUI;
-                Debug.LogFormat(" CraftStructureChanged订阅OnCraftStructureChangedUI");
-                Instance.FlightScene.ActiveCommandPodChanged += OnCraftChanged;
-                Debug.LogFormat(" ActiveCommandPodChanged订阅OnCraftChanged");
-                Instance.FlightScene.ActiveCommandPodStateChanged += OnCraftChanged;
-                Debug.LogFormat(" ActiveCommandPodStateChanged订阅OnCraftChanged");
+                ModApi.Common.Game.Instance.FlightScene.Initialized += OnInitialized;
+                LOG(" Initialized订阅OnInitialized");
+                ModApi.Common.Game.Instance.FlightScene.CraftChanged += OnCraftChanged;
+                LOG(" CraftChanged订阅OnCraftChanged");
+                ModApi.Common.Game.Instance.FlightScene.CraftStructureChanged += OnCraftStructureChangedUI;
+                LOG(" CraftStructureChanged订阅OnCraftStructureChangedUI");
+                ModApi.Common.Game.Instance.FlightScene.ActiveCommandPodChanged += OnCraftChanged;
+                LOG(" ActiveCommandPodChanged订阅OnCraftChanged");
+                ModApi.Common.Game.Instance.FlightScene.ActiveCommandPodStateChanged += OnCraftChanged;
+                LOG(" ActiveCommandPodStateChanged订阅OnCraftChanged");
 
             }
             catch (Exception e)
             {
-                Debug.LogWarningFormat($"订阅有问题,我不知道哪里有问题,但是反正这玩意加个try-catch也能跑{e}");
+                LOG($"订阅有问题,我不知道哪里有问题,但是反正这玩意加个try-catch也能跑{e}");
             }
 
         }
         //这个函数懒得调用
         private void subMinus()
         {
-            Instance.FlightScene.Initialized -= OnInitialized;
-            Instance.FlightScene.CraftChanged -= OnCraftChanged;
-            Instance.FlightScene.CraftStructureChanged -= OnCraftStructureChangedUI;
-            Instance.FlightScene.ActiveCommandPodChanged -= OnCraftChanged;
-            Instance.FlightScene.ActiveCommandPodStateChanged -= OnCraftChanged;
+            ModApi.Common.Game.Instance.FlightScene.Initialized -= OnInitialized;
+            ModApi.Common.Game.Instance.FlightScene.CraftChanged -= OnCraftChanged;
+            ModApi.Common.Game.Instance.FlightScene.CraftStructureChanged -= OnCraftStructureChangedUI;
+            ModApi.Common.Game.Instance.FlightScene.ActiveCommandPodChanged -= OnCraftChanged;
+            ModApi.Common.Game.Instance.FlightScene.ActiveCommandPodStateChanged -= OnCraftChanged;
         }
         public void SpawnFlag() 
         {
@@ -197,7 +176,6 @@ namespace Assets.Scripts
             flag.AllowPlayerControl = false;
             Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Planted Flag at <color=green> {Game.Instance.FlightScene.CraftNode.Parent.Name} </color>'s surface,at {(ConvertPlanetPositionToLatLongAgl(position).x)}° , {(ConvertPlanetPositionToLatLongAgl(position).y)}° ",true,120f);
         }
-
         
         
         public Vector3d ConvertPlanetPositionToLatLongAgl(Vector3d position)
@@ -258,6 +236,29 @@ namespace Assets.Scripts
             else if (Math.Abs(totalFuel) > 1e3)
                 return (totalFuel * 1e-3).ToString("0.00") + format[1];
             return totalFuel.ToString("0.00") + format[0];
-        }    }
+        }
+
+        public static void LOG(string message)
+        {
+            if (ModSettings.Instance.ShowDevLog)
+            {
+                LOG(message);
+            }
+        }
+        public static void LOG(string format, params object[] args)
+        {
+            if (ModSettings.Instance.ShowDevLog)
+            {
+                Debug.unityLogger.LogFormat(LogType.Log, format, args);
+            }
+        }
+        public static void LOG(UnityEngine.Object context, string format, params object[] args)
+        {
+            if (ModSettings.Instance.ShowDevLog)
+            {
+                Debug.unityLogger.LogFormat(LogType.Log, context, format, args);
+            }
+        }
+    }
     
 }

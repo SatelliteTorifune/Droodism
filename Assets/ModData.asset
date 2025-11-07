@@ -46,7 +46,7 @@ MonoBehaviour:
   _steamTitle: 
   _steamVisibility: 0
   _versionMajor: 0
-  _versionMinor: 34
+  _versionMinor: 4
   _partCategories:
   - {fileID: 11400000, guid: 7d2b6f557b8767544a162f30e61d22b6, type: 2}
   - {fileID: 11400000, guid: 05c2cf017b5bdba44b9f571f2c06bfb4, type: 2}
@@ -54,6 +54,7 @@ MonoBehaviour:
   - {fileID: 4900000, guid: 5292d75e4a1ffe2499d9f89dbff145c7, type: 3}
   - {fileID: 4900000, guid: 31490106fb7b35346a5dd4a598ffc6da, type: 3}
   - {fileID: 4900000, guid: 35946ff673f76024ea53a2e9a2f907d3, type: 3}
+  - {fileID: 4900000, guid: bffe8a233f4f6674dbffdbbe2614c3a5, type: 3}
   - {fileID: 4900000, guid: 14776ff5d3403f64eba601b94451442d, type: 3}
   - {fileID: 4900000, guid: 21a224a5845f95b48a100381457d8adc, type: 3}
   - {fileID: 4900000, guid: 0f5263b52e7ba02499432df7cc10aff6, type: 3}
@@ -62,6 +63,7 @@ MonoBehaviour:
   - {fileID: 4900000, guid: fafe886b5b9aee1478cff4f83f94d2bc, type: 3}
   - {fileID: 4900000, guid: e5dfe69c1a59448448387bf2c78a8313, type: 3}
   - {fileID: 4900000, guid: 8ab442a4620aba345a00dddf639c5d2c, type: 3}
+  - {fileID: 4900000, guid: 5ba1c7cc904e758499a73c0cf583bbdc, type: 3}
   - {fileID: 4900000, guid: 69fd3de320f79e14db97198de0f602fc, type: 3}
   - {fileID: 4900000, guid: 94d3c8abb77d8b54291b1cf067f7ddbf, type: 3}
   - {fileID: 4900000, guid: 11a692886d113e149937457d57601c68, type: 3}

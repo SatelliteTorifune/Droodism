@@ -37,6 +37,7 @@ namespace Assets.Scripts
         //public NumericSetting<float> TestSetting1 { get; private set; }
         public BoolSetting ConsumeResourceWhenUnloaded { get; set; }
         public BoolSetting UseLegacyUI { get; set; }
+        public BoolSetting ShowDevLog { get; set; }
 
         /// <summary>
         /// Initializes the settings in the category.
@@ -49,6 +50,9 @@ namespace Assets.Scripts
             UseLegacyUI=CreateBool("Use Legacy UI")
                 .SetDescription("Game will use the old UI")
                 .SetDefault(false);
+            ShowDevLog=CreateBool("show development log in dev console")
+                .SetDescription("")
+                .SetDefault(true);
         }
     }
 }

@@ -14,5 +14,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     [PartModifierTypeId("Droodism.Glider")]
     public class GliderData : PartModifierData<GliderScript>
     {
+        public float Area = 20f;
+
+        
+
+        
     }
 }

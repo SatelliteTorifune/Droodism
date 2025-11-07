@@ -36,7 +36,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             ReCheck();
             this.UpdateScale();
-            Mod.Inctance.UpdateDroodCount();
+            Mod.Instance.UpdateDroodCount();
         }
         public void FlightUpdate(in FlightFrameData frame)
         {
