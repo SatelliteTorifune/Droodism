@@ -60,12 +60,19 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         [SerializeField][PartModifierProperty]
         public long LastLoadTime=0;
         
-        public double _oxygenAmountBuffer=1f;
-        public double _foodAmountBuffer=1f;
-        public double _waterAmountBuffer = 1f;
-        public double _co2AmountBuffer=1f;
-        public double _wastedWaterAmountBuffer=1f;
-        public double _solidWasteAmountBuffer=1f;
+        [SerializeField] [PartModifierProperty(true, false)]
+        public double _oxygenAmountBuffer=0f;
+        [SerializeField] [PartModifierProperty(true, false)]
+        public double _foodAmountBuffer=0f;
+        [SerializeField] [PartModifierProperty(true, false)]
+        public double _waterAmountBuffer = 0f;
+        [SerializeField] [PartModifierProperty(true, false)]
+        public double _co2AmountBuffer=0f;
+        [SerializeField] [PartModifierProperty(true, false)]
+        public double _wastedWaterAmountBuffer=0f;
+        [SerializeField] [PartModifierProperty(true, false)]
+        public double _solidWasteAmountBuffer=0f;
+        [SerializeField] [PartModifierProperty(true, false)]
         public double evaConsumeEfficiency=0.3f;
         
         public float OxygenComsumeRate

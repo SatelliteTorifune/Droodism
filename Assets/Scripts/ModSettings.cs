@@ -38,6 +38,8 @@ namespace Assets.Scripts
         public BoolSetting ConsumeResourceWhenUnloaded { get; set; }
         public BoolSetting UseLegacyUI { get; set; }
         public BoolSetting ShowDevLog { get; set; }
+        
+        public BoolSetting AltNavBallColor { get; set; }
 
         /// <summary>
         /// Initializes the settings in the category.
@@ -53,6 +55,9 @@ namespace Assets.Scripts
             ShowDevLog=CreateBool("show development log in dev console")
                 .SetDescription("")
                 .SetDefault(true);
+            AltNavBallColor=CreateBool("Alt Nav Ball Color")
+                .SetDescription("Use Alt Nav Ball Color")
+                .SetDefault(false);
         }
     }
 }

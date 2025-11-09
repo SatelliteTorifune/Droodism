@@ -46,7 +46,7 @@ MonoBehaviour:
   _steamTitle: 
   _steamVisibility: 0
   _versionMajor: 0
-  _versionMinor: 4
+  _versionMinor: 5
   _partCategories:
   - {fileID: 11400000, guid: 7d2b6f557b8767544a162f30e61d22b6, type: 2}
   - {fileID: 11400000, guid: 05c2cf017b5bdba44b9f571f2c06bfb4, type: 2}

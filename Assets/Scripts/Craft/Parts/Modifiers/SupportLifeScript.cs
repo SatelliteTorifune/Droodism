@@ -29,6 +29,7 @@ using Assembly = ModApi.Craft.Assembly;
 //2025 9 8 为什么
 //2025 10 17一想到我还在这个Modifier苦战,往上面喷屎山我就忍不住轻哼起来.
 //2025 10 22 我希望这是我最后一次碰这个class
+//2025 11 10 Welcome back ,I will  fix this piece of shit once and for all.
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
@@ -166,7 +167,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             droodCrewCompartmentScript = GetComponent<CrewCompartmentScript>();
             UpdateCurrentPlanet();
             Game.Instance.FlightScene.CraftNode.ChangedSoI += OnSoiChanged;
+            
             LoadFuelTanks();
+            Mod.LOG("FlightStart调用LoadFuelTanks");
             //我他妈没在OnInitialLaunch里implent这个函数是为了方便你们这群小逼崽子瞎鸡巴改xml乱搞你们知道吗
             //SetRole();
             
@@ -457,6 +460,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
             }
 
+            
             if (_co2Source==null||_oxygenSource==null||_foodSource==null||_waterSource==null||_wastedWaterSource==null||_solidWasteSource==null)
             {
                LoadFuelTanks();
@@ -549,7 +553,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                
                 if (_oxygenSource != null && _foodSource != null && _waterSource != null&&_co2Source!= null&& _wastedWaterSource!= null&& _solidWasteSource != null)
                 {
-                    //Mod.LOG("调用CraftRefeshFuelSource 刷新完成 Oxygen:{0},Food:{1},Water:{2},CO2:{3},WastedWater:{4},SolidWaste:{5}", _oxygenSource.TotalFuel, _foodSource.TotalFuel, _waterSource.TotalFuel, _co2Source.TotalFuel, _wastedWaterSource.TotalFuel, _solidWasteSource.TotalFuel);
+                    Mod.LOG("调用CraftRefeshFuelSource 刷新完成 Oxygen:{0},Food:{1},Water:{2},CO2:{3},WastedWater:{4},SolidWaste:{5}", _oxygenSource.TotalFuel, _foodSource.TotalFuel, _waterSource.TotalFuel, _co2Source.TotalFuel, _wastedWaterSource.TotalFuel, _solidWasteSource.TotalFuel);
                     ReFill(_oxygenSource, GetLocalFuelSource("Oxygen"));
                     ReFill(_foodSource, GetLocalFuelSource("Food"));
                     ReFill(_waterSource, GetLocalFuelSource("H2O"));
@@ -705,16 +709,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         public override void OnCraftLoaded(ICraftScript craftScript, bool movedToNewCraft)
         {
+            base.OnCraftLoaded(craftScript, movedToNewCraft);
             if(!Game.InFlightScene)
                 return;
-            base.OnCraftLoaded(craftScript, movedToNewCraft);
-            if (!PartScript.Data.IsRootPart)
-            {
-                RefreshFuelSource();
-                //Mod.LOG("OnCraftLoaded 调用RefreshFuelSource");
-
-            }
-            
+            RefreshFuelSource();
+            //Mod.LOG("OnCraftLoaded 调用RefreshFuelSource");
         }
         
         /// <summary>
@@ -727,7 +726,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             AddingTankFlag=true;
             List<(string, double, double)> DataLocal = new List<(string, double, double)>();
-           Mod.LOG("LoadFuelTanks调用");
+            Mod.LOG("LoadFuelTanks调用");
             _oxygenSource = GetLocalFuelSource("Oxygen");
             _foodSource = GetLocalFuelSource("Food");
             _waterSource = GetLocalFuelSource("H2O");
@@ -853,10 +852,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             
         }
-        public override void OnDesignerPullout(Assembly assembly)
-        {
-            base.OnDesignerPullout(assembly);
-        }
+        
         
         private void OnFlightEnded(object sender, FlightEndedEventArgs e)
         {
@@ -871,14 +867,16 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         public void OnPhysicsEnabled(ICraftNode craftNode, PhysicsChangeReason reason)
         {
-            //Mod.LOG("OnPhysicsEnabled{0}",reason);
+            Mod.LOG("OnPhysicsEnabled{0}",reason);
             if (reason == PhysicsChangeReason.Warp||reason == PhysicsChangeReason.LoadedIntoGameView)
             {
                 return;
             }
             LoadFuelTanks();
+            Mod.LOG("OnPhysicsEnabled调用LoadFuelTanks");
             if (ModSettings.Instance.ConsumeResourceWhenUnloaded==true&&!IsHibernating)
             {
+                return;
                 RemoveFuelAmonutInstantly();
                 AddWastedAmountInstantly();
             }
@@ -886,13 +884,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         public void OnPhysicsDisabled(ICraftNode craftNode, PhysicsChangeReason reason)
         {
-            //Mod.LOG("OnPhysicsDisabled 原因:{0}",reason);
+            Mod.LOG("OnPhysicsDisabled 原因:{0}",reason);
             if (reason == PhysicsChangeReason.Warp||reason== PhysicsChangeReason.UnloadedFromGameView)
             {
                 return;
             }
             OnCraftUnloaded();
-            //Mod.LOG("OnPhysicsDisabled调用OnCraftUnloaded");
+            Mod.LOG("OnPhysicsDisabled调用OnCraftUnloaded");
         }
         public static XElement RemoveFuelTankXML(XElement partElement)
         {
@@ -933,7 +931,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private void OnCraftUnloaded()
         {
             
-            Mod.LOG("{0} 调用OnCraftUnloaded",PartScript.Data.Id);
+            Mod.LOG("{0} 调用OnCraftUnloaded",PartScript.CraftScript.CraftNode.NodeId);
             try
             {
                 Data.LastLoadTime = (long)FlightSceneScript.Instance.FlightState.Time;
@@ -955,13 +953,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 if (_oxygenSource != null && _foodSource != null && _foodSource != null)
                 {
-                    Data._oxygenAmountBuffer = _oxygenSource.TotalFuel;
-                    Data._foodAmountBuffer = _foodSource.TotalFuel;
-                    Data._waterAmountBuffer = _waterSource.TotalFuel;
-                    Data._co2AmountBuffer = _co2Source.TotalFuel;
-                    Data._wastedWaterAmountBuffer = _wastedWaterSource.TotalFuel;
-                    Data._solidWasteAmountBuffer = _solidWasteSource.TotalFuel;
-                    //Mod.LOG("缓冲区燃料:食物{0},oxygen{1},water,{2},二氧化碳:{3},WastedWater:{4},SolidWaste:{5}", Data._solidWasteAmountBuffer, Data._foodAmountBuffer, Data._oxygenAmountBuffer, Data._waterAmountBuffer, Data._co2AmountBuffer, Data._wastedWaterAmountBuffer);
+                    Data._oxygenAmountBuffer = GetLocalFuelSource("Oxygen").TotalFuel;
+                    Data._foodAmountBuffer =  GetLocalFuelSource("Food").TotalFuel;
+                    Data._waterAmountBuffer =  GetLocalFuelSource("H2O").TotalFuel;
+                    Data._co2AmountBuffer =  GetLocalFuelSource("CO2").TotalFuel;
+                    Data._wastedWaterAmountBuffer =  GetLocalFuelSource("Wasted Water").TotalFuel;
+                    Data._solidWasteAmountBuffer =  GetLocalFuelSource("Solid Waste").TotalFuel;
+                    Mod.LOG("缓冲区燃料:食物{0},oxygen{1},water,{2},二氧化碳:{3},WastedWater:{4},SolidWaste:{5}", Data._solidWasteAmountBuffer, Data._foodAmountBuffer, Data._oxygenAmountBuffer, Data._waterAmountBuffer, Data._co2AmountBuffer, Data._wastedWaterAmountBuffer);
                 }
                 else
                 {
