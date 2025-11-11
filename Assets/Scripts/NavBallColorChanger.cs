@@ -73,13 +73,14 @@ namespace Assets.Scripts
                 return false;  
             }
 
-            return ModSettings.Instance.AltNavBallColor? false : true;
+            return !ModSettings.Instance.AltNavBallColor;
         }
 
         // 拦截 TopColor 的 setter
         [HarmonyPatch(typeof(NavballRendererControllerScript), "TopColor", MethodType.Setter)]
         [HarmonyPrefix]
-        static bool TopColorSetterPrefix(NavballRendererControllerScript __instance, Color value, ref Material ____navballMaterial)
+        static bool TopColorSetterPrefix(NavballRendererControllerScript __instance, Color value,
+            ref Material ____navballMaterial)
         {
             if (ModSettings.Instance.AltNavBallColor)
             {
@@ -88,7 +89,8 @@ namespace Assets.Scripts
 
                 return false;
             }
-            return ModSettings.Instance.AltNavBallColor? false : true;
+
+            return !ModSettings.Instance.AltNavBallColor;
         }
     }
 }

@@ -876,7 +876,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             Mod.LOG("OnPhysicsEnabled调用LoadFuelTanks");
             if (ModSettings.Instance.ConsumeResourceWhenUnloaded==true&&!IsHibernating)
             {
-                return;
                 RemoveFuelAmonutInstantly();
                 AddWastedAmountInstantly();
             }
@@ -1426,7 +1425,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             Mod.Instance.SpawnFlag();
         }
         
-        private void DeployParaglider()
+        public void DeployParaglider()
         {
             ICraftScript craftScript = this.PartScript.CraftScript;
             IFlightSceneUI ui = ModApi.Common.Game.Instance.FlightScene.FlightSceneUI;
