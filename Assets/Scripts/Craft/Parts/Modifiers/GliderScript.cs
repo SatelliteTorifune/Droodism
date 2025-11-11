@@ -63,14 +63,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         public void FlightUpdate(in FlightFrameData frame)
         {
-            //Debug.LogFormat($"PartScript.CraftScript.ReferenceFrame.Center{PartScript.CraftScript.ReferenceFrame.Center},again{PartScript.CraftScript.Transform.position},pci{PartScript.CraftScript.FlightData.Position}");
+            Mod.LOG($"PartScript.CraftScript.ReferenceFrame.Center{PartScript.CraftScript.ReferenceFrame.Center},again{PartScript.CraftScript.Transform.position},pci{PartScript.CraftScript.FlightData.Position}");
             try
             {
                 if (isGround())
                 {
                     foreach (var eva in _crewCompartment.Crew)
                     {
-                        _crewCompartment.UnloadCrewMember(eva,true);
+                        _crewCompartment.UnloadCrewMember(eva,this.PartScript.CraftScript.CraftNode.IsPlayer);
+                        ui.ShowMessage($"{eva.Data.CrewMember.Name} has landed on the ground");
                     }
                 }
                 
@@ -81,7 +82,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             catch (Exception e)
             {
-                //since this shit is called every frame,so, when the part kills itself, it will throw an exception,so, i just ignore it.
+                //since this shit is called every frame,so, when the part kills itself, it will throw an exception,so,just ignore it asshole lmao
+                Mod.LOG("(note:this is not a bug,it an intentional game design,so,just ignore it)GliderScript.FlightUpdate: " + e);
             }
             
         }
@@ -125,7 +127,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
                 if (currentState==ChuteState.HalfDeploying)
                 {
-                    DeployGlider(frame);
+                    DeployGlider();
                     if (Data.Part.PartType.Id == "DroodParachute")
                     {
                         UpdateHandPositions();
@@ -150,7 +152,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
             }
 
-            void DeployGlider(in FlightFrameData frame)
+            void DeployGlider()
             {
                 if (parachuteMeshTransform.transform.localScale.x>=100)
                 {
