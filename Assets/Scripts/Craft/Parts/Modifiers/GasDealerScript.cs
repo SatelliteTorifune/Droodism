@@ -26,7 +26,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private ParticleSystem.MainModule _particleSystemMain;
        
         
-        private Transform _particalSystemTransform;
+        private Transform _particleSystemTransform;
         
         private IFuelSource highPressureGasSource;
         private IFuelSource lowPressureGasSource;
@@ -225,13 +225,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 this.SetSubPart( subPart );
             else
                 this.SetSubPart( Utilities.FindFirstGameObjectMyselfOrChildren( "Device/ParticleSystem/", this.gameObject ) ?.transform );
-            _particleSystem = _particalSystemTransform.GetComponent<ParticleSystem>();
+            _particleSystem = _particleSystemTransform.GetComponent<ParticleSystem>();
             this._particleSystemEmission = this._particleSystem.emission;
             this._particleSystemMain = this._particleSystem.main;
         }
         public void SetSubPart( Transform subPart )
         {
-            this._particalSystemTransform = subPart;
+            this._particleSystemTransform = subPart;
         }
         
         public override void OnGenerateInspectorModel(PartInspectorModel model)

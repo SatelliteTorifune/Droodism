@@ -63,14 +63,16 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         public void FlightUpdate(in FlightFrameData frame)
         {
-            Mod.LOG($"PartScript.CraftScript.ReferenceFrame.Center{PartScript.CraftScript.ReferenceFrame.Center},again{PartScript.CraftScript.Transform.position},pci{PartScript.CraftScript.FlightData.Position}");
+           
             try
             {
                 if (isGround())
                 {
                     foreach (var eva in _crewCompartment.Crew)
                     {
-                        _crewCompartment.UnloadCrewMember(eva,this.PartScript.CraftScript.CraftNode.IsPlayer);
+                       
+                        _crewCompartment.UnloadCrewMember(eva,this.PartScript.CraftScript.CraftNode.IsPlayer || (!PartScript.CraftScript.CraftNode.IsPlayer && Game.Instance.FlightScene.CraftNode
+                            .CraftScript.ActiveCommandPod.EvaScript.IsFpsActive));
                         ui.ShowMessage($"{eva.Data.CrewMember.Name} has landed on the ground");
                     }
                 }

@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 8150469448342207078}
   - component: {fileID: 9191647805944175394}
   - component: {fileID: 8540000463223109328}
+  - component: {fileID: 1480624306533669020}
+  - component: {fileID: 7997269786761436403}
   m_Layer: 0
   m_Name: Ladder
   m_TagString: Untagged
@@ -159,3 +161,54 @@ MonoBehaviour:
     _supportsTransparency: 1
     _thermalMassRatio: 1
     _tutorialId: 
+--- !u!114 &1480624306533669020
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8465145932521631970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e1d22d154cae524ea574a9d0d2080c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Data:
+    _id: 
+    _inputId: 
+    _inspectorEnabled: 1
+    _partPropertiesEnabled: 1
+    _staticPriceAndMass: 0
+    _version: 1
+    _versionLast: 1
+    _versionsAllowed: 
+--- !u!114 &7997269786761436403
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8465145932521631970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1264219031, guid: 55a7c5278766598448d9083b0de0861d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Data:
+    _id: 
+    _inputId: 
+    _inspectorEnabled: 1
+    _partPropertiesEnabled: 1
+    _staticPriceAndMass: 0
+    _version: 1
+    _versionLast: 1
+    _versionsAllowed: 
+    _capacity: 1
+    _capacityLabel: 
+    _commandPodEnabledInCompartment: 0
+    _crewExitPosition: {x: 0, y: 0, z: 0}
+    _crewExitRotation: {x: 0, y: 0, z: 0}
+    _maxPressure: -1
+    _minPressure: -1
+    _visibleInCompartment: 1
+    _volumePerIndividual: 3
