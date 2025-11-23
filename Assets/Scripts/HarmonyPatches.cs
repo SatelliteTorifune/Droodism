@@ -45,7 +45,7 @@ namespace Assets.Scripts
                     var fuelTanks = ((Component)__instance).GetComponents<FuelTankScript>();
                     var jetPackFuelTank = Enumerable.FirstOrDefault(fuelTanks, tank => tank.FuelType?.Id == "Jetpack");
                     
-                    // Use reflection to set the value of the _fuelTank field
+                   
                     var fuelTankField = AccessTools.Field(typeof(EvaScript), "_fuelTank");
                     if (fuelTankField != null)
                     {
@@ -180,12 +180,15 @@ namespace Assets.Scripts
             }
         }
         
+        //写这个b玩意的意义何在啊我操
+        //我下次加harmonyPatch一定要写注释
         [HarmonyPatch(typeof(EvaScript), "LoadIntoCrewCompartment")]
         class LoadCompartmentPatch
         {
             [HarmonyPrefix]
             static bool LoadIntoCrewCompartment(EvaScript __instance, CrewCompartmentScript crewCompartment)
             {
+                //这东西我也不敢动啊
                 return true;
             }
         }

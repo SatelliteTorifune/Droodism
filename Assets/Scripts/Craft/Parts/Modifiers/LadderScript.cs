@@ -1,4 +1,5 @@
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
+using ModApi.Craft;
 using ModApi.GameLoop;
 using RootMotion.FinalIK;
 
@@ -23,6 +24,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private EvaScript _pilot = (EvaScript) null;
         private CrewCompartmentScript _crewCompartment;
         private AttachPoint _seatAttachPoint;
+        private CraftControls controls;
         
         
         public void FlightStart(in FlightFrameData frameData)
@@ -33,15 +35,24 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public void FlightUpdate(in FlightFrameData frameData)
         {
             
-        }
 
+        }
         public void FlightFixedUpdate(in FlightFrameData frameData)
         {
             LogData();
-            if (PartScript.Data.Activated)
+            if (_crewCompartment.Crew.Count == 0)
             {
-                BaseLKTransform.transform.localPosition=new Vector3(BaseLKTransform.transform.localPosition.x,BaseLKTransform.transform.localPosition.y+0.1f,BaseLKTransform.transform.localPosition.z);
+                return;
             }
+
+            MoveDrood();
+        }
+
+        private void MoveDrood()
+        {
+            _crewCompartment.Data.CrewExitPosition=new Vector3(0, this.BaseLKTransform.transform.localPosition.y,_crewCompartment.Data.CrewExitPosition.z);
+            controls = this._pilot?.PartScript.CommandPod.Controls;
+            BaseLKTransform.transform.localPosition=new Vector3(BaseLKTransform.transform.localPosition.x,BaseLKTransform.transform.localPosition.y+0.05f*controls.Pitch,BaseLKTransform.transform.localPosition.z);
         }
 
         private void LogData()
@@ -83,6 +94,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (!((UnityEngine.Object) crew == (UnityEngine.Object) this._pilot))
                 return;
             this.SetPilot((EvaScript) null);
+            controls = null;
         }
         private void SetPilot(EvaScript pilot)
         {
@@ -94,6 +106,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             else
             {
+                
                 this._pilotIK = this._pilot.GetComponentInChildren<FullBodyBipedIK>();
                 this.SetIKEnabled(true);
                 

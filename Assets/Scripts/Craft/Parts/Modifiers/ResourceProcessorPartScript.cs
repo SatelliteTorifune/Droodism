@@ -5,7 +5,7 @@ using ModApi.GameLoop.Interfaces;
 using RootMotion.FinalIK;
 using UnityEngine;
 
-public abstract class ResourceProcessorPartScript<T> : PartModifierScript<T>, IFlightStart, IFlightUpdate, IDesignerStart
+public abstract class ResourceProcessorPartScript<T> : PartModifierScript<T>, IFlightStart, IFlightUpdate, IDesignerStart,IFlightFixedUpdate
     where T : PartModifierData
 {
     protected IFuelSource BatterySource { get; private set; }
@@ -17,12 +17,18 @@ public abstract class ResourceProcessorPartScript<T> : PartModifierScript<T>, IF
         UpdateFuelSources();
         UpdateComponents();
     }
+    
+    
 
     protected virtual void UpdateComponents()
     {
         
     }
 
+    public virtual void FlightFixedUpdate(in FlightFrameData frame)
+    {
+        
+    }
     public virtual void FlightUpdate(in FlightFrameData frame)
     {
         if (!PartScript.Data.Activated)
