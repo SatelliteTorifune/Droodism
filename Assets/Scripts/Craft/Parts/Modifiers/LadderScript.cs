@@ -50,9 +50,18 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private void MoveDrood()
         {
-            _crewCompartment.Data.CrewExitPosition=new Vector3(0, this.BaseLKTransform.transform.localPosition.y,_crewCompartment.Data.CrewExitPosition.z);
-            controls = this._pilot?.PartScript.CommandPod.Controls;
+            controls = this._pilot.PartScript.CommandPod.Controls;
             BaseLKTransform.transform.localPosition=new Vector3(BaseLKTransform.transform.localPosition.x,BaseLKTransform.transform.localPosition.y+0.05f*controls.Pitch,BaseLKTransform.transform.localPosition.z);
+            _crewCompartment.Data.CrewExitPosition=new Vector3(0, this.BaseLKTransform.transform.localPosition.y,_crewCompartment.Data.CrewExitPosition.z);
+        }
+
+        private void SetDroodPositionOnEnter(EvaScript crew)
+        {
+            var sb = crew.PartScript.CraftScript.FlightData.Position - this.PartScript.CraftScript.FlightData.Position;
+            Mod.LOG("sb{0}",sb);
+            var sb2 = Vector3d.Project(sb, this.PartScript.Transform.transform.localPosition);
+            Mod.LOG("sb2{0}",sb2);
+            BaseLKTransform.transform.localPosition = new Vector3(BaseLKTransform.transform.localPosition.x,(float)sb2.y,BaseLKTransform.transform.localPosition.z);
         }
 
         private void LogData()
@@ -72,20 +81,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             UpdateComponents();
         }
 
-        private void UpdateComponents()
+        
+        private void OnPilotEnter(EvaScript crew)
         {
-            BaseLKTransform = ModApi.Utilities.FindFirstGameObjectMyselfOrChildren("BodyBase", this.gameObject).transform;
-            if (BaseLKTransform == null)
-            {
-                Debug.LogError("HibernatingChamberScript: Could not find BodyBase transform");
-            }
-
-            RightElbowTransform = BaseLKTransform.Find("RightElbow");
-            RightHandTransform = RightElbowTransform.Find("RightHand");
-            LeftElbowTransform = BaseLKTransform.Find("LeftElbow");
-            LeftHandTransform = LeftElbowTransform.Find("LeftHand");
+            SetDroodPositionOnEnter(crew);
+            this.SetPilot(crew);
+            
         }
-        private void OnPilotEnter(EvaScript crew) => this.SetPilot(crew);
 
         /// <summary>Called when [pilot exit].</summary>
         /// <param name="crew">The crew.</param>
@@ -96,6 +98,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             this.SetPilot((EvaScript) null);
             controls = null;
         }
+
+        #region 可能是动画部分
         private void SetPilot(EvaScript pilot)
         {
             this._pilot = pilot;
@@ -113,6 +117,19 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
         }
     
+        private void UpdateComponents()
+        {
+            BaseLKTransform = ModApi.Utilities.FindFirstGameObjectMyselfOrChildren("BodyBase", this.gameObject).transform;
+            if (BaseLKTransform == null)
+            {
+                Debug.LogError("HibernatingChamberScript: Could not find BodyBase transform");
+            }
+
+            RightElbowTransform = BaseLKTransform.Find("RightElbow");
+            RightHandTransform = RightElbowTransform.Find("RightHand");
+            LeftElbowTransform = BaseLKTransform.Find("LeftElbow");
+            LeftHandTransform = LeftElbowTransform.Find("LeftHand");
+        }
         private void SetIKEnabled(bool enabled) {
       if (!((UnityEngine.Object) this._pilotIK != (UnityEngine.Object) null))
         return;
@@ -171,6 +188,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             base.OnPartDestroyed();
             this.SetPilot((EvaScript) null);
         }
+        #endregion
     }
     
 }

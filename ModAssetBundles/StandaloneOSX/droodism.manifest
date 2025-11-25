@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 466966766
+CRC: 2999552392
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 87201f752e56b66daabcb317eec0d051
+    Hash: df85b8043e4d70aebb26f78635385ce7
   TypeTreeHash:
     serializedVersion: 2
     Hash: 9df4ebb39d20af61b70b3e2e83e1c9d1
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 87201f752e56b66daabcb317eec0d051
+    Hash: df85b8043e4d70aebb26f78635385ce7
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -64,7 +64,7 @@ SerializeReferenceClassIdentifiers:
 - AssemblyName: XmlLayout
   ClassName: UI.Xml.XmlLayoutResourceEntry
 Assets:
-- Assets/Resources/Craft/Parts/Definitions/DroodParachute.xml
+- Assets/Resources/Craft/Parts/Definitions/WaterTank.xml
 - Assets/Resources/Craft/Parts/Prefabs/GravityRing.prefab
 - Assets/Content/Craft/Parts/Categories/Science.asset
 - Assets/Resources/Craft/Parts/Prefabs/balloon.prefab
@@ -74,23 +74,28 @@ Assets:
 - Assets/Content/Resources/flag.xml
 - Assets/Resources/Craft/Parts/Prefabs/ElectrolyticDevice.prefab
 - Assets/Resources/Craft/Parts/Definitions/Glider.xml
+- Assets/Resources/Craft/Parts/Prefabs/Ladder.prefab
 - Assets/Resources/Craft/Parts/Definitions/balloon.xml
 - Assets/Resources/Craft/Parts/Definitions/FoodTank.xml
 - Assets/Content/Craft/Parts/RocketEngines/Propulsion.xml
+- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/Resources/Craft/Parts/Prefabs/HibernatingChamber.prefab
 - Assets/Content/Craft/Parts/Categories/LifeSupport.asset
 - Assets/Resources/Craft/Parts/Definitions/ElectrolyticDevice.xml
 - Assets/Resources/Craft/Parts/Definitions/GravityRing.xml
+- Assets/Resources/Craft/Parts/Definitions/MethaloxGenerator.xml
 - Assets/Resources/Craft/Parts/Definitions/Resource Fuselage.xml
+- Assets/Resources/Craft/Parts/Prefabs/MethaloxGenerator.prefab
 - Assets/Resources/Craft/Parts/Definitions/PhotoBioReactor.xml
 - Assets/Resources/Craft/Parts/Prefabs/GasDepressurizeDevice.prefab
+- Assets/Resources/Craft/Parts/Definitions/Ladder.xml
 - Assets/Resources/Craft/Parts/Definitions/SewageTreatDevice.xml
 - Assets/Resources/Craft/Parts/Prefabs/DOCRDevice.prefab
+- Assets/_ModAssets_/Droodism.dll.bytes
 - Assets/Resources/Craft/Parts/Prefabs/ResourcesPack.prefab
 - Assets/Content/Craft/Parts/GravityRingIcon.png
 - Assets/Resources/Craft/Parts/Prefabs/WaterTank.prefab
 - Assets/Resources/Craft/Parts/Definitions/HibernatingChamber.xml
-- Assets/_ModAssets_/Droodism.dll.bytes
 - Assets/Content/Craft/Parts/GasDepressure.png
 - Assets/Content/XML UI/Sprites/White.png
 - Assets/Resources/Craft/Parts/Definitions/CarbonDioxideFilter.xml
@@ -104,10 +109,9 @@ Assets:
 - Assets/Resources/Craft/Parts/Definitions/ResourcesPack.xml
 - Assets/Content/XML UI/UIResourceDatabase.asset
 - Assets/Resources/Craft/Parts/Prefabs/GasPressurizeDevice.prefab
-- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/Resources/Craft/Parts/Definitions/WaterPump.xml
 - Assets/Resources/Craft/Parts/Prefabs/WaterPump.prefab
 - Assets/Resources/Craft/Parts/Prefabs/PhotoBioReactor.prefab
 - Assets/Resources/Craft/Parts/Definitions/DOCRDevice.xml
-- Assets/Resources/Craft/Parts/Definitions/WaterTank.xml
+- Assets/Resources/Craft/Parts/Definitions/DroodParachute.xml
 Dependencies: []

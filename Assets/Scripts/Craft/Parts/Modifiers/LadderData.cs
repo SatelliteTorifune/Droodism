@@ -14,5 +14,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     [PartModifierTypeId("Droodism.Ladder")]
     public class LadderData : PartModifierData<LadderScript>
     {
+        
+        
     }
 }
