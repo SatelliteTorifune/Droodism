@@ -1355,13 +1355,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 if (Data.ParachuteTypes=="ParaGlider")
                 {
                     model.Add<TextButtonModel>(new TextButtonModel("Deploy ParaGlider", (Action<TextButtonModel>)(b => this.DeployParaglider())));
-                    model.Add(new SliderModel("Fully Deploy Height", (Func<float>) (() => this.Data.MinDelpoyHeight), (Action<float>) (s => this.Data.MinDelpoyHeight = s), 100, 3000, true,true)).ValueFormatter = (Func<float, string>) (x => Units.GetDistanceString(x));
+                    model.Add(new SliderModel("Fully Deploy Height", (Func<float>) (() => this.Data.MinDeployHeight), (Action<float>) (s => this.Data.MinDeployHeight = s), 100, 3000, true,true)).ValueFormatter = (Func<float, string>) (x => Units.GetDistanceString(x));
                 }
 
                 if (Data.ParachuteTypes=="Parachute")
                 {
                     model.Add<TextButtonModel>(new TextButtonModel("Deploy Parachute", (Action<TextButtonModel>)(b => this.DeployParaglider())));
-                    model.Add(new SliderModel("Fully Deploy Height", (Func<float>) (() => this.Data.MinDelpoyHeight), (Action<float>) (s => this.Data.MinDelpoyHeight = s), 100, 3000, true,true)).ValueFormatter = (Func<float, string>) (x => Units.GetDistanceString(x));
+                    model.Add(new SliderModel("Fully Deploy Height", (Func<float>) (() => this.Data.MinDeployHeight), (Action<float>) (s => this.Data.MinDeployHeight = s), 100, 3000, true,true)).ValueFormatter = (Func<float, string>) (x => Units.GetDistanceString(x));
                 }
             }
 

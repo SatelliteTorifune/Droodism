@@ -100,7 +100,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 return;
             }
-            MinFullDeployHeight = this._pilot.PartScript.GetModifier<SupportLifeScript>().Data.MinDelpoyHeight;
+            MinFullDeployHeight = this._pilot.PartScript.GetModifier<SupportLifeScript>().Data.MinDeployHeight;
             if (isGround())
             {
                 return;

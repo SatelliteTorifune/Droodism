@@ -48,11 +48,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private float desireWaterCapacity = 0.2f;
         
         [SerializeField]
-        [DesignerPropertySpinner(Label = "<color=yellow>Parachute Type", Order = 0, Tooltip = "The type of parachute this drood brings.")]
+        [DesignerPropertySpinner(Label = "<color=yellow>Parachute Type</color>", Order = 0, Tooltip = "The type of parachute this drood brings.")]
+        [PartModifierProperty(true, false)]
         private string _parachuteType = "Parachute";
 
-        [SerializeField] [PartModifierProperty(true, false)]
+        [SerializeField] 
+        [DesignerPropertySlider(200f, 500f, 30, Label = "Min Deploy Height", Tooltip = "Minimum height for parachute deployment")]
+        [PartModifierProperty(true, false)]
         private float minDeployHeight = 250f;
+
        
         
         [SerializeField][PartModifierProperty]
@@ -136,7 +140,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             return value>0?value:1;
         }
 
-        public float MinDelpoyHeight
+        public float MinDeployHeight
         {
             get=>this.minDeployHeight;
             set=>this.minDeployHeight=value;
@@ -144,10 +148,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         protected override void OnDesignerInitialization(IDesignerPartPropertiesModifierInterface d)
         {
             base.OnDesignerInitialization(d);
-            d.OnValueLabelRequested<string>((Expression<Func<string>>) (() => this._parachuteType), (Func<string, string>) (x => this._parachuteType));
-            d.OnSpinnerValuesRequested<string>((Expression<Func<string>>) (() => this._parachuteType), new Action<List<string>>(this.GetSpinnerValues));
-            d.OnValueLabelRequested(() => this.MinDelpoyHeight, (s)=>Units.GetDistanceString(s));
+            d.OnValueLabelRequested<string>(() => this._parachuteType, x => x);
+            d.OnSpinnerValuesRequested<string>(() => this._parachuteType, this.GetSpinnerValues);
+            d.OnValueLabelRequested(() => this.minDeployHeight, s => Units.GetDistanceString(s));
         }
+
 
         private void GetSpinnerValues(List<string> chuteTypes)
         {

@@ -14,7 +14,7 @@
     </SubpartTypes>
   </PartType>
   <DesignerParts>
-    <DesignerPart name="Ladder" category="Control &amp; Descent" description="" order="0" showInDesigner="true" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
+    <DesignerPart name="Ladder" category="Control &amp; Descent" description="" order="0" showInDesigner="false" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
       <Assembly>
         <Parts>
           <Part id="1" partType="Ladder" position="0,0,0" rotation="0,0,0">
