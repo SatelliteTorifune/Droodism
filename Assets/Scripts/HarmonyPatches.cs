@@ -45,7 +45,7 @@ namespace Assets.Scripts
                     var fuelTanks = ((Component)__instance).GetComponents<FuelTankScript>();
                     var jetPackFuelTank = Enumerable.FirstOrDefault(fuelTanks, tank => tank.FuelType?.Id == "Jetpack");
                     
-                    // Use reflection to set the value of the _fuelTank field
+                   
                     var fuelTankField = AccessTools.Field(typeof(EvaScript), "_fuelTank");
                     if (fuelTankField != null)
                     {
@@ -114,6 +114,7 @@ namespace Assets.Scripts
             }
         }
         
+        
         [HarmonyPatch(typeof(CraftPerformanceAnalysis), "RefreshInspectorPanel", new Type[] { typeof(bool) })]
         public class CraftPerformanceAnalysisPatch
         {
@@ -121,71 +122,87 @@ namespace Assets.Scripts
             [HarmonyPostfix]
             public static void Postfix(CraftPerformanceAnalysis __instance, bool immediate)
             {
-                if (!immediate) return;
-                var inspectorPanelField = AccessTools.Field(typeof(CraftPerformanceAnalysis), "_inspectorPanel");
-                var inspectorPanel = inspectorPanelField.GetValue(__instance) as IInspectorPanel;
-
-                if (inspectorPanel == null)
+                try
                 {
-                    Debug.LogError("InspectorPanel is null, cannot add TEXT group.");
-                    return;
-                }
 
-                var inspectorModel = inspectorPanel.Model;
-                if (inspectorModel == null)
-                {
-                    Debug.LogError("InspectorModel is null, cannot add TEXT group.");
-                    return;
-                }
 
-                GroupModel textGroup = new GroupModel("<color=green>Life Support Resources Info");
 
-                textGroup.Add<TextModel>(new TextModel("Drood Count",
-                    () => Scripts.Mod.Instance.GetDroodCountInDesigner()));
-                foreach (var var in fuelTypes)
-                {
-                    AddStuff(var);
-                }
+                    if (!immediate) return;
+                    var inspectorPanelField = AccessTools.Field(typeof(CraftPerformanceAnalysis), "_inspectorPanel");
+                    var inspectorPanel = inspectorPanelField.GetValue(__instance) as IInspectorPanel;
 
-                void AddStuff(String fuelType)
-                {
-                    bool isWaste = fuelType.Contains("Waste") || fuelType == "CO2"||fuelType=="HPCO2";
-                    string name = "";
-                    switch (fuelType)
+                    if (inspectorPanel == null)
                     {
-                        case "H2O":
-                            name="Water";
-                            break;
-                        case "CO2":
-                            name = "Carbon Dioxide";
-                            break;
-                        case "HPCO2":
-                            name = "High Pressure Carbon Dioxide";
-                            break;
-                        case "HPOxygen":
-                            name = "High Pressure Oxygen";
-                            break;
-                        
-                        default:
-                            name = fuelType;
-                            break;
-                    
+                        Debug.LogError("InspectorPanel is null, cannot add TEXT group.");
+                        return;
                     }
-                    textGroup.Add<TextModel>(new TextModel(name + (isWaste ? " Capacity" : " Amount"),
-                        () => GetFuelAmountInDesigner(fuelType, isWaste)));
-                }
 
-                // 将新组添加到 InspectorModel
-                inspectorModel.AddGroup(textGroup);
+                    var inspectorModel = inspectorPanel.Model;
+                    if (inspectorModel == null)
+                    {
+                        Debug.LogError("InspectorModel is null, cannot add TEXT group.");
+                        return;
+                    }
+
+                    GroupModel textGroup = new GroupModel("<color=green>Life Support Resources Info");
+
+                    textGroup.Add<TextModel>(new TextModel("Drood Count",
+                        () => Scripts.Mod.Instance.GetDroodCountInDesigner()));
+                    foreach (var var in fuelTypes)
+                    {
+                        AddStuff(var);
+                    }
+
+                    void AddStuff(String fuelType)
+                    {
+                        bool isWaste = fuelType.Contains("Waste") || fuelType == "CO2" || fuelType == "HPCO2";
+                        string name = "";
+                        switch (fuelType)
+                        {
+                            case "H2O":
+                                name = "Water";
+                                break;
+                            case "CO2":
+                                name = "Carbon Dioxide";
+                                break;
+                            case "HPCO2":
+                                name = "High Pressure Carbon Dioxide";
+                                break;
+                            case "HPOxygen":
+                                name = "High Pressure Oxygen";
+                                break;
+
+                            default:
+                                name = fuelType;
+                                break;
+
+                        }
+
+                        textGroup.Add<TextModel>(new TextModel(name + (isWaste ? " Capacity" : " Amount"),
+                            () => GetFuelAmountInDesigner(fuelType, isWaste)));
+                    }
+
+                    // 将新组添加到 InspectorModel
+                    inspectorModel.AddGroup(textGroup);
+                }
+                catch (Exception e)
+                {
+                    LOG("Droodism.CraftPerformanceAnalysis failed", e);
+                }
             }
         }
         
+        
+        
+        //写这个b玩意的意义何在啊我操
+        //我下次加harmonyPatch一定要写注释
         [HarmonyPatch(typeof(EvaScript), "LoadIntoCrewCompartment")]
         class LoadCompartmentPatch
         {
             [HarmonyPrefix]
             static bool LoadIntoCrewCompartment(EvaScript __instance, CrewCompartmentScript crewCompartment)
             {
+                //这东西我也不敢动啊
                 return true;
             }
         }

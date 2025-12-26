@@ -20,6 +20,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     private Transform _fanTransformBase, _fan1, _fan2;
     private float _fanSpeed;
 
+    
     protected override void UpdateFuelSources()
     {
        
@@ -85,7 +86,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             subPart = subPart.Find(n) ?? subPart;
         if (subPart.name != strArray[strArray.Length - 1])
             subPart = Utilities.FindFirstGameObjectMyselfOrChildren("Device/DeviceFan", gameObject)?.transform;
-        SetSubPart(subPart, Data.PositionOffset, ref _fanTransformBase);
+        SetSubPartWithOffset(subPart, Data.PositionOffset, ref _fanTransformBase);
         _fan1 = _fanTransformBase?.Find("fan1");
         _fan2 = _fanTransformBase?.Find("fan2");
     }

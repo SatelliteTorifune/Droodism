@@ -238,11 +238,11 @@ namespace Assets.Scripts
             return totalFuel.ToString("0.00") + format[0];
         }
 
-        public static void LOG(string message)
+        public static void LOG(object message)
         {
             if (ModSettings.Instance.ShowDevLog)
             {
-                LOG(message);
+                Debug.unityLogger.Log(message);
             }
         }
         public static void LOG(string format, params object[] args)

@@ -175,8 +175,6 @@ namespace Assets.Scripts
             
         }
         
-       
-
         private static void OnBuildFlightUI(BuildUserInterfaceXmlRequest request)
         {
             var ns = XmlLayoutConstants.XmlNamespace;
@@ -451,10 +449,7 @@ namespace Assets.Scripts
             
             #endregion
         }
-
         
-
-
 
         #region 数据更新处理
 

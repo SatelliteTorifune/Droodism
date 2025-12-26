@@ -2,20 +2,33 @@ using ModApi.Craft;
 using ModApi.Craft.Parts;
 using ModApi.GameLoop;
 using ModApi.GameLoop.Interfaces;
+using RootMotion.FinalIK;
 using UnityEngine;
 
-public abstract class ResourceProcessorPartScript<T> : PartModifierScript<T>, IFlightStart, IFlightUpdate, IDesignerStart
+public abstract class ResourceProcessorPartScript<T> : PartModifierScript<T>, IFlightStart, IFlightUpdate, IDesignerStart,IFlightFixedUpdate
     where T : PartModifierData
 {
-    protected IFuelSource BatterySource { get; set; }
+    protected IFuelSource BatterySource { get; private set; }
     protected Transform Offset { get; private set; }
     protected Vector3 OffsetPositionInverse { get; set; }
 
     public virtual void FlightStart(in FlightFrameData frame)
     {
         UpdateFuelSources();
+        UpdateComponents();
+    }
+    
+    
+
+    protected virtual void UpdateComponents()
+    {
+        
     }
 
+    public virtual void FlightFixedUpdate(in FlightFrameData frame)
+    {
+        
+    }
     public virtual void FlightUpdate(in FlightFrameData frame)
     {
         if (!PartScript.Data.Activated)
@@ -70,7 +83,7 @@ public abstract class ResourceProcessorPartScript<T> : PartModifierScript<T>, IF
         return null;
     }
 
-    protected void SetSubPart(Transform subPart, Vector3 positionOffset, ref Transform targetTransform)
+    protected void SetSubPartWithOffset(Transform subPart, Vector3 positionOffset, ref Transform targetTransform)
     {
         if (Offset != null)
         {

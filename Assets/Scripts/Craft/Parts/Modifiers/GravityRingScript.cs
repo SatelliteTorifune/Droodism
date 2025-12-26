@@ -11,7 +11,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
 
-    public class GravityRingScript : PartModifierScript<GravityRingData>, IFlightUpdate, IFlightStart, IDesignerStart
+    public class GravityRingScript : PartModifierScript<GravityRingData>, IFlightUpdate, IFlightStart
     {
         private Transform _mainBase, _rotateBase;
         private Transform _sideA, _struc1A, _struc2A, _struc3A,_struc4A, _ringA;
@@ -33,7 +33,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 Deploy(frame);
             }
 
-            if (PartScript.Data.Activated == false) 
+            if (!PartScript.Data.Activated) 
             {
                 Undeploy(frame);
             }
@@ -103,11 +103,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         { 
             UpdateComponents();
         }
-
-        public void DesignerStart(in DesignerFrameData frame)
-        {
-
-        }
+        
 
         #region Animation Methods
 
