@@ -80,7 +80,10 @@ MonoBehaviour:
   Data:
     _activationGroup: 0
     _category: {fileID: 11400000, guid: 7d2b6f557b8767544a162f30e61d22b6, type: 2}
-    _description: 
+    _description: 'A device turnning <color=red>High Pressure CO2</color>,<color=green>Hight
+      Pressure Oxygen</color>,Water into
+
+      Methalox'
     _displayOrder: 0
     _iconPath: 
     _iconType: 0
@@ -181,8 +184,8 @@ MonoBehaviour:
     _version: 1
     _versionLast: 1
     _versionsAllowed: 
-    batteryComsumption: 1
-    hpco2Comsumption: 1
+    batteryConsumption: 1
+    hpco2Consumption: 1
     methaneloxGeneration: 1
-    waterComsumption: 1
-    hpoxygenComsumption: 1
+    waterConsumption: 1
+    hpoxygenConsumption: 1

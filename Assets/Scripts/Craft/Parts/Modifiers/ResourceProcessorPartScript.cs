@@ -39,6 +39,7 @@ public abstract class ResourceProcessorPartScript<T> : PartModifierScript<T>, IF
         WorkingLogic(frame);
         WorkingAnimation(true);
     }
+    
 
     public virtual void DesignerStart(in DesignerFrameData frame)
     {
@@ -70,7 +71,7 @@ public abstract class ResourceProcessorPartScript<T> : PartModifierScript<T>, IF
     {
     }
 
-    protected IFuelSource GetCraftFuelSource(string fuelType)
+    protected IFuelSource GetRegularCraftFuelSource(string fuelType)
     {
         var craftSources = PartScript.CraftScript.FuelSources.FuelSources;
         foreach (var source in craftSources)

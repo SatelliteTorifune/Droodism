@@ -16,18 +16,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     {
         private IFuelSource waterFuelSource;
         public bool IsGenerator{get;private set;}
+        public bool IsRightType{get;private set;}
         public override void FlightStart(in FlightFrameData frame)
         {
-            UpdateFuelSources();
+            base.FlightStart(frame);
             if (this.PartScript.Data.PartType.Name.Contains("Generator"))
             {
-                
+                IsGenerator = true;
                 if (this.PartScript.GetModifier<GeneratorScript>().Data.FuelType.Id=="LOX/LH2"||this.PartScript.GetModifier<GeneratorScript>().Data.FuelType.Id=="LOX/CH4")
                 {
-                    IsGenerator = false;
+                    IsRightType = true;
                 }
-                IsGenerator = true;
-                
             }
         }
         
@@ -36,18 +35,22 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             base.UpdateFuelSources();
             waterFuelSource = PartScript?.CommandPod?.Part.PartScript.GetModifier<STCommandPodPatchScript>()
                 .WaterFuelSource;
-
-
         }
         
 
         protected override void WorkingLogic(in FlightFrameData frame)
         {
-            if (this.PartScript.WaterPhysics.IsInWater)
+            if (!this.PartScript.WaterPhysics.IsInWater)
             {
-                BatterySource.RemoveFuel(Data.PowerConsumption*frame.DeltaTimeWorld);
-                waterFuelSource.AddFuel(Data.WaterGenerationScale*frame.DeltaTimeWorld);
+                return;
             }
+
+            if (IsGenerator&&!IsRightType)
+            {
+                return;
+            }
+            BatterySource.RemoveFuel(Data.PowerConsumption*frame.DeltaTimeWorld);
+            waterFuelSource.AddFuel(Data.WaterGenerationScale*frame.DeltaTimeWorld);
         }
     }
 }

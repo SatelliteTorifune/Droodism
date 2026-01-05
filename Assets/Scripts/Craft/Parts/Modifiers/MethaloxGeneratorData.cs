@@ -1,3 +1,5 @@
+using UnityEngine.Serialization;
+
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
     using System;
@@ -14,29 +16,29 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     [PartModifierTypeId("MethaloxGenerator")]
     public class MethaloxGeneratorData : PartModifierData<MethaloxGeneratorScript>
     {
-        [SerializeField] [PartModifierProperty(true, false)]
-        private float batteryComsumption=1f;
+        [FormerlySerializedAs("batteryComsumption")] [SerializeField] [PartModifierProperty(true, false)]
+        private float batteryConsumption=1f;
 
-        [SerializeField] [PartModifierProperty(true, false)]
-        private float hpco2Comsumption=1f;
+        [FormerlySerializedAs("hpco2Comsumption")] [SerializeField] [PartModifierProperty(true, false)]
+        private float hpco2Consumption=1f;
 
         [SerializeField] [PartModifierProperty(true, false)]
         private float methaneloxGeneration=1f;
 
-        [SerializeField] [PartModifierProperty(true, false)]
-        private float waterComsumption=1f;
+        [FormerlySerializedAs("waterComsumption")] [SerializeField] [PartModifierProperty(true, false)]
+        private float waterConsumption=1f;
 
-        [SerializeField] [PartModifierProperty(true, false)]
-        private float hpoxygenComsumption=1f;
+        [FormerlySerializedAs("hpoxygenComsumption")] [SerializeField] [PartModifierProperty(true, false)]
+        private float hpoxygenConsumption=1f;
 
-        public float BatteryComsumption
+        public float BatteryConsumption
         {
-            get => this.batteryComsumption*100f;
+            get => this.batteryConsumption*100f;
         }
 
-        public float Hpco2Comsumption
+        public float Hpco2Consumption
         {
-            get => this.hpco2Comsumption*0.08f;
+            get => this.hpco2Consumption*0.08f;
         }
 
         public float MethaneloxGeneration
@@ -44,14 +46,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             get => this.methaneloxGeneration*0.01f;
         }
         
-        public float WaterComsumption
+        public float WaterConsumption
         {
-            get => this.waterComsumption*0.004f;
+            get => this.waterConsumption*0.004f;
         }
 
-        public float HpoxygenComsumption
+        public float HpoxygenConsumption
         {
-            get => this.hpoxygenComsumption*0.015f;
+            get => this.hpoxygenConsumption*0.015f;
         }
         
 
