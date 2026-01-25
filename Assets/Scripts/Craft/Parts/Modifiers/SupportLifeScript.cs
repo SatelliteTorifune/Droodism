@@ -195,12 +195,37 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
                 ConsumptionLogic(frame);
             }
-            
 
+            if (Data.ParachuteTypes!="None"&&Data.AutoDeployEnabled)
+            {
+                AutoDeployParachute();
+            }
             MissionDurationTime = (long)Game.Instance.FlightScene.FlightState.Time - Data.MissionStartTime;
         }
 
-        
+        private void AutoDeployParachute()
+        {
+           
+            bool isEva()
+            {
+                if (_evaScript.EvaActive)
+                {
+                    return !_evaScript.ActiveWhileInCrewCompartment;
+                }return _evaScript.PartScript.CraftScript.Data.Assembly.Parts.Count == 1 && _evaScript.PartScript.CraftScript.RootPart.Data.PartType.Name.Contains("Eva");
+            }
+            if (!isEva()||_evaScript.IsGrounded||_evaScript.IsInWater||_evaScript.PartScript.CraftScript.FlightData.AltitudeAboveGroundLevel<=10||_evaScript.PartScript.CraftScript.FlightData.AtmosphereSample.AirDensity<=0.01||_evaScript.PartScript.CraftScript.FlightData.SurfaceVelocityMagnitude >= _evaScript.PartScript.CraftScript.FlightData.AtmosphereSample.SpeedOfSound||_evaScript.PartScript.CraftScript.FlightData.VerticalSurfaceVelocity>0)
+            {
+                return;
+            }
+
+            if (_evaScript.PartScript.CraftScript.FlightData.AltitudeAboveGroundLevel>Data.AutoDeployHeight)
+            {
+                return;
+            }
+            DeployParaglider();
+
+            
+        }
         /// <summary>
         /// 这b玩意看不懂那你去吃我屎吧,你不会百度翻译吗?
         /// </summary>
@@ -1354,14 +1379,31 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 model.Add<TextButtonModel>(textButtonModel1);
                 if (Data.ParachuteTypes=="ParaGlider")
                 {
-                    model.Add<TextButtonModel>(new TextButtonModel("Deploy ParaGlider", (Action<TextButtonModel>)(b => this.DeployParaglider())));
-                    model.Add(new SliderModel("Fully Deploy Height", (Func<float>) (() => this.Data.MinDeployHeight), (Action<float>) (s => this.Data.MinDeployHeight = s), 100, 3000, true,true)).ValueFormatter = (Func<float, string>) (x => Units.GetDistanceString(x));
+                    model.Add(new ToggleModel("Auto Deploy ParaGlider",()=>Data.AutoDeployEnabled,b=>
+                    {
+                        Data.AutoDeployEnabled=b;
+                    },"Enable Auto Deployment"));
+                    model.Add(new SliderModel("Auto Deploy Height", (Func<float>) (() => this.Data.AutoDeployHeight), (Action<float>) (s => this.Data.AutoDeployHeight = s), 100, 3000, true,true)).ValueFormatter = (Func<float, string>) (x => Units.GetDistanceString(x));
+                    model.Add<TextButtonModel>(new TextButtonModel("<color=red>Manual Deploy ParaGlider", (Action<TextButtonModel>)(b => this.DeployParaglider())));
+                    model.Add(new SliderModel("Fully Deploy Height", (Func<float>) (() => Mathf.Min(Data.MinDeployHeight, Data.AutoDeployHeight)), (Action<float>) (s =>
+                    {
+                        this.Data.MinDeployHeight = Mathf.Min(s, Data.AutoDeployHeight);
+                    }), 100, 3000, true,true)).ValueFormatter = (Func<float, string>) (x => Units.GetDistanceString(x));
                 }
 
                 if (Data.ParachuteTypes=="Parachute")
                 {
-                    model.Add<TextButtonModel>(new TextButtonModel("Deploy Parachute", (Action<TextButtonModel>)(b => this.DeployParaglider())));
-                    model.Add(new SliderModel("Fully Deploy Height", (Func<float>) (() => this.Data.MinDeployHeight), (Action<float>) (s => this.Data.MinDeployHeight = s), 100, 3000, true,true)).ValueFormatter = (Func<float, string>) (x => Units.GetDistanceString(x));
+                    model.Add(new ToggleModel("Auto Deploy Parachute",()=>Data.AutoDeployEnabled,b=>
+                    {
+                        Data.AutoDeployEnabled=b;
+                    },"Enable Auto Deployment"));
+                    model.Add(new SliderModel("Auto Deploy Height", (Func<float>) (() => this.Data.AutoDeployHeight), (Action<float>) (s => this.Data.AutoDeployHeight = s), 100, 3000, true,true)).ValueFormatter = (Func<float, string>) (x => Units.GetDistanceString(x));
+                    model.Add<TextButtonModel>(new TextButtonModel("<color=red>Manual Deploy Parachute", (Action<TextButtonModel>)(b => this.DeployParaglider())));
+                    model.Add(new SliderModel("Fully Deploy Height", (Func<float>) (() => Mathf.Min(Data.MinDeployHeight, Data.AutoDeployHeight)), (Action<float>) (s =>
+                    {
+                        
+                        this.Data.MinDeployHeight = Mathf.Min(s, Data.AutoDeployHeight);
+                    }), 100, 3000, true,true)).ValueFormatter = (Func<float, string>) (x => Units.GetDistanceString(x));
                 }
             }
 

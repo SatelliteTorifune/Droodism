@@ -40,24 +40,28 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private float waterDamageScale=1f;
         
         [SerializeField] 
-        [DesignerPropertySlider(0.1f, 3f, 30, Label = "<color=green>Oxygen</color> Carry Amount(days)", Tooltip = "How much <color=green>Oxygen</color> Drood himself/herself will carry when Eva.")]
+        [DesignerPropertySlider(0.1f, 3f, 30, Label = "<color=green>Oxygen</color> Carry Amount(days)",Order = 4, Tooltip = "How much <color=green>Oxygen</color> Drood himself/herself will carry when Eva.")]
         private float desireOxygenCapacity = 0.2f;
-        [SerializeField] [DesignerPropertySlider(0.1f, 3f, 30, Label = "<color=yellow>Food</color> Carry Amount(days)", Tooltip = "How much <color=yellow>Food</color> Drood himself/herself will carry when Eva.")]
+        [SerializeField] [DesignerPropertySlider(0.1f, 3f, 30, Label = "<color=yellow>Food</color> Carry Amount(days)",Order = 5, Tooltip = "How much <color=yellow>Food</color> Drood himself/herself will carry when Eva.")]
         private float desireFoodCapacity = 0.2f;
-        [SerializeField] [DesignerPropertySlider(0.1f, 3f, 30, Label = "<color=red>Water</color> Carry Amount(days)", Tooltip = "How much<color=red> Drink Water</color> Drood himself/herself will carry when Eva.")]
+        [SerializeField] [DesignerPropertySlider(0.1f, 3f, 30, Label = "<color=red>Water</color> Carry Amount(days)",Order = 6, Tooltip = "How much<color=red> Drink Water</color> Drood himself/herself will carry when Eva.")]
         private float desireWaterCapacity = 0.2f;
         
         [SerializeField]
-        [DesignerPropertySpinner(Label = "<color=yellow>Parachute Type</color>", Order = 0, Tooltip = "The type of parachute this drood brings.")]
-        [PartModifierProperty(true, false)]
+        [DesignerPropertySpinner(Label = "<color=yellow>Chute Type</color>", Order = 0, Tooltip = "The type of parachute this drood brings.")]
         private string _parachuteType = "Parachute";
 
         [SerializeField] 
-        [DesignerPropertySlider(200f, 500f, 30, Label = "Min Deploy Height", Tooltip = "Minimum height for parachute deployment")]
-        [PartModifierProperty(true, false)]
+        [DesignerPropertySlider(100f, 1000f, 60, Label = "Min Deploy Height",Order=1, Tooltip = "Minimum height for parachute deployment")]
         private float minDeployHeight = 250f;
 
-       
+        [SerializeField] 
+        [DesignerPropertyToggleButton(Label = "<color=#FFB600>Auto Deploy Parachute</color>",Order = 2,Tooltip = "Auto Deploy Parachute or not")]
+        private bool autoDeployEnabled = true;
+        [SerializeField] 
+        [DesignerPropertySlider(100f, 1000f, 60, Label = "<color=#FFB600>Auto Deploy Height</color>",Order = 3, Tooltip = "Height for auto parachute deployment in Agl")]
+        private float autoDeployHeight = 500f;
+        
         
         [SerializeField][PartModifierProperty]
         public long MissionStartTime=0;
@@ -142,15 +146,42 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public float MinDeployHeight
         {
-            get=>this.minDeployHeight;
-            set=>this.minDeployHeight=value;
+            get=> Mathf.Min(this.autoDeployHeight, this.minDeployHeight);
+            set
+            {
+                minDeployHeight=Mathf.Min(value, this.autoDeployHeight);
+            }
+        }
+
+        public bool AutoDeployEnabled
+        {
+            get => autoDeployEnabled;
+            set =>autoDeployEnabled=value;
+        }
+
+        public float AutoDeployHeight
+        {
+            get => autoDeployHeight;
+            set => autoDeployHeight=value;
         }
         protected override void OnDesignerInitialization(IDesignerPartPropertiesModifierInterface d)
         {
             base.OnDesignerInitialization(d);
             d.OnValueLabelRequested<string>(() => this._parachuteType, x => x);
             d.OnSpinnerValuesRequested<string>(() => this._parachuteType, this.GetSpinnerValues);
-            d.OnValueLabelRequested(() => this.minDeployHeight, s => Units.GetDistanceString(s));
+            d.OnValueLabelRequested(() => this.minDeployHeight, s => Units.GetDistanceString(Mathf.Min(s,autoDeployHeight)));
+            d.OnValueLabelRequested(() => this.autoDeployHeight, s => Units.GetDistanceString(s));
+            
+            d.OnPropertyChanged<float>((Expression<Func<float>>) (() => this.minDeployHeight), (Action<float, float>) ((newVal, oldVal) =>
+            {
+                this.minDeployHeight = Mathf.Min(minDeployHeight,this.autoDeployHeight);
+                d.Manager.RefreshUI();
+            }));
+            d.OnPropertyChanged<float>((Expression<Func<float>>) (() => this.autoDeployHeight), (Action<float, float>) ((newVal, oldVal) =>
+            {
+                this.minDeployHeight = Mathf.Min(this.autoDeployHeight, this.minDeployHeight);
+                d.Manager.RefreshUI();
+            }));
         }
 
 
