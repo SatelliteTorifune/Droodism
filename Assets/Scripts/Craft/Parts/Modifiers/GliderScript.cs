@@ -190,14 +190,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             Rigidbody rb = PartScript.BodyScript.RigidBody;
             Vector3 worldVel = this.PartScript.CraftScript.FlightData.SurfaceVelocity.ToVector3();
-            Vector3 dragForce =OpenPercent* -kDrag * worldVel * worldVel.magnitude*0.4f;
+            Vector3 dragForce =OpenPercent* kDrag * worldVel * worldVel.magnitude*0.4f*-1;
             rb.AddForceAtPosition(dragForce, PartScript.Transform.position,ForceMode.Force);
         }
         private void UpdateForceForFullyDeployedParachute(in FlightFrameData frameData)
         {
             Rigidbody rb = PartScript.BodyScript.RigidBody;
             Vector3 worldVel = this.PartScript.CraftScript.FlightData.SurfaceVelocity.ToVector3();
-            Vector3 dragForce =OpenPercent* -kDrag * worldVel * worldVel.magnitude*4f;
+            Vector3 dragForce =OpenPercent* kDrag * worldVel * worldVel.magnitude*4f*-1;
             rb.AddForceAtPosition(dragForce, PartScript.Transform.position,ForceMode.Force);
         }
         #region 滑翔伞
