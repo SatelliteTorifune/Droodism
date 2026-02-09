@@ -10,11 +10,12 @@ using ModApi.Craft;
 using ModApi.Craft.Parts;
 using ModApi.Craft.Propulsion;
 using ModApi.Flight.UI;
+using ModApi.GameLoop;
 
 namespace Assets.Scripts
 {
     //骗你的,其实这个所谓的New管的是LegacyUI,new是相对于远古版本的纯用flightInspectorPanel的版本的
-    public class LegacyDroodismUI:MonoBehaviour
+    public class LegacyDroodismUI:MonoBehaviourBase
     {
         private XmlLayoutController controller;
         private XmlElement mainPanel,FuelPercentageItemTemplate,fuelPercentageList,FuelTransferItemList,FuelTransferItemModeTemplet;
