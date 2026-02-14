@@ -3,9 +3,12 @@ using System.Linq;
 using Assets.Scripts.Craft;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
+using Assets.Scripts.Flight;
+using ModApi.CelestialData;
 using ModApi.Craft;
 using ModApi.Craft.Parts;
 using ModApi.Craft.Parts.Events;
+using ModApi.Flight;
 using ModApi.Mods;
 using UnityEngine;
 
@@ -184,5 +187,7 @@ namespace Assets.Scripts
                 //LOG($"Added CrewCabinData to part {part.Name}");
             }
         }
+
+        
     }
 }

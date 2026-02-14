@@ -527,7 +527,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
                 catch (Exception e)
                 {
-                    Mod.LOG("RefreshFuelSource调用CraftRefeshFuelSource歇逼了{0}", e);
+                    Mod.LOGError("RefreshFuelSource调用CraftRefeshFuelSource歇逼了{0}", e);
                 }
                 
             }
