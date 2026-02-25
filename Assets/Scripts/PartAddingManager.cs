@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.Craft;
@@ -74,6 +75,20 @@ namespace Assets.Scripts
         {
             var part = e.Part;
             if (part == null) return;
+            if (part.PartType.Name=="Docking Port")
+            {
+                try
+                {
+                    var cam = part.GetModifier<CameraVantageData>();
+                    cam.InspectorEnabled = true;
+                    cam.IsNight = false;
+                }
+                catch (Exception)
+                {
+                   
+                }
+
+            }
 
             if (part.Name == EvaPartName || part.Name == EvaTouristPartName)
             {
