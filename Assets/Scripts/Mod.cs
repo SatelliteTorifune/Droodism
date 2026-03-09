@@ -1,20 +1,16 @@
 using System.Xml.Linq;
 using Assets.Packages.DevConsole;
 using Assets.Scripts.Craft;
-using Assets.Scripts.Craft.Parts;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Flight;
 using ModApi.Scenes.Events;
 using HarmonyLib;
 using ModApi.Craft;
-using ModApi.Craft.Parts;
-using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using ModApi.Flight.Sim;
 using ModApi.Math;
 using ModApi.State;
 using static ModApi.Common.Game;
 using static ModApi.Craft.Parts.PartData;
-using Assets.Scripts.State;
 using Assembly = System.Reflection.Assembly;
 
 namespace Assets.Scripts
@@ -45,7 +41,12 @@ namespace Assets.Scripts
         }
 
         public static Mod Instance { get; } = GetModInstance<Mod>();
-        private CraftScript Craft => ModApi.Common.Game.Instance.Designer.CraftScript as CraftScript;
+
+        private CraftScript CurrentCraft()
+        {
+            return InFlightScene ?ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript as CraftScript:Game.Instance.Designer.CraftScript as CraftScript;
+
+        } 
 
         public override void OnModLoaded()
         {
@@ -59,11 +60,10 @@ namespace Assets.Scripts
 
         private void OnSceneLoaded(object sender, SceneEventArgs e)
         {
-            subPlus();
 
             if (InDesignerScene)
             {
-                ModApi.Common.Game.Instance.Designer.CraftLoaded += OnCraftLoaded;
+                ModApi.Common.Game.Instance.Designer.CraftLoaded+=OnCraftLoaded;
                 ModApi.Common.Game.Instance.Designer.CraftStructureChanged+=OnCraftStructureChanged;
                 Created += OnPartAdded;
             }
@@ -72,7 +72,8 @@ namespace Assets.Scripts
             {
                 try
                 {
-                    UpdateDroodCount();
+                    ModApi.Common.Game.Instance.FlightScene.CraftChanged += OnCraftChanged;
+                    PatchCraft(ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript as CraftScript);
                     LOG("OnSceneLoaded更新Drood数量");
                     那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花();
                     LOG("OnSceneLoaded执行doShit");
@@ -83,6 +84,11 @@ namespace Assets.Scripts
                 }
             }
 
+        }
+
+        private void OnCraftLoaded()
+        {
+            PatchCraft(CurrentCraft());
         }
 
         private void OnCraftStructureChanged()
@@ -97,9 +103,13 @@ namespace Assets.Scripts
             Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
             Game.Instance.SceneManager.SceneTransitionCompleted+=OnSceneTransitionCompleted;
             //Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.FlightView,OnBuildFlightViewInspectorPanel);
+            //注册一下指令
             DevConsoleApi.RegisterCommand("RefreshFuelSource",那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花);
+            DevConsoleApi.RegisterCommand("ManualRefreshInstance",ManualRefreshInstance);
             
         }
+
+        private void OnCraftChanged(ICraftNode craft) => PatchCraft(CurrentCraft());
         public void 那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花()
         {
             
@@ -124,37 +134,7 @@ namespace Assets.Scripts
         {
             那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花();
         }
-        private void subPlus()
-        {
-            try
-            {
-                ModApi.Common.Game.Instance.FlightScene.Initialized += OnInitialized;
-                LOG(" Initialized订阅OnInitialized");
-                ModApi.Common.Game.Instance.FlightScene.CraftChanged += OnCraftChanged;
-                LOG(" CraftChanged订阅OnCraftChanged");
-                ModApi.Common.Game.Instance.FlightScene.CraftStructureChanged += OnCraftStructureChangedUI;
-                LOG(" CraftStructureChanged订阅OnCraftStructureChangedUI");
-                ModApi.Common.Game.Instance.FlightScene.ActiveCommandPodChanged += OnCraftChanged;
-                LOG(" ActiveCommandPodChanged订阅OnCraftChanged");
-                ModApi.Common.Game.Instance.FlightScene.ActiveCommandPodStateChanged += OnCraftChanged;
-                LOG(" ActiveCommandPodStateChanged订阅OnCraftChanged");
-
-            }
-            catch (Exception e)
-            {
-                LOG($"订阅有问题,我不知道哪里有问题,但是反正这玩意加个try-catch也能跑{e}");
-            }
-
-        }
-        //这个函数懒得调用
-        private void subMinus()
-        {
-            ModApi.Common.Game.Instance.FlightScene.Initialized -= OnInitialized;
-            ModApi.Common.Game.Instance.FlightScene.CraftChanged -= OnCraftChanged;
-            ModApi.Common.Game.Instance.FlightScene.CraftStructureChanged -= OnCraftStructureChangedUI;
-            ModApi.Common.Game.Instance.FlightScene.ActiveCommandPodChanged -= OnCraftChanged;
-            ModApi.Common.Game.Instance.FlightScene.ActiveCommandPodStateChanged -= OnCraftChanged;
-        }
+        
         public void SpawnFlag() 
         {
             var templateText = Mod.ResourceLoader.LoadAsset<TextAsset>("Assets/Content/Resources/flag.xml");
@@ -178,87 +158,8 @@ namespace Assets.Scripts
         }
         
         
-        public Vector3d ConvertPlanetPositionToLatLongAgl(Vector3d position)
-        {
-            if (double.IsNaN(position.x) || double.IsNaN(position.y) || double.IsNaN(position.z))
-                return Vector3d.zero;
-            IPlanetNode parent = Game.Instance.FlightScene.CraftNode.Parent;
-            Vector3d surfaceVector = parent.PlanetVectorToSurfaceVector(position);
-            double latitude;
-            double longitude;
-            parent.GetSurfaceCoordinates(surfaceVector, out latitude, out longitude);
-            double num = parent.GetTerrainHeight(position);
-            if (parent.PlanetData.HasWater && num < (double) parent.PlanetData.SeaLevel)
-                num = (double) parent.PlanetData.SeaLevel;
-            return new Vector3d(latitude * 57.29578, longitude * 57.29578, position.magnitude - (parent.PlanetData.Radius + num));
-        }
-        //傻逼jundroo害我还要帮他们擦屁股
-        public static string GetStopwatchTimeString(double seconds)
-        {
-            if (!Units.IsFinite(seconds))
-                return "N/A";
-            string empty = string.Empty;
-            if (seconds > 31536000.0)
-            {
-                long num = (long) (seconds / 31536000.0);
-                seconds -= (double) (num * 31536000L);
-                empty += string.Format("{0:n0}y ", (object) num);
-            }
-            if (seconds > 86400.0)
-            {
-                long num = (long) (seconds / 86400.0);
-                seconds -= (double) (num * 86400L);
-                empty += string.Format("{0:n0}d ", (object) num);
-            }
-            if (seconds > 3600.0)
-            {
-                long num = (long) (seconds / 3600.0);
-                seconds -= (double) (num * 3600L);
-                empty += string.Format("{0:n0}h ", (object) num);
-            }
-            if (seconds > 60.0)
-            {
-                long num = (long) (seconds / 60.0);
-                seconds -= (double) (num * 60L);
-                empty += string.Format("{0:n0}m ", (object) num);
-            }
-            return empty + string.Format("{0:n2}s", (object) seconds);
-        }
-        public string FormatFuel(double totalFuel, string[] format)
-        {
-            // Converts into lowest unit type
-            //Code by Chaotic Graviton
-            totalFuel *= 1e3;
-            if (Math.Abs(totalFuel) > 1e9)
-                return (totalFuel * 1e-9).ToString("0.00") + format[3];
-            else if (Math.Abs(totalFuel) > 1e6)
-                return (totalFuel * 1e-6).ToString("0.00") + format[2];
-            else if (Math.Abs(totalFuel) > 1e3)
-                return (totalFuel * 1e-3).ToString("0.00") + format[1];
-            return totalFuel.ToString("0.00") + format[0];
-        }
-
-        public static void LOG(object message)
-        {
-            if (ModSettings.Instance.ShowDevLog)
-            {
-                Debug.unityLogger.Log(message);
-            }
-        }
-        public static void LOG(string format, params object[] args)
-        {
-            if (ModSettings.Instance.ShowDevLog)
-            {
-                Debug.unityLogger.LogFormat(LogType.Log, format, args);
-            }
-        }
-        public static void LOG(UnityEngine.Object context, string format, params object[] args)
-        {
-            if (ModSettings.Instance.ShowDevLog)
-            {
-                Debug.unityLogger.LogFormat(LogType.Log, context, format, args);
-            }
-        }
+        
+        
     }
     
 }

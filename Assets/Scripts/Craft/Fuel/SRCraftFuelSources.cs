@@ -213,7 +213,7 @@ namespace Assets.Scripts.Craft.Fuel
             }
             catch (Exception e)
             {
-                Debug.LogFormat("CreateFuelSourceForConnectedParts歇逼了: {0}",e);
+                Mod.LOGError("CreateFuelSourceForConnectedParts歇逼了: {0}",e);
             }
             
             //Debug.Log("Modded CreateFuelSourceForConnectedParts called");

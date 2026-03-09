@@ -35,7 +35,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             _waterSource = patchScript.WaterFuelSource;
             _oxygenSource = patchScript.OxygenFuelSource;
-            _hydrogenSource = GetCraftFuelSource("LH2");
+            _hydrogenSource = GetRegularCraftFuelSource("LH2");
         }
         catch (Exception)
         {

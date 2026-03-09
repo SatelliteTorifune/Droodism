@@ -164,14 +164,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
             waterSource = patchScript?.WaterFuelSource;
             oxygenSource = patchScript?.OxygenFuelSource;
-            hydroLoxSource = GetCraftFuelSource("LOX/LH2");
+            hydroLoxSource = GetRegularCraftFuelSource("LOX/LH2");
             co2Source = patchScript?.CO2FuelSource;
             if (PartScript != null)
             {
 
                 fossilSource = FossilFuelTypeIndex == 0 ? null :
-                    FossilFuelTypeIndex == 1 ? GetCraftFuelSource("LOX/RP1") :
-                    FossilFuelTypeIndex == 2 ? GetCraftFuelSource("LOX/CH4") :
+                    FossilFuelTypeIndex == 1 ? GetRegularCraftFuelSource("LOX/RP1") :
+                    FossilFuelTypeIndex == 2 ? GetRegularCraftFuelSource("LOX/CH4") :
                     FossilFuelTypeIndex == 2 ? this.PartScript?.CommandPod?.JetFuelSource : null;
             }
         }

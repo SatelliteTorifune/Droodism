@@ -7,6 +7,8 @@ using System.Xml.Linq;
 using Assets.Scripts.State;
 using Debug = UnityEngine.Debug;
 using HarmonyLib;
+using ModApi.Flight;
+using ModApi.Scenes.Parameters;
 
 namespace Assets.Scripts
 {
@@ -116,7 +118,18 @@ namespace Assets.Scripts
                 Console.WriteLine($"Error: {ex.Message}");
             }
         }
+        public void ManualRefreshInstance()
+        {
+            if (!Game.InFlightScene)
+            {
+                return;
+            }
+            //手动quickSave并且load
+            FlightSceneScript.Instance.QuickSave();
+            FlightSceneScript.Instance.ReloadFlightScene(false, FlightSceneLoadParameters.ResumeCraft(), FlightSceneExitReason.QuickLoad);
+        }
     }
+    
     /// <summary>
     /// 使用HarmonyLib来拦截FlightSceneScript的QuickSave方法，并在其调用后调用Mod的OnQuickSave方法
     /// Use HarmonyLib to intercept the QuickSave method of FlightSceneScript and call Mod's OnQuickSave method after it is called.

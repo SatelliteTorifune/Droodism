@@ -1,10 +1,15 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.Craft;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
+using Assets.Scripts.Flight;
+using ModApi.CelestialData;
+using ModApi.Craft;
 using ModApi.Craft.Parts;
 using ModApi.Craft.Parts.Events;
+using ModApi.Flight;
 using ModApi.Mods;
 using UnityEngine;
 
@@ -23,36 +28,44 @@ namespace Assets.Scripts
         /// <summary>
         /// Called when a craft is loaded. Adds life support and related modifiers to specific parts.
         /// </summary>
-        private void OnCraftLoaded()
-        {
-            var craft = Craft;
-            if (craft?.Data?.Assembly?.Parts == null) return;
+        private void PatchCraft(CraftScript craftScript)
+        { ;
+            if (craftScript?.Data?.Assembly?.Parts == null)
+            {
+                LOGError("Patching Craft Error, Craft is null");
+                return;
+                
+            }
 
             // Process Drood parts
-            foreach (var part in GetPartsWithEvaModifier(craft, withoutLifeSupport: true))
+            foreach (var part in GetPartsWithEvaModifier(craftScript, withoutLifeSupport: true))
             {
                 AddLifeSupportModifier(part);
             }
 
             // Process Generator parts
-            foreach (var part in GetPartsByType(craft, GeneratorPartName))
+            foreach (var part in GetPartsByType(craftScript, GeneratorPartName))
             {
                 AddLifeSupportGeneratorModifiers(part);
             }
 
             // Process Command Pods
-            foreach (var part in GetCommandPods(craft))
+            foreach (var part in craftScript.Data.Assembly.Parts.Where(part => part.PartType.IsCommandPod && !part.PartType.Name.Contains(EvaPartName)).ToList())
             {
                 PatchCommandPod(part);
             }
 
             // Process Crew Compartments
-            foreach (var part in GetCrewCompartments(craft))
+            foreach (var part in craftScript.Data.Assembly.Parts.Where(part => part.GetModifier<CrewCompartmentData>() != null && !part.PartType.Name.Contains(EvaPartName)).ToList())
             {
                 AddCrewCompartmentPatch(part);
             }
 
-            GetDroodCountInDesigner();
+            if (Game.InDesignerScene)
+            {
+                GetDroodCountInDesigner();
+            }
+            
         }
 
         /// <summary>
@@ -62,6 +75,20 @@ namespace Assets.Scripts
         {
             var part = e.Part;
             if (part == null) return;
+            if (part.PartType.Name=="Docking Port")
+            {
+                try
+                {
+                    var cam = part.GetModifier<CameraVantageData>();
+                    cam.InspectorEnabled = true;
+                    cam.IsNight = false;
+                }
+                catch (Exception)
+                {
+                   
+                }
+
+            }
 
             if (part.Name == EvaPartName || part.Name == EvaTouristPartName)
             {
@@ -97,21 +124,7 @@ namespace Assets.Scripts
             return craft.Data.Assembly.Parts.Where(part => part.PartType.Name == partTypeName).ToList();
         }
 
-        /// <summary>
-        /// Retrieves command pod parts, excluding those containing "Eva" in their name.
-        /// </summary>
-        private List<PartData> GetCommandPods(CraftScript craft)
-        {
-            return craft.Data.Assembly.Parts.Where(part => part.PartType.IsCommandPod && !part.PartType.Name.Contains(EvaPartName)).ToList();
-        }
-
-        /// <summary>
-        /// Retrieves crew compartment parts, excluding those containing "Eva" in their name.
-        /// </summary>
-        private List<PartData> GetCrewCompartments(CraftScript craft)
-        {
-            return craft.Data.Assembly.Parts.Where(part => part.GetModifier<CrewCompartmentData>() != null && !part.PartType.Name.Contains(EvaPartName)).ToList();
-        }
+        
 
         /// <summary>
         /// Adds a SupportLife modifier to the specified part if it doesn't already exist.
@@ -189,5 +202,7 @@ namespace Assets.Scripts
                 //LOG($"Added CrewCabinData to part {part.Name}");
             }
         }
+
+        
     }
 }

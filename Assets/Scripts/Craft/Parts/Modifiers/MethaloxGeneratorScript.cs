@@ -21,11 +21,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         protected override void UpdateFuelSources()
         {
             base.UpdateFuelSources();
-            HPco2Source = GetCraftFuelSource("HPCO2");
-            HPoxygenSource = GetCraftFuelSource("HPOxygen");
+            HPco2Source = GetRegularCraftFuelSource("HPCO2");
+            HPoxygenSource = GetRegularCraftFuelSource("HPOxygen");
             waterSource = this.PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>()
                 .WaterFuelSource;
-            methaneloxSource = GetCraftFuelSource("LOX/CH4");
+            methaneloxSource = GetRegularCraftFuelSource("LOX/CH4");
         }
 
         public override void FlightUpdate(in FlightFrameData frame)
@@ -51,10 +51,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return;
             }
 
-            BatterySource.RemoveFuel(Data.BatteryComsumption*frame.DeltaTimeWorld);
-            HPco2Source.RemoveFuel(Data.Hpco2Comsumption*frame.DeltaTimeWorld);
-            HPoxygenSource.RemoveFuel(Data.HpoxygenComsumption*frame.DeltaTimeWorld);
-            waterSource.RemoveFuel(Data.WaterComsumption*frame.DeltaTimeWorld);
+            BatterySource.RemoveFuel(Data.BatteryConsumption*frame.DeltaTimeWorld);
+            HPco2Source.RemoveFuel(Data.Hpco2Consumption*frame.DeltaTimeWorld);
+            HPoxygenSource.RemoveFuel(Data.HpoxygenConsumption*frame.DeltaTimeWorld);
+            waterSource.RemoveFuel(Data.WaterConsumption*frame.DeltaTimeWorld);
             methaneloxSource.AddFuel(Data.MethaneloxGeneration*frame.DeltaTimeWorld);
             if (_particleSystem!=null)
             {

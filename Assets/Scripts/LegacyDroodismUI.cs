@@ -10,11 +10,12 @@ using ModApi.Craft;
 using ModApi.Craft.Parts;
 using ModApi.Craft.Propulsion;
 using ModApi.Flight.UI;
+using ModApi.GameLoop;
 
 namespace Assets.Scripts
 {
     //骗你的,其实这个所谓的New管的是LegacyUI,new是相对于远古版本的纯用flightInspectorPanel的版本的
-    public class LegacyDroodismUI:MonoBehaviour
+    public class LegacyDroodismUI:MonoBehaviourBase
     {
         private XmlLayoutController controller;
         private XmlElement mainPanel,FuelPercentageItemTemplate,fuelPercentageList,FuelTransferItemList,FuelTransferItemModeTemplet;
@@ -126,11 +127,11 @@ namespace Assets.Scripts
             component.GetElementByInternalId("FuelTransferTypeName").SetText(mode.ToString());
             
             fuelPercentXMLItems.Add(component);
-            Debug.LogFormat("LegacyDroodismUI:AddFuelTransferListItem:{0}", mode.ToString());
+            Mod.LOG("LegacyDroodismUI:AddFuelTransferListItem:{0}", mode.ToString());
             //Mod.Instance.那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花();
         }
         /// <summary>
-        /// 更新UpdateFuelTemplate项目用的,属于是我拉的第二坨屎山,纯纯恶臭,我也不知道为什么要这么写,本来是为了解决性能问题的,但是这函数在Upddate()里面调用,而且还有贼鸡巴多的别的函数和foreach调用,你说这能要是能优化性能我给你嗦几把.
+        /// 更新UpdateFuelTemplate项目用的,属于是我拉的第二坨屎山,纯纯恶臭,我也不知道为什么要这么写,本来是为了解决性能问题的,但是这函数在Update()里面调用,而且还有贼鸡巴多的别的函数和foreach调用,你说这能要是能优化性能我给你嗦几把.
         /// </summary>
         /// <param name="item"></param>
         /// <param name="fuelSource"></param>
@@ -275,7 +276,7 @@ namespace Assets.Scripts
 #endregion
         private void OnFuelItemInspectorToggle(XmlElement item)
         {
-            Debug.LogFormat("LegacyDroodismUI:OnFuelItemInspectorToggle:item:{0}", item);
+            Mod.LOG("LegacyDroodismUI:OnFuelItemInspectorToggle:item:{0}", item);
         }
         #region UI数据更新相关函数
         public void UpdateFuelPercentageItemTemplate()
