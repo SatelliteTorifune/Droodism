@@ -12,6 +12,7 @@ using ModApi.State;
 using static ModApi.Common.Game;
 using static ModApi.Craft.Parts.PartData;
 using Assembly = System.Reflection.Assembly;
+using Droodism.RadiationBelt;
 
 namespace Assets.Scripts
 {
@@ -53,6 +54,9 @@ namespace Assets.Scripts
             base.OnModLoaded();
             GameObject DroodismUI=new GameObject("DroodismUI");
             DroodismUI.AddComponent<DroodismUIManager>();
+            GameObject DroodismRadiationBeltManager=new GameObject("DroodismRadiationBeltManager");
+            DroodismRadiationBeltManager.AddComponent<DroodismRadiationBeltManager>();
+            DroodismRadiationBeltManager.AddComponent<DroodismRadiationBeltDebugUI>();
             //DroodismUI.AddComponent<DroodismCrewMananger>();
             GameObject.DontDestroyOnLoad(DroodismUI);
             DroodismUI.SetActive(true);
@@ -106,6 +110,14 @@ namespace Assets.Scripts
             //注册一下指令
             DevConsoleApi.RegisterCommand("RefreshFuelSource",那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花);
             DevConsoleApi.RegisterCommand("ManualRefreshInstance",ManualRefreshInstance);
+            DevConsoleApi.RegisterCommand("RBUI", () =>
+            {
+                DroodismRadiationBeltDebugUI.Instance.OnToggleInspectorPanelState();
+            });
+            DevConsoleApi.RegisterCommand("doit",()=>
+            {
+                DroodismRadiationBeltManager.Instance.OnSceneLoaded(new object(),new SceneEventArgs("Flight"));
+            });
             
         }
 
