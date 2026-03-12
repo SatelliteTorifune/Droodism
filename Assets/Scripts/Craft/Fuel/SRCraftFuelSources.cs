@@ -216,7 +216,7 @@ namespace Assets.Scripts.Craft.Fuel
                 Mod.LOGError("CreateFuelSourceForConnectedParts歇逼了: {0}",e);
             }
             
-            //Debug.Log("Modded CreateFuelSourceForConnectedParts called");
+            //Mod.LOG("Modded CreateFuelSourceForConnectedParts called");
             
         }
 
@@ -229,7 +229,7 @@ namespace Assets.Scripts.Craft.Fuel
         //     The craft script.
         public void Rebuild(ICraftScript craftScript)
         {
-            //Debug.Log("Patched Rebuild firing");
+            //Mod.LOG("Patched Rebuild firing");
             _fuelSources.Clear();
             _crossFeeds.Clear();
             foreach (ICommandPod commandPod in craftScript.CommandPods)
@@ -252,7 +252,7 @@ namespace Assets.Scripts.Craft.Fuel
                     }
                     catch (Exception e)
                     {
-                        Debug.LogFormat($"SRCCraftFuelSources.Rebuild: Error creating fuel sources: {e}");
+                        Mod.LOG($"SRCCraftFuelSources.Rebuild: Error creating fuel sources: {e}");
                     }
                 }
             }

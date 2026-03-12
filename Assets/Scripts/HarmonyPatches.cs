@@ -61,12 +61,12 @@ namespace Assets.Scripts
                     }
                     else
                     {
-                        Debug.LogError("[EvaScriptPatch] Failed to find _fuelTank field via reflection.");
+                      LOGError("[EvaScriptPatch] Failed to find _fuelTank field via reflection.");
                     }
                 }
                 catch (System.Exception e)
                 {
-                    Debug.LogError($"[EvaScriptPatch] Error in Postfix patch: {e.Message}");
+                   LOGError($"[EvaScriptPatch] Error in Postfix patch: {e.Message}");
                 }
             }
         }
@@ -133,14 +133,14 @@ namespace Assets.Scripts
 
                     if (inspectorPanel == null)
                     {
-                        Debug.LogError("InspectorPanel is null, cannot add TEXT group.");
+                       LOGError("InspectorPanel is null, cannot add TEXT group.");
                         return;
                     }
 
                     var inspectorModel = inspectorPanel.Model;
                     if (inspectorModel == null)
                     {
-                        Debug.LogError("InspectorModel is null, cannot add TEXT group.");
+                       LOGError("InspectorModel is null, cannot add TEXT group.");
                         return;
                     }
 

@@ -8,9 +8,9 @@ using UnityEngine;
 
 namespace Droodism.RadiationBelt
 {
-    public class DroodismRadiationBeltDebugUI : MonoBehaviourBase
+    public class RadiationBeltDebugUI : MonoBehaviourBase
     {
-        public static DroodismRadiationBeltDebugUI Instance;
+        public static RadiationBeltDebugUI Instance;
 
         private IInspectorPanel inspectorPanel;
         private InspectorModel inspectorModel;
@@ -18,6 +18,9 @@ namespace Droodism.RadiationBelt
         public bool ShowGeneral { get; private set; } = true;
         public bool ShowInner { get; private set; }= true;
         public bool ShowOuter { get; private set; }= true;
+
+       
+        public string currentPlanetName;
         private void Awake()
         {
             Instance = this;
@@ -53,24 +56,31 @@ namespace Droodism.RadiationBelt
          public void CreateInspectorPanel()
          {
              inspectorModel = new InspectorModel("Radiation Belt Inspector", "<color=red>Radiation Belt Inspector");
+             inspectorModel.Add(new TextButtonModel("ReGenerate Belt Mesh", (b) =>
+             {
+                 RadiationBeltManager.Instance.CurrentRadiationBeltObject?.GetComponent<ProceduralRadiationBelt>().RegenerateMeshes();
+             }));
              inspectorModel.Add(new ToggleModel("show",()=>ShowGeneral,(b =>
              {
                  ShowGeneral = b;
+             })));
+             inspectorModel.Add(new ToggleModel("show inner",()=>ShowInner,b =>
+             {
+                 ShowInner = b;
+             }));
+             inspectorModel.Add(new ToggleModel("show outer",()=>ShowOuter,b =>
+             {
+                 ShowOuter = b;
+             }));
+             inspectorModel.Add(new TextButtonModel("Save Current Config", (Action<TextButtonModel>)(b => 
+             {
+                 RadiationBeltManager.Instance.currentConfig.SaveToFile(currentPlanetName);
              })));
              //
              GroupModel InnerInspectorGroup = new GroupModel("Inner");
              GroupModel OuterInspectorGroup = new GroupModel("Outer");
              //  
-             InnerInspectorGroup.Add(new ToggleModel("show inner",()=>ShowInner,b =>
-             {
-                 ShowInner = b;
-             }));
-             
-             //
-             OuterInspectorGroup.Add(new ToggleModel("show outer",()=>ShowOuter,b =>
-             {
-                 ShowOuter = b;
-             }));
+             //InnerInspectorGroup.Add(new SliderModel(""))
              
              
              

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Assets.Scripts;
+using ModApi.CelestialData;
+using ModApi;
 using UnityEngine;
 
 namespace Droodism.RadiationBelt
@@ -10,40 +12,49 @@ namespace Droodism.RadiationBelt
     public class ProceduralRadiationBelt : MonoBehaviour
     {
         public GameObject Parent;
-        [Header("通用参数")] public Material pointMaterial; // 拖入 Particles/Additive 或自定义 Unlit/Transparent 材质
-        public Vector3 starDirection = Vector3.left; // 模拟太阳方向 (normalized)
+        public Material pointMaterial; 
+        public Vector3 starDirection = Vector3.left;
 
-        [Header("内带参数 (类似 Kerbalism inner)")] public float innerDist = 2f; // 主半径
-        public float innerRadius = 0.5f; // 管半径
-        public float innerDeform = 0.2f; // 扰动幅度
-        public int innerParticleCount = 8000; // 粒子数
-        public float innerQuality = 30f; // 质量 (越高越薄)
+        private float innerDist = 2f; // 主半径
+        private float innerRadius = 0.5f; // 管半径
+        private float innerDeform = 0.2f; // 扰动幅度
+        private int innerParticleCount = 8000; // 粒子数
+        private float innerQuality = 30f; // 质量 (越高越薄)
 
-        [Header("外带参数 (肾形 outer)")] public float outerDist = 5f;
-        public float outerRadius = 1.5f;
-        public float outerBorderStart = 0.1f; // 内减法渐变
-        public float outerBorderEnd = 1.0f;
-        public float outerCompression = 0.6f; // 太阳侧压缩
-        public float outerExtension = 1.5f; // 尾侧拉伸
-        public float outerDeform = 0.15f;
-        public int outerParticleCount = 15000;
-        public float outerQuality = 40f;
+        private float outerDist = 5f;
+        private float outerRadius = 1.5f;
+        private float outerBorderStart = 0.1f; // 内减法渐变
+        private float outerBorderEnd = 1.0f;
+        private float outerCompression = 0.6f; // 太阳侧压缩
+        private float outerExtension = 1.5f; // 尾侧拉伸
+        private float outerDeform = 0.15f;
+        private int outerParticleCount = 15000;
+        private float outerQuality = 40f;
 
         public ParticleMesh innerMesh;
         public ParticleMesh outerMesh;
+        
 
-        private bool needsRegenerate = true;
-
-
-        void Start()
+        public void LoadDataFromConfig(RadiationBeltConfig config)
         {
-            RegenerateMeshes();
+            this.innerDist = config.innerDist;
+            this.innerRadius = config.innerRadius;
+            this.innerDeform=config.innerDeform;
+            this.innerQuality=config.innerQuality;
+            this.innerParticleCount=config.innerParticleCount;
             
+            this.outerDist=config.outerDist;
+            this.outerRadius=config.outerRadius;
+            this.outerBorderStart=config.outerBorderStart;
+            this.outerBorderEnd=config.outerBorderEnd;
+            this.outerCompression=config.outerCompression;
+            this.outerExtension=config.outerExtension;
+            this.outerParticleCount=config.outerParticleCount;
+            this.outerQuality=config.outerQuality;
         }
 
         public void RegenerateMeshes()
         {
-            Debug.Log("Regenerating radiation belts...");
 
             // 彻底销毁旧 mesh，防止鬼影
             if (innerMesh != null)
@@ -119,27 +130,18 @@ namespace Droodism.RadiationBelt
             //和星球同步位置和rotation,但是rotation同步不了
             this.transform.position = Parent.transform.position;
 
+            //这破玩意是干啥的,没测
             //this.transform.eulerAngles = Parent.transform.eulerAngles;
             //this.transform.rotation = Parent.transform.rotation;
 
         }
 
-
-
-
-        void OnValidate()
-        {
-            needsRegenerate = true; // 只要改了参数，就标记为需要重生成
-        }
-
         void Update()
         {
             SycWithParent();
-            if (needsRegenerate)
-            {
-                RegenerateMeshes(); // ← 这里调用
-                needsRegenerate = false;
-            }
+            //Mod.LOG($"current is { Game.Instance.FlightScene.ViewManager.MapViewManager.MapView.MapViewInspector.SelectedItem.AssociatedPlanet.Name}");
+           
+            
         }
     }
 }

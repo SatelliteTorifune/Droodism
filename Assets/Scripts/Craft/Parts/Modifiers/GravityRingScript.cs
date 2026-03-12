@@ -111,7 +111,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             if ( _rotateBase == null )
             {
-                Debug.LogFormat( "_rotateBase is null" );
                 return;
             }
            Data.RotationSpeed = Mathf.Lerp(Data.RotationSpeed, active ?0.1f : 0.0f, Time.deltaTime * 0.4f);

@@ -82,7 +82,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             else
             {
-                Debug.LogWarningFormat("Water Source not found");
+                Mod.LOGError("Water Source not found");
             }
 
             if (oxygenSource != null)
@@ -94,7 +94,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             else
             {
-                Debug.LogWarningFormat("oxygen Source not found");
+                Mod.LOGError("oxygen Source not found");
             }
 
         }

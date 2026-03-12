@@ -28,16 +28,16 @@ namespace Droodism.RadiationBelt
             if (Time.frameCount == lastRenderedFrame) return;
             lastRenderedFrame = Time.frameCount;
 
-            if (!beltRenderer.pointMaterial.SetPass(0)||!DroodismRadiationBeltDebugUI.Instance.ShowGeneral)
+            if (!beltRenderer.pointMaterial.SetPass(0)||!RadiationBeltDebugUI.Instance.ShowGeneral)
             {
                 return;
             }
-            if (DroodismRadiationBeltDebugUI.Instance.ShowInner)
+            if (RadiationBeltDebugUI.Instance.ShowInner)
             {
                 beltRenderer.innerMesh?.Render( beltRenderer.transform.localToWorldMatrix);
             }
             
-            if (DroodismRadiationBeltDebugUI.Instance.ShowOuter)
+            if (RadiationBeltDebugUI.Instance.ShowOuter)
             {
                 beltRenderer.outerMesh?.Render( beltRenderer.transform.localToWorldMatrix);
             }

@@ -52,14 +52,13 @@ namespace Assets.Scripts
         public override void OnModLoaded()
         {
             base.OnModLoaded();
-            GameObject DroodismUI=new GameObject("DroodismUI");
-            DroodismUI.AddComponent<DroodismUIManager>();
-            GameObject DroodismRadiationBeltManager=new GameObject("DroodismRadiationBeltManager");
-            DroodismRadiationBeltManager.AddComponent<DroodismRadiationBeltManager>();
-            DroodismRadiationBeltManager.AddComponent<DroodismRadiationBeltDebugUI>();
-            //DroodismUI.AddComponent<DroodismCrewMananger>();
-            GameObject.DontDestroyOnLoad(DroodismUI);
-            DroodismUI.SetActive(true);
+            GameObject DroodismGO=new GameObject("DroodismUI");
+            DroodismGO.AddComponent<DroodismUIManager>();
+            DroodismGO.AddComponent<RadiationBeltManager>();
+            DroodismGO.AddComponent<RadiationBeltDebugUI>();
+            GameObject.DontDestroyOnLoad(DroodismGO);
+            DroodismGO.SetActive(true);
+            
         }
 
         private void OnSceneLoaded(object sender, SceneEventArgs e)
@@ -112,12 +111,9 @@ namespace Assets.Scripts
             DevConsoleApi.RegisterCommand("ManualRefreshInstance",ManualRefreshInstance);
             DevConsoleApi.RegisterCommand("RBUI", () =>
             {
-                DroodismRadiationBeltDebugUI.Instance.OnToggleInspectorPanelState();
+                RadiationBeltDebugUI.Instance.OnToggleInspectorPanelState();
             });
-            DevConsoleApi.RegisterCommand("doit",()=>
-            {
-                DroodismRadiationBeltManager.Instance.OnSceneLoaded(new object(),new SceneEventArgs("Flight"));
-            });
+           
             
         }
 

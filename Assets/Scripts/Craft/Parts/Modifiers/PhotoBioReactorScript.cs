@@ -232,10 +232,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 R1= MainPipe.Find("R1");
                 R2= R1.Find("R2");
                 R3= R2.Find("R3");
-
-                if (L1 == null) Debug.LogWarning("L1 not found under MainPipe");
-                if (L2 == null) Debug.LogWarning("L2 not found under L1");
-                if (L3 == null) Debug.LogWarning("L3 not found under L3");
+                
             }
         }
 
@@ -257,10 +254,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public float AngleMultiplier { get; set; } = 1f;
         private void DeployAnimate(float percent)
         {
-            if ((UnityEngine.Object) this.MainPipe == (UnityEngine.Object) null||(UnityEngine.Object) this.L1 == (UnityEngine.Object) null)
-            {
-                Debug.LogWarning((object) "SubPartRotator has no defined sub part.", (UnityEngine.Object) this);
-            }
             MainPipe.localRotation = this.Data.AngleLerp != SubPartRotatorData.AngleLerpType.Quaternion ? Quaternion.Euler(Vector3.Lerp(this.Data.DisabledRotation * this.AngleMultiplier, new Vector3(90,0,0) * this.AngleMultiplier, percent)) : Quaternion.Lerp(Quaternion.Euler(this.Data.DisabledRotation * this.AngleMultiplier), Quaternion.Euler(new Vector3(90,0,0) * this.AngleMultiplier),percent);
             RotateSub(ref L1,new Vector3(0,0,45) * this.AngleMultiplier,this.Data.DisabledRotation * this.AngleMultiplier);
             RotateSub(ref L2,new Vector3(0,0,-75) * this.AngleMultiplier,new Vector3(0,0,-90));

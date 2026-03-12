@@ -365,7 +365,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             parachuteMeshTransform=Utilities.FindFirstGameObjectMyselfOrChildren("ParachuteMesh", this.gameObject).transform;
             if (BaseLKTransform == null)
             {
-                Debug.LogError("GliderScript: Could not find BodyBase transform");
+                Mod.LOGError("GliderScript: Could not find BodyBase transform");
             }
 
             RightElbowTransform = BaseLKTransform.Find("RightElbow");

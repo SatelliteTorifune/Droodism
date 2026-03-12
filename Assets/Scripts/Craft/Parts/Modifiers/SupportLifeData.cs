@@ -195,11 +195,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         #region functions
         
-        public CrewData crewData
-        {
-            get;
-            set;
-        }
+        
         private int _crewId = 0;
         public int CrewId => this._crewId;
 

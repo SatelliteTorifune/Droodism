@@ -140,7 +140,7 @@ namespace Assets.Scripts
         [HarmonyPostfix]
         static void Postfix(FlightSceneScript __instance)
         {
-            DroodismCrewMananger.Instance?.OnQuickSave();
+            //DroodismCrewMananger.Instance?.OnQuickSave();
             Mod.Instance.OnQuickSave();
         }
     }

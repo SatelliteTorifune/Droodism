@@ -245,9 +245,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             base.OnPartDestroyed();
             if (!Assets.Scripts.Game.InFlightScene)
                 return;
-            if (this.Data.crewData != null)
-                this.Data.crewData.MissionTimeTotal += 
-            MissionDurationTime;
         }
 
         public void SetHibernating(bool hibernatingState, PartType partType)

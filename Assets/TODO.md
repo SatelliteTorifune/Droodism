@@ -9,9 +9,10 @@
 ## 视觉
 > ## 给Map View加上辐射带<br>
 > 辐射带旋转<br>
->InspectorPanel和Toggle可视化<br>
->自动添加辐射带
-> >你先等下 DroodismRadiationBeltManager.OnSceneLoaded出事了
+> 辐射带配置
+> >在写了在写了
+> 多行星配置
+
 
 
 ## 实际功能
