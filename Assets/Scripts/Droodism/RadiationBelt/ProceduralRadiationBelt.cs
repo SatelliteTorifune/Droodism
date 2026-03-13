@@ -14,7 +14,8 @@ namespace Droodism.RadiationBelt
         public GameObject Parent;
         public Material pointMaterial; 
         public Vector3 starDirection = Vector3.left;
-
+        
+        
         private float innerDist = 2f; // 主半径
         private float innerRadius = 0.5f; // 管半径
         private float innerDeform = 0.2f; // 扰动幅度
@@ -37,6 +38,7 @@ namespace Droodism.RadiationBelt
 
         public void LoadDataFromConfig(RadiationBeltConfig config)
         {
+            this.enabled = config.Enabled;
             this.innerDist = config.innerDist;
             this.innerRadius = config.innerRadius;
             this.innerDeform=config.innerDeform;

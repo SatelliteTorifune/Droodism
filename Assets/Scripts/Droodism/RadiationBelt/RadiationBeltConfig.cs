@@ -17,7 +17,8 @@ namespace Droodism.RadiationBelt
         #region parameter
         
         public Vector3 Scale = Vector3.one * 14;
-        
+
+        public bool Enabled;
         public float innerDist ; // 主半径
         public float innerRadius ; // 管半径
         public float innerDeform; // 扰动幅度
@@ -78,6 +79,7 @@ namespace Droodism.RadiationBelt
         {
             RadiationBeltConfig defaultCFG = new RadiationBeltConfig();
             defaultCFG.Scale = Vector3.one * 14;
+            defaultCFG.Enabled = false;
             defaultCFG.innerDist = 2f;
             defaultCFG.innerRadius = 0.5f; 
             defaultCFG.innerDeform = 0.2f;
@@ -119,7 +121,7 @@ namespace Droodism.RadiationBelt
             }
             catch (System.Exception e)
             {
-                Mod.LOG($"Failed to load Radiation Belt config '{planetName}': {e.Message}. Using default config.");
+                Mod.LOG($"Failed to load Radiation Belt config '{planetName}': {e.Message}.");
                 return CreateDefault();
             }
         }

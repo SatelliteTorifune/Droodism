@@ -28,7 +28,7 @@ namespace Droodism.RadiationBelt
             if (Time.frameCount == lastRenderedFrame) return;
             lastRenderedFrame = Time.frameCount;
 
-            if (!beltRenderer.pointMaterial.SetPass(0)||!RadiationBeltDebugUI.Instance.ShowGeneral)
+            if (!beltRenderer.pointMaterial.SetPass(0)||!RadiationBeltDebugUI.Instance.ShowGeneral||!RadiationBeltManager.Instance.currentConfig.Enabled)
             {
                 return;
             }

@@ -111,6 +111,14 @@ namespace Assets.Scripts
             DevConsoleApi.RegisterCommand("ManualRefreshInstance",ManualRefreshInstance);
             DevConsoleApi.RegisterCommand("RBUI", () =>
             {
+                if (!Game.InFlightScene)
+                {
+                  return;   
+                }
+                if (!Game.Instance.FlightScene.ViewManager.MapViewManager.MapView.Visible)
+                {
+                    return;   
+                }
                 RadiationBeltDebugUI.Instance.OnToggleInspectorPanelState();
             });
            
