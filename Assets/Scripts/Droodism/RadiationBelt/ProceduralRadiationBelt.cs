@@ -7,143 +7,147 @@ using UnityEngine;
 
 namespace Droodism.RadiationBelt
 {
-
-
     public class ProceduralRadiationBelt : MonoBehaviour
     {
-        public GameObject Parent;
-        public Material pointMaterial; 
-        public Vector3 starDirection = Vector3.left;
-        
-        
-        private float innerDist = 2f; // 主半径
-        private float innerRadius = 0.5f; // 管半径
-        private float innerDeform = 0.2f; // 扰动幅度
-        private int innerParticleCount = 8000; // 粒子数
-        private float innerQuality = 30f; // 质量 (越高越薄)
+     
+        public GameObject Parent;               // 行星的 ScaledSpace GameObject
+        public Material pointMaterial;
 
-        private float outerDist = 5f;
-        private float outerRadius = 1.5f;
-        private float outerBorderStart = 0.1f; // 内减法渐变
-        private float outerBorderEnd = 1.0f;
-        private float outerCompression = 0.6f; // 太阳侧压缩
-        private float outerExtension = 1.5f; // 尾侧拉伸
-        private float outerDeform = 0.15f;
-        private int outerParticleCount = 15000;
-        private float outerQuality = 40f;
+      
+        public Vector3 starDirection = Vector3.left;
+
+       
+        public float innerDist = 2f;
+        public float innerRadius = 0.5f;
+        public float innerHeightScale = 2; 
+        public float innerDeform = 0.2f;
+        public int innerParticleCount = 8000;
+        public float innerQuality = 30f;
+
+        
+        public float outerDist = 5f;
+        public float outerRadius = 1.5f;
+        public float outerHeightScale = 1.4f;  // 新增：外带通常更高
+        public float outerBorderStart = 0.1f;
+        public float outerBorderEnd = 1.0f;
+        public float outerCompression = 0.6f;
+        public float outerExtension = 1.5f;
+        public float outerDeform = 0.15f;
+        public int outerParticleCount = 15000;
+        public float outerQuality = 40f;
 
         public ParticleMesh innerMesh;
         public ParticleMesh outerMesh;
-        
+
+        private int lastRenderedFrame = -1;
 
         public void LoadDataFromConfig(RadiationBeltConfig config)
         {
             this.enabled = config.Enabled;
-            this.innerDist = config.innerDist;
-            this.innerRadius = config.innerRadius;
-            this.innerDeform=config.innerDeform;
-            this.innerQuality=config.innerQuality;
-            this.innerParticleCount=config.innerParticleCount;
+            innerDist = config.innerDist;
+            innerRadius = config.innerRadius;
+            innerDeform = config.innerDeform;
+            innerQuality = config.innerQuality;
+            innerParticleCount = config.innerParticleCount;
             
-            this.outerDist=config.outerDist;
-            this.outerRadius=config.outerRadius;
-            this.outerBorderStart=config.outerBorderStart;
-            this.outerBorderEnd=config.outerBorderEnd;
-            this.outerCompression=config.outerCompression;
-            this.outerExtension=config.outerExtension;
-            this.outerParticleCount=config.outerParticleCount;
-            this.outerQuality=config.outerQuality;
+
+            outerDist = config.outerDist;
+            outerRadius = config.outerRadius;
+            outerBorderStart = config.outerBorderStart;
+            outerBorderEnd = config.outerBorderEnd;
+            outerCompression = config.outerCompression;
+            outerExtension = config.outerExtension;
+            outerDeform = config.outerDeform;
+            outerParticleCount = config.outerParticleCount;
+            outerQuality = config.outerQuality;
         }
 
         public void RegenerateMeshes()
         {
+            Debug.Log("Regenerating radiation belts...");
 
-            // 彻底销毁旧 mesh，防止鬼影
+            // 彻底清理旧 mesh
             if (innerMesh != null)
             {
                 foreach (var m in innerMesh.meshes ?? new List<Mesh>())
-                {
-                    if (m != null) DestroyImmediate(m); // 编辑器用 DestroyImmediate
-                }
-
+                    if (m) DestroyImmediate(m);
                 innerMesh = null;
             }
-
             if (outerMesh != null)
             {
                 foreach (var m in outerMesh.meshes ?? new List<Mesh>())
-                {
-                    if (m != null) DestroyImmediate(m);
-                }
-
+                    if (m) DestroyImmediate(m);
                 outerMesh = null;
             }
 
-            Func<Vector3, float> innerSDF = (Vector3 p) =>
+            Func<Vector3, float> innerSDF = p =>
             {
-                // 沿太阳方向变形
                 float dot = Vector3.Dot(p.normalized, starDirection);
                 float deformFactor = Mathf.Lerp(outerCompression, outerExtension, (dot + 1f) / 2f);
                 p /= deformFactor;
 
-                // 加 sine deform
-                p += Mathf.Sin(Vector3.Magnitude(p * 5f)) * innerDeform * p.normalized;
+                // sine deform
+                p += Mathf.Sin(p.magnitude * 5f) * innerDeform * p.normalized;
 
-                // torus SDF
+                // 新增：高度方向缩放，让它更圆
+                p.y *= innerHeightScale;
+
                 Vector2 q = new Vector2(new Vector2(p.x, p.z).magnitude - innerDist, p.y);
                 return q.magnitude - innerRadius;
             };
 
-            // 定义外带 SDF (肾形: torus - subtract torus + border)
-            Func<Vector3, float> outerSDF = (Vector3 p) =>
+            Func<Vector3, float> outerSDF = p =>
             {
-                // 变形同上
                 float dot = Vector3.Dot(p.normalized, starDirection);
                 float deformFactor = Mathf.Lerp(outerCompression, outerExtension, (dot + 1f) / 2f);
                 p /= deformFactor;
 
-                p += Mathf.Sin(Vector3.Magnitude(p * 5f)) * outerDeform * p.normalized;
+                p += Mathf.Sin(p.magnitude * 5f) * outerDeform * p.normalized;
 
-                // base torus
+                // 高度缩放
+                p.y *= outerHeightScale;
+
                 Vector2 q = new Vector2(new Vector2(p.x, p.z).magnitude - outerDist, p.y);
                 float outer = q.magnitude - outerRadius;
 
-                // subtract inner torus
                 Vector2 q_sub = new Vector2(new Vector2(p.x, p.z).magnitude - outerDist * 0.8f, p.y);
                 float subtract = q_sub.magnitude - outerRadius * 0.7f;
 
-                // border fade
                 float border = Mathf.Lerp(outerBorderStart, outerBorderEnd, Mathf.Clamp01(p.magnitude / outerDist));
 
                 return Mathf.Max(outer, -subtract - border);
             };
 
-            // 包围盒 (domain): 稍大于辐射带大小
-            Vector3 hsize = new Vector3(outerDist + outerRadius * 2f, outerRadius * 2f, outerDist + outerRadius * 2f);
+            Vector3 hsize = new Vector3(outerDist + outerRadius * 2f, outerRadius * 2f * Mathf.Max(innerHeightScale, outerHeightScale), outerDist + outerRadius * 2f);
             Vector3 offset = Vector3.zero;
 
-            // 生成新 mesh
             innerMesh = new ParticleMesh(innerSDF, hsize, offset, innerParticleCount, innerQuality);
             outerMesh = new ParticleMesh(outerSDF, hsize * 1.2f, offset, outerParticleCount, outerQuality);
         }
 
-        private void SycWithParent()
-        {
-            //和星球同步位置和rotation,但是rotation同步不了
-            this.transform.position = Parent.transform.position;
-
-            //这破玩意是干啥的,没测
-            //this.transform.eulerAngles = Parent.transform.eulerAngles;
-            //this.transform.rotation = Parent.transform.rotation;
-
-        }
-
-        void Update()
+        private void Update()
         {
             SycWithParent();
-            //Mod.LOG($"current is { Game.Instance.FlightScene.ViewManager.MapViewManager.MapView.MapViewInspector.SelectedItem.AssociatedPlanet.Name}");
-           
+        }
+
+        private void SycWithParent()
+        {
             
+            transform.position = Parent.transform.position;
+        }
+        
+
+        void OnDestroy()
+        {
+            // 清理 mesh 防止内存泄漏
+            if (innerMesh != null)
+            {
+                foreach (var m in innerMesh.meshes ?? new List<Mesh>()) if (m) Destroy(m);
+            }
+            if (outerMesh != null)
+            {
+                foreach (var m in outerMesh.meshes ?? new List<Mesh>()) if (m) Destroy(m);
+            }
         }
     }
 }

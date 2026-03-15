@@ -81,7 +81,7 @@ namespace Droodism.RadiationBelt
             defaultCFG.Scale = Vector3.one * 14;
             defaultCFG.Enabled = false;
             defaultCFG.innerDist = 2f;
-            defaultCFG.innerRadius = 0.5f; 
+            defaultCFG.innerRadius = 0.5f;
             defaultCFG.innerDeform = 0.2f;
             defaultCFG.innerParticleCount = 8000;
             defaultCFG.innerQuality = 30f; // 

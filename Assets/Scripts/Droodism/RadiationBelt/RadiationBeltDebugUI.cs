@@ -132,7 +132,7 @@ namespace Droodism.RadiationBelt
              var innerDeform=new SliderModel("Inner Deform", () => RadiationBeltManager.Instance.currentConfig.innerDeform,
                  s => { RadiationBeltManager.Instance.currentConfig.innerDeform = s;}, 0.1f, 3f);
              innerDeform.ValueFormatter = (f) => FormatValue(f, 4);
-             InnerInspectorGroup.Add(innerDeform);
+             InnerInspectorGroup.Add(innerDeform);  
              
              var innerParticleCount=new SliderModel("Inner Particle Count", () => RadiationBeltManager.Instance.currentConfig.innerParticleCount,
                  s => { RadiationBeltManager.Instance.currentConfig.innerParticleCount = (int)s;}, 0f, 20000f,true);
