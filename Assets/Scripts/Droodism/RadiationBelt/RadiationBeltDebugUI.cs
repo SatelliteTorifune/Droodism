@@ -69,7 +69,7 @@ namespace Droodism.RadiationBelt
              }));
              inspectorModel.Add(new TextButtonModel("Save Current Config", (Action<TextButtonModel>)(b => 
              {
-                 RadiationBeltManager.Instance.currentConfig.SaveToFile(Game.Instance.FlightScene.CraftNode.Parent.Name);
+                 RadiationBeltManager.Instance.currentConfig.SaveToFile(RadiationBeltManager.Instance.CurrentFocusPlanet);
              })));
              inspectorModel.Add(new TextButtonModel("Load Current Config", (Action<TextButtonModel>)(b => 
              {

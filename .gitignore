@@ -127,3 +127,4 @@ ModAssetBundles/StandaloneOSX/StandaloneOSX.manifest
 /dataSources/
 /dataSources.local.xml
 /ModAssetBundles
+*.meta
