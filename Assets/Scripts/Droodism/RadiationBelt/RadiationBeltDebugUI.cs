@@ -91,8 +91,11 @@ namespace Droodism.RadiationBelt
 
              #region General
              GroupModel GeneralGroupModel = new GroupModel("General");
-            
+
+             GeneralGroupModel.Add(new TextModel("Current Planet", ()=>
              
+                 RadiationBeltManager.Instance.CurrentFocusPlanet
+             ));
              GeneralGroupModel.Add(new ToggleModel("Main Enabled",()=> RadiationBeltManager.Instance.currentConfig.Enabled,b =>
              {
                  RadiationBeltManager.Instance.currentConfig.Enabled = b;
