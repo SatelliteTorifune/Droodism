@@ -76,7 +76,7 @@ namespace Assets.Scripts
             return totalFuel.ToString("0.00") + format[0];
         }
 
-        public static void LOG(object message)
+        public static void Log(object message)
         {
             if (ModSettings.Instance.ShowDevLog)
             {
@@ -84,7 +84,7 @@ namespace Assets.Scripts
             }
         }
 
-        public static void LOG(string format, params object[] args)
+        public static void Log(string format, params object[] args)
         {
             if (ModSettings.Instance.ShowDevLog)
             {
@@ -92,7 +92,7 @@ namespace Assets.Scripts
             }
         }
 
-        public static void LOGError(string format, params object[] args)
+        public static void LogError(string format, params object[] args)
         {
             if (ModSettings.Instance.ShowDevLog)
             {
@@ -101,7 +101,7 @@ namespace Assets.Scripts
             }
         }
 
-        public static void LOG(UnityEngine.Object context, string format, params object[] args)
+        public static void Log(UnityEngine.Object context, string format, params object[] args)
         {
             if (ModSettings.Instance.ShowDevLog)
             {

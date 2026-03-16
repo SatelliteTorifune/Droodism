@@ -48,7 +48,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             catch (Exception e)
             {
-                Mod.LOGError("wocaonima");
+                Mod.LogError("wocaonima");
             }
             
         }

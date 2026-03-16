@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Assets.Scripts;
 using Assets.Scripts.GameLoop;
 using ModApi.Flight;
@@ -20,6 +21,9 @@ namespace Droodism.RadiationBelt
         private GameObject CurrentRadiationBeltObject;
         public ProceduralRadiationBelt BeltInstance;
 
+        public List<ProceduralRadiationBelt> BeltList;
+
+        #region NBCS
         void Awake()
         {
             Instance = this;
@@ -37,14 +41,23 @@ namespace Droodism.RadiationBelt
 
         void OnForegroundStateChanged(bool b)
         {
-            Mod.LOG("OnForegroundStateChanged"+b);
+            Mod.Log("OnForegroundStateChanged"+b);
         }
 
         void OnForegroundStateChanging(bool b)
         {
-          Mod.LOG("OnForegroundStateChanging"+b);
+          Mod.Log("OnForegroundStateChanging"+b);
         }
-        
+        private void OnFlightEnded(object sender, FlightEndedEventArgs e)
+        {
+            CurrentRadiationBeltObject = null;
+        }
+
+        private void OnFlightSceneInitialized(IFlightScene flightScene)
+        {
+          
+        }
+        #endregion
         private string lastPlanetName="";
         void Update()
         {
@@ -74,7 +87,7 @@ namespace Droodism.RadiationBelt
           
             catch (Exception e)
             {
-               Mod.LOGError("fucked1111 "+e.StackTrace);
+               Mod.LogError("fucked1111 "+e.StackTrace);
             }
         }
 
@@ -118,7 +131,7 @@ namespace Droodism.RadiationBelt
         {
             var currentName = Game.Instance.FlightScene.ViewManager.MapViewManager.MapView.MapViewInspector.SelectedItem
                 .AssociatedPlanet.Name;
-            Mod.LOG($"OnFocusPlanet changed,current is {currentName}");
+            Mod.Log($"OnFocusPlanet changed,current is {currentName}");
             ChangeBeltParent(ref this.CurrentRadiationBeltObject, currentName);
             this.currentConfig = RadiationBeltConfig.LoadFromFile(currentName);
             if (currentConfig.Enabled)
@@ -126,20 +139,12 @@ namespace Droodism.RadiationBelt
                 ReGenerateMeshes();
             }
             
-            Mod.LOG("OnFocusPlanet finished");
+            Mod.Log("OnFocusPlanet finished");
 
         }
         
 
-        private void OnFlightEnded(object sender, FlightEndedEventArgs e)
-        {
-            CurrentRadiationBeltObject = null;
-        }
-
-        private void OnFlightSceneInitialized(IFlightScene flightScene)
-        {
-          
-        }
+        
 
         private void OnMapViewInitialized(IMapView mapView)
         {
@@ -151,22 +156,29 @@ namespace Droodism.RadiationBelt
             }
             catch (Exception e)
             {
-                Mod.LOGError("fucked"+e.StackTrace);
+                Mod.LogError("fucked"+e.StackTrace);
+            }
+
+            foreach (var name in Game.Instance.FlightScene.CraftNode.Parent.Name)
+            {
+                
             }
             ReFreshCurrentConfig();
             if (currentConfig.Enabled)
             {
-                AddPlanetRadiationBelt(ref this.CurrentRadiationBeltObject, Game.Instance.FlightScene.CraftNode.Parent.Name);
+                AddPlanetRadiationBelt(this.CurrentRadiationBeltObject, Game.Instance.FlightScene.CraftNode.Parent.Name);
             }
             
         }
+        
+        
 
         private void ChangeBeltParent(ref GameObject CurrentRadiationBeltObject,string PlanetName)
         {
             var parentGameObject=GetMapPlanet(PlanetName);
             if (parentGameObject == null)
             {
-                Mod.LOGError("Parent GameObject is null.");
+                Mod.LogError("Parent GameObject is null.");
                 return;
             }
             BeltInstance.Parent = parentGameObject;
@@ -176,12 +188,12 @@ namespace Droodism.RadiationBelt
             renderer.beltRenderer=BeltInstance;
         }
 
-        private void AddPlanetRadiationBelt(ref GameObject CurrentRadiationBeltObject,string PlanetName)
+        private void AddPlanetRadiationBelt( GameObject CurrentRadiationBeltObject,string PlanetName)
         {
             var parentGameObject=GetMapPlanet(PlanetName);
             if (parentGameObject == null)
             {
-                Mod.LOGError("Parent GameObject is null.");
+                Mod.LogError("Parent GameObject is null.");
                 return;
             }
             
@@ -190,7 +202,7 @@ namespace Droodism.RadiationBelt
             CurrentRadiationBeltObject = Instantiate(Mod.Instance.ResourceLoader.LoadAsset<GameObject>("Assets/Resources/PlanetBelt.prefab"));
             if (CurrentRadiationBeltObject == null)
             {
-                Mod.LOG("Belt Object not found");
+                Mod.Log("Belt Object not found");
                 return;
             }
             BeltInstance=CurrentRadiationBeltObject.GetComponent<ProceduralRadiationBelt>();
@@ -214,7 +226,18 @@ namespace Droodism.RadiationBelt
             BeltInstance.LoadDataFromConfig(currentConfig);
             BeltInstance.RegenerateMeshes();
         }
-       
+
+        private ProceduralRadiationBelt GetCurrentRadiationBelt()
+        {
+            foreach (var prb in BeltList)
+            {
+                if (prb.Parent.name==Game.Instance.FlightScene.ViewManager.MapViewManager.MapView.MapViewInspector.SelectedItem.AssociatedPlanet.Name)
+                {
+                    return prb;
+                }
+            }
+            return null;
+        }
 
         public static GameObject GetMapPlanet(string PlanetName)
         {

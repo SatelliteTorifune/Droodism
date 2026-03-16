@@ -32,7 +32,7 @@ namespace Assets.Scripts
         { ;
             if (craftScript?.Data?.Assembly?.Parts == null)
             {
-                LOGError("Patching Craft Error, Craft is null");
+                LogError("Patching Craft Error, Craft is null");
                 return;
                 
             }

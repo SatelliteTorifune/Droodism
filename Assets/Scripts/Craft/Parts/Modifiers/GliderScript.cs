@@ -85,7 +85,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             catch (Exception e)
             {
                 //since this shit is called every frame,so, when the part kills itself, it will throw an exception,so,just ignore it asshole lmao
-                Mod.LOG("(note:this is not a bug,it an intentional game design,so,just ignore it)GliderScript.FlightUpdate: " + e);
+                Mod.Log("(note:this is not a bug,it an intentional game design,so,just ignore it)GliderScript.FlightUpdate: " + e);
             }
             
         }
@@ -365,7 +365,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             parachuteMeshTransform=Utilities.FindFirstGameObjectMyselfOrChildren("ParachuteMesh", this.gameObject).transform;
             if (BaseLKTransform == null)
             {
-                Mod.LOGError("GliderScript: Could not find BodyBase transform");
+                Mod.LogError("GliderScript: Could not find BodyBase transform");
             }
 
             RightElbowTransform = BaseLKTransform.Find("RightElbow");

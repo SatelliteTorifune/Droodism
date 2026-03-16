@@ -58,15 +58,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private void SetDroodPositionOnEnter(EvaScript crew)
         {
             var sb = crew.PartScript.CraftScript.FlightData.Position - this.PartScript.CraftScript.FlightData.Position;
-            Mod.LOG("sb{0}",sb);
+            Mod.Log("sb{0}",sb);
             var sb2 = Vector3d.Project(sb, this.PartScript.Transform.transform.localPosition);
-            Mod.LOG("sb2{0}",sb2);
+            Mod.Log("sb2{0}",sb2);
             BaseLKTransform.transform.localPosition = new Vector3(BaseLKTransform.transform.localPosition.x,(float)sb2.y,BaseLKTransform.transform.localPosition.z);
         }
 
         private void LogData()
         {
-            Mod.LOG($"ladder BaseLKTransform.transform{this.BaseLKTransform.transform.localPosition}.出口{_crewCompartment.Data.CrewExitPosition}");
+            Mod.Log($"ladder BaseLKTransform.transform{this.BaseLKTransform.transform.localPosition}.出口{_crewCompartment.Data.CrewExitPosition}");
         }
         public override void OnModifiersCreated()
         {

@@ -116,7 +116,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             base.OnInitialLaunch();
             Data.MissionStartTime = (long)Game.Instance.FlightScene.FlightState.Time;
-            Mod.LOG("OnInitialLaunch");
+            Mod.Log("OnInitialLaunch");
             isFirstTime = true;
             base.OnInitialLaunch();
             if (this.PartScript.Data.PartType.Name == "Eva-Tourist")
@@ -134,11 +134,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             try
             {
                 RefreshFuelSource();
-                Mod.LOG("OnInitialLaunch调用RefreshFuelSource");
+                Mod.Log("OnInitialLaunch调用RefreshFuelSource");
             }
             catch (Exception e)
             {
-                Mod.LOG("OnInitialLaunch调用RefreshFuelSource出问题了{0}", e);
+                Mod.Log("OnInitialLaunch调用RefreshFuelSource出问题了{0}", e);
             }
 
             Data.LastLoadTime = (long)FlightSceneScript.Instance.FlightState.Time;
@@ -151,7 +151,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         void IFlightStart.FlightStart(in FlightFrameData frame)
         {
             
-            Mod.LOG("FlightStart");
+            Mod.Log("FlightStart");
             Game.Instance.FlightScene.FlightEnded+=OnFlightEnded;
             Game.Instance.FlightScene.CraftNode.ChangedSoI += OnSoiChanged;
             Game.Instance.FlightScene.PlayerChangedSoi += OnPlayerChangedSoi;
@@ -169,7 +169,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             Game.Instance.FlightScene.CraftNode.ChangedSoI += OnSoiChanged;
             
             LoadFuelTanks();
-            Mod.LOG("FlightStart调用LoadFuelTanks");
+            Mod.Log("FlightStart调用LoadFuelTanks");
             //我他妈没在OnInitialLaunch里implent这个函数是为了方便你们这群小逼崽子瞎鸡巴改xml乱搞你们知道吗
             //SetRole();
             
@@ -292,7 +292,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             catch (Exception e)
             {
-                Mod.LOG("GetLocalFuelSource出问题了{0}", e);
+                Mod.Log("GetLocalFuelSource出问题了{0}", e);
             }
             
             return null;
@@ -327,7 +327,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             else
             {
                 if (_oxygenSource == null)
-                    Mod.LOG("_oxygenSource is Null");
+                    Mod.Log("_oxygenSource is Null");
             }
 
             if (_co2Source != null && UsingInternalOxygen())
@@ -340,7 +340,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     var localFuelSource = GetLocalFuelSource("CO2");
                     if (localFuelSource == null)
                     {
-                        Mod.LOG("local CO2 is Null");
+                        Mod.Log("local CO2 is Null");
                         return;
                     }
                     if (localFuelSource.TotalCapacity - localFuelSource.TotalFuel <= 0.00001)
@@ -366,7 +366,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             else
             {
                 if (_co2Source == null)
-                    Mod.LOG("_co2Source is Null");
+                    Mod.Log("_co2Source is Null");
             }
             if (_foodSource != null)
             {
@@ -387,7 +387,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             else
             {
-                Mod.LOG("_foodSource is Null");
+                Mod.Log("_foodSource is Null");
             }
             if (_solidWasteSource != null)
             {
@@ -399,7 +399,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     var localFuelSource = GetLocalFuelSource("Solid Waste");
                     if (localFuelSource == null)
                     {
-                        Mod.LOG("local Solid Waste is Null");
+                        Mod.Log("local Solid Waste is Null");
                         return;
                     }
                     if (localFuelSource.TotalCapacity - localFuelSource.TotalFuel <= 0.00001)
@@ -425,7 +425,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             else
             {
                 if (_solidWasteSource == null)
-                    Mod.LOG("_solidWasteSource is Null");
+                    Mod.Log("_solidWasteSource is Null");
             }
             if (_waterSource != null)
             {
@@ -446,7 +446,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             else
             {
-                Mod.LOG("_waterSource is Null");
+                Mod.Log("_waterSource is Null");
             }
             if (_wastedWaterSource != null)
             {
@@ -458,7 +458,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     var localFuelSource = GetLocalFuelSource("Wasted Water");
                     if (localFuelSource == null)
                     {
-                        Mod.LOG("local Wasted Water is Null");
+                        Mod.Log("local Wasted Water is Null");
                         return;
                     }
                     if (localFuelSource.TotalCapacity - localFuelSource.TotalFuel <= 0.00001)
@@ -486,7 +486,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (_co2Source==null||_oxygenSource==null||_foodSource==null||_waterSource==null||_wastedWaterSource==null||_solidWasteSource==null)
             {
                LoadFuelTanks();
-              Mod.LOG("ConsumptionLogic调用LoadFuelTanks");
+              Mod.Log("ConsumptionLogic调用LoadFuelTanks");
             }
         }
 
@@ -524,7 +524,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
                 catch (Exception e)
                 {
-                    Mod.LOGError("RefreshFuelSource调用CraftRefeshFuelSource歇逼了{0}", e);
+                    Mod.LogError("RefreshFuelSource调用CraftRefeshFuelSource歇逼了{0}", e);
                 }
                 
             }
@@ -569,13 +569,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
                 catch (Exception e)
                 {
-                   Mod.LOG("CraftRefreshSource:No Eva part:{0}",e);
+                   Mod.Log("CraftRefreshSource:No Eva part:{0}",e);
                 }
                 
                
                 if (_oxygenSource != null && _foodSource != null && _waterSource != null&&_co2Source!= null&& _wastedWaterSource!= null&& _solidWasteSource != null)
                 {
-                    Mod.LOG("调用CraftRefeshFuelSource 刷新完成 Oxygen:{0},Food:{1},Water:{2},CO2:{3},WastedWater:{4},SolidWaste:{5}", _oxygenSource.TotalFuel, _foodSource.TotalFuel, _waterSource.TotalFuel, _co2Source.TotalFuel, _wastedWaterSource.TotalFuel, _solidWasteSource.TotalFuel);
+                    Mod.Log("调用CraftRefeshFuelSource 刷新完成 Oxygen:{0},Food:{1},Water:{2},CO2:{3},WastedWater:{4},SolidWaste:{5}", _oxygenSource.TotalFuel, _foodSource.TotalFuel, _waterSource.TotalFuel, _co2Source.TotalFuel, _wastedWaterSource.TotalFuel, _solidWasteSource.TotalFuel);
                     ReFill(_oxygenSource, GetLocalFuelSource("Oxygen"));
                     ReFill(_foodSource, GetLocalFuelSource("Food"));
                     ReFill(_waterSource, GetLocalFuelSource("H2O"));
@@ -598,7 +598,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             catch (Exception e)
             {
-                Mod.LOG("CraftRefreshFuelSource出问题了{0}", e);
+                Mod.Log("CraftRefreshFuelSource出问题了{0}", e);
             }
             void HandleFuelSource(string fuelType, double capacity, double bufferAmount, ref IFuelSource fuelSource)
             {
@@ -615,15 +615,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                             }
                             else
                             {
-                                Mod.LOG($"未找到 {fuelType} 类型的 FuelSource");
+                                Mod.Log($"未找到 {fuelType} 类型的 FuelSource");
                                 try
                                 {
                                     DataLocal.Add((fuelType, capacity, bufferAmount));
-                                   Mod.LOG($"已记录 {fuelType} 类型");
+                                   Mod.Log($"已记录 {fuelType} 类型");
                                 }
                                 catch (Exception e)
                                 {
-                                   Mod.LOG($"从 CraftRefreshFuelSource 记录 {fuelType} 出错: {e}");
+                                   Mod.Log($"从 CraftRefreshFuelSource 记录 {fuelType} 出错: {e}");
                                 }
                             }
                         }
@@ -635,7 +635,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                             }
                             else
                             {
-                                Mod.LOG($"未找到 {fuelType} 类型的 FuelSource,无法调用RemoveWaste");
+                                Mod.Log($"未找到 {fuelType} 类型的 FuelSource,无法调用RemoveWaste");
                             }
                            
                         
@@ -652,15 +652,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                             }
                             else
                             {
-                                Mod.LOG($"未找到 {fuelType} 类型的 FuelSource");
+                                Mod.Log($"未找到 {fuelType} 类型的 FuelSource");
                                 try
                                 {
                                     DataLocal.Add((fuelType, capacity, bufferAmount));
-                                   Mod.LOG($"已记录 {fuelType} 类型");
+                                   Mod.Log($"已记录 {fuelType} 类型");
                                 }
                                 catch (Exception e)
                                 {
-                                   Mod.LOG($"从 CraftRefreshFuelSource 记录 {fuelType} 出错: {e}");
+                                   Mod.Log($"从 CraftRefreshFuelSource 记录 {fuelType} 出错: {e}");
                                 }
                             }
                         }
@@ -672,7 +672,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                             }
                             else
                             {
-                                Mod.LOG($"未找到 {fuelType} 类型的 FuelSource,无法调用RemoveWaste");
+                                Mod.Log($"未找到 {fuelType} 类型的 FuelSource,无法调用RemoveWaste");
                             }
                         
                         } 
@@ -681,7 +681,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
                 catch (Exception e)
                 {
-                   Mod.LOG($"处理 {fuelType} FuelSource 出错: {e}");
+                   Mod.Log($"处理 {fuelType} FuelSource 出错: {e}");
                 }
             }
             
@@ -714,13 +714,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 Craft.AddFuel(drood.TotalFuel);
                 drood.RemoveFuel(drood.TotalFuel);
-                Mod.LOG($"Remove{Craft.FuelType.Name} 成功:{0}实际{1}",drood.TotalFuel,Craft.TotalFuel);
+                Mod.Log($"Remove{Craft.FuelType.Name} 成功:{0}实际{1}",drood.TotalFuel,Craft.TotalFuel);
             }
             else
             {
                 drood.RemoveFuel(Craft.TotalCapacity - Craft.TotalFuel);
                 Craft.AddFuel(Craft.TotalCapacity - Craft.TotalFuel);
-                Mod.LOG($"Remove{Craft.FuelType.Name} 满了成功:{0}实际{1}", drood.TotalFuel, Craft.TotalFuel);
+                Mod.Log($"Remove{Craft.FuelType.Name} 满了成功:{0}实际{1}", drood.TotalFuel, Craft.TotalFuel);
             }
         }
 
@@ -748,7 +748,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             AddingTankFlag=true;
             List<(string, double, double)> DataLocal = new List<(string, double, double)>();
-            Mod.LOG("LoadFuelTanks调用");
+            Mod.Log("LoadFuelTanks调用");
             _oxygenSource = GetLocalFuelSource("Oxygen");
             _foodSource = GetLocalFuelSource("Food");
             _waterSource = GetLocalFuelSource("H2O");
@@ -791,16 +791,16 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             foreach (var data in DataLocal)
             {
                 AddTank(data.Item1, data.Item2, data.Item3);
-                Mod.LOG($"添加 {data.Item1} 类型,容量{data.Item2},实际{data.Item3}");
+                Mod.Log($"添加 {data.Item1} 类型,容量{data.Item2},实际{data.Item3}");
             }
             // 强制刷新 CraftFuelSources
             if (Game.InFlightScene && PartScript.CraftScript != null)
             {
                 RefreshFuelSource();
-               Mod.LOG("LoadFuelTank 调用RefreshFuelSource");
+               Mod.Log("LoadFuelTank 调用RefreshFuelSource");
             }
             AddingTankFlag=false;
-           Mod.LOG("LoadFuelTanks结束,AddingTankFlag=false");
+           Mod.Log("LoadFuelTanks结束,AddingTankFlag=false");
             
             
         }
@@ -833,7 +833,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 var tankData = PartModifierData.CreateFromStateXml(element, Data.Part, 15) as FuelTankData;
                 if (tankData == null)
                 {
-                   Mod.LOG($"Failed to create FuelTankData for {fuelType}");
+                   Mod.Log($"Failed to create FuelTankData for {fuelType}");
                     return;
                 }
         
@@ -843,14 +843,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 var fuelTankScript = tankData.CreateScript() as FuelTankScript;
                 if (fuelTankScript == null)
                 {
-                   Mod.LOG($"Failed to create FuelTankScript for {fuelType}");
+                   Mod.Log($"Failed to create FuelTankScript for {fuelType}");
                     return;
                 }
         
                 // 验证 FuelType
                 if (fuelTankScript.FuelType == null || fuelTankScript.FuelType.Id != fuelType)
                 {
-                   Mod.LOG($"FuelTankScript for {fuelType} has invalid FuelType: {fuelTankScript.FuelType?.Id}");
+                   Mod.Log($"FuelTankScript for {fuelType} has invalid FuelType: {fuelTankScript.FuelType?.Id}");
                     return;
                 }
         
@@ -860,17 +860,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 // 添加到 Modifiers 前验证 PartScript
                 if (PartScript == null || PartScript.Modifiers == null)
                 {
-                   Mod.LOG($"PartScript or Modifiers is null for Part ID: {PartScript?.Data.Id}");
+                   Mod.Log($"PartScript or Modifiers is null for Part ID: {PartScript?.Data.Id}");
                     return;
                 }
         
                 PartScript.Modifiers.Add(fuelTankScript);
-               Mod.LOG($"Successfully added FuelTank for {fuelType} to Part ID: {PartScript.Data.Id}");
+               Mod.Log($"Successfully added FuelTank for {fuelType} to Part ID: {PartScript.Data.Id}");
                 
             }
             catch (Exception e)
             {
-               Mod.LOG($"Failed to add FuelTank for {fuelType}: {e}");
+               Mod.Log($"Failed to add FuelTank for {fuelType}: {e}");
             }
             
         }
@@ -878,7 +878,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         private void OnFlightEnded(object sender, FlightEndedEventArgs e)
         {
-           Mod.LOG("OnFlightEnded");
+           Mod.Log("OnFlightEnded");
             FlightEnd();
         }
         /// <summary>
@@ -889,13 +889,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         public void OnPhysicsEnabled(ICraftNode craftNode, PhysicsChangeReason reason)
         {
-            Mod.LOG("OnPhysicsEnabled{0}",reason);
+            Mod.Log("OnPhysicsEnabled{0}",reason);
             if (reason == PhysicsChangeReason.Warp||reason == PhysicsChangeReason.LoadedIntoGameView)
             {
                 return;
             }
             LoadFuelTanks();
-            Mod.LOG("OnPhysicsEnabled调用LoadFuelTanks");
+            Mod.Log("OnPhysicsEnabled调用LoadFuelTanks");
             if (ModSettings.Instance.ConsumeResourceWhenUnloaded==true&&!IsHibernating)
             {
                 RemoveFuelAmonutInstantly();
@@ -905,19 +905,19 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         public void OnPhysicsDisabled(ICraftNode craftNode, PhysicsChangeReason reason)
         {
-            Mod.LOG("OnPhysicsDisabled 原因:{0}",reason);
+            Mod.Log("OnPhysicsDisabled 原因:{0}",reason);
             if (reason == PhysicsChangeReason.Warp||reason== PhysicsChangeReason.UnloadedFromGameView)
             {
                 return;
             }
             OnCraftUnloaded();
-            Mod.LOG("OnPhysicsDisabled调用OnCraftUnloaded");
+            Mod.Log("OnPhysicsDisabled调用OnCraftUnloaded");
         }
         public static XElement RemoveFuelTankXML(XElement partElement)
         {
             if (partElement == null)
             {
-               Mod.LOG("Part element is null.");
+               Mod.Log("Part element is null.");
                 return null;
             }
 
@@ -932,27 +932,27 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 {
                     foreach (var tank in tanksToRemove)
                     {
-                       Mod.LOG($"Removing FuelTank with fuelType={tank.Attribute("fuelType")?.Value}");
+                       Mod.Log($"Removing FuelTank with fuelType={tank.Attribute("fuelType")?.Value}");
                         tank.Remove();
                     }
                 }
                 else
                 {
-                   Mod.LOG("No FuelTank nodes found to remove.");
+                   Mod.Log("No FuelTank nodes found to remove.");
                 }
 
                 return partElement;
             }
             catch (Exception ex)
             {
-               Mod.LOG($"Error removing FuelTank nodes: {ex.Message}");
+               Mod.Log($"Error removing FuelTank nodes: {ex.Message}");
                 return null;
             }
         }
         private void OnCraftUnloaded()
         {
             
-            Mod.LOG("{0} 调用OnCraftUnloaded",PartScript.CraftScript.CraftNode.NodeId);
+            Mod.Log("{0} 调用OnCraftUnloaded",PartScript.CraftScript.CraftNode.NodeId);
             try
             {
                 Data.LastLoadTime = (long)FlightSceneScript.Instance.FlightState.Time;
@@ -962,7 +962,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             catch (Exception e)
             {
-                Mod.LOG("RemoveExtraTanks调用RemoveFuelTankXML出问题了{0}", e);
+                Mod.Log("RemoveExtraTanks调用RemoveFuelTankXML出问题了{0}", e);
             }
             
 
@@ -980,17 +980,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     Data._co2AmountBuffer =  GetLocalFuelSource("CO2").TotalFuel;
                     Data._wastedWaterAmountBuffer =  GetLocalFuelSource("Wasted Water").TotalFuel;
                     Data._solidWasteAmountBuffer =  GetLocalFuelSource("Solid Waste").TotalFuel;
-                    Mod.LOG("缓冲区燃料:食物{0},oxygen{1},water,{2},二氧化碳:{3},WastedWater:{4},SolidWaste:{5}", Data._solidWasteAmountBuffer, Data._foodAmountBuffer, Data._oxygenAmountBuffer, Data._waterAmountBuffer, Data._co2AmountBuffer, Data._wastedWaterAmountBuffer);
+                    Mod.Log("缓冲区燃料:食物{0},oxygen{1},water,{2},二氧化碳:{3},WastedWater:{4},SolidWaste:{5}", Data._solidWasteAmountBuffer, Data._foodAmountBuffer, Data._oxygenAmountBuffer, Data._waterAmountBuffer, Data._co2AmountBuffer, Data._wastedWaterAmountBuffer);
                 }
                 else
                 {
-                    Mod.LOG("SaveFuelAmountBuffer时燃料源为空");
+                    Mod.Log("SaveFuelAmountBuffer时燃料源为空");
                 }
                 
             }
             catch (Exception e)
             {
-                Mod.LOG("缓冲区燃料爆了{0}", e);
+                Mod.Log("缓冲区燃料爆了{0}", e);
             }
         }
 
@@ -999,26 +999,26 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 
             double xishu=360;
             var time= Game.Instance.FlightScene.FlightState.Time-Data.LastLoadTime;
-            Mod.LOG("调用RemoveFuelAmonutInstantly ,间隔{0}",time);
+            Mod.Log("调用RemoveFuelAmonutInstantly ,间隔{0}",time);
             if (this._oxygenSource == null)
             {
-                Mod.LOG("调用RemoveFuelAmonutInstantly失败,_oxygenSource有他妈null");
+                Mod.Log("调用RemoveFuelAmonutInstantly失败,_oxygenSource有他妈null");
                 return;
             }
             if (this._foodSource == null)
             {
-                Mod.LOG("调用RemoveFuelAmonutInstantly失败,_foodSource有他妈null");
+                Mod.Log("调用RemoveFuelAmonutInstantly失败,_foodSource有他妈null");
                 return;
             }
             if (this._waterSource == null)
             {
-                Mod.LOG("调用RemoveFuelAmonutInstantly失败,_waterSource有他妈null");
+                Mod.Log("调用RemoveFuelAmonutInstantly失败,_waterSource有他妈null");
                 return;
             }
             if (Data.FoodComsumeRate*(time/xishu) > this._foodSource.TotalFuel)
             {
                 this._foodSource.RemoveFuel(_foodSource.TotalCapacity);
-                Mod.LOG("调用RemoveFuelAmonutInstantly,理论:{0}实际{1}",Data.FoodComsumeRate*(time/xishu),this._foodSource.TotalFuel);
+                Mod.Log("调用RemoveFuelAmonutInstantly,理论:{0}实际{1}",Data.FoodComsumeRate*(time/xishu),this._foodSource.TotalFuel);
             }
             else
             {
@@ -1052,42 +1052,42 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             double xishu=360;
             var time= Game.Instance.FlightScene.FlightState.Time-Data.LastLoadTime;
-            Mod.LOG("AddWastedAmountInstantly ,间隔{0}",time);
+            Mod.Log("AddWastedAmountInstantly ,间隔{0}",time);
             if (this._co2Source == null)
             {
-                Mod.LOG("调用AddWastedAmountInstantly失败,_co2Source有他妈null");
+                Mod.Log("调用AddWastedAmountInstantly失败,_co2Source有他妈null");
                 return;
             }
 
             if (_wastedWaterSource==null)
             {
-                Mod.LOG("调用AddWastedAmountInstantly失败,_wastedWaterSource有他妈null");
+                Mod.Log("调用AddWastedAmountInstantly失败,_wastedWaterSource有他妈null");
             }
 
             if (_solidWasteSource == null)
             {
-                Mod.LOG("调用AddWastedAmountInstantly失败,_solidWasteSource有他妈null");
+                Mod.Log("调用AddWastedAmountInstantly失败,_solidWasteSource有他妈null");
             }
             if (Data.WaterComsumeRate*Data.evaConsumeEfficiency*1.1*(time/xishu) >= this._wastedWaterSource.TotalCapacity-_wastedWaterSource.TotalFuel)
             {
                 this._wastedWaterSource.AddFuel(this._wastedWaterSource.TotalCapacity-_wastedWaterSource.TotalFuel);
-                Mod.LOG("调用AddWastedAmountInstantly,满的,理论:{0}实际{1}",Data.WaterComsumeRate*Data.evaConsumeEfficiency*(time/xishu),this._wastedWaterSource.TotalCapacity-_wastedWaterSource.TotalFuel);
+                Mod.Log("调用AddWastedAmountInstantly,满的,理论:{0}实际{1}",Data.WaterComsumeRate*Data.evaConsumeEfficiency*(time/xishu),this._wastedWaterSource.TotalCapacity-_wastedWaterSource.TotalFuel);
             }
             else
             {
                 this._wastedWaterSource.AddFuel(
                     0.9 * Data.WaterComsumeRate * Data.evaConsumeEfficiency * (time / xishu));
-                Mod.LOG("调用AddWastedAmountInstantly,理论:{0}",Data.WaterComsumeRate*Data.evaConsumeEfficiency*(time/xishu)*0.001);
+                Mod.Log("调用AddWastedAmountInstantly,理论:{0}",Data.WaterComsumeRate*Data.evaConsumeEfficiency*(time/xishu)*0.001);
             }
             if (Data.FoodComsumeRate*Data.evaConsumeEfficiency*1.1*(time/xishu) >= this._solidWasteSource.TotalCapacity-_solidWasteSource.TotalFuel)
             {
                 this._solidWasteSource.AddFuel(this._solidWasteSource.TotalCapacity-_solidWasteSource.TotalFuel);
-                Mod.LOG("调用AddWastedAmountInstantly,满的,理论:{0}实际{1}",Data.FoodComsumeRate*Data.evaConsumeEfficiency*(time/xishu),this._solidWasteSource.TotalCapacity-_solidWasteSource.TotalFuel);
+                Mod.Log("调用AddWastedAmountInstantly,满的,理论:{0}实际{1}",Data.FoodComsumeRate*Data.evaConsumeEfficiency*(time/xishu),this._solidWasteSource.TotalCapacity-_solidWasteSource.TotalFuel);
             }
             else
             {
                 this._solidWasteSource.AddFuel(Data.FoodComsumeRate*Data.evaConsumeEfficiency*(time/xishu)*1.1*0.00006);
-                Mod.LOG("调用AddWastedAmountInstantly,理论:{0}",Data.FoodComsumeRate*Data.evaConsumeEfficiency*(time/xishu)*1.1*0.06);
+                Mod.Log("调用AddWastedAmountInstantly,理论:{0}",Data.FoodComsumeRate*Data.evaConsumeEfficiency*(time/xishu)*1.1*0.06);
             }
 
             if (UsingInternalOxygen())
@@ -1095,12 +1095,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 if (Data.OxygenComsumeRate*Data.evaConsumeEfficiency*1.375*(time/xishu) >= this._co2Source.TotalCapacity-_co2Source.TotalFuel)
                 {
                     this._co2Source.AddFuel(this._co2Source.TotalCapacity-_co2Source.TotalFuel);
-                    Mod.LOG("调用AddWastedAmountInstantly,满的,理论:{0}实际{1}",Data.OxygenComsumeRate*Data.evaConsumeEfficiency*(time/xishu),this._co2Source.TotalCapacity-_co2Source.TotalFuel);
+                    Mod.Log("调用AddWastedAmountInstantly,满的,理论:{0}实际{1}",Data.OxygenComsumeRate*Data.evaConsumeEfficiency*(time/xishu),this._co2Source.TotalCapacity-_co2Source.TotalFuel);
                 }
                 else
                 {
                     this._co2Source.AddFuel(Data.OxygenComsumeRate*Data.evaConsumeEfficiency*(time/xishu)*1.1);
-                    Mod.LOG("调用AddWastedAmountInstantly,理论:{0}",Data.OxygenComsumeRate*Data.evaConsumeEfficiency*(time/xishu));
+                    Mod.Log("调用AddWastedAmountInstantly,理论:{0}",Data.OxygenComsumeRate*Data.evaConsumeEfficiency*(time/xishu));
                 }
             }
             
@@ -1172,7 +1172,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             catch (Exception e)
             {
-                Mod.LOG("UpdateCurrentPlanet调用出问题了{0}", e);
+                Mod.Log("UpdateCurrentPlanet调用出问题了{0}", e);
             }
 
         }
@@ -1205,7 +1205,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (_fuelSource == null || _evaScript == null || PartScript == null || 
                 Game.Instance == null || Game.Instance.Settings?.Game?.Flight == null)
             {
-               Mod.LOG("DamageDrood: null object found: - " +
+               Mod.Log("DamageDrood: null object found: - " +
                                $"_fuelSource={_fuelSource != null}, _evaScript={_evaScript != null}, " +
                                $"PartScript={PartScript != null}, Game.Instance={Game.Instance != null}, Settings={Game.Instance?.Settings != null}");
                 return;
@@ -1236,7 +1236,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (_fuelSource == null || _evaScript == null || PartScript == null ||
                 Game.Instance == null || Game.Instance.Settings?.Game?.Flight == null)
             {
-               Mod.LOG("DamageWaste: null object found: - " +
+               Mod.Log("DamageWaste: null object found: - " +
                                $"_fuelSource={_fuelSource != null}, _evaScript={_evaScript != null}, " +
                                $"PartScript={PartScript != null}, Game.Instance={Game.Instance != null}, Settings={Game.Instance?.Settings != null}");
                 return;

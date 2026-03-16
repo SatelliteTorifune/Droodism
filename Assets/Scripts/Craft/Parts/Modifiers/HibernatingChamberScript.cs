@@ -32,7 +32,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             BaseLKTransform = Utilities.FindFirstGameObjectMyselfOrChildren("BodyBase", this.gameObject).transform;
             if (BaseLKTransform == null)
             {
-                Mod.LOGError("HibernatingChamberScript: Could not find BodyBase transform");
+                Mod.LogError("HibernatingChamberScript: Could not find BodyBase transform");
             }
 
             RightElbowTransform = BaseLKTransform.Find("RightElbow");

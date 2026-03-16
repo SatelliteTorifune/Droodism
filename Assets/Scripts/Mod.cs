@@ -77,13 +77,13 @@ namespace Assets.Scripts
                 {
                     ModApi.Common.Game.Instance.FlightScene.CraftChanged += OnCraftChanged;
                     PatchCraft(ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript as CraftScript);
-                    LOG("OnSceneLoaded更新Drood数量");
+                    Log("OnSceneLoaded更新Drood数量");
                     那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花();
-                    LOG("OnSceneLoaded执行doShit");
+                    Log("OnSceneLoaded执行doShit");
                 }
                 catch (Exception e1)
                 {
-                    LOG("你要干啥{0}", e1);
+                    Log("你要干啥{0}", e1);
                 }
             }
 

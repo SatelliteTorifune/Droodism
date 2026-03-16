@@ -67,11 +67,11 @@ namespace Droodism.RadiationBelt
                 {
                     serializer.Serialize(stream, this);
                 }
-                Mod.LOG($"Radiation Belt config '{planetName}' saved to: {filePath}");
+                Mod.Log($"Radiation Belt config '{planetName}' saved to: {filePath}");
             }
             catch (System.Exception e)
             {
-                Mod.LOG($"Failed to save Radiation Belt config '{planetName}': {e.Message}");
+                Mod.Log($"Failed to save Radiation Belt config '{planetName}': {e.Message}");
             }
         }
 
@@ -103,7 +103,7 @@ namespace Droodism.RadiationBelt
         
             if (!File.Exists(filePath))
             {
-                Mod.LOG($"Config file '{planetName}' not found at {filePath}. Creating default config.");
+                Mod.Log($"Config file '{planetName}' not found at {filePath}. Creating default config.");
                 RadiationBeltConfig defaultConfig = CreateDefault();
                 defaultConfig.SaveToFile(planetName);
                 return defaultConfig;
@@ -115,13 +115,13 @@ namespace Droodism.RadiationBelt
                 using (FileStream stream = new FileStream(filePath, FileMode.Open))
                 {
                     RadiationBeltConfig config = serializer.Deserialize(stream) as RadiationBeltConfig;
-                    Mod.LOG($"Cloud config '{planetName}' loaded from: {filePath}");
+                    Mod.Log($"Cloud config '{planetName}' loaded from: {filePath}");
                     return config;
                 }
             }
             catch (System.Exception e)
             {
-                Mod.LOG($"Failed to load Radiation Belt config '{planetName}': {e.Message}.");
+                Mod.Log($"Failed to load Radiation Belt config '{planetName}': {e.Message}.");
                 return CreateDefault();
             }
         }

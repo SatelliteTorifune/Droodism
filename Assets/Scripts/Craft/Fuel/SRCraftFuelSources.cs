@@ -213,7 +213,7 @@ namespace Assets.Scripts.Craft.Fuel
             }
             catch (Exception e)
             {
-                Mod.LOGError("CreateFuelSourceForConnectedParts歇逼了: {0}",e);
+                Mod.LogError("CreateFuelSourceForConnectedParts歇逼了: {0}",e);
             }
             
             //Mod.LOG("Modded CreateFuelSourceForConnectedParts called");
@@ -252,7 +252,7 @@ namespace Assets.Scripts.Craft.Fuel
                     }
                     catch (Exception e)
                     {
-                        Mod.LOG($"SRCCraftFuelSources.Rebuild: Error creating fuel sources: {e}");
+                        Mod.Log($"SRCCraftFuelSources.Rebuild: Error creating fuel sources: {e}");
                     }
                 }
             }

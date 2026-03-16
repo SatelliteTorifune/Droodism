@@ -254,7 +254,7 @@ namespace Assets.Scripts
     private void OnCraftMerged(ICraftNode craftNodeA, ICraftNode craftNodeB)
     {
         UpdateInfo();
-        Mod.LOG("OnCraftMerged");
+        Mod.Log("OnCraftMerged");
     }
 
     #endregion

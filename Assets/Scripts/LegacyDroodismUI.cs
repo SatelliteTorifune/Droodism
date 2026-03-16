@@ -127,7 +127,7 @@ namespace Assets.Scripts
             component.GetElementByInternalId("FuelTransferTypeName").SetText(mode.ToString());
             
             fuelPercentXMLItems.Add(component);
-            Mod.LOG("LegacyDroodismUI:AddFuelTransferListItem:{0}", mode.ToString());
+            Mod.Log("LegacyDroodismUI:AddFuelTransferListItem:{0}", mode.ToString());
             //Mod.Instance.那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花();
         }
         /// <summary>
@@ -276,7 +276,7 @@ namespace Assets.Scripts
 #endregion
         private void OnFuelItemInspectorToggle(XmlElement item)
         {
-            Mod.LOG("LegacyDroodismUI:OnFuelItemInspectorToggle:item:{0}", item);
+            Mod.Log("LegacyDroodismUI:OnFuelItemInspectorToggle:item:{0}", item);
         }
         #region UI数据更新相关函数
         public void UpdateFuelPercentageItemTemplate()
