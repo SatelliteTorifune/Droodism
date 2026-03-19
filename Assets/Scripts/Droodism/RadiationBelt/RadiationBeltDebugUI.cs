@@ -153,6 +153,51 @@ namespace Droodism.RadiationBelt
              #region Outer
              GroupModel OuterInspectorGroup = new GroupModel("Outer");
              
+             var outerDist=new SliderModel("Outer Disk", () => RadiationBeltManager.Instance.currentConfig.outerDist,
+                 s => { RadiationBeltManager.Instance.currentConfig.outerDist = (int)s;},  0.1f, 3f);
+             outerDist.ValueFormatter = (f) => FormatValue(f, 4);
+             OuterInspectorGroup.Add(outerDist);
+             
+             var outerRadius=new SliderModel("Outer Radius", () => RadiationBeltManager.Instance.currentConfig.outerRadius,
+                 s => { RadiationBeltManager.Instance.currentConfig.outerRadius = (int)s;},  0.1f, 3f);
+             outerRadius.ValueFormatter = (f) => FormatValue(f, 4);
+             OuterInspectorGroup.Add(outerRadius);
+             
+             var outerBorderStart=new SliderModel("Outer Border Start", () => RadiationBeltManager.Instance.currentConfig.outerBorderStart,
+                 s => { RadiationBeltManager.Instance.currentConfig.outerBorderStart = (int)s;},  0.1f, 3f);
+             outerBorderStart.ValueFormatter = (f) => FormatValue(f, 4);
+             OuterInspectorGroup.Add(outerBorderStart);
+             
+             var outerBorderEnd=new SliderModel("Outer Border End", () => RadiationBeltManager.Instance.currentConfig.outerBorderEnd,
+                 s => { RadiationBeltManager.Instance.currentConfig.outerBorderEnd = (int)s;},  0.1f, 3f);
+             outerBorderEnd.ValueFormatter = (f) => FormatValue(f, 4);
+             OuterInspectorGroup.Add(outerBorderEnd);
+             
+             var outerCompression=new SliderModel("Outer Compression", () => RadiationBeltManager.Instance.currentConfig.outerCompression,
+                 s => { RadiationBeltManager.Instance.currentConfig.outerCompression = (int)s;},  0.1f, 3f);
+             outerCompression.ValueFormatter = (f) => FormatValue(f, 4);
+             OuterInspectorGroup.Add(outerCompression);
+             
+             var outerExtension=new SliderModel("Outer Extension", () => RadiationBeltManager.Instance.currentConfig.outerExtension,
+                 s => { RadiationBeltManager.Instance.currentConfig.outerExtension = (int)s;},  0.1f, 3f);
+             outerExtension.ValueFormatter = (f) => FormatValue(f, 4);
+             OuterInspectorGroup.Add(outerExtension);
+             
+             var outerDeform=new SliderModel("Outer Deform", () => RadiationBeltManager.Instance.currentConfig.outerDeform,
+                 s => { RadiationBeltManager.Instance.currentConfig.outerDeform = s;}, 0.1f, 3f);
+             outerDeform.ValueFormatter = (f) => FormatValue(f, 4);
+             OuterInspectorGroup.Add(outerDeform);  
+             
+             var outerParticleCount=new SliderModel("Outer Particle Count", () => RadiationBeltManager.Instance.currentConfig.outerParticleCount,
+                 s => { RadiationBeltManager.Instance.currentConfig.outerParticleCount = (int)s;}, 0f, 20000f,true);
+             outerParticleCount.ValueFormatter = (f) => FormatValue(f, 1);
+             OuterInspectorGroup.Add(outerParticleCount);
+             
+             var outerQuality=new SliderModel("Outer Quality", () => RadiationBeltManager.Instance.currentConfig.outerQuality,
+                 s => { RadiationBeltManager.Instance.currentConfig.outerQuality = (int)s;}, 0f, 50f,true);
+             outerQuality.ValueFormatter = (f) => FormatValue(f, 4);
+             OuterInspectorGroup.Add(outerQuality);
+             
              inspectorModel.AddGroup(OuterInspectorGroup);
              #endregion
              inspectorPanel = Game.Instance.UserInterface.CreateInspectorPanel(inspectorModel,

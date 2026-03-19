@@ -125,11 +125,8 @@ namespace Droodism.RadiationBelt
             
             Mod.Log($"OnFocusPlanet changed,current is {currentName}");
             currentConfig = RadiationBeltConfig.LoadFromFile(currentName);
-            Mod.Log("config loaded");
             BeltInstance = GetCurrentRadiationBelt(currentName);
-            Mod.Log("BeltInstance loaded");
             CurrentRadiationBeltObject = BeltInstance.gameObject;
-            Mod.Log("BeltInstance GO loaded");
             if (currentConfig.Enabled)
             {
                 this.CameraRenderer.beltRenderer = BeltInstance; 
@@ -226,7 +223,7 @@ namespace Droodism.RadiationBelt
             }
             catch (Exception e)
             {
-                Mod.Log("OnMap Fucked");
+                Mod.Log("OnMapViewInitialized Fucked");
             }
 
         }

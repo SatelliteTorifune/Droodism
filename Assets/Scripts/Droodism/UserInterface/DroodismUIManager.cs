@@ -15,7 +15,7 @@ using ModApi.Scenes.Events;
 using ModApi.Ui.Inspector;
 using UnityEngine.Serialization;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.Droodism.UserInterface
 {
     public class DroodismUIManager : MonoBehaviourBase
 

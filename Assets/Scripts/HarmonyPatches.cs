@@ -6,6 +6,7 @@ using Assets.Scripts.Craft.Fuel;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using Assets.Scripts.Design;
+using Assets.Scripts.Droodism.UserInterface;
 using Assets.Scripts.Flight.UI;
 using HarmonyLib;
 using ModApi.Craft;

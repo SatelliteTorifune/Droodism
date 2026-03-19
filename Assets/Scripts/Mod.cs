@@ -2,6 +2,7 @@ using System.Xml.Linq;
 using Assets.Packages.DevConsole;
 using Assets.Scripts.Craft;
 using Assets.Scripts.Craft.Parts.Modifiers;
+using Assets.Scripts.Droodism.UserInterface;
 using Assets.Scripts.Flight;
 using ModApi.Scenes.Events;
 using HarmonyLib;
