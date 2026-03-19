@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Assets.Scripts;
 using ModApi.CelestialData;
 using ModApi;
@@ -40,6 +41,8 @@ namespace Droodism.RadiationBelt
         public ParticleMesh outerMesh;
 
         private int lastRenderedFrame = -1;
+        
+        private bool isRegenerating = false;
 
         public void LoadDataFromConfig(RadiationBeltConfig config)
         {
@@ -60,6 +63,105 @@ namespace Droodism.RadiationBelt
             outerDeform = config.outerDeform;
             outerParticleCount = config.outerParticleCount;
             outerQuality = config.outerQuality;
+        }
+        public async void RegenerateMeshesAsync()
+        {
+            if (isRegenerating) return;
+            isRegenerating = true;
+
+            Mod.Log("Rebuilding Meshes");
+
+            try
+            {
+                // 彻底清理旧 mesh
+                if (innerMesh != null)
+                {
+                    foreach (var m in innerMesh.meshes ?? new List<Mesh>())
+                        if (m) UnityEngine.Object.DestroyImmediate(m);
+                    innerMesh = null;
+                }
+                if (outerMesh != null)
+                {
+                    foreach (var m in outerMesh.meshes ?? new List<Mesh>())
+                        if (m) UnityEngine.Object.DestroyImmediate(m);
+                    outerMesh = null;
+                }
+
+                // 定义SDF函数（这些可以复用原来的）
+                Func<Vector3, float> innerSDF = CreateInnerSDF();
+                Func<Vector3, float> outerSDF = CreateOuterSDF();
+
+                Vector3 hsize = new Vector3(outerDist + outerRadius * 2f, 
+                    outerRadius * 2f * Mathf.Max(innerHeightScale, outerHeightScale), 
+                    outerDist + outerRadius * 2f);
+                Vector3 offset = Vector3.zero;
+
+                // 异步创建两个网格
+                var innerTask = ParticleMesh.CreateAsync(innerSDF, hsize, offset, innerParticleCount, innerQuality);
+                var outerTask = ParticleMesh.CreateAsync(outerSDF, hsize * 1.2f, offset, outerParticleCount, outerQuality);
+
+                // 等待两个任务完成
+                await Task.WhenAll(innerTask, outerTask);
+
+                // 在主线程中赋值
+                innerMesh = innerTask.Result;
+                outerMesh = outerTask.Result;
+
+                Mod.Log("Rebuilding Complete");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Rebuilding failed: {ex.Message}");
+            }
+            finally
+            {
+                isRegenerating = false;
+            }
+        }
+
+        // 为了代码复用，将SDF函数提取出来
+        private Func<Vector3, float> CreateInnerSDF()
+        {
+            return p =>
+            {
+                float dot = Vector3.Dot(p.normalized, starDirection);
+                float deformFactor = Mathf.Lerp(outerCompression, outerExtension, (dot + 1f) / 2f);
+                p /= deformFactor;
+
+                // sine deform
+                p += Mathf.Sin(p.magnitude * 5f) * innerDeform * p.normalized;
+
+                // 新增：高度方向缩放，让它更圆
+                p.y *= innerHeightScale;
+
+                Vector2 q = new Vector2(new Vector2(p.x, p.z).magnitude - innerDist, p.y);
+                return q.magnitude - innerRadius;
+            };
+        }
+
+        private Func<Vector3, float> CreateOuterSDF()
+        {
+            return p =>
+            {
+                float dot = Vector3.Dot(p.normalized, starDirection);
+                float deformFactor = Mathf.Lerp(outerCompression, outerExtension, (dot + 1f) / 2f);
+                p /= deformFactor;
+
+                p += Mathf.Sin(p.magnitude * 5f) * outerDeform * p.normalized;
+
+                // 高度缩放
+                p.y *= outerHeightScale;
+
+                Vector2 q = new Vector2(new Vector2(p.x, p.z).magnitude - outerDist, p.y);
+                float outer = q.magnitude - outerRadius;
+
+                Vector2 q_sub = new Vector2(new Vector2(p.x, p.z).magnitude - outerDist * 0.8f, p.y);
+                float subtract = q_sub.magnitude - outerRadius * 0.7f;
+
+                float border = Mathf.Lerp(outerBorderStart, outerBorderEnd, Mathf.Clamp01(p.magnitude / outerDist));
+
+                return Mathf.Max(outer, -subtract - border);
+            };
         }
 
         public void RegenerateMeshes()

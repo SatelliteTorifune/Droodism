@@ -1,22 +1,45 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Threading.Tasks;
 
 namespace Droodism.RadiationBelt
 {
-
-
     public sealed class ParticleMesh
     {
-        // create a particle mesh from a set of points
+        
         public ParticleMesh(List<Vector3> points)
         {
             this.points = points;
         }
 
-        // create a particle mesh by fitting points on an implicit surface defined by a signed distance field
+        // 我操你妈的,给我滚去异步计算去你妈滴
+        public static async Task<ParticleMesh> CreateAsync
+        (
+            Func<Vector3, float> dist_func, 
+            Vector3 domain_hsize, 
+            Vector3 domain_offset,
+            int particle_count, 
+            float quality)
+        {
+            var points = await Task.Run(() => GeneratePoints(dist_func, domain_hsize, domain_offset, particle_count, quality));
+            return new ParticleMesh(points);
+        }
+
+        //你别管,这个又不是异步
         public ParticleMesh(Func<Vector3, float> dist_func, Vector3 domain_hsize, Vector3 domain_offset,
             int particle_count, float quality)
+        {
+            this.points = GeneratePoints(dist_func, domain_hsize, domain_offset, particle_count, quality);
+        }
+
+        // 核心计算逻辑提取到静态方法中，可在后台线程执行
+        private static List<Vector3> GeneratePoints(
+            Func<Vector3, float> dist_func, 
+            Vector3 domain_hsize, 
+            Vector3 domain_offset,
+            int particle_count, 
+            float quality)
         {
             // store stuff
             Vector3 p;
@@ -29,7 +52,7 @@ namespace Droodism.RadiationBelt
             float thickness = 1.0f / quality;
 
             // preallocate position container
-            points = new List<Vector3>(particle_count);
+            var points = new List<Vector3>(particle_count);
 
             // particle-fitting
             int samples = 0;
@@ -58,8 +81,7 @@ namespace Droodism.RadiationBelt
                 ++samples;
             }
 
-            // some feedback on the samples going above the limit
-            // if (i < particle_count) Debug.Log("particle-fitting reached hard limit at " + (double)i / (double)particle_count);
+            return points;
         }
 
         void Compile()
@@ -81,6 +103,7 @@ namespace Droodism.RadiationBelt
                     m = new Mesh();
                     m.SetVertices(t_points);
                     m.SetIndices(t_indexes.ToArray(), MeshTopology.Points, 0);
+                    m.UploadMeshData(true); // 优化内存
                     meshes.Add(m);
                     t_points.Clear();
                     t_indexes.Clear();
@@ -93,7 +116,6 @@ namespace Droodism.RadiationBelt
         // render all the meshes
         public void Render(Matrix4x4 m)
         {
-
             if (meshes == null)
             {
                 Compile();
@@ -103,9 +125,7 @@ namespace Droodism.RadiationBelt
             {
                 Graphics.DrawMeshNow(mesh, m);
             }
-
         }
-
 
         public List<Vector3> points; // set of points
         public List<Mesh> meshes; // set of meshes

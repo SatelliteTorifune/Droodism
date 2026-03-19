@@ -251,7 +251,7 @@ namespace Droodism.RadiationBelt
             if (config.Enabled)
             {
                 beltInstance.LoadDataFromConfig(config);
-                beltInstance.RegenerateMeshes();
+                beltInstance.RegenerateMeshesAsync();
             }
             this.BeltList.Add(beltInstance);
         }
@@ -268,7 +268,8 @@ namespace Droodism.RadiationBelt
         public void ReGenerateMeshes()
         {
             BeltInstance.LoadDataFromConfig(currentConfig);
-            BeltInstance.RegenerateMeshes();
+            BeltInstance.RegenerateMeshesAsync();
+            //BeltInstance.RegenerateMeshes();
         }
 
         private ProceduralRadiationBelt GetCurrentRadiationBelt(string nAme)

@@ -159,27 +159,27 @@ namespace Droodism.RadiationBelt
              OuterInspectorGroup.Add(outerDist);
              
              var outerRadius=new SliderModel("Outer Radius", () => RadiationBeltManager.Instance.currentConfig.outerRadius,
-                 s => { RadiationBeltManager.Instance.currentConfig.outerRadius = (int)s;},  0.1f, 3f);
+                 s => { RadiationBeltManager.Instance.currentConfig.outerRadius = s;},  0.1f, 3f);
              outerRadius.ValueFormatter = (f) => FormatValue(f, 4);
              OuterInspectorGroup.Add(outerRadius);
              
              var outerBorderStart=new SliderModel("Outer Border Start", () => RadiationBeltManager.Instance.currentConfig.outerBorderStart,
-                 s => { RadiationBeltManager.Instance.currentConfig.outerBorderStart = (int)s;},  0.1f, 3f);
+                 s => { RadiationBeltManager.Instance.currentConfig.outerBorderStart = s;},  0.1f, 3f);
              outerBorderStart.ValueFormatter = (f) => FormatValue(f, 4);
              OuterInspectorGroup.Add(outerBorderStart);
              
              var outerBorderEnd=new SliderModel("Outer Border End", () => RadiationBeltManager.Instance.currentConfig.outerBorderEnd,
-                 s => { RadiationBeltManager.Instance.currentConfig.outerBorderEnd = (int)s;},  0.1f, 3f);
+                 s => { RadiationBeltManager.Instance.currentConfig.outerBorderEnd =s;},  0.1f, 3f);
              outerBorderEnd.ValueFormatter = (f) => FormatValue(f, 4);
              OuterInspectorGroup.Add(outerBorderEnd);
              
              var outerCompression=new SliderModel("Outer Compression", () => RadiationBeltManager.Instance.currentConfig.outerCompression,
-                 s => { RadiationBeltManager.Instance.currentConfig.outerCompression = (int)s;},  0.1f, 3f);
+                 s => { RadiationBeltManager.Instance.currentConfig.outerCompression = s;},  0.1f, 3f);
              outerCompression.ValueFormatter = (f) => FormatValue(f, 4);
              OuterInspectorGroup.Add(outerCompression);
              
              var outerExtension=new SliderModel("Outer Extension", () => RadiationBeltManager.Instance.currentConfig.outerExtension,
-                 s => { RadiationBeltManager.Instance.currentConfig.outerExtension = (int)s;},  0.1f, 3f);
+                 s => { RadiationBeltManager.Instance.currentConfig.outerExtension = s;},  0.1f, 3f);
              outerExtension.ValueFormatter = (f) => FormatValue(f, 4);
              OuterInspectorGroup.Add(outerExtension);
              
