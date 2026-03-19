@@ -12,221 +12,56 @@ namespace Droodism.RadiationBelt
     {
      
         public GameObject Parent;               // 行星的 ScaledSpace GameObject
-        public Material pointMaterial;
-
-      
-        public Vector3 starDirection = Vector3.left;
-
-       
-        public float innerDist = 2f;
-        public float innerRadius = 0.5f;
-        public float innerHeightScale = 2; 
-        public float innerDeform = 0.2f;
-        public int innerParticleCount = 8000;
-        public float innerQuality = 30f;
-
+        public Material   pointMaterial;
         
-        public float outerDist = 5f;
-        public float outerRadius = 1.5f;
-        public float outerHeightScale = 1.4f;  // 新增：外带通常更高
-        public float outerBorderStart = 0.1f;
-        public float outerBorderEnd = 1.0f;
-        public float outerCompression = 0.6f;
-        public float outerExtension = 1.5f;
-        public float outerDeform = 0.15f;
-        public int outerParticleCount = 15000;
-        public float outerQuality = 40f;
-
+        private RadiationBeltConfig config;
         public ParticleMesh innerMesh;
         public ParticleMesh outerMesh;
 
         private int lastRenderedFrame = -1;
         
-        private bool isRegenerating = false;
+        private bool isRegenerating;
 
         public void LoadDataFromConfig(RadiationBeltConfig config)
         {
-            this.enabled = config.Enabled;
-            innerDist = config.innerDist;
-            innerRadius = config.innerRadius;
-            innerDeform = config.innerDeform;
-            innerQuality = config.innerQuality;
-            innerParticleCount = config.innerParticleCount;
-            
-
-            outerDist = config.outerDist;
-            outerRadius = config.outerRadius;
-            outerBorderStart = config.outerBorderStart;
-            outerBorderEnd = config.outerBorderEnd;
-            outerCompression = config.outerCompression;
-            outerExtension = config.outerExtension;
-            outerDeform = config.outerDeform;
-            outerParticleCount = config.outerParticleCount;
-            outerQuality = config.outerQuality;
+            this.config= config;
         }
         public async void RegenerateMeshesAsync()
         {
-            if (isRegenerating) return;
+            if (isRegenerating || config == null) return;
             isRegenerating = true;
 
             Mod.Log("Rebuilding Meshes");
 
             try
             {
-                // 彻底清理旧 mesh
-                if (innerMesh != null)
-                {
-                    foreach (var m in innerMesh.meshes ?? new List<Mesh>())
-                        if (m) UnityEngine.Object.DestroyImmediate(m);
-                    innerMesh = null;
-                }
-                if (outerMesh != null)
-                {
-                    foreach (var m in outerMesh.meshes ?? new List<Mesh>())
-                        if (m) UnityEngine.Object.DestroyImmediate(m);
-                    outerMesh = null;
-                }
+                Func<Vector3, float> innerSDF = config.GetInnerDist;
+                Func<Vector3, float> outerSDF = config.GetOuterDist;
 
-                // 定义SDF函数（这些可以复用原来的）
-                Func<Vector3, float> innerSDF = CreateInnerSDF();
-                Func<Vector3, float> outerSDF = CreateOuterSDF();
+                Vector3 hsize = new Vector3(config.outerDist + config.outerRadius * 2f,
+                    config.outerRadius * 2f * Mathf.Max(config.innerHeightScale, config.outerHeightScale),
+                    config.outerDist + config.outerRadius * 2f);
 
-                Vector3 hsize = new Vector3(outerDist + outerRadius * 2f, 
-                    outerRadius * 2f * Mathf.Max(innerHeightScale, outerHeightScale), 
-                    outerDist + outerRadius * 2f);
-                Vector3 offset = Vector3.zero;
+                var innerTask = ParticleMesh.CreateAsync(innerSDF, hsize, Vector3.zero, config.innerParticleCount, config.innerQuality);
+                var outerTask = ParticleMesh.CreateAsync(outerSDF, hsize * 1.2f, Vector3.zero, config.outerParticleCount, config.outerQuality);
 
-                // 异步创建两个网格
-                var innerTask = ParticleMesh.CreateAsync(innerSDF, hsize, offset, innerParticleCount, innerQuality);
-                var outerTask = ParticleMesh.CreateAsync(outerSDF, hsize * 1.2f, offset, outerParticleCount, outerQuality);
-
-                // 等待两个任务完成
                 await Task.WhenAll(innerTask, outerTask);
 
-                // 在主线程中赋值
-                innerMesh = innerTask.Result;
-                outerMesh = outerTask.Result;
+                innerMesh = await innerTask;
+                outerMesh = await outerTask;
 
                 Mod.Log("Rebuilding Complete");
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
-                Debug.LogError($"Rebuilding failed: {ex.Message}");
+                Mod.LogError($"Rebuilding failed: {ex.Message}");
             }
             finally
             {
                 isRegenerating = false;
             }
         }
-
-        // 为了代码复用，将SDF函数提取出来
-        private Func<Vector3, float> CreateInnerSDF()
-        {
-            return p =>
-            {
-                float dot = Vector3.Dot(p.normalized, starDirection);
-                float deformFactor = Mathf.Lerp(outerCompression, outerExtension, (dot + 1f) / 2f);
-                p /= deformFactor;
-
-                // sine deform
-                p += Mathf.Sin(p.magnitude * 5f) * innerDeform * p.normalized;
-
-                // 新增：高度方向缩放，让它更圆
-                p.y *= innerHeightScale;
-
-                Vector2 q = new Vector2(new Vector2(p.x, p.z).magnitude - innerDist, p.y);
-                return q.magnitude - innerRadius;
-            };
-        }
-
-        private Func<Vector3, float> CreateOuterSDF()
-        {
-            return p =>
-            {
-                float dot = Vector3.Dot(p.normalized, starDirection);
-                float deformFactor = Mathf.Lerp(outerCompression, outerExtension, (dot + 1f) / 2f);
-                p /= deformFactor;
-
-                p += Mathf.Sin(p.magnitude * 5f) * outerDeform * p.normalized;
-
-                // 高度缩放
-                p.y *= outerHeightScale;
-
-                Vector2 q = new Vector2(new Vector2(p.x, p.z).magnitude - outerDist, p.y);
-                float outer = q.magnitude - outerRadius;
-
-                Vector2 q_sub = new Vector2(new Vector2(p.x, p.z).magnitude - outerDist * 0.8f, p.y);
-                float subtract = q_sub.magnitude - outerRadius * 0.7f;
-
-                float border = Mathf.Lerp(outerBorderStart, outerBorderEnd, Mathf.Clamp01(p.magnitude / outerDist));
-
-                return Mathf.Max(outer, -subtract - border);
-            };
-        }
-
-        public void RegenerateMeshes()
-        {
-            Debug.Log("Regenerating radiation belts...");
-
-            // 彻底清理旧 mesh
-            if (innerMesh != null)
-            {
-                foreach (var m in innerMesh.meshes ?? new List<Mesh>())
-                    if (m) DestroyImmediate(m);
-                innerMesh = null;
-            }
-            if (outerMesh != null)
-            {
-                foreach (var m in outerMesh.meshes ?? new List<Mesh>())
-                    if (m) DestroyImmediate(m);
-                outerMesh = null;
-            }
-
-            Func<Vector3, float> innerSDF = p =>
-            {
-                float dot = Vector3.Dot(p.normalized, starDirection);
-                float deformFactor = Mathf.Lerp(outerCompression, outerExtension, (dot + 1f) / 2f);
-                p /= deformFactor;
-
-                // sine deform
-                p += Mathf.Sin(p.magnitude * 5f) * innerDeform * p.normalized;
-
-                // 新增：高度方向缩放，让它更圆
-                p.y *= innerHeightScale;
-
-                Vector2 q = new Vector2(new Vector2(p.x, p.z).magnitude - innerDist, p.y);
-                return q.magnitude - innerRadius;
-            };
-
-            Func<Vector3, float> outerSDF = p =>
-            {
-                float dot = Vector3.Dot(p.normalized, starDirection);
-                float deformFactor = Mathf.Lerp(outerCompression, outerExtension, (dot + 1f) / 2f);
-                p /= deformFactor;
-
-                p += Mathf.Sin(p.magnitude * 5f) * outerDeform * p.normalized;
-
-                // 高度缩放
-                p.y *= outerHeightScale;
-
-                Vector2 q = new Vector2(new Vector2(p.x, p.z).magnitude - outerDist, p.y);
-                float outer = q.magnitude - outerRadius;
-
-                Vector2 q_sub = new Vector2(new Vector2(p.x, p.z).magnitude - outerDist * 0.8f, p.y);
-                float subtract = q_sub.magnitude - outerRadius * 0.7f;
-
-                float border = Mathf.Lerp(outerBorderStart, outerBorderEnd, Mathf.Clamp01(p.magnitude / outerDist));
-
-                return Mathf.Max(outer, -subtract - border);
-            };
-
-            Vector3 hsize = new Vector3(outerDist + outerRadius * 2f, outerRadius * 2f * Mathf.Max(innerHeightScale, outerHeightScale), outerDist + outerRadius * 2f);
-            Vector3 offset = Vector3.zero;
-
-            innerMesh = new ParticleMesh(innerSDF, hsize, offset, innerParticleCount, innerQuality);
-            outerMesh = new ParticleMesh(outerSDF, hsize * 1.2f, offset, outerParticleCount, outerQuality);
-        }
-
+        
         private void Update()
         {
             SycWithParent();

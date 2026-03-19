@@ -25,15 +25,8 @@ namespace Droodism.RadiationBelt
             var points = await Task.Run(() => GeneratePoints(dist_func, domain_hsize, domain_offset, particle_count, quality));
             return new ParticleMesh(points);
         }
-
-        //你别管,这个又不是异步
-        public ParticleMesh(Func<Vector3, float> dist_func, Vector3 domain_hsize, Vector3 domain_offset,
-            int particle_count, float quality)
-        {
-            this.points = GeneratePoints(dist_func, domain_hsize, domain_offset, particle_count, quality);
-        }
-
-        // 核心计算逻辑提取到静态方法中，可在后台线程执行
+        
+        
         private static List<Vector3> GeneratePoints(
             Func<Vector3, float> dist_func, 
             Vector3 domain_hsize, 
@@ -127,7 +120,7 @@ namespace Droodism.RadiationBelt
             }
         }
 
-        public List<Vector3> points; // set of points
+        private List<Vector3> points; // set of points
         public List<Mesh> meshes; // set of meshes
     }
 }

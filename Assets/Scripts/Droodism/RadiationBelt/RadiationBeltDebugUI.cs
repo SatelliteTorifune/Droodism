@@ -135,7 +135,12 @@ namespace Droodism.RadiationBelt
              var innerDeform=new SliderModel("Inner Deform", () => RadiationBeltManager.Instance.currentConfig.innerDeform,
                  s => { RadiationBeltManager.Instance.currentConfig.innerDeform = s;}, 0.1f, 3f);
              innerDeform.ValueFormatter = (f) => FormatValue(f, 4);
-             InnerInspectorGroup.Add(innerDeform);  
+             InnerInspectorGroup.Add(innerDeform); 
+             
+             var innerHeightScale=new SliderModel("Inner Height Scale", () => RadiationBeltManager.Instance.currentConfig.innerHeightScale,
+                 s => { RadiationBeltManager.Instance.currentConfig.innerHeightScale = s;}, 0f, 2f,false);
+             innerHeightScale.ValueFormatter = (f) => FormatValue(f, 3);
+             InnerInspectorGroup.Add(innerHeightScale);
              
              var innerParticleCount=new SliderModel("Inner Particle Count", () => RadiationBeltManager.Instance.currentConfig.innerParticleCount,
                  s => { RadiationBeltManager.Instance.currentConfig.innerParticleCount = (int)s;}, 0f, 20000f,true);
@@ -187,6 +192,11 @@ namespace Droodism.RadiationBelt
                  s => { RadiationBeltManager.Instance.currentConfig.outerDeform = s;}, 0.1f, 3f);
              outerDeform.ValueFormatter = (f) => FormatValue(f, 4);
              OuterInspectorGroup.Add(outerDeform);  
+             
+             var outerHeightScale=new SliderModel("Outer Height Scale ", () => RadiationBeltManager.Instance.currentConfig.outerHeightScale,
+                 s => { RadiationBeltManager.Instance.currentConfig.outerHeightScale = s;}, 0f, 2f);
+             outerHeightScale.ValueFormatter = (f) => FormatValue(f, 3);
+             OuterInspectorGroup.Add(outerHeightScale);
              
              var outerParticleCount=new SliderModel("Outer Particle Count", () => RadiationBeltManager.Instance.currentConfig.outerParticleCount,
                  s => { RadiationBeltManager.Instance.currentConfig.outerParticleCount = (int)s;}, 0f, 20000f,true);
