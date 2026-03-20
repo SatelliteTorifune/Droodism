@@ -18,15 +18,15 @@ namespace Droodism.RadiationBelt
         public Vector3 Scale = Vector3.one * 14;
 
         public bool Enabled;
-        public float innerDist ; // 主半径
-        public float innerRadius ; // 管半径
+        public float innerMajorRadius ; // 主半径
+        public float innerMinorRadius ; // 管半径
         public float innerDeform;
         public float innerHeightScale;
         public int innerParticleCount ; // 粒子数
         public float innerQuality ; // 质量 (越高越薄)
 
-        public float outerDist ;
-        public float outerRadius ;
+        public float outerMajorRadius ;
+        public float outerMinorRadius ;
         public float outerBorderStart ; // 内减法渐变
         public float outerBorderEnd ;
         public float outerCompression; // 太阳侧压缩
@@ -40,72 +40,7 @@ namespace Droodism.RadiationBelt
         
 
         #endregion
-        public float GetInnerDist(Vector3 pciPos)   // pciPos 是行星本地坐标 (PCI)
-        {
-            Vector3 p = pciPos;
-            float dot = Vector3.Dot(p.normalized, starDirection);
-            float deformFactor = Mathf.Lerp(outerCompression, outerExtension, (dot + 1f) / 2f);
-            p /= deformFactor;
-
-            p += Mathf.Sin(p.magnitude * 5f) * innerDeform * p.normalized;
-            p.y *= innerHeightScale;  // 高度缩放，控制圆度
-
-            Vector2 q = new Vector2(new Vector2(p.x, p.z).magnitude - innerDist, p.y);
-            return q.magnitude - innerRadius;
-        }
-
-        public float GetOuterDist(Vector3 pciPos)
-        {
-            Vector3 p = pciPos;
-            float dot = Vector3.Dot(p.normalized, starDirection);
-            float deformFactor = Mathf.Lerp(outerCompression, outerExtension, (dot + 1f) / 2f);
-            p /= deformFactor;
-
-            p += Mathf.Sin(p.magnitude * 5f) * outerDeform * p.normalized;
-            p.y *= outerHeightScale;
-
-            Vector2 q = new Vector2(new Vector2(p.x, p.z).magnitude - outerDist, p.y);
-            float outer = q.magnitude - outerRadius;
-
-            Vector2 q_sub = new Vector2(new Vector2(p.x, p.z).magnitude - outerDist * 0.8f, p.y);
-            float subtract = q_sub.magnitude - outerRadius * 0.7f;
-
-            float border = Mathf.Lerp(outerBorderStart, outerBorderEnd, Mathf.Clamp01(p.magnitude / outerDist));
-
-            return Mathf.Max(outer, -subtract - border);
-        }
-
-        // ====================== 判断 craft 是否在辐射带内 ======================
-        /// <summary>
-        /// craft 是否在内带（用 PCI 坐标判断）
-        /// </summary>
-        public bool IsInInnerBelt(Vector3d craftWorldPos, Transform planetTransform)
-        {
-            Vector3 pci = planetTransform.InverseTransformPoint((Vector3)craftWorldPos);
-            return GetInnerDist(pci) <= 0f;
-        }
-
-        public bool IsInOuterBelt(Vector3d craftWorldPos, Transform planetTransform)
-        {
-            Vector3 pci = planetTransform.InverseTransformPoint((Vector3)craftWorldPos);
-            return GetOuterDist(pci) <= 0f;
-        }
-
-        /// <summary>
-        /// 返回辐射强度因子（0~1），内带强、外带弱
-        /// </summary>
-        public float GetRadiationIntensity(Vector3d craftWorldPos, Transform planetTransform)
-        {
-            Vector3 pci = planetTransform.InverseTransformPoint((Vector3)craftWorldPos);
-            float dInner = GetInnerDist(pci);
-            float dOuter = GetOuterDist(pci);
-
-            if (dInner <= 0f)
-                return Mathf.Clamp01(1f - dInner / 0.1f);  // 内带强度高
-            if (dOuter <= 0f)
-                return 0.4f * Mathf.Clamp01(1f - dOuter / 0.3f);  // 外带强度中
-            return 0f;
-        }
+        
         public static string GetConfigFolderPath()
         {
             string folderPath = Application.persistentDataPath + CONFIG_FOLDER;
@@ -149,15 +84,15 @@ namespace Droodism.RadiationBelt
             RadiationBeltConfig defaultCFG = new RadiationBeltConfig();
             defaultCFG.Scale = Vector3.one * 14;
             defaultCFG.Enabled = false;
-            defaultCFG.innerDist = 2f;
-            defaultCFG.innerRadius = 0.5f;
+            defaultCFG.innerMajorRadius = 2f;
+            defaultCFG.innerMinorRadius = 0.45f;
             defaultCFG.innerDeform = 0.2f;
             defaultCFG.innerParticleCount = 8000;
             defaultCFG.innerQuality = 30f;
             defaultCFG.outerHeightScale = 1f;
             defaultCFG.innerHeightScale = 1f;
-            defaultCFG.outerDist = 5f;
-            defaultCFG.outerRadius = 1.5f;
+            defaultCFG.outerMajorRadius = 5.2f;
+            defaultCFG.outerMinorRadius = 1.35f;
             defaultCFG.outerBorderStart = 0.1f;
             defaultCFG.outerBorderEnd = 1.0f;
             defaultCFG.outerCompression = 0.6f;
