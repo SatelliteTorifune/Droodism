@@ -75,6 +75,13 @@ namespace Droodism.RadiationBelt
              {
                  RadiationBeltManager.Instance.ReFreshCurrentConfig();
              })));
+             inspectorModel.Add(new TextButtonModel("Apply Kerbalism Earth Preset", (Action<TextButtonModel>)(b =>
+             {
+                 var manager = RadiationBeltManager.Instance;
+                 if (manager.currentConfig == null) return;
+                 manager.currentConfig.ApplyKerbalismEarthPreset();
+                 manager.ReGenerateMeshes();
+             })));
              inspectorModel.Add(new ToggleModel("show",()=>ShowGeneral,(b =>
              {
                  ShowGeneral = b;
@@ -121,36 +128,82 @@ namespace Droodism.RadiationBelt
 
              #region Inner
              GroupModel InnerInspectorGroup = new GroupModel("Inner");
-            
-             var innerDistModel = new SliderModel("Inner Dist", () => RadiationBeltManager.Instance.currentConfig.innerDist,
-                 s => { RadiationBeltManager.Instance.currentConfig.innerDist = s;}, 0.1f, 3f);
-             innerDistModel.ValueFormatter = (f) => FormatValue(f, 4);
-             InnerInspectorGroup.Add(innerDistModel);
              
-             var innerRadius = new SliderModel("Inner Radius", () => RadiationBeltManager.Instance.currentConfig.innerRadius,
-                 s => { RadiationBeltManager.Instance.currentConfig.innerRadius = s;}, 0.1f, 3f);
-             innerRadius.ValueFormatter = (f) => FormatValue(f, 4);
-             InnerInspectorGroup.Add(innerRadius);
              
-             var innerDeform=new SliderModel("Inner Deform", () => RadiationBeltManager.Instance.currentConfig.innerDeform,
-                 s => { RadiationBeltManager.Instance.currentConfig.innerDeform = s;}, 0.1f, 3f);
-             innerDeform.ValueFormatter = (f) => FormatValue(f, 4);
-             InnerInspectorGroup.Add(innerDeform); 
+             InnerInspectorGroup.Add( new SliderModel("Inner Dist", () => RadiationBeltManager.Instance.currentConfig.innerDist,
+                 s => { RadiationBeltManager.Instance.currentConfig.innerDist = s;}, 0.1f, 3f)
+             {
+                 ValueFormatter = (f) => FormatValue(f, 4)
+             });
+             InnerInspectorGroup.Add( new SliderModel("Inner Radius", () => RadiationBeltManager.Instance.currentConfig.innerRadius,
+                 s => { RadiationBeltManager.Instance.currentConfig.innerRadius = s;}, 0.1f, 3f)
+             {
+                 ValueFormatter = (f) => FormatValue(f, 4)
+             });
              
-             var innerHeightScale=new SliderModel("Inner Height Scale", () => RadiationBeltManager.Instance.currentConfig.innerHeightScale,
-                 s => { RadiationBeltManager.Instance.currentConfig.innerHeightScale = s;}, 0f, 2f,false);
-             innerHeightScale.ValueFormatter = (f) => FormatValue(f, 3);
-             InnerInspectorGroup.Add(innerHeightScale);
              
-             var innerParticleCount=new SliderModel("Inner Particle Count", () => RadiationBeltManager.Instance.currentConfig.innerParticleCount,
-                 s => { RadiationBeltManager.Instance.currentConfig.innerParticleCount = (int)s;}, 0f, 20000f,true);
-             innerParticleCount.ValueFormatter = (f) => FormatValue(f, 1);
-             InnerInspectorGroup.Add(innerParticleCount);
+             InnerInspectorGroup.Add( new SliderModel("Inner Border Dist", () => RadiationBeltManager.Instance.currentConfig.innerBorderDist,
+                 s => { RadiationBeltManager.Instance.currentConfig.innerBorderDist = s;}, 0.0001f, 3f)
+             {
+                 ValueFormatter = (f) => FormatValue(f, 4)
+             });
              
-             var innerQuality=new SliderModel("Inner Quality", () => RadiationBeltManager.Instance.currentConfig.innerQuality,
-                 s => { RadiationBeltManager.Instance.currentConfig.innerQuality = (int)s;}, 0f, 50f,true);
-             innerQuality.ValueFormatter = (f) => FormatValue(f, 1);
-             InnerInspectorGroup.Add(innerQuality);
+             InnerInspectorGroup.Add( new SliderModel("Inner Border Radius", () => RadiationBeltManager.Instance.currentConfig.innerBorderRadius,
+                 s => { RadiationBeltManager.Instance.currentConfig.innerBorderRadius = s;}, -3f, 3f)
+             {
+                 ValueFormatter = (f) => FormatValue(f, 4)
+             });
+             
+             InnerInspectorGroup.Add( new SliderModel("Inner Deform", () => RadiationBeltManager.Instance.currentConfig.innerDeform,
+                 s => { RadiationBeltManager.Instance.currentConfig.innerDeform = s;}, -3f, 3f)
+             {
+                 ValueFormatter = (f) => FormatValue(f, 4)
+             });
+
+             InnerInspectorGroup.Add(new SliderModel("Inner Deform XY", () => RadiationBeltManager.Instance.currentConfig.innerDeformXY,
+                 s => { RadiationBeltManager.Instance.currentConfig.innerDeformXY = s; }, 0.05f, 4f)
+             {
+                 ValueFormatter = (f) => FormatValue(f, 4)
+             });
+
+             InnerInspectorGroup.Add(new SliderModel("Inner Border Deform XY", () => RadiationBeltManager.Instance.currentConfig.innerBorderDeformXY,
+                 s => { RadiationBeltManager.Instance.currentConfig.innerBorderDeformXY = s; }, 0.05f, 4f)
+             {
+                 ValueFormatter = (f) => FormatValue(f, 4)
+             });
+
+             InnerInspectorGroup.Add(new SliderModel("Inner Compression", () => RadiationBeltManager.Instance.currentConfig.innerCompression,
+                 s => { RadiationBeltManager.Instance.currentConfig.innerCompression = s; }, 0.1f, 4f)
+             {
+                 ValueFormatter = (f) => FormatValue(f, 4)
+             });
+
+             InnerInspectorGroup.Add(new SliderModel("Inner Extension", () => RadiationBeltManager.Instance.currentConfig.innerExtension,
+                 s => { RadiationBeltManager.Instance.currentConfig.innerExtension = s; }, 0.1f, 4f)
+             {
+                 ValueFormatter = (f) => FormatValue(f, 4)
+             });
+             
+             
+             
+             InnerInspectorGroup.Add(new SliderModel("Inner Height Scale", () => RadiationBeltManager.Instance.currentConfig.innerHeightScale,
+                 s => { RadiationBeltManager.Instance.currentConfig.innerHeightScale = s;}, 0f, 2f,false)
+             {
+                 ValueFormatter = (f) => FormatValue(f, 3)
+             });
+             
+           
+             InnerInspectorGroup.Add(new SliderModel("Inner Particle Count", () => RadiationBeltManager.Instance.currentConfig.innerParticleCount,
+                 s => { RadiationBeltManager.Instance.currentConfig.innerParticleCount = (int)s;}, 0f, 20000f,true)
+             {
+                 ValueFormatter = (f) => FormatValue(f, 1)
+             });
+             
+             InnerInspectorGroup.Add(new SliderModel("Inner Quality", () => RadiationBeltManager.Instance.currentConfig.innerQuality,
+                 s => { RadiationBeltManager.Instance.currentConfig.innerQuality = (int)s;}, 0f, 50f,true)
+             {
+                 ValueFormatter = (f) => FormatValue(f, 1)
+             });
              
              inspectorModel.AddGroup(InnerInspectorGroup);
              #endregion
@@ -158,55 +211,79 @@ namespace Droodism.RadiationBelt
              #region Outer
              GroupModel OuterInspectorGroup = new GroupModel("Outer");
              
-             var outerDist=new SliderModel("Outer Disk", () => RadiationBeltManager.Instance.currentConfig.outerDist,
-                 s => { RadiationBeltManager.Instance.currentConfig.outerDist = (int)s;},  0.1f, 3f);
-             outerDist.ValueFormatter = (f) => FormatValue(f, 4);
-             OuterInspectorGroup.Add(outerDist);
+             OuterInspectorGroup.Add(new SliderModel("Outer Dist", () => RadiationBeltManager.Instance.currentConfig.outerDist,
+                 s => { RadiationBeltManager.Instance.currentConfig.outerDist = s;},  0.1f, 5f)
+             {
+                 ValueFormatter = (f) => FormatValue(f, 4)
+             });
              
-             var outerRadius=new SliderModel("Outer Radius", () => RadiationBeltManager.Instance.currentConfig.outerRadius,
-                 s => { RadiationBeltManager.Instance.currentConfig.outerRadius = s;},  0.1f, 3f);
-             outerRadius.ValueFormatter = (f) => FormatValue(f, 4);
-             OuterInspectorGroup.Add(outerRadius);
+             OuterInspectorGroup.Add(new SliderModel("Outer Radius", () => RadiationBeltManager.Instance.currentConfig.outerRadius,
+                 s => { RadiationBeltManager.Instance.currentConfig.outerRadius = s;},  0.1f, 5f)
+             {
+                 ValueFormatter = (f) => FormatValue(f, 4)
+             });
              
-             var outerBorderStart=new SliderModel("Outer Border Start", () => RadiationBeltManager.Instance.currentConfig.outerBorderStart,
-                 s => { RadiationBeltManager.Instance.currentConfig.outerBorderStart = s;},  0.1f, 3f);
-             outerBorderStart.ValueFormatter = (f) => FormatValue(f, 4);
-             OuterInspectorGroup.Add(outerBorderStart);
+             OuterInspectorGroup.Add(new SliderModel("Outer Border Dist", () => RadiationBeltManager.Instance.currentConfig.outerBorderDist,
+                 s => { RadiationBeltManager.Instance.currentConfig.outerBorderDist = s;},  0.0001f, 5f)
+             {
+                 ValueFormatter = (f) => FormatValue(f, 4)
+             });
              
-             var outerBorderEnd=new SliderModel("Outer Border End", () => RadiationBeltManager.Instance.currentConfig.outerBorderEnd,
-                 s => { RadiationBeltManager.Instance.currentConfig.outerBorderEnd =s;},  0.1f, 3f);
-             outerBorderEnd.ValueFormatter = (f) => FormatValue(f, 4);
-             OuterInspectorGroup.Add(outerBorderEnd);
              
-             var outerCompression=new SliderModel("Outer Compression", () => RadiationBeltManager.Instance.currentConfig.outerCompression,
-                 s => { RadiationBeltManager.Instance.currentConfig.outerCompression = s;},  0.1f, 3f);
-             outerCompression.ValueFormatter = (f) => FormatValue(f, 4);
-             OuterInspectorGroup.Add(outerCompression);
+             OuterInspectorGroup.Add(new SliderModel("Outer Border Radius", () => RadiationBeltManager.Instance.currentConfig.outerBorderRadius,
+                 s => { RadiationBeltManager.Instance.currentConfig.outerBorderRadius =s;},  0.0001f, 5f)
+             {
+                 ValueFormatter = (f) => FormatValue(f, 4)
+             });
              
-             var outerExtension=new SliderModel("Outer Extension", () => RadiationBeltManager.Instance.currentConfig.outerExtension,
-                 s => { RadiationBeltManager.Instance.currentConfig.outerExtension = s;},  0.1f, 3f);
-             outerExtension.ValueFormatter = (f) => FormatValue(f, 4);
-             OuterInspectorGroup.Add(outerExtension);
+             OuterInspectorGroup.Add(new SliderModel("Outer Compression", () => RadiationBeltManager.Instance.currentConfig.outerCompression,
+                 s => { RadiationBeltManager.Instance.currentConfig.outerCompression = s;},  0.1f, 3f)
+             {
+                 ValueFormatter = (f) => FormatValue(f, 4)
+             });
              
-             var outerDeform=new SliderModel("Outer Deform", () => RadiationBeltManager.Instance.currentConfig.outerDeform,
-                 s => { RadiationBeltManager.Instance.currentConfig.outerDeform = s;}, 0.1f, 3f);
-             outerDeform.ValueFormatter = (f) => FormatValue(f, 4);
-             OuterInspectorGroup.Add(outerDeform);  
+             OuterInspectorGroup.Add(new SliderModel("Outer Extension", () => RadiationBeltManager.Instance.currentConfig.outerExtension,
+                 s => { RadiationBeltManager.Instance.currentConfig.outerExtension = s;},  0.1f, 3f)
+             {
+                 ValueFormatter = (f) => FormatValue(f, 4)
+             });
+
+             OuterInspectorGroup.Add(new SliderModel("Outer Deform XY", () => RadiationBeltManager.Instance.currentConfig.outerDeformXY,
+                 s => { RadiationBeltManager.Instance.currentConfig.outerDeformXY = s;},  0.05f, 4f)
+             {
+                 ValueFormatter = (f) => FormatValue(f, 4)
+             });
+
+             OuterInspectorGroup.Add(new SliderModel("Outer Border Deform XY", () => RadiationBeltManager.Instance.currentConfig.outerBorderDeformXY,
+                 s => { RadiationBeltManager.Instance.currentConfig.outerBorderDeformXY = s;},  0.05f, 4f)
+             {
+                 ValueFormatter = (f) => FormatValue(f, 4)
+             });
              
-             var outerHeightScale=new SliderModel("Outer Height Scale ", () => RadiationBeltManager.Instance.currentConfig.outerHeightScale,
-                 s => { RadiationBeltManager.Instance.currentConfig.outerHeightScale = s;}, 0f, 2f);
-             outerHeightScale.ValueFormatter = (f) => FormatValue(f, 3);
-             OuterInspectorGroup.Add(outerHeightScale);
              
-             var outerParticleCount=new SliderModel("Outer Particle Count", () => RadiationBeltManager.Instance.currentConfig.outerParticleCount,
-                 s => { RadiationBeltManager.Instance.currentConfig.outerParticleCount = (int)s;}, 0f, 20000f,true);
-             outerParticleCount.ValueFormatter = (f) => FormatValue(f, 1);
-             OuterInspectorGroup.Add(outerParticleCount);
+             OuterInspectorGroup.Add(new SliderModel("Outer Deform", () => RadiationBeltManager.Instance.currentConfig.outerDeform,
+                 s => { RadiationBeltManager.Instance.currentConfig.outerDeform = s;}, 0.0f, 3f)
+             {
+                 ValueFormatter = (f) => FormatValue(f, 4)
+             });  
              
-             var outerQuality=new SliderModel("Outer Quality", () => RadiationBeltManager.Instance.currentConfig.outerQuality,
-                 s => { RadiationBeltManager.Instance.currentConfig.outerQuality = (int)s;}, 0f, 50f,true);
-             outerQuality.ValueFormatter = (f) => FormatValue(f, 4);
-             OuterInspectorGroup.Add(outerQuality);
+             OuterInspectorGroup.Add(new SliderModel("Outer Height Scale ", () => RadiationBeltManager.Instance.currentConfig.outerHeightScale,
+                 s => { RadiationBeltManager.Instance.currentConfig.outerHeightScale = s;}, 0f, 2f)
+             {
+                 ValueFormatter = (f) => FormatValue(f, 3)
+             });
+             
+             OuterInspectorGroup.Add(new SliderModel("Outer Particle Count", () => RadiationBeltManager.Instance.currentConfig.outerParticleCount,
+                 s => { RadiationBeltManager.Instance.currentConfig.outerParticleCount = (int)s;}, 0f, 20000f,true)
+             {
+                 ValueFormatter = (f) => FormatValue(f, 1)
+             });
+             
+             OuterInspectorGroup.Add(new SliderModel("Outer Quality", () => RadiationBeltManager.Instance.currentConfig.outerQuality,
+                 s => { RadiationBeltManager.Instance.currentConfig.outerQuality = (int)s;}, 0f, 50f,true)
+             {
+                 ValueFormatter = (f) => FormatValue(f, 4)
+             });
              
              inspectorModel.AddGroup(OuterInspectorGroup);
              #endregion

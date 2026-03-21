@@ -34,43 +34,32 @@ namespace Droodism.RadiationBelt
             int particle_count, 
             float quality)
         {
-            // store stuff
-            Vector3 p;
-            float D;
-
-            // hard-limit on sample count, to avoid infinite sampling when the distance function is positive everywhere
-            int sample_limit = particle_count * 1000;
-
-            // divide once
-            float thickness = 1.0f / quality;
-
-            // preallocate position container
             var points = new List<Vector3>(particle_count);
+            int sample_limit = particle_count * 1000;
+            float thickness = 1f / Mathf.Max(0.01f, quality);
 
-            // particle-fitting
-            int samples = 0;
-            int i = 0;
+            int i = 0, samples = 0;
             while (i < particle_count && samples < sample_limit)
             {
-                // generate random position inside bounding volume
-                p.x = UnityEngine.Random.value * domain_hsize.x * 2f + domain_offset.x - domain_hsize.x;
-                p.y = UnityEngine.Random.value * domain_hsize.y * 2f + domain_offset.y - domain_hsize.y;
-                p.z = UnityEngine.Random.value * domain_hsize.z * 2f + domain_offset.z - domain_hsize.z;
+                // Match Kerbalism fitting convention:
+                // p in [domain_offset, domain_offset + domain_hsize]
+                float rx = UnityEngine.Random.value * 2f - 1f;
+                float ry = UnityEngine.Random.value * 2f - 1f;
+                float rz = UnityEngine.Random.value * 2f - 1f;
+                Vector3 p = new Vector3(
+                    rx * domain_hsize.x + domain_offset.x,
+                    ry * domain_hsize.y + domain_offset.y,
+                    rz * domain_hsize.z + domain_offset.z
+                );
 
-                // calculate signed distance
-                D = dist_func(p);
+                float D = dist_func(p);
 
-                if (D <= 0.0f) // if inside
+                // Keep only a thin shell *inside* the field border, same as Kerbalism.
+                if (D <= 0f && D > -thickness)
                 {
-                    // this displays the exact radiation field border
-                    if (D <= 0.0 && D > -thickness)
-                    {
-                        points.Add(p);
-                        ++i;
-                    }
+                    points.Add(p);
+                    ++i;
                 }
-
-                // count samples
                 ++samples;
             }
 

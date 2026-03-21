@@ -46,18 +46,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Parent: {fileID: 0}
   pointMaterial: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
-  starDirection: {x: -1, y: 0, z: 0}
-  innerDist: 2
-  innerRadius: 0.5
-  innerDeform: 0.2
-  innerParticleCount: 8000
-  innerQuality: 30
-  outerDist: 5
-  outerRadius: 1.5
-  outerBorderStart: 0.1
-  outerBorderEnd: 1
-  outerCompression: 0.6
-  outerExtension: 1.5
-  outerDeform: 0.15
-  outerParticleCount: 15000
-  outerQuality: 40

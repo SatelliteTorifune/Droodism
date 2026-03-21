@@ -10,22 +10,21 @@ namespace Droodism.RadiationBelt
 {
     public class ProceduralRadiationBelt : MonoBehaviour
     {
-     
-        public GameObject Parent;               // 行星的 ScaledSpace GameObject
-        public Material   pointMaterial;
+        public GameObject Parent;
+        public Material pointMaterial;
         
         private RadiationBeltConfig config;
         public ParticleMesh innerMesh;
         public ParticleMesh outerMesh;
 
         private int lastRenderedFrame = -1;
-        
         private bool isRegenerating;
 
         public void LoadDataFromConfig(RadiationBeltConfig config)
         {
-            this.config= config;
+            this.config = config;
         }
+        
         public async void RegenerateMeshesAsync()
         {
             if (isRegenerating || config == null) return;
@@ -35,16 +34,17 @@ namespace Droodism.RadiationBelt
 
             try
             {
-                Func<Vector3, float> innerSDF = config.GetInnerDist;
-                Func<Vector3, float> outerSDF = config.GetOuterDist;
+                Func<Vector3, float> innerSDF = Inner_func;
+                Func<Vector3, float> outerSDF = Outer_func;
 
-                Vector3 hsize = new Vector3(config.outerDist + config.outerRadius * 2f,
-                    config.outerRadius * 2f * Mathf.Max(config.innerHeightScale, config.outerHeightScale),
-                    config.outerDist + config.outerRadius * 2f);
+                Vector3 innerDomain = Inner_domain();
+                Vector3 innerOffset = Inner_offset();
+                Vector3 outerDomain = Outer_domain();
+                Vector3 outerOffset = Outer_offset();
 
-                var innerTask = ParticleMesh.CreateAsync(innerSDF, hsize, Vector3.zero, config.innerParticleCount, config.innerQuality);
-                var outerTask = ParticleMesh.CreateAsync(outerSDF, hsize * 1.2f, Vector3.zero, config.outerParticleCount, config.outerQuality);
-
+                var innerTask = ParticleMesh.CreateAsync(innerSDF, innerDomain, innerOffset, config.innerParticleCount, config.innerQuality);
+                var outerTask = ParticleMesh.CreateAsync(outerSDF, outerDomain, outerOffset, config.outerParticleCount, config.outerQuality);
+                
                 await Task.WhenAll(innerTask, outerTask);
 
                 innerMesh = await innerTask;
@@ -61,6 +61,88 @@ namespace Droodism.RadiationBelt
                 isRegenerating = false;
             }
         }
+
+        #region  今天拼了
+    
+        public float Inner_func(Vector3 p)
+        {
+            float innerCompression = Mathf.Max(0.01f, config.innerCompression);
+            float innerExtension = Mathf.Max(0.01f, config.innerExtension);
+            p.x *= p.x < 0.0f ? innerExtension : innerCompression;
+
+            float innerDeformXY = Mathf.Max(0.01f, config.innerDeformXY);
+            float innerBorderDeformXY = Mathf.Max(0.01f, config.innerBorderDeformXY);
+            float q1 = Mathf.Sqrt((p.x * p.x + p.z * p.z) * innerDeformXY) - config.innerDist;
+            float d1 = Mathf.Sqrt(q1 * q1 + p.y * p.y) - config.innerRadius;
+            float q2 = Mathf.Sqrt((p.x * p.x + p.z * p.z) * innerBorderDeformXY) - config.innerBorderDist;
+            float d2 = Mathf.Sqrt(q2 * q2 + p.y * p.y) - config.innerBorderRadius;
+            return Mathf.Max(d1, -d2) + (config.innerDeform > 0.001 ? (Mathf.Sin(p.x * 5.0f) * Mathf.Sin(p.y * 7.0f) * Mathf.Sin(p.z * 6.0f)) * config.innerDeform : 0.0f);
+        }
+
+        public Vector3 Inner_domain()
+        {
+            float p = Mathf.Max((config.innerDist + config.innerRadius), (config.innerBorderDist + config.innerBorderRadius));
+            float innerDeformXY = Mathf.Max(0.01f, config.innerDeformXY);
+            float innerBorderDeformXY = Mathf.Max(0.01f, config.innerBorderDeformXY);
+            float innerCompression = Mathf.Max(0.01f, config.innerCompression);
+            float innerExtension = Mathf.Max(0.01f, config.innerExtension);
+
+            float w = p * Mathf.Sqrt(1f / Mathf.Min(innerDeformXY, innerBorderDeformXY));
+            return new Vector3((w / innerCompression + w / innerExtension) * 0.5f, Mathf.Max(config.innerRadius, config.innerBorderRadius), w) * (1.0f + Mathf.Max(0f, config.innerDeform));
+        }
+
+        public Vector3 Inner_offset()
+        {
+            float p = Mathf.Max((config.innerDist + config.innerRadius), (config.innerBorderDist + config.innerBorderRadius));
+            float innerDeformXY = Mathf.Max(0.01f, config.innerDeformXY);
+            float innerBorderDeformXY = Mathf.Max(0.01f, config.innerBorderDeformXY);
+            float innerCompression = Mathf.Max(0.01f, config.innerCompression);
+            float innerExtension = Mathf.Max(0.01f, config.innerExtension);
+
+            float w = p * Mathf.Sqrt(1f / Mathf.Min(innerDeformXY, innerBorderDeformXY));
+            return new Vector3(w / innerCompression - (w / innerCompression + w / innerExtension) * 0.5f, 0.0f, 0.0f);
+        }
+
+        public float Outer_func(Vector3 p)
+        {
+            float outerCompression = Mathf.Max(0.01f, config.outerCompression);
+            float outerExtension = Mathf.Max(0.01f, config.outerExtension);
+            p.x *= p.x < 0.0f ? outerExtension : outerCompression;
+
+            float outerDeformXY = Mathf.Max(0.01f, config.outerDeformXY);
+            float outerBorderDeformXY = Mathf.Max(0.01f, config.outerBorderDeformXY);
+            float q1 = Mathf.Sqrt((p.x * p.x + p.z * p.z) * outerDeformXY) - config.outerDist;
+            float d1 = Mathf.Sqrt(q1 * q1 + p.y * p.y) - config.outerRadius;
+            float q2 = Mathf.Sqrt((p.x * p.x + p.z * p.z) * outerBorderDeformXY) - config.outerBorderDist;
+            float d2 = Mathf.Sqrt(q2 * q2 + p.y * p.y) - config.outerBorderRadius;
+            return Mathf.Max(d1, -d2) + (config.outerDeform > 0.001 ? (Mathf.Sin(p.x * 5.0f) * Mathf.Sin(p.y * 7.0f) * Mathf.Sin(p.z * 6.0f)) * config.outerDeform : 0.0f);
+        }
+
+        public Vector3 Outer_domain()
+        {
+            float p = Mathf.Max((config.outerDist + config.outerRadius), (config.outerBorderDist + config.outerBorderRadius));
+            float outerDeformXY = Mathf.Max(0.01f, config.outerDeformXY);
+            float outerBorderDeformXY = Mathf.Max(0.01f, config.outerBorderDeformXY);
+            float outerCompression = Mathf.Max(0.01f, config.outerCompression);
+            float outerExtension = Mathf.Max(0.01f, config.outerExtension);
+
+            float w = p * Mathf.Sqrt(1f / Mathf.Min(outerDeformXY, outerBorderDeformXY));
+            return new Vector3((w / outerCompression + w / outerExtension) * 0.5f, Mathf.Max(config.outerRadius, config.outerBorderRadius), w) * (1.0f + Mathf.Max(0f, config.outerDeform));
+        }
+
+        public Vector3 Outer_offset()
+        {
+            float p = Mathf.Max((config.outerDist + config.outerRadius), (config.outerBorderDist + config.outerBorderRadius));
+            float outerDeformXY = Mathf.Max(0.01f, config.outerDeformXY);
+            float outerBorderDeformXY = Mathf.Max(0.01f, config.outerBorderDeformXY);
+            float outerCompression = Mathf.Max(0.01f, config.outerCompression);
+            float outerExtension = Mathf.Max(0.01f, config.outerExtension);
+
+            float w = p * Mathf.Sqrt(1f / Mathf.Min(outerDeformXY, outerBorderDeformXY));
+            return new Vector3(w / outerCompression - (w / outerCompression + w / outerExtension) * 0.5f, 0.0f, 0.0f);
+        }
+
+        #endregion
         
         private void Update()
         {
@@ -69,14 +151,12 @@ namespace Droodism.RadiationBelt
 
         private void SycWithParent()
         {
-            
             transform.position = Parent.transform.position;
+            transform.rotation = Parent.transform.rotation;
         }
         
-
         void OnDestroy()
         {
-            // 清理 mesh 防止内存泄漏
             if (innerMesh != null)
             {
                 foreach (var m in innerMesh.meshes ?? new List<Mesh>()) if (m) Destroy(m);

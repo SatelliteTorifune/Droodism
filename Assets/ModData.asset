@@ -33,6 +33,7 @@ MonoBehaviour:
   _loadPriority: 400
   _name: Droodism
   _otherAssets:
+  - {fileID: 4800000, guid: a47cf6a210efb3d428d8dde7a88b7b7e, type: 3}
   - {fileID: 2800000, guid: c2503f6c8b1301f47931ce7891b9443b, type: 3}
   - {fileID: 4900000, guid: 2f28744980bce6a46b09955e6f949278, type: 3}
   - {fileID: 2800000, guid: c837144b5a2a3cf49bc0d20fadf51828, type: 3}
