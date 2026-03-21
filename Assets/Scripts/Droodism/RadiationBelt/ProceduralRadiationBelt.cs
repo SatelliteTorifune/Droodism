@@ -10,68 +10,40 @@ namespace Droodism.RadiationBelt
 {
     public class ProceduralRadiationBelt : MonoBehaviour
     {
-     
-        public GameObject Parent;               
-        public Material   pointMaterial;
+        public GameObject Parent;
+        public Material pointMaterial;
         
         private RadiationBeltConfig config;
         public ParticleMesh innerMesh;
         public ParticleMesh outerMesh;
 
         private int lastRenderedFrame = -1;
-        
         private bool isRegenerating;
 
         public void LoadDataFromConfig(RadiationBeltConfig config)
         {
-            this.config= config;
+            this.config = config;
         }
         
         public async void RegenerateMeshesAsync()
         {
-            if (isRegenerating || config == null)
-            {
-                return;
-            }
+            if (isRegenerating || config == null) return;
             isRegenerating = true;
 
             Mod.Log("Rebuilding Meshes");
 
             try
             {
-                Func<Vector3, float> innerSDF = p => EllipticalCrescentTorusSDF(
-                    Deform(p, config.innerHeightScale, config.innerDeform),
-                    config.innerMajorRadius,
-                    config.innerOuterCenterX, config.innerOuterCenterY, 
-                    config.innerOuterRadiusX, config.innerOuterRadiusY,
-                    config.innerCoreCenterX, config.innerCoreCenterY,
-                    config.innerCoreRadiusX, config.innerCoreRadiusY
-                );
+                Func<Vector3, float> innerSDF = Inner_func;
+                Func<Vector3, float> outerSDF = Outer_func;
 
-                Func<Vector3, float> outerSDF = p => EllipticalCrescentTorusSDF(
-                    Deform(p, config.outerHeightScale, config.outerDeform),
-                    config.outerMajorRadius,
-                    config.outerOuterCenterX, config.outerOuterCenterY,
-                    config.outerOuterRadiusX, config.outerOuterRadiusY,
-                    config.outerCoreCenterX, config.outerCoreCenterY,
-                    config.outerCoreRadiusX, config.outerCoreRadiusY
-                );
+                Vector3 innerDomain = Inner_domain();
+                Vector3 innerOffset = Inner_offset();
+                Vector3 outerDomain = Outer_domain();
+                Vector3 outerOffset = Outer_offset();
 
-
-                Vector3 innerSize = new Vector3(
-                    (config.innerMajorRadius + config.innerMinorRadius) * 2.2f,
-                    config.innerMinorRadius * 6f * config.innerHeightScale,
-                    (config.innerMajorRadius + config.innerMinorRadius) * 2.2f
-                );
-                
-                Vector3 outerSize = new Vector3(
-                    (config.outerMajorRadius + config.outerMinorRadius) * 3.5f,
-                    config.outerMinorRadius * 6f * config.outerHeightScale,
-                    (config.outerMajorRadius + config.outerMinorRadius) * 3.5f
-                );
-
-                var innerTask = ParticleMesh.CreateAsync(innerSDF, innerSize, Vector3.zero, config.innerParticleCount, config.innerQuality);
-                var outerTask = ParticleMesh.CreateAsync(outerSDF, outerSize * 1.2f, Vector3.zero, config.outerParticleCount, config.outerQuality);
+                var innerTask = ParticleMesh.CreateAsync(innerSDF, innerDomain, innerOffset, config.innerParticleCount, config.innerQuality);
+                var outerTask = ParticleMesh.CreateAsync(outerSDF, outerDomain, outerOffset, config.outerParticleCount, config.outerQuality);
                 
                 await Task.WhenAll(innerTask, outerTask);
 
@@ -89,119 +61,88 @@ namespace Droodism.RadiationBelt
                 isRegenerating = false;
             }
         }
-        
-       
-        private float CrescentTorusSDF(Vector3 worldPos, float majorRadius, float outerRadius, float coreOffset, float coreRadius)
-        {
-            // 转换到torus局部坐标系
-            float radialDist = new Vector2(worldPos.x, worldPos.z).magnitude;
-            Vector2 localPos = new Vector2(radialDist - majorRadius, worldPos.y);
+
+        #region  今天拼了
     
-            // 外圆（主环）- 可以调整中心偏移和半径
-            Vector2 outerCenter = new Vector2(config.outerCoreCenterX, config.outerCoreCenterY); // 默认(0,0)
-            Vector2 outerToPos = localPos - outerCenter;
-            float outerCircle = outerToPos.magnitude - outerRadius;
-    
-            // 内圆（挖空部分）- 可以独立调整中心偏移和半径
-            Vector2 coreCenter = new Vector2(config.innerCoreCenterX, config.innerCoreCenterY); // 默认可以是非同心的
-            Vector2 coreToPos = localPos - coreCenter;
-            float innerCircle = coreToPos.magnitude - coreRadius;
-    
-            // 月牙形 = 外圆内部 AND NOT(内圆内部)
-            if (outerCircle <= 0 && innerCircle > 0)
-            {
-                return outerCircle;
-            }
-            else if (outerCircle > 0)
-            {
-                return outerCircle;
-            }
-            else
-            {
-                return 1000f;
-            }
-        }
-        // 椭圆月牙形torus SDF
-        private float EllipticalCrescentTorusSDF(Vector3 worldPos, float majorRadius,
-            float outerCenterX, float outerCenterY, float outerRadiusX, float outerRadiusY,
-            float coreCenterX, float coreCenterY, float coreRadiusX, float coreRadiusY)
+        public float Inner_func(Vector3 p)
         {
-            // 转换到torus局部坐标系
-            float radialDist = new Vector2(worldPos.x, worldPos.z).magnitude;
-            Vector2 localPos = new Vector2(radialDist - majorRadius, worldPos.y);
-            
-            // 外椭圆（主环）- 使用椭圆距离场
-            Vector2 outerCenter = new Vector2(outerCenterX, outerCenterY);
-            Vector2 outerRelative = localPos - outerCenter;
-            float outerEllipse = EllipseSDF(outerRelative, outerRadiusX, outerRadiusY);
-            
-            // 内椭圆（挖空部分）
-            Vector2 coreCenter = new Vector2(coreCenterX, coreCenterY);
-            Vector2 coreRelative = localPos - coreCenter;
-            float innerEllipse = EllipseSDF(coreRelative, coreRadiusX, coreRadiusY);
-            
-            // 月牙形区域判定
-            if (outerEllipse <= 0 && innerEllipse > 0)
-            {
-                return outerEllipse; // 在月牙形区域内
-            }
-            else if (outerEllipse > 0)
-            {
-                return outerEllipse; // 在外椭圆外部
-            }
-            else
-            {
-                return 1000f; // 在内椭圆内部（被挖掉）
-            }
-        }
-        
-        // 椭圆SDF函数
-        private float EllipseSDF(Vector2 p, float radiusX, float radiusY)
-        {
-            // 将点归一化到椭圆坐标系
-            Vector2 normalized = new Vector2(p.x / radiusX, p.y / radiusY);
-            
-            // 计算到椭圆的距离
-            float distance = normalized.magnitude;
-            
-            // 椭圆SDF近似公式
-            if (distance < 1e-6f) return -Mathf.Max(radiusX, radiusY);
-            
-            // 更精确的椭圆SDF
-            float angle = Mathf.Atan2(normalized.y, normalized.x);
-            float ellipseRadius = radiusX * radiusY / Mathf.Sqrt(
-                radiusX * radiusX * Mathf.Sin(angle) * Mathf.Sin(angle) +
-                radiusY * radiusY * Mathf.Cos(angle) * Mathf.Cos(angle)
-            );
-            
-            return distance * Mathf.Max(radiusX, radiusY) - ellipseRadius;
-        }
-        
-        // 简化版椭圆SDF（性能更好）
-        private float SimpleEllipseSDF(Vector2 p, float radiusX, float radiusY)
-        {
-            Vector2 e = new Vector2(radiusX, radiusY);
-            Vector2 normalized = new Vector2(p.x / e.x, p.y / e.y);
-            float distNormalized = normalized.magnitude;
-            if (distNormalized < 1e-6f) return -Mathf.Min(e.x, e.y);
-            return distNormalized * Mathf.Min(e.x, e.y) - Mathf.Min(e.x, e.y);
+            float innerCompression = Mathf.Max(0.01f, config.innerCompression);
+            float innerExtension = Mathf.Max(0.01f, config.innerExtension);
+            p.x *= p.x < 0.0f ? innerExtension : innerCompression;
+
+            float innerDeformXY = Mathf.Max(0.01f, config.innerDeformXY);
+            float innerBorderDeformXY = Mathf.Max(0.01f, config.innerBorderDeformXY);
+            float q1 = Mathf.Sqrt((p.x * p.x + p.z * p.z) * innerDeformXY) - config.innerDist;
+            float d1 = Mathf.Sqrt(q1 * q1 + p.y * p.y) - config.innerRadius;
+            float q2 = Mathf.Sqrt((p.x * p.x + p.z * p.z) * innerBorderDeformXY) - config.innerBorderDist;
+            float d2 = Mathf.Sqrt(q2 * q2 + p.y * p.y) - config.innerBorderRadius;
+            return Mathf.Max(d1, -d2) + (config.innerDeform > 0.001 ? (Mathf.Sin(p.x * 5.0f) * Mathf.Sin(p.y * 7.0f) * Mathf.Sin(p.z * 6.0f)) * config.innerDeform : 0.0f);
         }
 
+        public Vector3 Inner_domain()
+        {
+            float p = Mathf.Max((config.innerDist + config.innerRadius), (config.innerBorderDist + config.innerBorderRadius));
+            float innerDeformXY = Mathf.Max(0.01f, config.innerDeformXY);
+            float innerBorderDeformXY = Mathf.Max(0.01f, config.innerBorderDeformXY);
+            float innerCompression = Mathf.Max(0.01f, config.innerCompression);
+            float innerExtension = Mathf.Max(0.01f, config.innerExtension);
 
-        
-        private Vector3 Deform(Vector3 p, float heightScale, float deform)
-        {
-            p.y *= heightScale;
-            p += ApplyDeform(p, deform);
-            return p;
+            float w = p * Mathf.Sqrt(1f / Mathf.Min(innerDeformXY, innerBorderDeformXY));
+            return new Vector3((w / innerCompression + w / innerExtension) * 0.5f, Mathf.Max(config.innerRadius, config.innerBorderRadius), w) * (1.0f + Mathf.Max(0f, config.innerDeform));
         }
-        
-        private Vector3 ApplyDeform(Vector3 p, float amount)
+
+        public Vector3 Inner_offset()
         {
-            if (amount <= 0) return Vector3.zero;
-            float n = Mathf.Sin(p.x*3.5f + p.y*1.1f) * Mathf.Cos(p.z*3.2f + p.y*2.3f) * 0.6f;
-            return p.normalized * n * amount;
+            float p = Mathf.Max((config.innerDist + config.innerRadius), (config.innerBorderDist + config.innerBorderRadius));
+            float innerDeformXY = Mathf.Max(0.01f, config.innerDeformXY);
+            float innerBorderDeformXY = Mathf.Max(0.01f, config.innerBorderDeformXY);
+            float innerCompression = Mathf.Max(0.01f, config.innerCompression);
+            float innerExtension = Mathf.Max(0.01f, config.innerExtension);
+
+            float w = p * Mathf.Sqrt(1f / Mathf.Min(innerDeformXY, innerBorderDeformXY));
+            return new Vector3(w / innerCompression - (w / innerCompression + w / innerExtension) * 0.5f, 0.0f, 0.0f);
         }
+
+        public float Outer_func(Vector3 p)
+        {
+            float outerCompression = Mathf.Max(0.01f, config.outerCompression);
+            float outerExtension = Mathf.Max(0.01f, config.outerExtension);
+            p.x *= p.x < 0.0f ? outerExtension : outerCompression;
+
+            float outerDeformXY = Mathf.Max(0.01f, config.outerDeformXY);
+            float outerBorderDeformXY = Mathf.Max(0.01f, config.outerBorderDeformXY);
+            float q1 = Mathf.Sqrt((p.x * p.x + p.z * p.z) * outerDeformXY) - config.outerDist;
+            float d1 = Mathf.Sqrt(q1 * q1 + p.y * p.y) - config.outerRadius;
+            float q2 = Mathf.Sqrt((p.x * p.x + p.z * p.z) * outerBorderDeformXY) - config.outerBorderDist;
+            float d2 = Mathf.Sqrt(q2 * q2 + p.y * p.y) - config.outerBorderRadius;
+            return Mathf.Max(d1, -d2) + (config.outerDeform > 0.001 ? (Mathf.Sin(p.x * 5.0f) * Mathf.Sin(p.y * 7.0f) * Mathf.Sin(p.z * 6.0f)) * config.outerDeform : 0.0f);
+        }
+
+        public Vector3 Outer_domain()
+        {
+            float p = Mathf.Max((config.outerDist + config.outerRadius), (config.outerBorderDist + config.outerBorderRadius));
+            float outerDeformXY = Mathf.Max(0.01f, config.outerDeformXY);
+            float outerBorderDeformXY = Mathf.Max(0.01f, config.outerBorderDeformXY);
+            float outerCompression = Mathf.Max(0.01f, config.outerCompression);
+            float outerExtension = Mathf.Max(0.01f, config.outerExtension);
+
+            float w = p * Mathf.Sqrt(1f / Mathf.Min(outerDeformXY, outerBorderDeformXY));
+            return new Vector3((w / outerCompression + w / outerExtension) * 0.5f, Mathf.Max(config.outerRadius, config.outerBorderRadius), w) * (1.0f + Mathf.Max(0f, config.outerDeform));
+        }
+
+        public Vector3 Outer_offset()
+        {
+            float p = Mathf.Max((config.outerDist + config.outerRadius), (config.outerBorderDist + config.outerBorderRadius));
+            float outerDeformXY = Mathf.Max(0.01f, config.outerDeformXY);
+            float outerBorderDeformXY = Mathf.Max(0.01f, config.outerBorderDeformXY);
+            float outerCompression = Mathf.Max(0.01f, config.outerCompression);
+            float outerExtension = Mathf.Max(0.01f, config.outerExtension);
+
+            float w = p * Mathf.Sqrt(1f / Mathf.Min(outerDeformXY, outerBorderDeformXY));
+            return new Vector3(w / outerCompression - (w / outerCompression + w / outerExtension) * 0.5f, 0.0f, 0.0f);
+        }
+
+        #endregion
         
         private void Update()
         {
