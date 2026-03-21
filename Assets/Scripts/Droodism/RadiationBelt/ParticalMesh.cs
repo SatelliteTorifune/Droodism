@@ -34,31 +34,31 @@ namespace Droodism.RadiationBelt
             int particle_count, 
             float quality)
         {
-            // store stuff
             var points = new List<Vector3>(particle_count);
-            int sample_limit = particle_count * 1200;
-            float thickness = 1f / quality;   // 不再只用厚度
+            int sample_limit = particle_count * 1000;
+            float thickness = 1f / Mathf.Max(0.01f, quality);
 
             int i = 0, samples = 0;
             while (i < particle_count && samples < sample_limit)
             {
+                // Match Kerbalism fitting convention:
+                // p in [domain_offset, domain_offset + domain_hsize]
+                float rx = UnityEngine.Random.value * 2f - 1f;
+                float ry = UnityEngine.Random.value * 2f - 1f;
+                float rz = UnityEngine.Random.value * 2f - 1f;
                 Vector3 p = new Vector3(
-                    UnityEngine.Random.value * domain_hsize.x * 2f + domain_offset.x - domain_hsize.x,
-                    UnityEngine.Random.value * domain_hsize.y * 2f + domain_offset.y - domain_hsize.y,
-                    UnityEngine.Random.value * domain_hsize.z * 2f + domain_offset.z - domain_hsize.z
+                    rx * domain_hsize.x + domain_offset.x,
+                    ry * domain_hsize.y + domain_offset.y,
+                    rz * domain_hsize.z + domain_offset.z
                 );
 
                 float D = dist_func(p);
 
-                if (D <= 0f)
+                // Keep only a thin shell *inside* the field border, same as Kerbalism.
+                if (D <= 0f && D > -thickness)
                 {
-                    float depth = -D;  // 0 at surface, positive inside
-                    float prob = Mathf.Exp(-depth * 5.0f) * 3.5f;  // 表面 prob≈3.5，内部快速掉到0
-                    if (UnityEngine.Random.value < prob)
-                    {
-                        points.Add(p);
-                        ++i;
-                    }
+                    points.Add(p);
+                    ++i;
                 }
                 ++samples;
             }

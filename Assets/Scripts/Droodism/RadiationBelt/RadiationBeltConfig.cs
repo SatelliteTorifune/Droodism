@@ -126,6 +126,36 @@ namespace Droodism.RadiationBelt
             return  defaultCFG;
             
         }
+
+        public void ApplyKerbalismEarthPreset()
+        {
+            innerDist = 0.813f;
+            innerRadius = 0.7000f;
+            innerDeformXY = 0.5720f;
+            innerCompression = 1.01f;
+            innerExtension = 1.00f;
+            innerBorderDist = 0.0001f;
+            innerBorderRadius = 0.915f;
+            innerBorderDeformXY = 0.5f;
+            innerDeform = 0.0f;
+            innerQuality = 50.0f;
+
+            outerDist = 2.6338f;
+            outerRadius = 2.48f;
+            outerDeformXY = 0.7225f;
+            outerCompression = 1.01f;
+            outerExtension = 1.00f;
+            outerBorderDist = 1.4412f;
+            outerBorderRadius = 1.4875f;
+            outerBorderDeformXY = 0.7225f;
+            outerDeform = 0.0f;
+            outerQuality = 60.0f;
+
+            // 旧字段同步，避免旧逻辑分支读取到不一致数据
+            innerExtention = innerExtension;
+            innerBorderDeform = innerBorderDeformXY;
+            NormalizeLegacyFields();
+        }
         public static RadiationBeltConfig LoadFromFile(string planetName)
         {
             string filePath = GetConfigPath(planetName);

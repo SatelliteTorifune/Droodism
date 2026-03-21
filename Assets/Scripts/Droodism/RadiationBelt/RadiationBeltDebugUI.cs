@@ -75,6 +75,13 @@ namespace Droodism.RadiationBelt
              {
                  RadiationBeltManager.Instance.ReFreshCurrentConfig();
              })));
+             inspectorModel.Add(new TextButtonModel("Apply Kerbalism Earth Preset", (Action<TextButtonModel>)(b =>
+             {
+                 var manager = RadiationBeltManager.Instance;
+                 if (manager.currentConfig == null) return;
+                 manager.currentConfig.ApplyKerbalismEarthPreset();
+                 manager.ReGenerateMeshes();
+             })));
              inspectorModel.Add(new ToggleModel("show",()=>ShowGeneral,(b =>
              {
                  ShowGeneral = b;
@@ -136,7 +143,7 @@ namespace Droodism.RadiationBelt
              
              
              InnerInspectorGroup.Add( new SliderModel("Inner Border Dist", () => RadiationBeltManager.Instance.currentConfig.innerBorderDist,
-                 s => { RadiationBeltManager.Instance.currentConfig.innerBorderDist = s;}, 0.1f, 3f)
+                 s => { RadiationBeltManager.Instance.currentConfig.innerBorderDist = s;}, 0.0001f, 3f)
              {
                  ValueFormatter = (f) => FormatValue(f, 4)
              });
@@ -217,14 +224,14 @@ namespace Droodism.RadiationBelt
              });
              
              OuterInspectorGroup.Add(new SliderModel("Outer Border Dist", () => RadiationBeltManager.Instance.currentConfig.outerBorderDist,
-                 s => { RadiationBeltManager.Instance.currentConfig.outerBorderDist = s;},  0.1f, 5f)
+                 s => { RadiationBeltManager.Instance.currentConfig.outerBorderDist = s;},  0.0001f, 5f)
              {
                  ValueFormatter = (f) => FormatValue(f, 4)
              });
              
              
              OuterInspectorGroup.Add(new SliderModel("Outer Border Radius", () => RadiationBeltManager.Instance.currentConfig.outerBorderRadius,
-                 s => { RadiationBeltManager.Instance.currentConfig.outerBorderRadius =s;},  0.1f, 5f)
+                 s => { RadiationBeltManager.Instance.currentConfig.outerBorderRadius =s;},  0.0001f, 5f)
              {
                  ValueFormatter = (f) => FormatValue(f, 4)
              });
@@ -255,7 +262,7 @@ namespace Droodism.RadiationBelt
              
              
              OuterInspectorGroup.Add(new SliderModel("Outer Deform", () => RadiationBeltManager.Instance.currentConfig.outerDeform,
-                 s => { RadiationBeltManager.Instance.currentConfig.outerDeform = s;}, 0.1f, 3f)
+                 s => { RadiationBeltManager.Instance.currentConfig.outerDeform = s;}, 0.0f, 3f)
              {
                  ValueFormatter = (f) => FormatValue(f, 4)
              });  
