@@ -18,10 +18,20 @@ namespace Droodism.RadiationBelt
         public Vector3 Scale = Vector3.one * 14;
 
         public bool Enabled;
-        public float innerMajorRadius ; // 主半径
-        public float innerMinorRadius ; // 管半径
+        public float innerMajorRadius;
+        public float innerMinorRadius;
+        public float innerOuterCenterX;
+        public float innerOuterCenterY;
+        public float innerOuterRadiusX;
+        public float innerOuterRadiusY;
+        public float innerCoreRadius;
         public float innerDeform;
+        public float innerCoreOffset;
         public float innerHeightScale;
+        public float innerCoreRadiusX;
+        public float innerCoreRadiusY;
+        public float innerCoreCenterX;
+        public float innerCoreCenterY;
         public int innerParticleCount ; // 粒子数
         public float innerQuality ; // 质量 (越高越薄)
 
@@ -29,6 +39,16 @@ namespace Droodism.RadiationBelt
         public float outerMinorRadius ;
         public float outerBorderStart ; // 内减法渐变
         public float outerBorderEnd ;
+        public float outerCoreRadius;
+        public float outerCoreOffset;
+        public float outerCoreCenterX;
+        public float outerCoreCenterY;
+        public float outerCoreRadiusX;
+        public float outerCoreRadiusY;
+        public float outerOuterCenterX;
+        public float outerOuterCenterY;
+        public float outerOuterRadiusX;
+        public float outerOuterRadiusY;
         public float outerCompression; // 太阳侧压缩
         public float outerExtension; // 尾侧拉伸
         public float outerDeform;
@@ -85,14 +105,20 @@ namespace Droodism.RadiationBelt
             defaultCFG.Scale = Vector3.one * 14;
             defaultCFG.Enabled = false;
             defaultCFG.innerMajorRadius = 2f;
-            defaultCFG.innerMinorRadius = 0.45f;
             defaultCFG.innerDeform = 0.2f;
+            defaultCFG.innerCoreRadius = 0.5f;
+            defaultCFG.innerCoreOffset = 0.5f;
             defaultCFG.innerParticleCount = 8000;
             defaultCFG.innerQuality = 30f;
+            
             defaultCFG.outerHeightScale = 1f;
             defaultCFG.innerHeightScale = 1f;
+            
+            
             defaultCFG.outerMajorRadius = 5.2f;
             defaultCFG.outerMinorRadius = 1.35f;
+            defaultCFG.outerCoreRadius = 1.0f;
+            defaultCFG.outerCoreOffset = 0.5f;
             defaultCFG.outerBorderStart = 0.1f;
             defaultCFG.outerBorderEnd = 1.0f;
             defaultCFG.outerCompression = 0.6f;
