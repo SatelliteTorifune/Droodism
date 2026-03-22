@@ -41,7 +41,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             bool outer = manager.TryGetBeltSignedDistancePciMeters(
                 planetName, vesselPci, planetCenterPci, false, out var dOut) && dOut < 0f;
 
-            Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"内{inner},外{outer}");
+            Game.Instance.FlightScene.FlightSceneUI.ShowMessage($" inner {inner},outer {outer}");
         }
     }
 

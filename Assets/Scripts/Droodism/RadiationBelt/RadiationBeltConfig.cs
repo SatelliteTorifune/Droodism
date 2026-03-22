@@ -97,33 +97,34 @@ namespace Droodism.RadiationBelt
             defaultCFG.renderMetersPerUnit = 1_000_000f;
             defaultCFG.Enabled = false;
             
-            defaultCFG.innerDist = 1.0f;
-            defaultCFG.innerRadius = 2f;
-            defaultCFG.innerBorderDist = 1.0f;
-            defaultCFG.innerBorderRadius = 1.0f;
-            defaultCFG.innerDeformXY = 1.0f;
-            defaultCFG.innerCompression = 1.0f;
-            defaultCFG.innerExtension = 1.0f;
-            defaultCFG.innerBorderDeformXY = 1.0f;
-            defaultCFG.innerDeform = 0.2f;
-            defaultCFG.innerExtention = 1.0f; // 旧字段兼容
-            defaultCFG.innerBorderDeform = 1.0f; // 旧字段兼容
-            defaultCFG.innerParticleCount = 8000;
-            defaultCFG.innerQuality = 30f;
+            // Kerbalism 'earth' defaults
+            defaultCFG.innerDist = 0.813f;
+            defaultCFG.innerRadius = 0.7000f;
+            defaultCFG.innerBorderDist = 0.0001f;
+            defaultCFG.innerBorderRadius = 0.915f;
+            defaultCFG.innerDeformXY = 0.5720f;
+            defaultCFG.innerCompression = 1.01f;
+            defaultCFG.innerExtension = 1.00f;
+            defaultCFG.innerBorderDeformXY = 0.5f;
+            defaultCFG.innerDeform = 0.0f;
+            defaultCFG.innerExtention = defaultCFG.innerExtension; // legacy
+            defaultCFG.innerBorderDeform = defaultCFG.innerBorderDeformXY; // legacy
+            defaultCFG.innerParticleCount = 12000;
+            defaultCFG.innerQuality = 50f;
             
-            defaultCFG.outerDist = 1.5f;
-            defaultCFG.outerRadius = 2.5f;
-            defaultCFG.outerBorderDist = 1.5f;
-            defaultCFG.outerBorderRadius = 1.0f;
-            defaultCFG.outerDeformXY = 1.0f;
-            defaultCFG.outerCompression = 1.0f;
-            defaultCFG.outerExtension = 1.0f;
-            defaultCFG.outerBorderDeformXY = 1.0f;
+            defaultCFG.outerDist = 2.6338f;
+            defaultCFG.outerRadius = 2.48f;
+            defaultCFG.outerBorderDist = 1.4412f;
+            defaultCFG.outerBorderRadius = 1.4875f;
+            defaultCFG.outerDeformXY = 0.7225f;
+            defaultCFG.outerCompression = 1.01f;
+            defaultCFG.outerExtension = 1.00f;
+            defaultCFG.outerBorderDeformXY = 0.7225f;
             defaultCFG.outerHeightScale = 1f;
             defaultCFG.innerHeightScale = 1f;
-            defaultCFG.outerDeform = 0.15f;
-            defaultCFG.outerParticleCount = 15000;
-            defaultCFG.outerQuality = 40f;
+            defaultCFG.outerDeform = 0.0f;
+            defaultCFG.outerParticleCount = 18000;
+            defaultCFG.outerQuality = 60f;
             defaultCFG.NormalizeLegacyFields();
             return  defaultCFG;
             
