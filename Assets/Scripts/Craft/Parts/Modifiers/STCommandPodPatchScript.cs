@@ -48,7 +48,24 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 double radiusMeters = manager.GetPlanetRadiusMeters(planetName);
                 double rMeters = vesselPci.magnitude;
                 double rNorm = radiusMeters > 1e-6 ? rMeters / radiusMeters : 0.0;
-                Mod.Log($"[RadProbe] body={planetName} r={rMeters:F0}m R={radiusMeters:F0}m r/R={rNorm:F3} dIn={dIn:F4} dOut={dOut:F4} inInner={inner} inOuter={outer}");
+
+                float renderLocalRadius = -1f;
+                Vector3 parentLossy = Vector3.one;
+                Vector3 beltLossy = Vector3.one;
+                var beltRenderer = manager.BeltInstance;
+                if (beltRenderer != null && beltRenderer.Parent != null)
+                {
+                    Vector3 vesselWorld = this.PartScript.Transform.position;
+                    Vector3 local = beltRenderer.transform.InverseTransformPoint(vesselWorld);
+                    renderLocalRadius = local.magnitude;
+                    parentLossy = beltRenderer.Parent.transform.lossyScale;
+                    beltLossy = beltRenderer.transform.lossyScale;
+                }
+
+                Mod.Log(
+                    $"[RadProbe] body={planetName} r={rMeters:F0}m R={radiusMeters:F0}m r/R={rNorm:F3} " +
+                    $"renderLocalR={renderLocalRadius:F3} dIn={dIn:F4} dOut={dOut:F4} inInner={inner} inOuter={outer} " +
+                    $"parentScale={parentLossy} beltScale={beltLossy}");
             }
         }
 

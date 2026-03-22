@@ -107,8 +107,8 @@ namespace Droodism.RadiationBelt
             }
             try
             {
-               //未来加旋转,别急
-                //this.CurrentRadiationBeltObject.transform.eulerAngles = Vector3.one;
+                // Keep belt visual scale neutral; rendering uses transform matrix only
+                this.CurrentRadiationBeltObject.transform.localScale = Vector3.one;
                 if (CurrentFocusPlanet != currentName)
                 {
                     OnFocusPlanetChanged(currentName);
@@ -256,6 +256,7 @@ namespace Droodism.RadiationBelt
             var beltInstance=currentRadiationBeltObject.GetComponent<ProceduralRadiationBelt>();
             beltInstance.Parent = parentGameObject;
             currentRadiationBeltObject.transform.SetParent(parentGameObject.transform);
+            currentRadiationBeltObject.transform.localScale = Vector3.one;
             
             var config = RadiationBeltConfig.LoadFromFile(PlanetName);
             if (config.Enabled)
