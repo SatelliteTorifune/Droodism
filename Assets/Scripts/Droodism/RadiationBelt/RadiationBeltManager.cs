@@ -107,7 +107,7 @@ namespace Droodism.RadiationBelt
             }
             try
             {
-                // Keep belt visual scale neutral; rendering uses transform matrix only
+                // Keep belt scale neutral so visual boundary matches physics query.
                 this.CurrentRadiationBeltObject.transform.localScale = Vector3.one;
                 if (CurrentFocusPlanet != currentName)
                 {
@@ -334,6 +334,7 @@ namespace Droodism.RadiationBelt
             {
                 return 1f;
             }
+            EnsurePlanetRadiusCached(CurrentFocusPlanet);
             return planetRadiusScaledByName.TryGetValue(CurrentFocusPlanet, out double radiusScaled)
                 ? Mathf.Max(1e-6f, (float)radiusScaled)
                 : 1f;
@@ -342,6 +343,7 @@ namespace Droodism.RadiationBelt
         public double GetCurrentPlanetRadiusMeters()
         {
             if (string.IsNullOrEmpty(CurrentFocusPlanet)) return 1.0;
+            EnsurePlanetRadiusCached(CurrentFocusPlanet);
             return planetRadiusMetersByName.TryGetValue(CurrentFocusPlanet, out double radiusMeters)
                 ? Math.Max(1e-6, radiusMeters)
                 : 1.0;
@@ -350,9 +352,22 @@ namespace Droodism.RadiationBelt
         public double GetPlanetRadiusMeters(string planetName)
         {
             if (string.IsNullOrEmpty(planetName)) return 1.0;
+            EnsurePlanetRadiusCached(planetName);
             return planetRadiusMetersByName.TryGetValue(planetName, out double radiusMeters)
                 ? Math.Max(1e-6, radiusMeters)
                 : 1.0;
+        }
+
+        /// <summary>
+        /// Map render unit helper. In current map view, empirical scale is close to 1 unit = 1000 km.
+        /// </summary>
+        public float GetCurrentPlanetRenderRadiusUnits()
+        {
+            double meters = GetCurrentPlanetRadiusMeters();
+            float metersPerUnit = (currentConfig != null && currentConfig.renderMetersPerUnit > 0f)
+                ? currentConfig.renderMetersPerUnit
+                : 1_000_000f;
+            return Mathf.Max(1e-6f, (float)(meters / metersPerUnit));
         }
 
         public double NormalizedToMeters(double normalizedDistance)
@@ -439,7 +454,8 @@ namespace Droodism.RadiationBelt
                 return false;
             }
 
-            if (!planetRadiusMetersByName.TryGetValue(planetName, out double radiusMeters))
+            double radiusMeters = GetPlanetRadiusMeters(planetName);
+            if (radiusMeters <= 1.0)
             {
                 return false;
             }
@@ -472,6 +488,21 @@ namespace Droodism.RadiationBelt
 
             // Fallback for non-focus bodies (should be rare with current gameplay logic).
             return RadiationBeltConfig.LoadFromFile(planetName);
+        }
+
+        private void EnsurePlanetRadiusCached(string planetName)
+        {
+            if (string.IsNullOrEmpty(planetName)) return;
+            if (planetRadiusMetersByName.ContainsKey(planetName) && planetRadiusScaledByName.ContainsKey(planetName)) return;
+            if (!Game.InFlightScene || Game.Instance?.FlightScene?.CraftNode?.Parent?.PlanetData?.SolarSystemData?.Planets == null) return;
+
+            foreach (IPlanetData planet in Game.Instance.FlightScene.CraftNode.Parent.PlanetData.SolarSystemData.Planets)
+            {
+                if (!string.Equals(planet.Name, planetName, StringComparison.Ordinal)) continue;
+                planetRadiusMetersByName[planetName] = planet.Radius;
+                planetRadiusScaledByName[planetName] = planet.RadiusScaledSpace;
+                return;
+            }
         }
 
         private static float EvaluateInnerSignedDistance(RadiationBeltConfig cfg, Vector3 p)

@@ -16,6 +16,7 @@ namespace Droodism.RadiationBelt
         #region parameter
         
         public Vector3 Scale = Vector3.one * 1;
+        public float renderMetersPerUnit;
 
         public bool Enabled;
         public float innerDist;
@@ -93,6 +94,7 @@ namespace Droodism.RadiationBelt
         {
             RadiationBeltConfig defaultCFG = new RadiationBeltConfig();
             defaultCFG.Scale = Vector3.one;
+            defaultCFG.renderMetersPerUnit = 1_000_000f;
             defaultCFG.Enabled = false;
             
             defaultCFG.innerDist = 1.0f;
@@ -193,6 +195,7 @@ namespace Droodism.RadiationBelt
             if (innerBorderDeformXY <= 0f && innerBorderDeform > 0f) innerBorderDeformXY = innerBorderDeform;
 
             // 新字段最终兜底
+            if (renderMetersPerUnit <= 0f) renderMetersPerUnit = 1_000_000f;
             if (innerDeformXY <= 0f) innerDeformXY = 1.0f;
             if (innerCompression <= 0f) innerCompression = 1.0f;
             if (innerExtension <= 0f) innerExtension = 1.0f;

@@ -55,7 +55,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 var beltRenderer = manager.BeltInstance;
                 if (beltRenderer != null && beltRenderer.Parent != null)
                 {
-                    Vector3 vesselWorld = this.PartScript.Transform.position;
+
+                    Vector3 vesselWorld = this.PartScript.CraftScript.Transform.position;//FlightData.Position.ToVector3();
                     Vector3 local = beltRenderer.transform.InverseTransformPoint(vesselWorld);
                     renderLocalRadius = local.magnitude;
                     parentLossy = beltRenderer.Parent.transform.lossyScale;

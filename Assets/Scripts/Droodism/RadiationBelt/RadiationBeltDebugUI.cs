@@ -123,6 +123,11 @@ namespace Droodism.RadiationBelt
                  s => { RadiationBeltManager.Instance.currentConfig.Scale.z = s;}, 0.1f, 40f);
              scaleZ.ValueFormatter = (f) => FormatValue(f, 4);
              GeneralGroupModel.Add(scaleZ);
+
+             var renderMetersPerUnit = new SliderModel("Render Meters Per Unit", () => RadiationBeltManager.Instance.currentConfig.renderMetersPerUnit,
+                 s => { RadiationBeltManager.Instance.currentConfig.renderMetersPerUnit = s; }, 10000f, 10000000f, false);
+             renderMetersPerUnit.ValueFormatter = f => FormatValue(f, 0);
+             GeneralGroupModel.Add(renderMetersPerUnit);
              inspectorModel.AddGroup(GeneralGroupModel);
              #endregion
 
