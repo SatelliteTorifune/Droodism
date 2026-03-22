@@ -15,7 +15,7 @@ namespace Droodism.RadiationBelt
 
         #region parameter
         
-        public Vector3 Scale = Vector3.one * 14;
+        public Vector3 Scale = Vector3.one * 1;
 
         public bool Enabled;
         public float innerDist;
@@ -92,7 +92,7 @@ namespace Droodism.RadiationBelt
         public static RadiationBeltConfig CreateDefault()
         {
             RadiationBeltConfig defaultCFG = new RadiationBeltConfig();
-            defaultCFG.Scale = Vector3.one * 14;
+            defaultCFG.Scale = Vector3.one;
             defaultCFG.Enabled = false;
             
             defaultCFG.innerDist = 1.0f;
@@ -175,7 +175,7 @@ namespace Droodism.RadiationBelt
                 {
                     RadiationBeltConfig config = serializer.Deserialize(stream) as RadiationBeltConfig;
                     config?.NormalizeLegacyFields();
-                    Mod.Log($"Cloud config '{planetName}' loaded from: {filePath}");
+                    Mod.Log($"Radiation Belt config '{planetName}' loaded from: {filePath}");
                     return config;
                 }
             }

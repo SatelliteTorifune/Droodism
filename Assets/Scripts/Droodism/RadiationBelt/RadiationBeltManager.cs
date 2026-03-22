@@ -5,6 +5,7 @@ using ModApi.Flight;
 using ModApi.Flight.Events;
 using ModApi.Flight.MapView;
 using ModApi.GameLoop;
+using ModApi.Planet;
 using ModApi.Scenes.Events;
 using UnityEngine;
 
@@ -22,6 +23,8 @@ namespace Droodism.RadiationBelt
         public RadiationBeltCameraRenderer  CameraRenderer;
         
         public List<ProceduralRadiationBelt> BeltList=new List<ProceduralRadiationBelt>();
+        private readonly Dictionary<string, double> planetRadiusMetersByName = new Dictionary<string, double>();
+        private readonly Dictionary<string, double> planetRadiusScaledByName = new Dictionary<string, double>();
             
 
         #region NBCS
@@ -90,7 +93,7 @@ namespace Droodism.RadiationBelt
 
             if (this.currentConfig==null)
             {
-                Mod.Log("1");
+                Mod.Log("currentConfig is null");
                 currentConfig = RadiationBeltConfig.LoadFromFile(currentName);
                 return;
             }
@@ -104,8 +107,8 @@ namespace Droodism.RadiationBelt
             }
             try
             {
-                
-                this.CurrentRadiationBeltObject.transform.localScale = this.currentConfig.Scale;
+               //未来加旋转,别急
+                //this.CurrentRadiationBeltObject.transform.eulerAngles = Vector3.one;
                 if (CurrentFocusPlanet != currentName)
                 {
                     OnFocusPlanetChanged(currentName);
@@ -127,9 +130,12 @@ namespace Droodism.RadiationBelt
             currentConfig = RadiationBeltConfig.LoadFromFile(currentName);
             BeltInstance = GetCurrentRadiationBelt(currentName);
             CurrentRadiationBeltObject = BeltInstance.gameObject;
+            this.CameraRenderer.beltRenderer = BeltInstance;
+            // Ensure meshes exist for the newly focused planet if enabled.
             if (currentConfig.Enabled)
             {
-                this.CameraRenderer.beltRenderer = BeltInstance; 
+                BeltInstance.LoadDataFromConfig(currentConfig);
+                BeltInstance.RegenerateMeshesAsync();
             }
             Mod.Log("OnFocusPlanet finished");
 
@@ -198,12 +204,16 @@ namespace Droodism.RadiationBelt
         {
 
             this.BeltList.Clear();
+            this.planetRadiusMetersByName.Clear();
+            this.planetRadiusScaledByName.Clear();
             CurrentFocusPlanet = GetCurrentFocusPlanet();
 
             try
             {
-                foreach (var planetData in Game.Instance.FlightScene.CraftNode.Parent.PlanetData.SolarSystemData.Planets)
+                foreach (IPlanetData planetData in Game.Instance.FlightScene.CraftNode.Parent.PlanetData.SolarSystemData.Planets)
                 {
+                    planetRadiusMetersByName[planetData.Name] = planetData.Radius;
+                    planetRadiusScaledByName[planetData.Name] = planetData.RadiusScaledSpace;
                     AddPlanetRadiationBelt(planetData.Name);
                 }
                 
@@ -315,6 +325,35 @@ namespace Droodism.RadiationBelt
                 }
             }
             return null;
+        }
+
+        public float GetCurrentPlanetRadiusScaledSpace()
+        {
+            if (string.IsNullOrEmpty(CurrentFocusPlanet))
+            {
+                return 1f;
+            }
+            return planetRadiusScaledByName.TryGetValue(CurrentFocusPlanet, out double radiusScaled)
+                ? Mathf.Max(1e-6f, (float)radiusScaled)
+                : 1f;
+        }
+
+        public double GetCurrentPlanetRadiusMeters()
+        {
+            if (string.IsNullOrEmpty(CurrentFocusPlanet)) return 1.0;
+            return planetRadiusMetersByName.TryGetValue(CurrentFocusPlanet, out double radiusMeters)
+                ? Math.Max(1e-6, radiusMeters)
+                : 1.0;
+        }
+
+        public double NormalizedToMeters(double normalizedDistance)
+        {
+            return normalizedDistance * GetCurrentPlanetRadiusMeters();
+        }
+
+        public double MetersToNormalized(double metersDistance)
+        {
+            return metersDistance / GetCurrentPlanetRadiusMeters();
         }
     }
     

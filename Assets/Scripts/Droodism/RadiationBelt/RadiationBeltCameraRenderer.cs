@@ -34,12 +34,20 @@ namespace Droodism.RadiationBelt
             }
             if (RadiationBeltDebugUI.Instance.ShowInner)
             {
-                beltRenderer.innerMesh?.Render( beltRenderer.transform.localToWorldMatrix);
+                float radiusScale = RadiationBeltManager.Instance != null
+                    ? RadiationBeltManager.Instance.GetCurrentPlanetRadiusScaledSpace()
+                    : 1f;
+                Matrix4x4 renderMatrix = beltRenderer.transform.localToWorldMatrix * Matrix4x4.Scale(Vector3.one * radiusScale);
+                beltRenderer.innerMesh?.Render(renderMatrix);
             }
             
             if (RadiationBeltDebugUI.Instance.ShowOuter)
             {
-                beltRenderer.outerMesh?.Render( beltRenderer.transform.localToWorldMatrix);
+                float radiusScale = RadiationBeltManager.Instance != null
+                    ? RadiationBeltManager.Instance.GetCurrentPlanetRadiusScaledSpace()
+                    : 1f;
+                Matrix4x4 renderMatrix = beltRenderer.transform.localToWorldMatrix * Matrix4x4.Scale(Vector3.one * radiusScale);
+                beltRenderer.outerMesh?.Render(renderMatrix);
             }
            
             
