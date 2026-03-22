@@ -11,12 +11,13 @@ namespace Droodism.RadiationBelt
     public class RadiationBeltConfig
     {
         public const string CONFIG_FOLDER = "/UserData/DroodismConfig/RadiationBeltConfigs/";
-        private const string DEFAULT_CONFIG_NAME = "Default";
-
         #region parameter
         
-        public Vector3 Scale = Vector3.one * 1;
         public float renderMetersPerUnit;
+        public Vector3 beltTiltAxis;
+        public float beltTiltDegrees;
+        public float beltSpinSpeedDegPerSec;
+        public float beltSpinPhaseDeg;
 
         public bool Enabled;
         public float innerDist;
@@ -28,8 +29,6 @@ namespace Droodism.RadiationBelt
         public float innerExtension;
         public float innerBorderDeformXY;
         public float innerDeform;
-        public float innerExtention;
-        public float innerBorderDeform;
         public float innerHeightScale;
         public int innerParticleCount ; // 粒子数
         public float innerQuality ; // 质量 (越高越薄)
@@ -46,13 +45,9 @@ namespace Droodism.RadiationBelt
         public float outerHeightScale;
         public int outerParticleCount ;
         public float outerQuality;
-        
-        public Vector3 starDirection = Vector3.left;
-        
-
         #endregion
         
-        public static string GetConfigFolderPath()
+        private  static string GetConfigFolderPath()
         {
             string folderPath = Application.persistentDataPath + CONFIG_FOLDER;
             if (!Directory.Exists(folderPath))
@@ -61,7 +56,7 @@ namespace Droodism.RadiationBelt
             }
             return folderPath;
         }
-        public static string GetConfigPath(string planetName)
+        private static string GetConfigPath(string planetName)
         {
             return Path.Combine(GetConfigFolderPath(), planetName + ".xml");
         }
@@ -90,14 +85,18 @@ namespace Droodism.RadiationBelt
             }
         }
 
-        public static RadiationBeltConfig CreateDefault()
+        private static RadiationBeltConfig CreateDefault()
         {
             RadiationBeltConfig defaultCFG = new RadiationBeltConfig();
-            defaultCFG.Scale = Vector3.one;
             defaultCFG.renderMetersPerUnit = 1_000_000f;
+            defaultCFG.beltTiltAxis = Vector3.right;
+            defaultCFG.beltTiltDegrees = 11.5f;
+            defaultCFG.beltSpinSpeedDegPerSec = 0f;
+            defaultCFG.beltSpinPhaseDeg = 0f;
             defaultCFG.Enabled = false;
             
             // Kerbalism 'earth' defaults
+            // yes i check the RadiationModel from kerbalism
             defaultCFG.innerDist = 0.813f;
             defaultCFG.innerRadius = 0.7000f;
             defaultCFG.innerBorderDist = 0.0001f;
@@ -107,8 +106,6 @@ namespace Droodism.RadiationBelt
             defaultCFG.innerExtension = 1.00f;
             defaultCFG.innerBorderDeformXY = 0.5f;
             defaultCFG.innerDeform = 0.0f;
-            defaultCFG.innerExtention = defaultCFG.innerExtension; // legacy
-            defaultCFG.innerBorderDeform = defaultCFG.innerBorderDeformXY; // legacy
             defaultCFG.innerParticleCount = 12000;
             defaultCFG.innerQuality = 50f;
             
@@ -130,8 +127,13 @@ namespace Droodism.RadiationBelt
             
         }
 
-        public void ApplyKerbalismEarthPreset()
+        public void ApplyDefaultPreset()
         {
+            beltTiltDegrees = 11.5f;
+            beltTiltAxis = Vector3.right;
+            beltSpinSpeedDegPerSec = 0f;
+            beltSpinPhaseDeg = 0f;
+
             innerDist = 0.813f;
             innerRadius = 0.7000f;
             innerDeformXY = 0.5720f;
@@ -153,10 +155,7 @@ namespace Droodism.RadiationBelt
             outerBorderDeformXY = 0.7225f;
             outerDeform = 0.0f;
             outerQuality = 60.0f;
-
-            // 旧字段同步，避免旧逻辑分支读取到不一致数据
-            innerExtention = innerExtension;
-            innerBorderDeform = innerBorderDeformXY;
+            
             NormalizeLegacyFields();
         }
         public static RadiationBeltConfig LoadFromFile(string planetName)
@@ -189,14 +188,17 @@ namespace Droodism.RadiationBelt
             }
         }
 
+        /// <summary>
+        /// 以防你们瞎几把填数据,加个函数确保输入合法
+        /// </summary>
         private void NormalizeLegacyFields()
         {
-            // 兼容老配置：旧字段有值时用于填充新字段
-            if (innerExtension <= 0f && innerExtention > 0f) innerExtension = innerExtention;
-            if (innerBorderDeformXY <= 0f && innerBorderDeform > 0f) innerBorderDeformXY = innerBorderDeform;
-
-            // 新字段最终兜底
+            
             if (renderMetersPerUnit <= 0f) renderMetersPerUnit = 1_000_000f;
+            
+            bool legacyTiltUnset = beltTiltAxis.sqrMagnitude <= 1e-6f && Mathf.Abs(beltTiltDegrees) <= 1e-4f;
+            if (legacyTiltUnset) beltTiltDegrees = 11.5f;
+            if (beltTiltAxis.sqrMagnitude <= 1e-6f) beltTiltAxis = Vector3.right;
             if (innerDeformXY <= 0f) innerDeformXY = 1.0f;
             if (innerCompression <= 0f) innerCompression = 1.0f;
             if (innerExtension <= 0f) innerExtension = 1.0f;

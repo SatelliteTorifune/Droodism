@@ -34,12 +34,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             string planetName = this.PartScript.CraftScript.CraftNode.Parent.Name;
 
             Vector3 vesselPci = this.PartScript.CraftScript.FlightData.Position.ToVector3();
-            Vector3 planetCenterPci = Vector3.zero;
 
             bool inner = manager.TryGetBeltSignedDistancePciMeters(
-                planetName, vesselPci, planetCenterPci, true, out var dIn) && dIn < 0f;
+                planetName, vesselPci, true, out var dIn) && dIn < 0f;
             bool outer = manager.TryGetBeltSignedDistancePciMeters(
-                planetName, vesselPci, planetCenterPci, false, out var dOut) && dOut < 0f;
+                planetName, vesselPci, false, out var dOut) && dOut < 0f;
 
             Game.Instance.FlightScene.FlightSceneUI.ShowMessage($" inner {inner},outer {outer}");
         }

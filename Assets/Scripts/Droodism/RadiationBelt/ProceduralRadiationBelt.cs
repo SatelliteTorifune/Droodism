@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Assets.Scripts;
+using ModApi.GameLoop;
 using ModApi.CelestialData;
 using ModApi;
 using UnityEngine;
@@ -19,6 +20,7 @@ namespace Droodism.RadiationBelt
 
         private int lastRenderedFrame = -1;
         private bool isRegenerating;
+        private double accumulatedSpinTimeSeconds;
 
         public void LoadDataFromConfig(RadiationBeltConfig config)
         {
@@ -151,8 +153,34 @@ namespace Droodism.RadiationBelt
 
         private void SycWithParent()
         {
-            transform.position = Parent.transform.position;
-            transform.rotation = Parent.transform.rotation;
+            transform.localPosition = Vector3.zero;
+            if (config == null)
+            {
+                transform.localRotation = Quaternion.identity;
+                return;
+            }
+
+            // First tilt the belt axis around a configurable local axis,
+            // then spin around the tilted local up axis.
+            Vector3 tiltAxis = config.beltTiltAxis.sqrMagnitude > 1e-6f
+                ? config.beltTiltAxis.normalized
+                : Vector3.right;
+            Quaternion tilt = Quaternion.AngleAxis(config.beltTiltDegrees, tiltAxis);
+            accumulatedSpinTimeSeconds += GetSpinDeltaTimeSeconds();
+            float spinAngle = config.beltSpinPhaseDeg + (float)accumulatedSpinTimeSeconds * config.beltSpinSpeedDegPerSec;
+            Quaternion spin = Quaternion.AngleAxis(spinAngle, Vector3.up);
+            transform.localRotation = tilt * spin;
+        }
+
+        private float GetSpinDeltaTimeSeconds()
+        {
+            if (Game.Instance?.FlightScene?.TimeManager == null)
+            {
+                return Time.deltaTime;
+            }
+
+            // Warp-aware game delta time (pauses/timewarp already reflected by TimeManager).
+            return Mathf.Max(0f, (float)Game.Instance.FlightScene.TimeManager.DeltaTime);
         }
         
         void OnDestroy()
