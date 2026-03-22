@@ -75,6 +75,7 @@ namespace Droodism.RadiationBelt
              {
                  RadiationBeltManager.Instance.ReFreshCurrentConfig();
              })));
+             
              inspectorModel.Add(new TextButtonModel("Apply Kerbalism Earth Preset", (Action<TextButtonModel>)(b =>
              {
                  var manager = RadiationBeltManager.Instance;

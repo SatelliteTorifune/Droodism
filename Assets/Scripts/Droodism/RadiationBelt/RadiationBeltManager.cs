@@ -280,7 +280,6 @@ namespace Droodism.RadiationBelt
         {
             BeltInstance.LoadDataFromConfig(currentConfig);
             BeltInstance.RegenerateMeshesAsync();
-            //BeltInstance.RegenerateMeshes();
         }
 
         private ProceduralRadiationBelt GetCurrentRadiationBelt(string nAme)
@@ -368,75 +367,6 @@ namespace Droodism.RadiationBelt
                 ? currentConfig.renderMetersPerUnit
                 : 1_000_000f;
             return Mathf.Max(1e-6f, (float)(meters / metersPerUnit));
-        }
-
-        public double NormalizedToMeters(double normalizedDistance)
-        {
-            return normalizedDistance * GetCurrentPlanetRadiusMeters();
-        }
-        
-
-        public bool TryGetBeltSignedDistance(
-            string planetName,
-            Vector3 worldPosition,
-            bool innerBelt,
-            out float signedDistance)
-        {
-            signedDistance = float.PositiveInfinity;
-            var belt = GetCurrentRadiationBelt(planetName);
-            if (belt == null)
-            {
-                return false;
-            }
-
-            var cfg = GetRuntimeConfigForPlanet(planetName);
-            if (cfg == null || !cfg.Enabled)
-            {
-                return false;
-            }
-
-            belt.LoadDataFromConfig(cfg);
-
-            // Convert world position to belt local coordinates.
-            // This keeps the computation space identical to the mesh generation space.
-            Vector3 local = belt.transform.InverseTransformPoint(worldPosition);
-
-            signedDistance = innerBelt ? belt.Inner_func(local) : belt.Outer_func(local);
-            return true;
-        }
-
-        /// <summary>
-        /// PCI (planet-centered inertial) meters-space query.
-        /// Input position is expected to be centered on the target planet, in meters.
-        /// </summary>
-        public bool IsInInnerBeltPciMeters(string planetName, Vector3 pciPositionMeters)
-        {
-            return TryGetBeltSignedDistancePciMeters(planetName, pciPositionMeters, Vector3.zero, true, out float signedDistance) &&
-                   signedDistance < 0f;
-        }
-
-        /// <summary>
-        /// PCI (planet-centered inertial) meters-space query.
-        /// Input position is expected to be centered on the target planet, in meters.
-        /// </summary>
-        public bool IsInOuterBeltPciMeters(string planetName, Vector3 pciPositionMeters)
-        {
-            return TryGetBeltSignedDistancePciMeters(planetName, pciPositionMeters, Vector3.zero, false, out float signedDistance) &&
-                   signedDistance < 0f;
-        }
-
-        public bool TryGetBeltSignedDistancePciMeters(
-            string planetName,
-            Vector3 pciPositionMeters,
-            bool innerBelt,
-            out float signedDistance)
-        {
-            return TryGetBeltSignedDistancePciMeters(
-                planetName,
-                pciPositionMeters,
-                Vector3.zero,
-                innerBelt,
-                out signedDistance);
         }
 
         public bool TryGetBeltSignedDistancePciMeters(
