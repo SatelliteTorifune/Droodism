@@ -83,6 +83,34 @@ namespace Droodism.RadiationBelt
                  manager.CurrentConfig.ApplyDefaultPreset();
                  manager.ReGenerateMeshes();
              })));
+             inspectorModel.Add(new TextButtonModel("Apply Giant Preset", (Action<TextButtonModel>)(b =>
+             {
+                 var manager = RadiationBeltManager.Instance;
+                 if (manager.CurrentConfig == null) return;
+                 manager.CurrentConfig.ApplyGiantPreset();
+                 manager.ReGenerateMeshes();
+             })));
+             inspectorModel.Add(new TextButtonModel("Apply Metallic Preset", (Action<TextButtonModel>)(b =>
+             {
+                 var manager = RadiationBeltManager.Instance;
+                 if (manager.CurrentConfig == null) return;
+                 manager.CurrentConfig.ApplyMetallicPreset();
+                 manager.ReGenerateMeshes();
+             })));
+             inspectorModel.Add(new TextButtonModel("Apply SolidIron Preset", (Action<TextButtonModel>)(b =>
+             {
+                 var manager = RadiationBeltManager.Instance;
+                 if (manager.CurrentConfig == null) return;
+                 manager.CurrentConfig.ApplySolidIronPreset();
+                 manager.ReGenerateMeshes();
+             })));
+             inspectorModel.Add(new TextButtonModel("Apply Anomaly Preset", (Action<TextButtonModel>)(b =>
+             {
+                 var manager = RadiationBeltManager.Instance;
+                 if (manager.CurrentConfig == null) return;
+                 manager.CurrentConfig.ApplyAnomalyPreset();
+                 manager.ReGenerateMeshes();
+             })));
              inspectorModel.Add(new ToggleModel("show",()=>ShowGeneral,(b =>
              {
                  ShowGeneral = b;

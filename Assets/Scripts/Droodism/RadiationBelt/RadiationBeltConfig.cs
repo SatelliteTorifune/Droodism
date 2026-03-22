@@ -158,6 +158,157 @@ namespace Droodism.RadiationBelt
             
             NormalizeLegacyFields();
         }
+
+        public void ApplyGiantPreset()
+        {
+            beltTiltDegrees = 10.8f;
+            beltTiltAxis = Vector3.right;
+            beltSpinSpeedDegPerSec = 0f;
+            beltSpinPhaseDeg = 0f;
+            Enabled = true;
+
+            innerDist = 2.2f;
+            innerRadius = 1.0f;
+            innerDeformXY = 1.0f;
+            innerCompression = 1.05f;
+            innerExtension = 0.8f;
+            innerBorderDist = 0.8f;
+            innerBorderRadius = 1.25f;
+            innerBorderDeformXY = 1.0f;
+            innerDeform = 0.0f;
+            innerHeightScale = 1.0f;
+            innerParticleCount = 16000;
+            innerQuality = 30.0f;
+
+            outerDist = 6.0f;
+            outerRadius = 6.0f;
+            outerDeformXY = 1.0f;
+            outerCompression = 1.05f;
+            outerExtension = 0.7f;
+            // Kerbalism giant model uses border_start/end; map to this implementation's subtraction torus.
+            outerBorderDist = 3.282f;
+            outerBorderRadius = 3.6f;
+            outerBorderDeformXY = 1.0f;
+            outerDeform = 0.0f;
+            outerHeightScale = 1.0f;
+            outerParticleCount = 22000;
+            outerQuality = 30.0f;
+
+            NormalizeLegacyFields();
+        }
+
+        public void ApplyMetallicPreset()
+        {
+            beltTiltDegrees = 7.0f;
+            beltTiltAxis = Vector3.right;
+            beltSpinSpeedDegPerSec = 0f;
+            beltSpinPhaseDeg = 0f;
+            Enabled = true;
+
+            innerDist = 1.25f;
+            innerRadius = 0.15f;
+            innerDeformXY = 1.0f;
+            innerCompression = 1.15f;
+            innerExtension = 1.0f;
+            innerBorderDist = 0.95f;
+            innerBorderRadius = 0.25f;
+            innerBorderDeformXY = 1.0f;
+            innerDeform = 0.05f;
+            innerHeightScale = 1.0f;
+            innerParticleCount = 12000;
+            innerQuality = 50.0f;
+
+            // This model has no outer belt in Kerbalism; keep outer empty.
+            outerDist = 1.0f;
+            outerRadius = 0.1f;
+            outerDeformXY = 1.0f;
+            outerCompression = 1.0f;
+            outerExtension = 1.0f;
+            outerBorderDist = 0.0f;
+            outerBorderRadius = 0.1f;
+            outerBorderDeformXY = 1.0f;
+            outerDeform = 0.0f;
+            outerHeightScale = 1.0f;
+            outerParticleCount = 0;
+            outerQuality = 30.0f;
+
+            NormalizeLegacyFields();
+        }
+
+        public void ApplySolidIronPreset()
+        {
+            beltTiltDegrees = 5.0f;
+            beltTiltAxis = Vector3.right;
+            beltSpinSpeedDegPerSec = 0f;
+            beltSpinPhaseDeg = 0f;
+            Enabled = true;
+
+            innerDist = 1.38f;
+            innerRadius = 0.2f;
+            innerDeformXY = 1.0f;
+            innerCompression = 1.1f;
+            innerExtension = 1.0f;
+            innerBorderDist = 1.1f;
+            innerBorderRadius = 0.28f;
+            innerBorderDeformXY = 1.0f;
+            innerDeform = 0.05f;
+            innerHeightScale = 1.0f;
+            innerParticleCount = 12000;
+            innerQuality = 45.0f;
+
+            outerDist = 1.0f;
+            outerRadius = 0.1f;
+            outerDeformXY = 1.0f;
+            outerCompression = 1.0f;
+            outerExtension = 1.0f;
+            outerBorderDist = 0.0f;
+            outerBorderRadius = 0.1f;
+            outerBorderDeformXY = 1.0f;
+            outerDeform = 0.0f;
+            outerHeightScale = 1.0f;
+            outerParticleCount = 0;
+            outerQuality = 20.0f;
+
+            NormalizeLegacyFields();
+        }
+
+        public void ApplyAnomalyPreset()
+        {
+            beltTiltDegrees = 25.0f;
+            beltTiltAxis = Vector3.right;
+            beltSpinSpeedDegPerSec = 0f;
+            beltSpinPhaseDeg = 0f;
+            Enabled = true;
+
+            // Kerbalism anomaly model is pause-only; approximate as a small polar ring.
+            innerDist = 0.765f;
+            innerRadius = 0.12f;
+            innerDeformXY = 0.45f;
+            innerCompression = 1.0f;
+            innerExtension = 0.8f;
+            innerBorderDist = 0.3f;
+            innerBorderRadius = 0.16f;
+            innerBorderDeformXY = 0.45f;
+            innerDeform = 0.05f;
+            innerHeightScale = 1.0f;
+            innerParticleCount = 8000;
+            innerQuality = 50.0f;
+
+            outerDist = 1.0f;
+            outerRadius = 0.1f;
+            outerDeformXY = 1.0f;
+            outerCompression = 1.0f;
+            outerExtension = 1.0f;
+            outerBorderDist = 0.0f;
+            outerBorderRadius = 0.1f;
+            outerBorderDeformXY = 1.0f;
+            outerDeform = 0.0f;
+            outerHeightScale = 1.0f;
+            outerParticleCount = 0;
+            outerQuality = 50.0f;
+
+            NormalizeLegacyFields();
+        }
         public static RadiationBeltConfig LoadFromFile(string planetName)
         {
             string filePath = GetConfigPath(planetName);
