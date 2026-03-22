@@ -346,14 +346,165 @@ namespace Droodism.RadiationBelt
                 : 1.0;
         }
 
+        public double GetPlanetRadiusMeters(string planetName)
+        {
+            if (string.IsNullOrEmpty(planetName)) return 1.0;
+            return planetRadiusMetersByName.TryGetValue(planetName, out double radiusMeters)
+                ? Math.Max(1e-6, radiusMeters)
+                : 1.0;
+        }
+
         public double NormalizedToMeters(double normalizedDistance)
         {
             return normalizedDistance * GetCurrentPlanetRadiusMeters();
         }
+        
 
-        public double MetersToNormalized(double metersDistance)
+        public bool TryGetBeltSignedDistance(
+            string planetName,
+            Vector3 worldPosition,
+            bool innerBelt,
+            out float signedDistance)
         {
-            return metersDistance / GetCurrentPlanetRadiusMeters();
+            signedDistance = float.PositiveInfinity;
+            var belt = GetCurrentRadiationBelt(planetName);
+            if (belt == null)
+            {
+                return false;
+            }
+
+            var cfg = GetRuntimeConfigForPlanet(planetName);
+            if (cfg == null || !cfg.Enabled)
+            {
+                return false;
+            }
+
+            belt.LoadDataFromConfig(cfg);
+
+            // Convert world position to belt local coordinates.
+            // This keeps the computation space identical to the mesh generation space.
+            Vector3 local = belt.transform.InverseTransformPoint(worldPosition);
+
+            signedDistance = innerBelt ? belt.Inner_func(local) : belt.Outer_func(local);
+            return true;
+        }
+
+        /// <summary>
+        /// PCI (planet-centered inertial) meters-space query.
+        /// Input position is expected to be centered on the target planet, in meters.
+        /// </summary>
+        public bool IsInInnerBeltPciMeters(string planetName, Vector3 pciPositionMeters)
+        {
+            return TryGetBeltSignedDistancePciMeters(planetName, pciPositionMeters, Vector3.zero, true, out float signedDistance) &&
+                   signedDistance < 0f;
+        }
+
+        /// <summary>
+        /// PCI (planet-centered inertial) meters-space query.
+        /// Input position is expected to be centered on the target planet, in meters.
+        /// </summary>
+        public bool IsInOuterBeltPciMeters(string planetName, Vector3 pciPositionMeters)
+        {
+            return TryGetBeltSignedDistancePciMeters(planetName, pciPositionMeters, Vector3.zero, false, out float signedDistance) &&
+                   signedDistance < 0f;
+        }
+
+        public bool TryGetBeltSignedDistancePciMeters(
+            string planetName,
+            Vector3 pciPositionMeters,
+            bool innerBelt,
+            out float signedDistance)
+        {
+            return TryGetBeltSignedDistancePciMeters(
+                planetName,
+                pciPositionMeters,
+                Vector3.zero,
+                innerBelt,
+                out signedDistance);
+        }
+
+        public bool TryGetBeltSignedDistancePciMeters(
+            string planetName,
+            Vector3 pciPositionMeters,
+            Vector3 planetCenterPciMeters,
+            bool innerBelt,
+            out float signedDistance)
+        {
+            signedDistance = float.PositiveInfinity;
+            
+            var cfg = GetRuntimeConfigForPlanet(planetName);
+            if (cfg == null || !cfg.Enabled)
+            {
+                return false;
+            }
+
+            if (!planetRadiusMetersByName.TryGetValue(planetName, out double radiusMeters))
+            {
+                return false;
+            }
+
+            float invRadius = 1f / Mathf.Max(1e-6f, (float)radiusMeters);
+            Vector3 planetRelativeMeters = pciPositionMeters - planetCenterPciMeters;
+
+            // Keep physics query in the same orientation used by rendered belts.
+            // Without this, tilted/rotated planets can produce visible mismatch.
+            var belt = GetCurrentRadiationBelt(planetName);
+            if (belt != null)
+            {
+                planetRelativeMeters = Quaternion.Inverse(belt.transform.rotation) * planetRelativeMeters;
+            }
+
+            Vector3 pNorm = planetRelativeMeters * invRadius;
+
+            signedDistance = innerBelt
+                ? EvaluateInnerSignedDistance(cfg, pNorm)
+                : EvaluateOuterSignedDistance(cfg, pNorm);
+            return true;
+        }
+
+        private RadiationBeltConfig GetRuntimeConfigForPlanet(string planetName)
+        {
+            if (currentConfig != null &&CurrentFocusPlanet== planetName)
+            {
+                return currentConfig;
+            }
+
+            // Fallback for non-focus bodies (should be rare with current gameplay logic).
+            return RadiationBeltConfig.LoadFromFile(planetName);
+        }
+
+        private static float EvaluateInnerSignedDistance(RadiationBeltConfig cfg, Vector3 p)
+        {
+            float innerCompression = Mathf.Max(0.01f, cfg.innerCompression);
+            float innerExtension = Mathf.Max(0.01f, cfg.innerExtension);
+            p.x *= p.x < 0.0f ? innerExtension : innerCompression;
+
+            float innerDeformXY = Mathf.Max(0.01f, cfg.innerDeformXY);
+            float innerBorderDeformXY = Mathf.Max(0.01f, cfg.innerBorderDeformXY);
+            float q1 = Mathf.Sqrt((p.x * p.x + p.z * p.z) * innerDeformXY) - cfg.innerDist;
+            float d1 = Mathf.Sqrt(q1 * q1 + p.y * p.y) - cfg.innerRadius;
+            float q2 = Mathf.Sqrt((p.x * p.x + p.z * p.z) * innerBorderDeformXY) - cfg.innerBorderDist;
+            float d2 = Mathf.Sqrt(q2 * q2 + p.y * p.y) - cfg.innerBorderRadius;
+            return Mathf.Max(d1, -d2) + (cfg.innerDeform > 0.001f
+                ? (Mathf.Sin(p.x * 5.0f) * Mathf.Sin(p.y * 7.0f) * Mathf.Sin(p.z * 6.0f)) * cfg.innerDeform
+                : 0.0f);
+        }
+
+        private static float EvaluateOuterSignedDistance(RadiationBeltConfig cfg, Vector3 p)
+        {
+            float outerCompression = Mathf.Max(0.01f, cfg.outerCompression);
+            float outerExtension = Mathf.Max(0.01f, cfg.outerExtension);
+            p.x *= p.x < 0.0f ? outerExtension : outerCompression;
+
+            float outerDeformXY = Mathf.Max(0.01f, cfg.outerDeformXY);
+            float outerBorderDeformXY = Mathf.Max(0.01f, cfg.outerBorderDeformXY);
+            float q1 = Mathf.Sqrt((p.x * p.x + p.z * p.z) * outerDeformXY) - cfg.outerDist;
+            float d1 = Mathf.Sqrt(q1 * q1 + p.y * p.y) - cfg.outerRadius;
+            float q2 = Mathf.Sqrt((p.x * p.x + p.z * p.z) * outerBorderDeformXY) - cfg.outerBorderDist;
+            float d2 = Mathf.Sqrt(q2 * q2 + p.y * p.y) - cfg.outerBorderRadius;
+            return Mathf.Max(d1, -d2) + (cfg.outerDeform > 0.001f
+                ? (Mathf.Sin(p.x * 5.0f) * Mathf.Sin(p.y * 7.0f) * Mathf.Sin(p.z * 6.0f)) * cfg.outerDeform
+                : 0.0f);
         }
     }
     

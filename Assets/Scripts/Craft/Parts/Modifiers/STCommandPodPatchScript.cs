@@ -14,6 +14,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     public class STCommandPodPatchScript : PartModifierScript<STCommandPodPatchData>,IFlightUpdate,IFlightStart
     {
         public ProceduralRadiationBelt belt;
+        private int _debugFrameCounter;
         public IFuelSource OxygenFuelSource { get; set; }
         public IFuelSource CO2FuelSource { get; set; }
         public IFuelSource FoodFuelSource { get; set; }
@@ -27,19 +28,28 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         public void FlightUpdate(in FlightFrameData flightFrameData)
         {
-            //别管,先解决前面map的问题
-            return;
             
-            this.belt = RadiationBeltManager.Instance.BeltInstance;
-            if (belt == null)
+            var manager = RadiationBeltManager.Instance;
+            string planetName = this.PartScript.CraftScript.CraftNode.Parent.Name;
+
+            Vector3 vesselPci = this.PartScript.CraftScript.FlightData.Position.ToVector3();
+            Vector3 planetCenterPci = Vector3.zero;
+
+            bool inner = manager.TryGetBeltSignedDistancePciMeters(
+                planetName, vesselPci, planetCenterPci, true, out var dIn) && dIn < 0f;
+            bool outer = manager.TryGetBeltSignedDistancePciMeters(
+                planetName, vesselPci, planetCenterPci, false, out var dOut) && dOut < 0f;
+            
+            Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"内{inner},外{outer}");
+
+            _debugFrameCounter++;
+            if (_debugFrameCounter % 120 == 0)
             {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage("空引用了");
-                return;
+                double radiusMeters = manager.GetPlanetRadiusMeters(planetName);
+                double rMeters = vesselPci.magnitude;
+                double rNorm = radiusMeters > 1e-6 ? rMeters / radiusMeters : 0.0;
+                Mod.Log($"[RadProbe] body={planetName} r={rMeters:F0}m R={radiusMeters:F0}m r/R={rNorm:F3} dIn={dIn:F4} dOut={dOut:F4} inInner={inner} inOuter={outer}");
             }
-            Transform planetTransform = belt.Parent.transform;
-            //bool inInner = belt.config.IsInInnerBelt(PartScript.Transform.position, planetTransform);
-            //bool inOuter = belt.config.IsInOuterBelt(PartScript.Transform.position, planetTransform);
-            //Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"内{inInner},外{inOuter}");
         }
 
         

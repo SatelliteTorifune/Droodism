@@ -162,7 +162,7 @@ namespace Droodism.RadiationBelt
         
             if (!File.Exists(filePath))
             {
-                Mod.Log($"Config file '{planetName}' not found at {filePath}. Creating default config.");
+               Mod.Log($"Config file '{planetName}' not found at {filePath}. Creating default config.");
                 RadiationBeltConfig defaultConfig = CreateDefault();
                 defaultConfig.SaveToFile(planetName);
                 return defaultConfig;
@@ -175,7 +175,7 @@ namespace Droodism.RadiationBelt
                 {
                     RadiationBeltConfig config = serializer.Deserialize(stream) as RadiationBeltConfig;
                     config?.NormalizeLegacyFields();
-                    Mod.Log($"Radiation Belt config '{planetName}' loaded from: {filePath}");
+                    //Mod.Log($"Radiation Belt config '{planetName}' loaded from: {filePath}");
                     return config;
                 }
             }
