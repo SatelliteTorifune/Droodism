@@ -5,6 +5,7 @@ using ModApi.Flight;
 using ModApi.Flight.Events;
 using ModApi.Flight.MapView;
 using ModApi.GameLoop;
+using ModApi.Planet;
 using ModApi.Scenes.Events;
 using UnityEngine;
 
@@ -14,14 +15,16 @@ namespace Droodism.RadiationBelt
     public class RadiationBeltManager : MonoBehaviourBase
     {
         public static RadiationBeltManager Instance { get; private set; }
-        public RadiationBeltConfig currentConfig;
+        public RadiationBeltConfig CurrentConfig;
 
-        private GameObject CurrentRadiationBeltObject;
+        private GameObject currentRadiationBeltObject;
         public ProceduralRadiationBelt BeltInstance;
 
         public RadiationBeltCameraRenderer  CameraRenderer;
         
         public List<ProceduralRadiationBelt> BeltList=new List<ProceduralRadiationBelt>();
+        private readonly Dictionary<string, double> planetRadiusMetersByName = new Dictionary<string, double>();
+        private readonly Dictionary<string, double> planetRadiusScaledByName = new Dictionary<string, double>();
             
 
         #region NBCS
@@ -38,30 +41,16 @@ namespace Droodism.RadiationBelt
             Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
 
         }
-
-        void OnForegroundStateChanged(bool b)
-        {
-            Mod.Log("OnForegroundStateChanged" + b);
-            if (!b)
-            {
-                return;
-            }
-            
-        }
-
-        void OnForegroundStateChanging(bool b)
-        {
-          Mod.Log("OnForegroundStateChanging"+b);
-        }
+        
         private void OnFlightEnded(object sender, FlightEndedEventArgs e)
         {
          return;
             try
             {
                 BeltList = null;
-                CurrentRadiationBeltObject = null;
+                currentRadiationBeltObject = null;
                 BeltInstance = null;
-                currentConfig = null;
+                CurrentConfig = null;
             }
             catch (Exception exception)
             {
@@ -71,11 +60,15 @@ namespace Droodism.RadiationBelt
 
         private void OnFlightSceneInitialized(IFlightScene flightScene)
         {
-          
+           //是的我知道你会很疑惑为什么要这么写
+           //很多辐射带的初始化要等到进入mapView,所以我直接在你进入FlightScene的时候帮你进入mapView一次再切回来
+            Game.Instance.FlightScene.ViewManager.ToggleMapView();
+            Game.Instance.FlightScene.ViewManager.ToggleMapView();
         }
         #endregion
 
         public string CurrentFocusPlanet { get; private set; }
+        //这个其实很蠢,我手动写了一个切换时更新的
         void Update()
         {
             if (!Game.InFlightScene)
@@ -88,24 +81,24 @@ namespace Droodism.RadiationBelt
             }
             var currentName = GetCurrentFocusPlanet();
 
-            if (this.currentConfig==null)
+            if (this.CurrentConfig==null)
             {
-                Mod.Log("1");
-                currentConfig = RadiationBeltConfig.LoadFromFile(currentName);
+                Mod.Log("currentConfig is null");
+                CurrentConfig = RadiationBeltConfig.LoadFromFile(currentName);
                 return;
             }
             
             
          
-            if (CurrentRadiationBeltObject==null)
+            if (currentRadiationBeltObject==null)
             {
                 Mod.Log("CurrentRadiationBeltObject is null.");
                 return;
             }
             try
             {
-                
-                this.CurrentRadiationBeltObject.transform.localScale = this.currentConfig.Scale;
+                // Keep belt scale neutral so visual boundary matches physics query.
+                this.currentRadiationBeltObject.transform.localScale = Vector3.one;
                 if (CurrentFocusPlanet != currentName)
                 {
                     OnFocusPlanetChanged(currentName);
@@ -124,12 +117,15 @@ namespace Droodism.RadiationBelt
         {
             
             Mod.Log($"OnFocusPlanet changed,current is {currentName}");
-            currentConfig = RadiationBeltConfig.LoadFromFile(currentName);
+            CurrentConfig = RadiationBeltConfig.LoadFromFile(currentName);
             BeltInstance = GetCurrentRadiationBelt(currentName);
-            CurrentRadiationBeltObject = BeltInstance.gameObject;
-            if (currentConfig.Enabled)
+            currentRadiationBeltObject = BeltInstance.gameObject;
+            this.CameraRenderer.beltRenderer = BeltInstance;
+            // Ensure meshes exist for the newly focused planet if enabled.
+            if (CurrentConfig.Enabled)
             {
-                this.CameraRenderer.beltRenderer = BeltInstance; 
+                BeltInstance.LoadDataFromConfig(CurrentConfig);
+                BeltInstance.RegenerateMeshesAsync();
             }
             Mod.Log("OnFocusPlanet finished");
 
@@ -176,8 +172,6 @@ namespace Droodism.RadiationBelt
             {
                 Game.Instance.FlightScene.FlightEnded += OnFlightEnded;
                 Game.Instance.FlightScene.Initialized += OnFlightSceneInitialized;
-                Game.Instance.FlightScene.ViewManager.MapViewManager.ForegroundStateChanged += OnForegroundStateChanged;
-                Game.Instance.FlightScene.ViewManager.MapViewManager.ForegroundStateChanging += OnForegroundStateChanging;
                 Game.Instance.FlightScene.ViewManager.MapViewManager.MapView.Initialized += OnMapViewInitialized;
                
             }
@@ -186,8 +180,6 @@ namespace Droodism.RadiationBelt
             {
                 Game.Instance.FlightScene.FlightEnded -= OnFlightEnded;
                 Game.Instance.FlightScene.Initialized -= OnFlightSceneInitialized;
-                Game.Instance.FlightScene.ViewManager.MapViewManager.ForegroundStateChanged -= OnForegroundStateChanged;
-                Game.Instance.FlightScene.ViewManager.MapViewManager.ForegroundStateChanging -= OnForegroundStateChanging;
                 Game.Instance.FlightScene.ViewManager.MapViewManager.MapView.Initialized -= OnMapViewInitialized;
 
             }
@@ -198,19 +190,23 @@ namespace Droodism.RadiationBelt
         {
 
             this.BeltList.Clear();
+            this.planetRadiusMetersByName.Clear();
+            this.planetRadiusScaledByName.Clear();
             CurrentFocusPlanet = GetCurrentFocusPlanet();
 
             try
             {
-                foreach (var planetData in Game.Instance.FlightScene.CraftNode.Parent.PlanetData.SolarSystemData.Planets)
+                foreach (IPlanetData planetData in Game.Instance.FlightScene.CraftNode.Parent.PlanetData.SolarSystemData.Planets)
                 {
+                    planetRadiusMetersByName[planetData.Name] = planetData.Radius;
+                    planetRadiusScaledByName[planetData.Name] = planetData.RadiusScaledSpace;
                     AddPlanetRadiationBelt(planetData.Name);
                 }
                 
                 ReFreshCurrentConfig();
                 
                 var currentRadiationBelt = GetCurrentRadiationBelt(CurrentFocusPlanet);
-                this.CurrentRadiationBeltObject = currentRadiationBelt.gameObject;
+                this.currentRadiationBeltObject = currentRadiationBelt.gameObject;
                 this.CameraRenderer =
                     Game.Instance.FlightScene.ViewManager.MapViewManager.MapViewCamera.gameObject
                         .GetComponent<RadiationBeltCameraRenderer>() == null
@@ -246,6 +242,7 @@ namespace Droodism.RadiationBelt
             var beltInstance=currentRadiationBeltObject.GetComponent<ProceduralRadiationBelt>();
             beltInstance.Parent = parentGameObject;
             currentRadiationBeltObject.transform.SetParent(parentGameObject.transform);
+            currentRadiationBeltObject.transform.localScale = Vector3.one;
             
             var config = RadiationBeltConfig.LoadFromFile(PlanetName);
             if (config.Enabled)
@@ -255,21 +252,16 @@ namespace Droodism.RadiationBelt
             }
             this.BeltList.Add(beltInstance);
         }
-
         
-
         public void ReFreshCurrentConfig()
         {
-            Mod.Log("ReFreshCurrentConfig called");
-            currentConfig = RadiationBeltConfig.LoadFromFile(GetCurrentFocusPlanet());
-            Mod.Log("ReFreshCurrentConfig end");
+            CurrentConfig = RadiationBeltConfig.LoadFromFile(GetCurrentFocusPlanet());
         }
 
         public void ReGenerateMeshes()
         {
-            BeltInstance.LoadDataFromConfig(currentConfig);
+            BeltInstance.LoadDataFromConfig(CurrentConfig);
             BeltInstance.RegenerateMeshesAsync();
-            //BeltInstance.RegenerateMeshes();
         }
 
         private ProceduralRadiationBelt GetCurrentRadiationBelt(string nAme)
@@ -315,6 +307,136 @@ namespace Droodism.RadiationBelt
                 }
             }
             return null;
+        }
+        
+        private double GetCurrentPlanetRadiusMeters()
+        {
+            if (string.IsNullOrEmpty(CurrentFocusPlanet)) return 1.0;
+            EnsurePlanetRadiusCached(CurrentFocusPlanet);
+            return planetRadiusMetersByName.TryGetValue(CurrentFocusPlanet, out double radiusMeters)
+                ? Math.Max(1e-6, radiusMeters)
+                : 1.0;
+        }
+
+        private double GetPlanetRadiusMeters(string planetName)
+        {
+            if (string.IsNullOrEmpty(planetName)) return 1.0;
+            EnsurePlanetRadiusCached(planetName);
+            return planetRadiusMetersByName.TryGetValue(planetName, out double radiusMeters)
+                ? Math.Max(1e-6, radiusMeters)
+                : 1.0;
+        }
+        private void EnsurePlanetRadiusCached(string planetName)
+        {
+            if (planetName == null)
+            {
+                return;
+            }
+            if (planetRadiusMetersByName.ContainsKey(planetName) && planetRadiusScaledByName.ContainsKey(planetName)) {return;}
+            if (!Game.InFlightScene || Game.Instance?.FlightScene?.CraftNode?.Parent?.PlanetData?.SolarSystemData?.Planets == null) return;
+
+            foreach (IPlanetData planet in Game.Instance.FlightScene.CraftNode.Parent.PlanetData.SolarSystemData.Planets)
+            {
+                if (!string.Equals(planet.Name, planetName, StringComparison.Ordinal)) continue;
+                planetRadiusMetersByName[planetName] = planet.Radius;
+                planetRadiusScaledByName[planetName] = planet.RadiusScaledSpace;
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Map render unit helper. In current map view, empirical scale is close to 1 unit = 1000 km.
+        /// </summary>
+        public float GetCurrentPlanetRenderRadiusUnits()
+        {
+            //你游这个b scaledSpace害人不浅,所以只能这么用了
+            double meters = GetCurrentPlanetRadiusMeters();
+            float metersPerUnit = (CurrentConfig != null && CurrentConfig.renderMetersPerUnit > 0f)
+                ? CurrentConfig.renderMetersPerUnit
+                : 1e6f;
+            return Mathf.Max(1e-6f, (float)(meters / metersPerUnit));
+        }
+
+        /// <summary>
+        /// 判断是否在辐射带内的函数,有点重要说是
+        /// </summary>
+        /// <param name="planetName"></param>
+        /// <param name="pciPositionMeters"></param>
+        /// <param name="planetCenterPciMeters"></param>
+        /// <param name="inInnerBelt"></param>
+        /// <param name="signedDistance"></param>
+        /// <returns></returns>
+        public bool TryGetBeltSignedDistancePciMeters(RadiationBeltConfig cfg,
+            string planetName,
+            Vector3 pciPositionMeters,
+            bool inInnerBelt,
+            out float signedDistance)
+        {
+            signedDistance = float.PositiveInfinity;
+            if (cfg == null || !cfg.Enabled)
+            {
+                return false;
+            }
+            
+
+            double radiusMeters = GetPlanetRadiusMeters(planetName);
+            if (radiusMeters <= 1.0)
+            {
+                return false;
+            }
+
+            float invRadius = 1f / Mathf.Max(1e-6f, (float)radiusMeters);
+            
+            var belt = GetCurrentRadiationBelt(planetName);
+            if (belt != null)
+            {
+                pciPositionMeters = Quaternion.Inverse(belt.transform.rotation) * pciPositionMeters;
+            }
+
+            Vector3 pNorm = pciPositionMeters * invRadius;
+
+            signedDistance = inInnerBelt
+                ? EvaluateInnerSignedDistance(cfg, pNorm)
+                : EvaluateOuterSignedDistance(cfg, pNorm);
+            return true;
+        }
+
+        
+
+        
+
+        private static float EvaluateInnerSignedDistance(RadiationBeltConfig cfg, Vector3 p)
+        {
+            float innerCompression = Mathf.Max(0.01f, cfg.innerCompression);
+            float innerExtension = Mathf.Max(0.01f, cfg.innerExtension);
+            p.x *= p.x < 0.0f ? innerExtension : innerCompression;
+
+            float innerDeformXY = Mathf.Max(0.01f, cfg.innerDeformXY);
+            float innerBorderDeformXY = Mathf.Max(0.01f, cfg.innerBorderDeformXY);
+            float q1 = Mathf.Sqrt((p.x * p.x + p.z * p.z) * innerDeformXY) - cfg.innerDist;
+            float d1 = Mathf.Sqrt(q1 * q1 + p.y * p.y) - cfg.innerRadius;
+            float q2 = Mathf.Sqrt((p.x * p.x + p.z * p.z) * innerBorderDeformXY) - cfg.innerBorderDist;
+            float d2 = Mathf.Sqrt(q2 * q2 + p.y * p.y) - cfg.innerBorderRadius;
+            return Mathf.Max(d1, -d2) + (cfg.innerDeform > 0.001f
+                ? (Mathf.Sin(p.x * 5.0f) * Mathf.Sin(p.y * 7.0f) * Mathf.Sin(p.z * 6.0f)) * cfg.innerDeform
+                : 0.0f);
+        }
+
+        private static float EvaluateOuterSignedDistance(RadiationBeltConfig cfg, Vector3 p)
+        {
+            float outerCompression = Mathf.Max(0.01f, cfg.outerCompression);
+            float outerExtension = Mathf.Max(0.01f, cfg.outerExtension);
+            p.x *= p.x < 0.0f ? outerExtension : outerCompression;
+
+            float outerDeformXY = Mathf.Max(0.01f, cfg.outerDeformXY);
+            float outerBorderDeformXY = Mathf.Max(0.01f, cfg.outerBorderDeformXY);
+            float q1 = Mathf.Sqrt((p.x * p.x + p.z * p.z) * outerDeformXY) - cfg.outerDist;
+            float d1 = Mathf.Sqrt(q1 * q1 + p.y * p.y) - cfg.outerRadius;
+            float q2 = Mathf.Sqrt((p.x * p.x + p.z * p.z) * outerBorderDeformXY) - cfg.outerBorderDist;
+            float d2 = Mathf.Sqrt(q2 * q2 + p.y * p.y) - cfg.outerBorderRadius;
+            return Mathf.Max(d1, -d2) + (cfg.outerDeform > 0.001f
+                ? (Mathf.Sin(p.x * 5.0f) * Mathf.Sin(p.y * 7.0f) * Mathf.Sin(p.z * 6.0f)) * cfg.outerDeform
+                : 0.0f);
         }
     }
     

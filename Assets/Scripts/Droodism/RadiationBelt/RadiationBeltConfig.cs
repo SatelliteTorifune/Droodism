@@ -11,11 +11,13 @@ namespace Droodism.RadiationBelt
     public class RadiationBeltConfig
     {
         public const string CONFIG_FOLDER = "/UserData/DroodismConfig/RadiationBeltConfigs/";
-        private const string DEFAULT_CONFIG_NAME = "Default";
-
         #region parameter
         
-        public Vector3 Scale = Vector3.one * 14;
+        public float renderMetersPerUnit;
+        public Vector3 beltTiltAxis;
+        public float beltTiltDegrees;
+        public float beltSpinSpeedDegPerSec;
+        public float beltSpinPhaseDeg;
 
         public bool Enabled;
         public float innerDist;
@@ -27,8 +29,6 @@ namespace Droodism.RadiationBelt
         public float innerExtension;
         public float innerBorderDeformXY;
         public float innerDeform;
-        public float innerExtention;
-        public float innerBorderDeform;
         public float innerHeightScale;
         public int innerParticleCount ; // 粒子数
         public float innerQuality ; // 质量 (越高越薄)
@@ -45,13 +45,9 @@ namespace Droodism.RadiationBelt
         public float outerHeightScale;
         public int outerParticleCount ;
         public float outerQuality;
-        
-        public Vector3 starDirection = Vector3.left;
-        
-
         #endregion
         
-        public static string GetConfigFolderPath()
+        private  static string GetConfigFolderPath()
         {
             string folderPath = Application.persistentDataPath + CONFIG_FOLDER;
             if (!Directory.Exists(folderPath))
@@ -60,7 +56,7 @@ namespace Droodism.RadiationBelt
             }
             return folderPath;
         }
-        public static string GetConfigPath(string planetName)
+        private static string GetConfigPath(string planetName)
         {
             return Path.Combine(GetConfigFolderPath(), planetName + ".xml");
         }
@@ -89,46 +85,55 @@ namespace Droodism.RadiationBelt
             }
         }
 
-        public static RadiationBeltConfig CreateDefault()
+        private static RadiationBeltConfig CreateDefault()
         {
             RadiationBeltConfig defaultCFG = new RadiationBeltConfig();
-            defaultCFG.Scale = Vector3.one * 14;
+            defaultCFG.renderMetersPerUnit = 1_000_000f;
+            defaultCFG.beltTiltAxis = Vector3.right;
+            defaultCFG.beltTiltDegrees = 11.5f;
+            defaultCFG.beltSpinSpeedDegPerSec = 0f;
+            defaultCFG.beltSpinPhaseDeg = 0f;
             defaultCFG.Enabled = false;
             
-            defaultCFG.innerDist = 1.0f;
-            defaultCFG.innerRadius = 2f;
-            defaultCFG.innerBorderDist = 1.0f;
-            defaultCFG.innerBorderRadius = 1.0f;
-            defaultCFG.innerDeformXY = 1.0f;
-            defaultCFG.innerCompression = 1.0f;
-            defaultCFG.innerExtension = 1.0f;
-            defaultCFG.innerBorderDeformXY = 1.0f;
-            defaultCFG.innerDeform = 0.2f;
-            defaultCFG.innerExtention = 1.0f; // 旧字段兼容
-            defaultCFG.innerBorderDeform = 1.0f; // 旧字段兼容
-            defaultCFG.innerParticleCount = 8000;
-            defaultCFG.innerQuality = 30f;
+            // Kerbalism 'earth' defaults
+            // yes i check the RadiationModel from kerbalism
+            defaultCFG.innerDist = 0.813f;
+            defaultCFG.innerRadius = 0.7000f;
+            defaultCFG.innerBorderDist = 0.0001f;
+            defaultCFG.innerBorderRadius = 0.915f;
+            defaultCFG.innerDeformXY = 0.5720f;
+            defaultCFG.innerCompression = 1.01f;
+            defaultCFG.innerExtension = 1.00f;
+            defaultCFG.innerBorderDeformXY = 0.5f;
+            defaultCFG.innerDeform = 0.0f;
+            defaultCFG.innerParticleCount = 12000;
+            defaultCFG.innerQuality = 50f;
             
-            defaultCFG.outerDist = 1.5f;
-            defaultCFG.outerRadius = 2.5f;
-            defaultCFG.outerBorderDist = 1.5f;
-            defaultCFG.outerBorderRadius = 1.0f;
-            defaultCFG.outerDeformXY = 1.0f;
-            defaultCFG.outerCompression = 1.0f;
-            defaultCFG.outerExtension = 1.0f;
-            defaultCFG.outerBorderDeformXY = 1.0f;
+            defaultCFG.outerDist = 2.6338f;
+            defaultCFG.outerRadius = 2.48f;
+            defaultCFG.outerBorderDist = 1.4412f;
+            defaultCFG.outerBorderRadius = 1.4875f;
+            defaultCFG.outerDeformXY = 0.7225f;
+            defaultCFG.outerCompression = 1.01f;
+            defaultCFG.outerExtension = 1.00f;
+            defaultCFG.outerBorderDeformXY = 0.7225f;
             defaultCFG.outerHeightScale = 1f;
             defaultCFG.innerHeightScale = 1f;
-            defaultCFG.outerDeform = 0.15f;
-            defaultCFG.outerParticleCount = 15000;
-            defaultCFG.outerQuality = 40f;
+            defaultCFG.outerDeform = 0.0f;
+            defaultCFG.outerParticleCount = 18000;
+            defaultCFG.outerQuality = 60f;
             defaultCFG.NormalizeLegacyFields();
             return  defaultCFG;
             
         }
 
-        public void ApplyKerbalismEarthPreset()
+        public void ApplyDefaultPreset()
         {
+            beltTiltDegrees = 11.5f;
+            beltTiltAxis = Vector3.right;
+            beltSpinSpeedDegPerSec = 0f;
+            beltSpinPhaseDeg = 0f;
+
             innerDist = 0.813f;
             innerRadius = 0.7000f;
             innerDeformXY = 0.5720f;
@@ -150,10 +155,158 @@ namespace Droodism.RadiationBelt
             outerBorderDeformXY = 0.7225f;
             outerDeform = 0.0f;
             outerQuality = 60.0f;
+            
+            NormalizeLegacyFields();
+        }
 
-            // 旧字段同步，避免旧逻辑分支读取到不一致数据
-            innerExtention = innerExtension;
-            innerBorderDeform = innerBorderDeformXY;
+        public void ApplyGiantPreset()
+        {
+            beltTiltDegrees = 10.8f;
+            beltTiltAxis = Vector3.right;
+            beltSpinSpeedDegPerSec = 0f;
+            beltSpinPhaseDeg = 0f;
+            Enabled = true;
+
+            innerDist = 2.2f;
+            innerRadius = 1.0f;
+            innerDeformXY = 1.0f;
+            innerCompression = 1.05f;
+            innerExtension = 0.8f;
+            innerBorderDist = 0.8f;
+            innerBorderRadius = 1.25f;
+            innerBorderDeformXY = 1.0f;
+            innerDeform = 0.0f;
+            innerHeightScale = 1.0f;
+            innerParticleCount = 16000;
+            innerQuality = 30.0f;
+
+            outerDist = 6.0f;
+            outerRadius = 6.0f;
+            outerDeformXY = 1.0f;
+            outerCompression = 1.05f;
+            outerExtension = 0.7f;
+            // Kerbalism giant model uses border_start/end; map to this implementation's subtraction torus.
+            outerBorderDist = 3.282f;
+            outerBorderRadius = 3.6f;
+            outerBorderDeformXY = 1.0f;
+            outerDeform = 0.0f;
+            outerHeightScale = 1.0f;
+            outerParticleCount = 22000;
+            outerQuality = 30.0f;
+
+            NormalizeLegacyFields();
+        }
+
+        public void ApplyMetallicPreset()
+        {
+            beltTiltDegrees = 7.0f;
+            beltTiltAxis = Vector3.right;
+            beltSpinSpeedDegPerSec = 0f;
+            beltSpinPhaseDeg = 0f;
+            Enabled = true;
+
+            innerDist = 1.25f;
+            innerRadius = 0.15f;
+            innerDeformXY = 1.0f;
+            innerCompression = 1.15f;
+            innerExtension = 1.0f;
+            innerBorderDist = 0.95f;
+            innerBorderRadius = 0.25f;
+            innerBorderDeformXY = 1.0f;
+            innerDeform = 0.05f;
+            innerHeightScale = 1.0f;
+            innerParticleCount = 12000;
+            innerQuality = 50.0f;
+
+            // This model has no outer belt in Kerbalism; keep outer empty.
+            outerDist = 1.0f;
+            outerRadius = 0.1f;
+            outerDeformXY = 1.0f;
+            outerCompression = 1.0f;
+            outerExtension = 1.0f;
+            outerBorderDist = 0.0f;
+            outerBorderRadius = 0.1f;
+            outerBorderDeformXY = 1.0f;
+            outerDeform = 0.0f;
+            outerHeightScale = 1.0f;
+            outerParticleCount = 0;
+            outerQuality = 30.0f;
+
+            NormalizeLegacyFields();
+        }
+
+        public void ApplySolidIronPreset()
+        {
+            beltTiltDegrees = 5.0f;
+            beltTiltAxis = Vector3.right;
+            beltSpinSpeedDegPerSec = 0f;
+            beltSpinPhaseDeg = 0f;
+            Enabled = true;
+
+            innerDist = 1.38f;
+            innerRadius = 0.2f;
+            innerDeformXY = 1.0f;
+            innerCompression = 1.1f;
+            innerExtension = 1.0f;
+            innerBorderDist = 1.1f;
+            innerBorderRadius = 0.28f;
+            innerBorderDeformXY = 1.0f;
+            innerDeform = 0.05f;
+            innerHeightScale = 1.0f;
+            innerParticleCount = 12000;
+            innerQuality = 45.0f;
+
+            outerDist = 1.0f;
+            outerRadius = 0.1f;
+            outerDeformXY = 1.0f;
+            outerCompression = 1.0f;
+            outerExtension = 1.0f;
+            outerBorderDist = 0.0f;
+            outerBorderRadius = 0.1f;
+            outerBorderDeformXY = 1.0f;
+            outerDeform = 0.0f;
+            outerHeightScale = 1.0f;
+            outerParticleCount = 0;
+            outerQuality = 20.0f;
+
+            NormalizeLegacyFields();
+        }
+
+        public void ApplyAnomalyPreset()
+        {
+            beltTiltDegrees = 25.0f;
+            beltTiltAxis = Vector3.right;
+            beltSpinSpeedDegPerSec = 0f;
+            beltSpinPhaseDeg = 0f;
+            Enabled = true;
+
+            // Kerbalism anomaly model is pause-only; approximate as a small polar ring.
+            innerDist = 0.765f;
+            innerRadius = 0.12f;
+            innerDeformXY = 0.45f;
+            innerCompression = 1.0f;
+            innerExtension = 0.8f;
+            innerBorderDist = 0.3f;
+            innerBorderRadius = 0.16f;
+            innerBorderDeformXY = 0.45f;
+            innerDeform = 0.05f;
+            innerHeightScale = 1.0f;
+            innerParticleCount = 8000;
+            innerQuality = 50.0f;
+
+            outerDist = 1.0f;
+            outerRadius = 0.1f;
+            outerDeformXY = 1.0f;
+            outerCompression = 1.0f;
+            outerExtension = 1.0f;
+            outerBorderDist = 0.0f;
+            outerBorderRadius = 0.1f;
+            outerBorderDeformXY = 1.0f;
+            outerDeform = 0.0f;
+            outerHeightScale = 1.0f;
+            outerParticleCount = 0;
+            outerQuality = 50.0f;
+
             NormalizeLegacyFields();
         }
         public static RadiationBeltConfig LoadFromFile(string planetName)
@@ -162,7 +315,7 @@ namespace Droodism.RadiationBelt
         
             if (!File.Exists(filePath))
             {
-                Mod.Log($"Config file '{planetName}' not found at {filePath}. Creating default config.");
+               Mod.Log($"Config file '{planetName}' not found at {filePath}. Creating default config.");
                 RadiationBeltConfig defaultConfig = CreateDefault();
                 defaultConfig.SaveToFile(planetName);
                 return defaultConfig;
@@ -175,7 +328,7 @@ namespace Droodism.RadiationBelt
                 {
                     RadiationBeltConfig config = serializer.Deserialize(stream) as RadiationBeltConfig;
                     config?.NormalizeLegacyFields();
-                    Mod.Log($"Cloud config '{planetName}' loaded from: {filePath}");
+                    //Mod.Log($"Radiation Belt config '{planetName}' loaded from: {filePath}");
                     return config;
                 }
             }
@@ -186,13 +339,17 @@ namespace Droodism.RadiationBelt
             }
         }
 
+        /// <summary>
+        /// 以防你们瞎几把填数据,加个函数确保输入合法
+        /// </summary>
         private void NormalizeLegacyFields()
         {
-            // 兼容老配置：旧字段有值时用于填充新字段
-            if (innerExtension <= 0f && innerExtention > 0f) innerExtension = innerExtention;
-            if (innerBorderDeformXY <= 0f && innerBorderDeform > 0f) innerBorderDeformXY = innerBorderDeform;
-
-            // 新字段最终兜底
+            
+            if (renderMetersPerUnit <= 0f) renderMetersPerUnit = 1_000_000f;
+            
+            bool legacyTiltUnset = beltTiltAxis.sqrMagnitude <= 1e-6f && Mathf.Abs(beltTiltDegrees) <= 1e-4f;
+            if (legacyTiltUnset) beltTiltDegrees = 11.5f;
+            if (beltTiltAxis.sqrMagnitude <= 1e-6f) beltTiltAxis = Vector3.right;
             if (innerDeformXY <= 0f) innerDeformXY = 1.0f;
             if (innerCompression <= 0f) innerCompression = 1.0f;
             if (innerExtension <= 0f) innerExtension = 1.0f;

@@ -28,18 +28,26 @@ namespace Droodism.RadiationBelt
             if (Time.frameCount == lastRenderedFrame) return;
             lastRenderedFrame = Time.frameCount;
 
-            if (!beltRenderer.pointMaterial.SetPass(0)||!RadiationBeltDebugUI.Instance.ShowGeneral||!RadiationBeltManager.Instance.currentConfig.Enabled)
+            if (!beltRenderer.pointMaterial.SetPass(0)||!RadiationBeltDebugUI.Instance.ShowGeneral||!RadiationBeltManager.Instance.CurrentConfig.Enabled)
             {
                 return;
             }
             if (RadiationBeltDebugUI.Instance.ShowInner)
             {
-                beltRenderer.innerMesh?.Render( beltRenderer.transform.localToWorldMatrix);
+                float radiusScale = RadiationBeltManager.Instance != null
+                    ? RadiationBeltManager.Instance.GetCurrentPlanetRenderRadiusUnits()
+                    : 1f;
+                Matrix4x4 renderMatrix = beltRenderer.transform.localToWorldMatrix * Matrix4x4.Scale(Vector3.one * radiusScale);
+                beltRenderer.innerMesh?.Render(renderMatrix);
             }
             
             if (RadiationBeltDebugUI.Instance.ShowOuter)
             {
-                beltRenderer.outerMesh?.Render( beltRenderer.transform.localToWorldMatrix);
+                float radiusScale = RadiationBeltManager.Instance != null
+                    ? RadiationBeltManager.Instance.GetCurrentPlanetRenderRadiusUnits()
+                    : 1f;
+                Matrix4x4 renderMatrix = beltRenderer.transform.localToWorldMatrix * Matrix4x4.Scale(Vector3.one * radiusScale);
+                beltRenderer.outerMesh?.Render(renderMatrix);
             }
            
             
