@@ -5,6 +5,7 @@ using ModApi.Mods;
 using System.Linq;
 using System.Xml.Linq;
 using Assets.Scripts.State;
+using Assets.Scripts.Droodism;
 using Debug = UnityEngine.Debug;
 using HarmonyLib;
 using ModApi.Flight;
@@ -140,7 +141,6 @@ namespace Assets.Scripts
         [HarmonyPostfix]
         static void Postfix(FlightSceneScript __instance)
         {
-            //DroodismCrewMananger.Instance?.OnQuickSave();
             Mod.Instance.OnQuickSave();
         }
     }

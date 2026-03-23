@@ -30,6 +30,7 @@ using Assembly = ModApi.Craft.Assembly;
 //2025 10 17一想到我还在这个Modifier苦战,往上面喷屎山我就忍不住轻哼起来.
 //2025 10 22 我希望这是我最后一次碰这个class
 //2025 11 10 Welcome back ,I will  fix this piece of shit once and for all.
+//2026 3 23 孩子们我又回来了,猜猜我又拉了什么屎?
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
@@ -82,13 +83,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// <summary>
         /// 开伞的最小高度。
         /// </summary>
-       
-        
+
+
         /// <summary>
         /// 指示小蓝人是否在跑或是否为游客。
         /// Flags indicating if the crew member is running or if they are a tourist.
         /// </summary>
-        public bool isRunning, isTourist, isFirstTime, AddingTankFlag;
+        public bool isRunning, isTourist;
         /// <summary>
         /// 在创建modifiers时调用，启用零件属性。
         /// Called when modifiers are created, enables part properties.
@@ -97,7 +98,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             base.OnModifiersCreated();
             this.Data.PartPropertiesEnabled = true;
-            isFirstTime = true;
         }
 
         /// <summary>
@@ -117,7 +117,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             base.OnInitialLaunch();
             Data.MissionStartTime = (long)Game.Instance.FlightScene.FlightState.Time;
             Mod.Log("OnInitialLaunch");
-            isFirstTime = true;
             base.OnInitialLaunch();
             if (this.PartScript.Data.PartType.Name == "Eva-Tourist")
             {
@@ -746,7 +745,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         #region 处理这坨屎用到的东西
          public void LoadFuelTanks()
         {
-            AddingTankFlag=true;
             List<(string, double, double)> DataLocal = new List<(string, double, double)>();
             Mod.Log("LoadFuelTanks调用");
             _oxygenSource = GetLocalFuelSource("Oxygen");
@@ -799,7 +797,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 RefreshFuelSource();
                Mod.Log("LoadFuelTank 调用RefreshFuelSource");
             }
-            AddingTankFlag=false;
            Mod.Log("LoadFuelTanks结束,AddingTankFlag=false");
             
             

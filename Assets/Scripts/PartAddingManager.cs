@@ -139,7 +139,6 @@ namespace Assets.Scripts
                 supportLifeData = PartModifierData.CreateFromDefaultXml<SupportLifeData>(part);
                 supportLifeData.PartPropertiesEnabled = true;
                 supportLifeData.InspectorEnabled = true;
-                //LOG($"Added SupportLifeData to part {part.Name}");
             }
         }
 
@@ -156,7 +155,6 @@ namespace Assets.Scripts
                 lsgData = PartModifierData.CreateFromDefaultXml<LifeSupportGeneratorData>(part);
                 lsgData.PartPropertiesEnabled = false;
                 lsgData.InspectorEnabled = true;
-                //LOG($"Added LifeSupportGeneratorData to part {part.Name}");
             }
 
             var waterData = part.GetModifier<Water_DesalinationData>();
@@ -165,7 +163,6 @@ namespace Assets.Scripts
                 waterData = PartModifierData.CreateFromDefaultXml<Water_DesalinationData>(part);
                 waterData.PartPropertiesEnabled = true;
                 waterData.InspectorEnabled = true;
-                //LOG($"Added Water_DesalinationData to part {part.Name}");
             }
         }
 
@@ -182,7 +179,6 @@ namespace Assets.Scripts
                 targetScript = PartModifierData.CreateFromDefaultXml<STCommandPodPatchData>(part);
                 targetScript.PartPropertiesEnabled = false;
                 targetScript.InspectorEnabled = false;
-                //LOG($"Patched CommandPod {part.Name} with STCommandPodPatchData");
             }
         }
 
@@ -199,7 +195,7 @@ namespace Assets.Scripts
                 targetScript = PartModifierData.CreateFromDefaultXml<CrewCabinData>(part);
                 targetScript.PartPropertiesEnabled = false;
                 targetScript.InspectorEnabled = false;
-                //LOG($"Added CrewCabinData to part {part.Name}");
+               
             }
         }
 
