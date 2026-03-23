@@ -11,11 +11,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using ModApi.Craft.Parts;
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
-    public class CrewCabinScript :ResourceProcessorPartScript<CrewCabinData>
+    public class CrewCabinScript :PartModifierScript<CrewCabinData>,IFlightStart,IFlightUpdate
     {
-        protected override void UpdateFuelSources()
+        
+        public void FlightStart(in FlightFrameData frame)
         {
             
+        }
+
+        public void FlightUpdate(in FlightFrameData frame)
+        {
+           
         }
     }
 }

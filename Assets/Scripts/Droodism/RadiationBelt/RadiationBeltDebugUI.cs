@@ -74,6 +74,7 @@ namespace Droodism.RadiationBelt
              inspectorModel.Add(new TextButtonModel("Load Current Config", (Action<TextButtonModel>)(b => 
              {
                  RadiationBeltManager.Instance.ReFreshCurrentConfig();
+                 RadiationBeltManager.Instance.ReGenerateMeshes();
              })));
              
              inspectorModel.Add(new TextButtonModel("Return to Default Preset", (Action<TextButtonModel>)(b =>

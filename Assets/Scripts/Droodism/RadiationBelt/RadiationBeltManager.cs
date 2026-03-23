@@ -326,6 +326,23 @@ namespace Droodism.RadiationBelt
                 ? Math.Max(1e-6, radiusMeters)
                 : 1.0;
         }
+        private void EnsurePlanetRadiusCached(string planetName)
+        {
+            if (planetName == null)
+            {
+                return;
+            }
+            if (planetRadiusMetersByName.ContainsKey(planetName) && planetRadiusScaledByName.ContainsKey(planetName)) {return;}
+            if (!Game.InFlightScene || Game.Instance?.FlightScene?.CraftNode?.Parent?.PlanetData?.SolarSystemData?.Planets == null) return;
+
+            foreach (IPlanetData planet in Game.Instance.FlightScene.CraftNode.Parent.PlanetData.SolarSystemData.Planets)
+            {
+                if (!string.Equals(planet.Name, planetName, StringComparison.Ordinal)) continue;
+                planetRadiusMetersByName[planetName] = planet.Radius;
+                planetRadiusScaledByName[planetName] = planet.RadiusScaledSpace;
+                return;
+            }
+        }
 
         /// <summary>
         /// Map render unit helper. In current map view, empirical scale is close to 1 unit = 1000 km.
@@ -349,19 +366,18 @@ namespace Droodism.RadiationBelt
         /// <param name="inInnerBelt"></param>
         /// <param name="signedDistance"></param>
         /// <returns></returns>
-        public bool TryGetBeltSignedDistancePciMeters(
+        public bool TryGetBeltSignedDistancePciMeters(RadiationBeltConfig cfg,
             string planetName,
             Vector3 pciPositionMeters,
             bool inInnerBelt,
             out float signedDistance)
         {
             signedDistance = float.PositiveInfinity;
-            
-            var cfg = GetRuntimeConfigForPlanet(planetName);
             if (cfg == null || !cfg.Enabled)
             {
                 return false;
             }
+            
 
             double radiusMeters = GetPlanetRadiusMeters(planetName);
             if (radiusMeters <= 1.0)
@@ -385,34 +401,9 @@ namespace Droodism.RadiationBelt
             return true;
         }
 
-        private RadiationBeltConfig GetRuntimeConfigForPlanet(string planetName)
-        {
-            //这个b玩意也蠢,要是你不在当前星球每帧都给你load
-            if (CurrentConfig != null &&CurrentFocusPlanet== planetName)
-            {
-                return CurrentConfig;
-            }
-            //要是没有那就手动load一下
-            return RadiationBeltConfig.LoadFromFile(planetName);
-        }
+        
 
-        private void EnsurePlanetRadiusCached(string planetName)
-        {
-            if (planetName == null)
-            {
-                return;
-            }
-            if (planetRadiusMetersByName.ContainsKey(planetName) && planetRadiusScaledByName.ContainsKey(planetName)) {return;}
-            if (!Game.InFlightScene || Game.Instance?.FlightScene?.CraftNode?.Parent?.PlanetData?.SolarSystemData?.Planets == null) return;
-
-            foreach (IPlanetData planet in Game.Instance.FlightScene.CraftNode.Parent.PlanetData.SolarSystemData.Planets)
-            {
-                if (!string.Equals(planet.Name, planetName, StringComparison.Ordinal)) continue;
-                planetRadiusMetersByName[planetName] = planet.Radius;
-                planetRadiusScaledByName[planetName] = planet.RadiusScaledSpace;
-                return;
-            }
-        }
+        
 
         private static float EvaluateInnerSignedDistance(RadiationBeltConfig cfg, Vector3 p)
         {
