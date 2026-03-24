@@ -272,6 +272,30 @@ namespace Droodism.RadiationBelt
              {
                  ValueFormatter = (f) => FormatValue(f, 1)
              });
+
+             InnerInspectorGroup.Add(new SliderModel("Inner Base Intensity", () => RadiationBeltManager.Instance.CurrentConfig.innerBaseIntensity,
+                 s => { RadiationBeltManager.Instance.CurrentConfig.innerBaseIntensity = s;}, 0f, 5f)
+             {
+                 ValueFormatter = (f) => FormatValue(f, 3)
+             });
+
+             InnerInspectorGroup.Add(new SliderModel("Inner Intensity Edge Width", () => RadiationBeltManager.Instance.CurrentConfig.innerIntensityEdgeWidth,
+                 s => { RadiationBeltManager.Instance.CurrentConfig.innerIntensityEdgeWidth = s;}, 0.001f, 1f)
+             {
+                 ValueFormatter = (f) => FormatValue(f, 4)
+             });
+
+             InnerInspectorGroup.Add(new SliderModel("Inner Intensity Exponent", () => RadiationBeltManager.Instance.CurrentConfig.innerIntensityExponent,
+                 s => { RadiationBeltManager.Instance.CurrentConfig.innerIntensityExponent = s;}, 0.1f, 5f)
+             {
+                 ValueFormatter = (f) => FormatValue(f, 3)
+             });
+
+             InnerInspectorGroup.Add(new SliderModel("Inner Peak Dose Rate (rad/h)", () => RadiationBeltManager.Instance.CurrentConfig.innerPeakDoseRateRadPerHour,
+                 s => { RadiationBeltManager.Instance.CurrentConfig.innerPeakDoseRateRadPerHour = s;}, 0f, 200f)
+             {
+                 ValueFormatter = (f) => FormatValue(f, 2)
+             });
              
              inspectorModel.AddGroup(InnerInspectorGroup);
              #endregion
@@ -351,6 +375,30 @@ namespace Droodism.RadiationBelt
                  s => { RadiationBeltManager.Instance.CurrentConfig.outerQuality = (int)s;}, 0f, 50f,true)
              {
                  ValueFormatter = (f) => FormatValue(f, 4)
+             });
+
+             OuterInspectorGroup.Add(new SliderModel("Outer Base Intensity", () => RadiationBeltManager.Instance.CurrentConfig.outerBaseIntensity,
+                 s => { RadiationBeltManager.Instance.CurrentConfig.outerBaseIntensity = s;}, 0f, 5f)
+             {
+                 ValueFormatter = (f) => FormatValue(f, 3)
+             });
+
+             OuterInspectorGroup.Add(new SliderModel("Outer Intensity Edge Width", () => RadiationBeltManager.Instance.CurrentConfig.outerIntensityEdgeWidth,
+                 s => { RadiationBeltManager.Instance.CurrentConfig.outerIntensityEdgeWidth = s;}, 0.001f, 1.5f)
+             {
+                 ValueFormatter = (f) => FormatValue(f, 4)
+             });
+
+             OuterInspectorGroup.Add(new SliderModel("Outer Intensity Exponent", () => RadiationBeltManager.Instance.CurrentConfig.outerIntensityExponent,
+                 s => { RadiationBeltManager.Instance.CurrentConfig.outerIntensityExponent = s;}, 0.1f, 5f)
+             {
+                 ValueFormatter = (f) => FormatValue(f, 3)
+             });
+
+             OuterInspectorGroup.Add(new SliderModel("Outer Peak Dose Rate (rad/h)", () => RadiationBeltManager.Instance.CurrentConfig.outerPeakDoseRateRadPerHour,
+                 s => { RadiationBeltManager.Instance.CurrentConfig.outerPeakDoseRateRadPerHour = s;}, 0f, 50f)
+             {
+                 ValueFormatter = (f) => FormatValue(f, 2)
              });
              
              inspectorModel.AddGroup(OuterInspectorGroup);

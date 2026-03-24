@@ -32,6 +32,10 @@ namespace Droodism.RadiationBelt
         public float innerHeightScale;
         public int innerParticleCount ; // 粒子数
         public float innerQuality ; // 质量 (越高越薄)
+        public float innerBaseIntensity;
+        public float innerIntensityEdgeWidth;
+        public float innerIntensityExponent;
+        public float innerPeakDoseRateRadPerHour;
         
         public float outerBorderRadius;
         public float outerRadius;
@@ -45,6 +49,10 @@ namespace Droodism.RadiationBelt
         public float outerHeightScale;
         public int outerParticleCount ;
         public float outerQuality;
+        public float outerBaseIntensity;
+        public float outerIntensityEdgeWidth;
+        public float outerIntensityExponent;
+        public float outerPeakDoseRateRadPerHour;
         #endregion
         
         private  static string GetConfigFolderPath()
@@ -108,6 +116,10 @@ namespace Droodism.RadiationBelt
             defaultCFG.innerDeform = 0.0f;
             defaultCFG.innerParticleCount = 12000;
             defaultCFG.innerQuality = 50f;
+            defaultCFG.innerBaseIntensity = 1.0f;
+            defaultCFG.innerIntensityEdgeWidth = 0.08f;
+            defaultCFG.innerIntensityExponent = 1.5f;
+            defaultCFG.innerPeakDoseRateRadPerHour = 35f;
             
             defaultCFG.outerDist = 2.6338f;
             defaultCFG.outerRadius = 2.48f;
@@ -122,6 +134,10 @@ namespace Droodism.RadiationBelt
             defaultCFG.outerDeform = 0.0f;
             defaultCFG.outerParticleCount = 18000;
             defaultCFG.outerQuality = 60f;
+            defaultCFG.outerBaseIntensity = 0.7f;
+            defaultCFG.outerIntensityEdgeWidth = 0.12f;
+            defaultCFG.outerIntensityExponent = 1.4f;
+            defaultCFG.outerPeakDoseRateRadPerHour = 0.5f;
             defaultCFG.NormalizeLegacyFields();
             return  defaultCFG;
             
@@ -144,6 +160,10 @@ namespace Droodism.RadiationBelt
             innerBorderDeformXY = 0.5f;
             innerDeform = 0.0f;
             innerQuality = 50.0f;
+            innerBaseIntensity = 1.0f;
+            innerIntensityEdgeWidth = 0.08f;
+            innerIntensityExponent = 1.5f;
+            innerPeakDoseRateRadPerHour = 35f;
 
             outerDist = 2.6338f;
             outerRadius = 2.48f;
@@ -155,6 +175,10 @@ namespace Droodism.RadiationBelt
             outerBorderDeformXY = 0.7225f;
             outerDeform = 0.0f;
             outerQuality = 60.0f;
+            outerBaseIntensity = 0.7f;
+            outerIntensityEdgeWidth = 0.12f;
+            outerIntensityExponent = 1.4f;
+            outerPeakDoseRateRadPerHour = 0.5f;
             
             NormalizeLegacyFields();
         }
@@ -179,6 +203,10 @@ namespace Droodism.RadiationBelt
             innerHeightScale = 1.0f;
             innerParticleCount = 16000;
             innerQuality = 30.0f;
+            innerBaseIntensity = 0.8f;
+            innerIntensityEdgeWidth = 0.2f;
+            innerIntensityExponent = 1.2f;
+            innerPeakDoseRateRadPerHour = 14f;
 
             outerDist = 6.0f;
             outerRadius = 6.0f;
@@ -193,6 +221,10 @@ namespace Droodism.RadiationBelt
             outerHeightScale = 1.0f;
             outerParticleCount = 22000;
             outerQuality = 30.0f;
+            outerBaseIntensity = 1.2f;
+            outerIntensityEdgeWidth = 0.28f;
+            outerIntensityExponent = 1.1f;
+            outerPeakDoseRateRadPerHour = 1.0f;
 
             NormalizeLegacyFields();
         }
@@ -217,6 +249,10 @@ namespace Droodism.RadiationBelt
             innerHeightScale = 1.0f;
             innerParticleCount = 12000;
             innerQuality = 50.0f;
+            innerBaseIntensity = 1.6f;
+            innerIntensityEdgeWidth = 0.05f;
+            innerIntensityExponent = 2.0f;
+            innerPeakDoseRateRadPerHour = 30f;
 
             // This model has no outer belt in Kerbalism; keep outer empty.
             outerDist = 1.0f;
@@ -231,6 +267,10 @@ namespace Droodism.RadiationBelt
             outerHeightScale = 1.0f;
             outerParticleCount = 0;
             outerQuality = 30.0f;
+            outerBaseIntensity = 0.0f;
+            outerIntensityEdgeWidth = 0.1f;
+            outerIntensityExponent = 1.0f;
+            outerPeakDoseRateRadPerHour = 0f;
 
             NormalizeLegacyFields();
         }
@@ -255,6 +295,10 @@ namespace Droodism.RadiationBelt
             innerHeightScale = 1.0f;
             innerParticleCount = 12000;
             innerQuality = 45.0f;
+            innerBaseIntensity = 1.4f;
+            innerIntensityEdgeWidth = 0.06f;
+            innerIntensityExponent = 1.8f;
+            innerPeakDoseRateRadPerHour = 24f;
 
             outerDist = 1.0f;
             outerRadius = 0.1f;
@@ -268,6 +312,10 @@ namespace Droodism.RadiationBelt
             outerHeightScale = 1.0f;
             outerParticleCount = 0;
             outerQuality = 20.0f;
+            outerBaseIntensity = 0.0f;
+            outerIntensityEdgeWidth = 0.1f;
+            outerIntensityExponent = 1.0f;
+            outerPeakDoseRateRadPerHour = 0f;
 
             NormalizeLegacyFields();
         }
@@ -293,6 +341,10 @@ namespace Droodism.RadiationBelt
             innerHeightScale = 1.0f;
             innerParticleCount = 8000;
             innerQuality = 50.0f;
+            innerBaseIntensity = 2.0f;
+            innerIntensityEdgeWidth = 0.04f;
+            innerIntensityExponent = 2.2f;
+            innerPeakDoseRateRadPerHour = 46f;
 
             outerDist = 1.0f;
             outerRadius = 0.1f;
@@ -306,6 +358,10 @@ namespace Droodism.RadiationBelt
             outerHeightScale = 1.0f;
             outerParticleCount = 0;
             outerQuality = 50.0f;
+            outerBaseIntensity = 0.0f;
+            outerIntensityEdgeWidth = 0.1f;
+            outerIntensityExponent = 1.0f;
+            outerPeakDoseRateRadPerHour = 0f;
 
             NormalizeLegacyFields();
         }
@@ -362,6 +418,23 @@ namespace Droodism.RadiationBelt
 
             if (innerHeightScale <= 0f) innerHeightScale = 1.0f;
             if (outerHeightScale <= 0f) outerHeightScale = 1.0f;
+            if (innerBaseIntensity < 0f) innerBaseIntensity = 0f;
+            if (outerBaseIntensity < 0f) outerBaseIntensity = 0f;
+            if (innerIntensityEdgeWidth <= 1e-4f) innerIntensityEdgeWidth = 0.08f;
+            if (outerIntensityEdgeWidth <= 1e-4f) outerIntensityEdgeWidth = 0.12f;
+            if (innerIntensityExponent <= 1e-4f) innerIntensityExponent = 1.0f;
+            if (outerIntensityExponent <= 1e-4f) outerIntensityExponent = 1.0f;
+            if (innerPeakDoseRateRadPerHour < 0f) innerPeakDoseRateRadPerHour = 0f;
+            if (outerPeakDoseRateRadPerHour < 0f) outerPeakDoseRateRadPerHour = 0f;
+
+            // Legacy xml compatibility:
+            // older configs don't contain peak dose rate fields and deserialize as 0.
+            // If both are 0, backfill with default environment rates.
+            if (innerPeakDoseRateRadPerHour <= 1e-6f && outerPeakDoseRateRadPerHour <= 1e-6f)
+            {
+                innerPeakDoseRateRadPerHour = 35f;
+                outerPeakDoseRateRadPerHour = 0.5f;
+            }
         }
         
 

@@ -20,6 +20,7 @@ using ModApi.Flight.UI;
 using ModApi.Math;
 using ModApi.Settings.Core;
 using ModApi.Ui.Inspector;
+using UnityEngine.Serialization;
 using Assembly = ModApi.Craft.Assembly;
 
 //鸡巴的我自己都看不懂我写的是什么鸡巴玩意了你还指望我给你写注释吗?
@@ -91,6 +92,16 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// Config Model for Calculating Radiation Level
         /// </summary>
         public RadiationBeltConfig RadiationBeltConfig;
+
+        /// <summary>
+        /// 当前辐射每小时吸收速率
+        /// </summary>
+        public float RadiationDoseRateRadPerHour { get; private set; }
+
+        //累计辐射值状态
+        public string CurrentCumulativeRadiationStats{ get; private set; }
+        //辐射值速率
+        public string CurrentRadiationRateStats{ get; private set; }
         #endregion
 
         #region 逻辑循环啥的
@@ -174,9 +185,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             LoadFuelTanks();
             Mod.Log("FlightStart调用LoadFuelTanks");
-            //我他妈没在OnInitialLaunch里implent这个函数是为了方便你们这群小逼崽子瞎鸡巴改xml乱搞你们知道吗
+
+            this.Data.CumulativeRad = 0;
+            //我他妈没在OnInitialLaunch里implement这个函数是为了方便你们这群小逼崽子瞎鸡巴改xml乱搞你们知道吗
             //SetRole();
-            
+            this.RadiationBeltConfig = RadiationBeltConfig.LoadFromFile(currentPlanetName);
+
         }
 
         
@@ -201,6 +215,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 this.RadiationBeltConfig = RadiationBeltManager.Instance.GetRuntimeConfigForPlanet(currentPlanetName);
             }
+
+            CheckRadiationState(frame);
 
             if (Data.ParachuteTypes!="None"&&Data.AutoDeployEnabled)
             {
@@ -1163,12 +1179,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 Mod.Log("UpdateCurrentPlanet调用出问题了{0}", e);
             }
+            this.RadiationBeltConfig = RadiationBeltConfig.LoadFromFile(currentPlanetName);
 
         }
 
         private void OnPlayerChangedSoi(ICraftNode craftNode, IOrbitNode orbitNode)
         {
             UpdateCurrentPlanet();
+           
         }
         /// <summary>
         /// SOI变化时的事件处理程序，更新当前行星。
@@ -1268,9 +1286,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             base.OnGenerateInspectorModel(model);
             //单独看任务时间的
             model.Add<TextModel>(new TextModel("<color=yellow>Mission Time", (Func<string>) (() =>Mod.GetStopwatchTimeString(MissionDurationTime))));
-            GroupModel groupModel = new GroupModel("<color=green><size=115%>Life Support Info");
-            model.AddGroup(groupModel);
-            groupModel.Add<TextModel>(new TextModel("Remain Oxygen", (Func<string>) (() =>
+            GroupModel lifeSupportGroupModel = new GroupModel("<color=green><size=115%>Life Support Info");
+            
+            lifeSupportGroupModel.Add<TextModel>(new TextModel("Remain Oxygen", (Func<string>) (() =>
             {
                 if (UsingInternalOxygen() && localOxygen != null && localOxygen.TotalCapacity > 0)
                 {
@@ -1285,7 +1303,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return "<color=purple>N/A</color>";
             })));
             
-            groupModel.Add<TextModel>(new TextModel("Oxygen Supply Time", (Func<string>) (() =>
+            lifeSupportGroupModel.Add<TextModel>(new TextModel("Oxygen Supply Time", (Func<string>) (() =>
             {
                 if (UsingInternalOxygen() && localOxygen != null && _evaScript != null)
                 {
@@ -1300,7 +1318,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return "N/A";
             })));
             
-            groupModel.Add<TextModel>(new TextModel("Remain Water", (Func<string>) (() =>
+            lifeSupportGroupModel.Add<TextModel>(new TextModel("Remain Water", (Func<string>) (() =>
             {
                 if (localWater != null && localWater.TotalCapacity > 0)
                 {
@@ -1311,7 +1329,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return "<color=purple>N/A</color>";
             })));
             
-            groupModel.Add<TextModel>(new TextModel("Water Supply Time", (Func<string>) (() =>
+            lifeSupportGroupModel.Add<TextModel>(new TextModel("Water Supply Time", (Func<string>) (() =>
             {
                 if (localWater != null && _evaScript != null)
                 {
@@ -1322,7 +1340,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return "N/A";
             })));
             
-            groupModel.Add<TextModel>(new TextModel("Remain Food", (Func<string>) (() =>
+            lifeSupportGroupModel.Add<TextModel>(new TextModel("Remain Food", (Func<string>) (() =>
             {
                 if (localFood != null && localFood.TotalCapacity > 0)
                 {
@@ -1333,7 +1351,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return "<color=purple>N/A</color>";
             })));
         
-            groupModel.Add<TextModel>(new TextModel("Food Supply Time", (Func<string>) (() =>
+            lifeSupportGroupModel.Add<TextModel>(new TextModel("Food Supply Time", (Func<string>) (() =>
             {
                 if (localFood != null && _evaScript != null)
                 {
@@ -1349,7 +1367,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             void AddGM(string Title, IFuelSource source)
             {
-                groupModel.Add<TextModel>(new TextModel(Title, (Func<string>) (() =>
+                lifeSupportGroupModel.Add<TextModel>(new TextModel(Title, (Func<string>) (() =>
                 {
                     if (source != null && source.TotalCapacity > 0)
                     {
@@ -1360,6 +1378,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     return "<color=purple>N/A</color>";
                 })));
             }
+            model.AddGroup(lifeSupportGroupModel);
+
+            GroupModel RadiationInspector = new GroupModel("<color=yellow><size=115%>Radiation Inspector");
+            RadiationInspector.Add<TextModel>(new TextModel("Current Radiation Dose", (Func<string>) (() => $"{this.Data.CumulativeRad:F4} rad")));
+            RadiationInspector.Add<TextModel>(new TextModel("Current Radiation Dose Stats", (Func<string>) (() => CurrentCumulativeRadiationStats)));
+            RadiationInspector.Add<TextModel>(new TextModel("Current Radiation Dose Rate Per Hour", (Func<string>) (() => $"{this.RadiationDoseRateRadPerHour:F2} rad/h")));
+            RadiationInspector.Add<TextModel>(new TextModel("Current Radiation Level", (Func<string>) (() => $"{CurrentRadiationRateStats}")));
+            
+            model.AddGroup(RadiationInspector);
 
             if (!isTourist)
             {
@@ -1619,24 +1646,77 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         #region 辐射计算
 
-        private void CheckRadiationState()
+        //OnFlightStart 或者啥的调用
+        private void LoadRadiationData()
         {
-            Vector3 vesselPci = this.PartScript.CraftScript.FlightData.Position.ToVector3();
-
-            bool inner = RadiationBeltManager.Instance.TryGetBeltSignedDistancePciMeters(this.RadiationBeltConfig,
-                currentPlanetName, 
-                vesselPci, 
-                true, 
-                out var dIn) && dIn < 0f;
-            bool outer = RadiationBeltManager.Instance.TryGetBeltSignedDistancePciMeters(this.RadiationBeltConfig,
-                currentPlanetName,
-                vesselPci, 
-                false, 
-                out var dOut) && dOut < 0f;
-            
             
         }
+
+        private void CheckRadiationState(in FlightFrameData data)
+        {
+            Vector3 craftPCIPos = this.PartScript.CraftScript.FlightData.Position.ToVector3();
+            
+            RadiationBeltManager.Instance.TryGetDoseRateRadPerHour(this.RadiationBeltConfig,
+                currentPlanetName,
+                craftPCIPos,
+                out var totalRadiationDoseRateRadPerHour,
+                out var innerDoseRateRadPerHour,
+                out var outerDoseRateRadPerHour);
+            
+            float deltaHours = Mathf.Max(0f, (float)data.DeltaTimeWorld) / 3600f;
+            if (deltaHours <= 1e-9f)
+            {
+                deltaHours = Mod.GetDeltaTimeHours();
+            }
+
+            this.RadiationDoseRateRadPerHour = totalRadiationDoseRateRadPerHour;
+            this.Data.CumulativeRad += RadiationDoseRateRadPerHour * deltaHours;
+            CurrentCumulativeRadiationStats = GetAcuteBand((float)this.Data.CumulativeRad);
+            CurrentRadiationRateStats = GetRadiationRateStats(RadiationDoseRateRadPerHour);
+
+
+        }
         #endregion
+        private static string GetAcuteBand(float cumulativeDoseRad)
+        {
+            if (cumulativeDoseRad >= 500f)
+            {
+                return"<color=red>Critical";
+            }
+            else if (cumulativeDoseRad >= 200f)
+            {
+                return"<color=orange>Severe";
+            }
+            else if (cumulativeDoseRad >= 100f)
+            {
+                return"<color=yellow>Mild";
+            }
+            else
+            {
+                return"<color=green>nominal";
+            }
+            
+        }
+
+        private static string GetRadiationRateStats(float rate)
+        {
+            if (rate > 10f)
+            {
+                return"<color=red>Critical";
+            }
+            else if (rate > 5f)
+            {
+                return"<color=orange>Severe";
+            }
+            else if (rate > 1f)
+            {
+                return"<color=yellow>Mild";
+            }
+            else
+            {
+                return"<color=green>nominal";
+            }
+        }
     }
    
 }

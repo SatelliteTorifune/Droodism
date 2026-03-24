@@ -5,6 +5,7 @@ using ModApi.Flight;
 using ModApi.Flight.Events;
 using ModApi.Flight.MapView;
 using ModApi.GameLoop;
+using ModApi.GameLoop.Interfaces;
 using ModApi.Planet;
 using ModApi.Scenes.Events;
 using UnityEngine;
@@ -39,6 +40,7 @@ namespace Droodism.RadiationBelt
         { 
             Instance = this;
             Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
+            Game.Instance.SceneManager.SceneTransitionCompleted += OnSceneTransitionCompleted;
 
         }
         
@@ -60,10 +62,21 @@ namespace Droodism.RadiationBelt
 
         private void OnFlightSceneInitialized(IFlightScene flightScene)
         {
-           //是的我知道你会很疑惑为什么要这么写
-           //很多辐射带的初始化要等到进入mapView,所以我直接在你进入FlightScene的时候帮你进入mapView一次再切回来
-            Game.Instance.FlightScene.ViewManager.ToggleMapView();
-            Game.Instance.FlightScene.ViewManager.ToggleMapView();
+            //是的我知道你会很疑惑为什么要这么写
+            //很多辐射带的初始化要等到进入mapView,所以我直接在你进入FlightScene的时候帮你进入mapView一次再切回来
+            //我操不对,有他妈bug我日你妈
+        }
+
+        
+
+        public void OnSceneTransitionCompleted(object sender, SceneTransitionEventArgs e)
+        {
+            if (e.TransitionToScene!="Flight")
+            {
+                return;
+            }
+            //Game.Instance.FlightScene.ViewManager.ToggleMapView();
+            //Game.Instance.FlightScene.ViewManager.ToggleMapView();
         }
         #endregion
 
@@ -164,6 +177,7 @@ namespace Droodism.RadiationBelt
 
                 return;
             }
+            
 
             Subscribe();
 
@@ -398,6 +412,107 @@ namespace Droodism.RadiationBelt
             signedDistance = inInnerBelt
                 ? EvaluateInnerSignedDistance(cfg, pNorm)
                 : EvaluateOuterSignedDistance(cfg, pNorm);
+            return true;
+        }
+
+        public bool TryGetBeltIntensityPciMeters(RadiationBeltConfig cfg,
+            string planetName,
+            Vector3 pciPositionMeters,
+            bool inInnerBelt,
+            out float intensity,
+            out float signedDistance)
+        {
+            intensity = 0f;
+            if (!TryGetBeltSignedDistancePciMeters(cfg, planetName, pciPositionMeters, inInnerBelt, out signedDistance))
+            {
+                return false;
+            }
+
+            if (signedDistance >= 0f)
+            {
+                intensity = 0f;
+                return true;
+            }
+
+            float edgeWidth = inInnerBelt
+                ? Mathf.Max(1e-4f, cfg.innerIntensityEdgeWidth)
+                : Mathf.Max(1e-4f, cfg.outerIntensityEdgeWidth);
+            float exponent = inInnerBelt
+                ? Mathf.Max(1e-4f, cfg.innerIntensityExponent)
+                : Mathf.Max(1e-4f, cfg.outerIntensityExponent);
+            float baseIntensity = inInnerBelt
+                ? Mathf.Max(0f, cfg.innerBaseIntensity)
+                : Mathf.Max(0f, cfg.outerBaseIntensity);
+
+            // signedDistance is normalized in planetary radii; deeper inside => higher intensity.
+            float depth01 = Mathf.Clamp01((-signedDistance) / edgeWidth);
+            float shaped = Mathf.Pow(depth01, exponent);
+            intensity = baseIntensity * shaped;
+            return true;
+        }
+
+        public bool TryGetTotalBeltIntensityPciMeters(RadiationBeltConfig cfg,
+            string planetName,
+            Vector3 pciPositionMeters,
+            out float totalIntensity,
+            out float innerIntensity,
+            out float outerIntensity)
+        {
+            totalIntensity = 0f;
+            innerIntensity = 0f;
+            outerIntensity = 0f;
+
+            bool innerOk = TryGetBeltIntensityPciMeters(cfg, planetName, pciPositionMeters, true, out innerIntensity, out _);
+            bool outerOk = TryGetBeltIntensityPciMeters(cfg, planetName, pciPositionMeters, false, out outerIntensity, out _);
+            if (!innerOk && !outerOk)
+            {
+                return false;
+            }
+
+            totalIntensity = innerIntensity + outerIntensity;
+            return true;
+        }
+
+        public bool TryGetDoseRateRadPerHour(RadiationBeltConfig cfg,
+            string planetName,
+            Vector3 pciPositionMeters,
+            out float totalDoseRateRadPerHour,
+            out float innerDoseRateRadPerHour,
+            out float outerDoseRateRadPerHour)
+        {
+            totalDoseRateRadPerHour = 0f;
+            innerDoseRateRadPerHour = 0f;
+            outerDoseRateRadPerHour = 0f;
+
+            if (!TryGetTotalBeltIntensityPciMeters(cfg, planetName, pciPositionMeters, out _, out float innerIntensity, out float outerIntensity))
+            {
+                return false;
+            }
+
+            float innerBase = Mathf.Max(1e-6f, cfg.innerBaseIntensity);
+            float outerBase = Mathf.Max(1e-6f, cfg.outerBaseIntensity);
+            float innerPeak = Mathf.Max(0f, cfg.innerPeakDoseRateRadPerHour);
+            float outerPeak = Mathf.Max(0f, cfg.outerPeakDoseRateRadPerHour);
+
+            innerDoseRateRadPerHour = innerPeak * Mathf.Clamp01(innerIntensity / innerBase);
+            outerDoseRateRadPerHour = outerPeak * Mathf.Clamp01(outerIntensity / outerBase);
+            totalDoseRateRadPerHour = innerDoseRateRadPerHour + outerDoseRateRadPerHour;
+            return true;
+        }
+
+        public bool TryGetDoseRateSievertPerHour(RadiationBeltConfig cfg,
+            string planetName,
+            Vector3 pciPositionMeters,
+            out float totalDoseRateSvPerHour,
+            float qualityFactor = 1.5f)
+        {
+            totalDoseRateSvPerHour = 0f;
+            if (!TryGetDoseRateRadPerHour(cfg, planetName, pciPositionMeters, out float totalRadPerHour, out _, out _))
+            {
+                return false;
+            }
+
+            totalDoseRateSvPerHour = totalRadPerHour * 0.01f * Mathf.Max(0f, qualityFactor);
             return true;
         }
 

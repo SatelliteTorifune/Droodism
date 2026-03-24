@@ -63,7 +63,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private float autoDeployHeight = 500f;
         
         [SerializeField][PartModifierProperty(true, false)]
-        private double currentRadiationLevel=0f;
+        private double cumulativeRad=0f;
         [SerializeField][PartModifierProperty]
         public long MissionStartTime=0;
         [SerializeField][PartModifierProperty]
@@ -135,10 +135,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             set=>this.desireWaterCapacity = value;
         }
 
-        public double CurrentRadiationLevel
+        public double CumulativeRad
         {
-            get=>this.currentRadiationLevel;
-            set=>this.currentRadiationLevel=value;
+            get=>this.cumulativeRad;
+            set=>this.cumulativeRad=value;
         }
         
         public string ParachuteTypes

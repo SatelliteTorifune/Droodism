@@ -75,6 +75,24 @@ namespace Assets.Scripts
                 return (totalFuel * 1e-3).ToString("0.00") + format[1];
             return totalFuel.ToString("0.00") + format[0];
         }
+        
+        public static float GetDeltaTimeHours()
+        {
+            float deltaSeconds = 0f;
+            if (Game.Instance?.FlightScene?.TimeManager != null)
+            {
+                deltaSeconds = Mathf.Max(0f, (float)Game.Instance.FlightScene.TimeManager.DeltaTime);
+            }
+            if (deltaSeconds <= 1e-6f)
+            {
+                deltaSeconds = Mathf.Max(0f, Time.deltaTime);
+            }
+            if (deltaSeconds <= 1e-6f)
+            {
+                deltaSeconds = Mathf.Max(0f, Time.unscaledDeltaTime);
+            }
+            return deltaSeconds / 3600f;
+        }
 
         public static void Log(object message)
         {
