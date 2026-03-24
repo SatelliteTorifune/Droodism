@@ -438,6 +438,17 @@ namespace Droodism.RadiationBelt
                 ? (Mathf.Sin(p.x * 5.0f) * Mathf.Sin(p.y * 7.0f) * Mathf.Sin(p.z * 6.0f)) * cfg.outerDeform
                 : 0.0f);
         }
+        public RadiationBeltConfig GetRuntimeConfigForPlanet(string planetName)
+        {
+            
+            //这个b玩意也蠢,要是你不在当前星球每帧都给你load
+            if (RadiationBeltManager.Instance.CurrentConfig != null &&RadiationBeltManager.Instance.CurrentFocusPlanet== planetName)
+            {
+                return RadiationBeltManager.Instance.CurrentConfig;
+            }
+            //要是没有那就手动load一下
+            return RadiationBeltConfig.LoadFromFile(planetName);
+        }
     }
     
    

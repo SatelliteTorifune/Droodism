@@ -10,6 +10,7 @@ using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
+using Droodism.RadiationBelt;
 using ModApi.Flight.Events;
 using ModApi.Flight.GameView;
 using ModApi.Planet;
@@ -40,6 +41,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         IFlightStart,
         IFlightUpdate
     {
+        #region 引用属性字段
         /// <summary>
         /// 引用EvaScript组件,来获取这个小蓝人的一些乱七八糟的狗屎鸡巴数据玩意
         /// Reference to the EvaScript component,get current part's eva data and other stuff
@@ -78,18 +80,20 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// 小蓝人目前的任务时长,从初次发射开始算的
         /// </summary>
         public long MissionDurationTime{get;private set;}
-
-
-        /// <summary>
-        /// 开伞的最小高度。
-        /// </summary>
-
-
         /// <summary>
         /// 指示小蓝人是否在跑或是否为游客。
         /// Flags indicating if the crew member is running or if they are a tourist.
         /// </summary>
         public bool isRunning, isTourist;
+
+        /// <summary>
+        /// 当前计算辐射值累计的配置模型
+        /// Config Model for Calculating Radiation Level
+        /// </summary>
+        public RadiationBeltConfig RadiationBeltConfig;
+        #endregion
+
+        #region 逻辑循环啥的
         /// <summary>
         /// 在创建modifiers时调用，启用零件属性。
         /// Called when modifiers are created, enables part properties.
@@ -99,6 +103,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             base.OnModifiersCreated();
             this.Data.PartPropertiesEnabled = true;
         }
+        
 
         /// <summary>
         /// 实现IDesignerStart接口，在设计器场景开始时调用。
@@ -183,8 +188,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             if (frame.DeltaTimeWorld == 0.0) 
                 return;
-            //remove before release
-            //Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"{this.PartScript.Transform.eulerAngles}\\{this.PartScript.Transform.rotation}");
             UpdateRunningStatus();
             if (!IsHibernating)
             {
@@ -194,6 +197,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
                 ConsumptionLogic(frame);
             }
+            if (ModSettings.Instance.ActiveUpdateRadiationBeltConfig)
+            {
+                this.RadiationBeltConfig = RadiationBeltManager.Instance.GetRuntimeConfigForPlanet(currentPlanetName);
+            }
 
             if (Data.ParachuteTypes!="None"&&Data.AutoDeployEnabled)
             {
@@ -201,30 +208,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             MissionDurationTime = (long)Game.Instance.FlightScene.FlightState.Time - Data.MissionStartTime;
         }
-
-        private void AutoDeployParachute()
-        {
-           
-            bool isEva()
-            {
-                if (_evaScript.EvaActive)
-                {
-                    return !_evaScript.ActiveWhileInCrewCompartment;
-                }return _evaScript.PartScript.CraftScript.Data.Assembly.Parts.Count == 1 && _evaScript.PartScript.CraftScript.RootPart.Data.PartType.Name.Contains("Eva");
-            }
-            if (!isEva()||_evaScript.IsGrounded||_evaScript.IsInWater||_evaScript.PartScript.CraftScript.FlightData.AltitudeAboveGroundLevel<=10||_evaScript.PartScript.CraftScript.FlightData.AtmosphereSample.AirDensity<=0.01||_evaScript.PartScript.CraftScript.FlightData.SurfaceVelocityMagnitude >= _evaScript.PartScript.CraftScript.FlightData.AtmosphereSample.SpeedOfSound||_evaScript.PartScript.CraftScript.FlightData.VerticalSurfaceVelocity>0)
-            {
-                return;
-            }
-
-            if (_evaScript.PartScript.CraftScript.FlightData.AltitudeAboveGroundLevel>Data.AutoDeployHeight)
-            {
-                return;
-            }
-            DeployParaglider();
-
-            
-        }
+        #endregion
+        
+        #region 休眠跑步状态更新
+        
         /// <summary>
         /// 这b玩意看不懂那你去吃我屎吧,你不会百度翻译吗?
         /// </summary>
@@ -255,9 +242,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             IsHibernating = hibernatingState;
         }
-
-       
-
+        #endregion
+        
+        #region 资源查找消耗补充相关函数
         /// <summary>
         /// 从零件的modifiers中检索指定燃料类型的本地燃料源。
         /// Retrieves the local fuel source for the specified fuel type from the part's modifiers.
@@ -722,8 +709,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 Mod.Log($"Remove{Craft.FuelType.Name} 满了成功:{0}实际{1}", drood.TotalFuel, Craft.TotalFuel);
             }
         }
-
+        #endregion
         
+        #region 处理"那个"玩意用到的
         /// <summary>
         /// 在加载飞船时调用，触发飞船结构变化处理。
         /// Called when the craft is loaded, triggers craft structure change handling.
@@ -742,7 +730,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         /// for some very strange and goofy reason, if a Drood has a FuelTankModifier when it's unloaded(like when you save the game, quick save, or it's out of physical range and not loaded), the phenomenon of the half-dead-and-half-alive bug(the drood itself is still there in the crew compartment, but you can not go EVA ,although you can still switch to the drood) will happen, so I have to remove all FuelTankModifiers and save the fuel amount buffer in SupportLifeData when unloading, then when reloading, it will read the buffer and restore the fuel amount, and then add the FuelTankModifier, this script is used to handle the flight situation, and for the quick save, I used a separate harmonyPatch to handle the craft's xml in the quickSave.
 
-        #region 处理这坨屎用到的东西
+        
          public void LoadFuelTanks()
         {
             List<(string, double, double)> DataLocal = new List<(string, double, double)>();
@@ -946,6 +934,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return null;
             }
         }
+        #endregion
+
+        #region 燃料值保存缓冲
         private void OnCraftUnloaded()
         {
             
@@ -1105,7 +1096,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
         }
         #endregion
-        #region 无所弔谓
+        
+        #region SOI,结构变化相关函数
         /// <summary>
         /// 在飞船结构变化时调用，如果在飞行场景中，则刷新燃料源。
         /// Called when the craft structure changes, refreshes fuel sources if in flight scene.
@@ -1190,6 +1182,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         #endregion
 
+        #region 伤害处理
         /// <summary>
         /// 如果燃料源为空，则对小蓝人造成伤害。
         /// Applies damage to the crew member if a fuel source is empty.
@@ -1257,7 +1250,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     false, 2f);
             }
         }
+        #endregion
 
+        #region UI
         /// <summary>
         /// 为零件生成inspector model，添加生命支持信息。
         /// Generates the inspector model for the part, adding life support information.
@@ -1422,8 +1417,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             #endregion
             
         }
+        #endregion
 
-        #region 这一坨也是临时调参用
+        #region Temporary PID Tuning Fields
         
         public float a;
         public float b;
@@ -1433,6 +1429,28 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public float f;
         #endregion
         
+        #region 插旗和开伞
+        private void AutoDeployParachute()
+        {
+           
+            bool isEva()
+            {
+                if (_evaScript.EvaActive)
+                {
+                    return !_evaScript.ActiveWhileInCrewCompartment;
+                }return _evaScript.PartScript.CraftScript.Data.Assembly.Parts.Count == 1 && _evaScript.PartScript.CraftScript.RootPart.Data.PartType.Name.Contains("Eva");
+            }
+            if (!isEva()||_evaScript.IsGrounded||_evaScript.IsInWater||_evaScript.PartScript.CraftScript.FlightData.AltitudeAboveGroundLevel<=10||_evaScript.PartScript.CraftScript.FlightData.AtmosphereSample.AirDensity<=0.01||_evaScript.PartScript.CraftScript.FlightData.SurfaceVelocityMagnitude >= _evaScript.PartScript.CraftScript.FlightData.AtmosphereSample.SpeedOfSound||_evaScript.PartScript.CraftScript.FlightData.VerticalSurfaceVelocity>0)
+            {
+                return;
+            }
+
+            if (_evaScript.PartScript.CraftScript.FlightData.AltitudeAboveGroundLevel>Data.AutoDeployHeight)
+            {
+                return;
+            }
+            DeployParaglider();
+        }
         private void PlantFlagClick()
         {
             ICraftScript craftScript = this.PartScript.CraftScript;
@@ -1597,7 +1615,28 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             return partGroupScript;
         }
         #endregion
+        #endregion
         
+        #region 辐射计算
+
+        private void CheckRadiationState()
+        {
+            Vector3 vesselPci = this.PartScript.CraftScript.FlightData.Position.ToVector3();
+
+            bool inner = RadiationBeltManager.Instance.TryGetBeltSignedDistancePciMeters(this.RadiationBeltConfig,
+                currentPlanetName, 
+                vesselPci, 
+                true, 
+                out var dIn) && dIn < 0f;
+            bool outer = RadiationBeltManager.Instance.TryGetBeltSignedDistancePciMeters(this.RadiationBeltConfig,
+                currentPlanetName,
+                vesselPci, 
+                false, 
+                out var dOut) && dOut < 0f;
+            
+            
+        }
+        #endregion
     }
    
 }

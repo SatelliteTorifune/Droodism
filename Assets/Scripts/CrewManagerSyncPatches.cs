@@ -47,7 +47,6 @@ namespace Assets.Scripts
 
         private static void CreateCrewMember_Postfix(object __result)
         {
-            // 需求：新 crew 创建后，立即同步 xml 条目（id/name）并把 radiation entry 补齐（没有就补 0）
             try
             {
                 DroodismCrewDataManager.Instance?.EnsureSyncedWithGameCrewManager(saveNow: true);

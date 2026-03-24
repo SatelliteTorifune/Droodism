@@ -62,7 +62,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         [DesignerPropertySlider(100f, 1000f, 60, Label = "<color=#FFB600>Auto Deploy Height</color>",Order = 3, Tooltip = "Height for auto parachute deployment in Agl")]
         private float autoDeployHeight = 500f;
         
-        
+        [SerializeField][PartModifierProperty(true, false)]
+        private double currentRadiationLevel=0f;
         [SerializeField][PartModifierProperty]
         public long MissionStartTime=0;
         [SerializeField][PartModifierProperty]
@@ -134,6 +135,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             set=>this.desireWaterCapacity = value;
         }
 
+        public double CurrentRadiationLevel
+        {
+            get=>this.currentRadiationLevel;
+            set=>this.currentRadiationLevel=value;
+        }
+        
         public string ParachuteTypes
         {
             get => this._parachuteType;
@@ -196,9 +203,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         #region functions
         
         
-        private int _crewId = 0;
-        public int CrewId => this._crewId;
-
         protected override void OnInitialized()
         {
             base.OnInitialized();

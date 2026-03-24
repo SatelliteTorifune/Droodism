@@ -44,7 +44,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             //我不知道你是啥想法,总之这个东西开启了会每帧都调用从文件load对应的config,损失性能,但是对于debug来说很有用
             if (ModSettings.Instance.ActiveUpdateRadiationBeltConfig)
             {
-                this.Config = GetRuntimeConfigForPlanet(planetName);
+                this.Config = RadiationBeltManager.Instance.GetRuntimeConfigForPlanet(planetName);
             }
             
 
@@ -58,23 +58,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             Game.Instance.FlightScene.FlightSceneUI.ShowMessage($" inner {inner},outer {outer}");
             
         }
-        /// <summary>
-        /// 考虑到这么写每帧都在load会造成不可忽视的性能损失,config的更新现在交给了调用的modifier在Start和SOI变化时调用
-        /// 缺点只有无法实施调用了
-        /// </summary>
-        /// <param name="planetName"></param>
-        /// <returns></returns>
-        /// RadiationBeltConfig GetRuntimeConfigForPlanet(string planetName)
-        private RadiationBeltConfig GetRuntimeConfigForPlanet(string planetName)
-        {
-            //这个b玩意也蠢,要是你不在当前星球每帧都给你load
-            if (RadiationBeltManager.Instance.CurrentConfig != null &&RadiationBeltManager.Instance.CurrentFocusPlanet== planetName)
-            {
-                return RadiationBeltManager.Instance.CurrentConfig;
-            }
-            //要是没有那就手动load一下
-            return RadiationBeltConfig.LoadFromFile(planetName);
-        }
+       
+        
     }
 
 }
