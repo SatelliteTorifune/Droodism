@@ -213,8 +213,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public override void OnPartRecovered()
         {
             base.OnPartRecovered();
-            return;
             
+            this.Script.SaveDroodismCrewData();
         }
 
         

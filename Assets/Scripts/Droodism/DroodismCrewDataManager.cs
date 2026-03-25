@@ -54,8 +54,7 @@ namespace Assets.Scripts.Droodism
 
                 bool gameStateChanged = !ReferenceEquals(gameState, _lastKnownGameStateInstance);
                 bool saveNameChanged = !string.Equals(sanitized, _currentGameSaveName, StringComparison.Ordinal);
-
-                // 仅当存档/游戏状态发生变化时才重载并写盘，避免每次加载场景都触发 IO
+                
                 _lastKnownGameStateInstance = gameState;
 
                 if (gameStateChanged || saveNameChanged)

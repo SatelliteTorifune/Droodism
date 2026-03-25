@@ -10,6 +10,7 @@ using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
+using Assets.Scripts.Droodism;
 using Droodism.RadiationBelt;
 using ModApi.Flight.Events;
 using ModApi.Flight.GameView;
@@ -48,10 +49,21 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// Reference to the EvaScript component,get current part's eva data and other stuff
         /// </summary>
         private EvaScript _evaScript;
+        
+        /// <summary>
+        /// 当前小蓝人是否处在休眠
+        /// </summary>
         public bool IsHibernating { get; private set; }
 
-        //当前小蓝人的CrewCompartment,目前没用到
+        /// <summary>
+        ///当前小蓝人的CrewCompartment,目前没用到
+        /// </summary>
         private CrewCompartmentScript droodCrewCompartmentScript;
+
+        /// <summary>
+        /// 这啥啊?
+        /// </summary>
+        private DroodismCrewData _droodismCrewData;
 
         public IFuelSource _oxygenSource,_waterSource,_foodSource,_co2Source,_wastedWaterSource,_solidWasteSource;
         
@@ -187,8 +199,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             Mod.Log("FlightStart调用LoadFuelTanks");
             
             //我他妈没在OnInitialLaunch里implement这个函数是为了方便你们这群小逼崽子瞎鸡巴改xml乱搞你们知道吗
-            //SetRole();
             this.RadiationBeltConfig = RadiationBeltConfig.LoadFromFile(currentPlanetName);
+            LoadRadiationData();
             
         }
 
@@ -1163,7 +1175,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// 根据飞行场景数据更新当前行星名称。
         /// Updates the current planet name based on the flight scene data.
         /// </summary>
-        public void UpdateCurrentPlanet()
+        private void UpdateCurrentPlanet()
         {
             if (!Game.InFlightScene)
             {
@@ -1648,7 +1660,24 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         //OnFlightStart 或者啥的调用
         private void LoadRadiationData()
         {
-            
+            if ( _evaScript.Data.CrewName=="Unassigned")
+            {
+                this._droodismCrewData = null;
+               return;
+            }
+
+            _droodismCrewData = DroodismCrewDataManager.Instance.GetCrewMember(_evaScript.Data.CrewId);
+            this.Data.CumulativeRad = _droodismCrewData.RadiationRate;
+
+        }
+
+        internal void SaveDroodismCrewData(bool saveImmediately = true)
+        {
+            if (_droodismCrewData==null)
+            {
+                return;
+            }
+            DroodismCrewDataManager.Instance.AddLifetimeRadiation(_evaScript.Data.CrewId, this.Data.CumulativeRad,saveImmediately);
         }
 
         private void CheckRadiationState(in FlightFrameData data)

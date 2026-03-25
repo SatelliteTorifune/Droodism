@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Assets.Scripts;
 using ModApi.Flight;
-using ModApi.Flight.Events;
 using ModApi.Flight.MapView;
 using ModApi.GameLoop;
 using ModApi.GameLoop.Interfaces;
@@ -37,34 +36,8 @@ namespace Droodism.RadiationBelt
         private void Start()
         { 
             Instance = this;
-            Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
             Game.Instance.SceneManager.SceneTransitionCompleted += OnSceneTransitionCompleted;
 
-        }
-        
-        private void OnFlightEnded(object sender, FlightEndedEventArgs e)
-        {
-         return;
-            try
-            {
-                BeltList = null;
-                currentRadiationBeltObject = null;
-                BeltInstance = null;
-                CurrentConfig = null;
-            }
-            catch (Exception exception)
-            {
-            }
-            
-        }
-
-        private void OnFlightSceneInitialized(IFlightScene flightScene)
-        {
-            //是的我知道你会很疑惑为什么要这么写
-            //很多辐射带的初始化要等到进入mapView,所以我直接在你进入FlightScene的时候帮你进入mapView一次再切回来
-            //我操不对,有他妈bug我日你妈
-            Mod.Log("manger:OnFlightSceneInitialized");
-            
         }
 
         
@@ -75,7 +48,6 @@ namespace Droodism.RadiationBelt
             {
                 return;
             }
-            Mod.Log("OnSceneTransitionCompleted");
             this.BeltList.Clear();
             this.planetRadiusMetersByName.Clear();
             this.planetRadiusScaledByName.Clear();
@@ -186,91 +158,6 @@ namespace Droodism.RadiationBelt
                 .AssociatedPlanet.Name;
             return Game.Instance.FlightScene.ViewManager.MapViewManager.MapView.MapViewInspector.SelectedItem.AssociatedPlanet.Name;
         }
-        private void OnSceneLoaded(object sender, SceneEventArgs e)
-        {
-            
-            if (e.Scene != "Flight")
-            {
-                try
-                {
-                    UnSubscribe();
-                }
-                catch (Exception exception)
-                {
-                }
-
-                return;
-            }
-            Mod.Log("manger:OnSceneLoaded");
-
-            Subscribe();
-
-            //换一个Invoke?
-            void Subscribe()
-            {
-                Game.Instance.FlightScene.FlightEnded += OnFlightEnded;
-                Game.Instance.FlightScene.Initialized += OnFlightSceneInitialized;
-                Game.Instance.FlightScene.ViewManager.MapViewManager.MapView.Initialized += OnMapViewInitialized;
-               
-            }
-
-            void UnSubscribe()
-            {
-                Game.Instance.FlightScene.FlightEnded -= OnFlightEnded;
-                Game.Instance.FlightScene.Initialized -= OnFlightSceneInitialized;
-                Game.Instance.FlightScene.ViewManager.MapViewManager.MapView.Initialized -= OnMapViewInitialized;
-
-            }
-
-        }
-        
-        private void OnMapViewInitialized(IMapView view)
-        {
-            //TryThisShit();
-        }
-
-        public void TryThisShit()
-        {
-            this.BeltList.Clear();
-            this.planetRadiusMetersByName.Clear();
-            this.planetRadiusScaledByName.Clear();
-            CurrentFocusPlanet = Game.Instance.FlightScene.CraftNode.Parent.Name;
-            try
-            {
-                foreach (IPlanetData planetData in Game.Instance.FlightScene.CraftNode.Parent.PlanetData.SolarSystemData.Planets)
-                {
-                    planetRadiusMetersByName[planetData.Name] = planetData.Radius;
-                    planetRadiusScaledByName[planetData.Name] = planetData.RadiusScaledSpace;
-                    AddPlanetRadiationBelt(planetData.Name);
-                }
-                ReFreshCurrentConfig();
-            }
-            catch (Exception e)
-            {
-              Mod.Log("try sh1t phase1 fucked"+e.StackTrace);
-            }
-
-            try
-            {
-                var currentRadiationBelt = GetCurrentRadiationBelt(CurrentFocusPlanet);
-                this.currentRadiationBeltObject = currentRadiationBelt.gameObject;
-                this.CameraRenderer =
-                    Game.Instance.FlightScene.ViewManager.MapViewManager.MapViewCamera.gameObject
-                        .GetComponent<RadiationBeltCameraRenderer>() == null
-                        ? Game.Instance.FlightScene.ViewManager.MapViewManager.MapViewCamera.gameObject
-                            .AddComponent<RadiationBeltCameraRenderer>()
-                        : Game.Instance.FlightScene.ViewManager.MapViewManager.MapViewCamera.gameObject
-                            .GetComponent<RadiationBeltCameraRenderer>();
-                CameraRenderer.beltRenderer = currentRadiationBelt;
-                this.BeltInstance = GetCurrentRadiationBelt(CurrentFocusPlanet);
-            }
-            catch (Exception e)
-            {
-                Mod.Log("try it  p2 Fucked"+ e);
-            }
-            
-        }
-        
         private void AddPlanetRadiationBelt(string PlanetName)
         { 
             var parentGameObject=GetMapPlanet(PlanetName);
