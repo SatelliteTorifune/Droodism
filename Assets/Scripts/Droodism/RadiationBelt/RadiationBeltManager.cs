@@ -33,9 +33,7 @@ namespace Droodism.RadiationBelt
         {
             Instance = this;
         }
-
-       
-
+        
         private void Start()
         { 
             Instance = this;
@@ -65,6 +63,8 @@ namespace Droodism.RadiationBelt
             //是的我知道你会很疑惑为什么要这么写
             //很多辐射带的初始化要等到进入mapView,所以我直接在你进入FlightScene的时候帮你进入mapView一次再切回来
             //我操不对,有他妈bug我日你妈
+            Mod.Log("manger:OnFlightSceneInitialized");
+            
         }
 
         
@@ -75,8 +75,31 @@ namespace Droodism.RadiationBelt
             {
                 return;
             }
-            //Game.Instance.FlightScene.ViewManager.ToggleMapView();
-            //Game.Instance.FlightScene.ViewManager.ToggleMapView();
+            Mod.Log("OnSceneTransitionCompleted");
+            this.BeltList.Clear();
+            this.planetRadiusMetersByName.Clear();
+            this.planetRadiusScaledByName.Clear();
+            CurrentFocusPlanet = Game.Instance.FlightScene.CraftNode.Parent.Name;
+            foreach (IPlanetData planetData in Game.Instance.FlightScene.CraftNode.Parent.PlanetData.SolarSystemData.Planets)
+            {
+                planetRadiusMetersByName[planetData.Name] = planetData.Radius;
+                planetRadiusScaledByName[planetData.Name] = planetData.RadiusScaledSpace;
+                AddPlanetRadiationBelt(planetData.Name);
+            }
+
+            this.CurrentConfig = RadiationBeltConfig.LoadFromFile(CurrentFocusPlanet);
+            var currentRadiationBelt = GetCurrentRadiationBelt(CurrentFocusPlanet);
+            this.currentRadiationBeltObject = currentRadiationBelt.gameObject;
+            this.CameraRenderer =
+                Game.Instance.FlightScene.ViewManager.MapViewManager.MapViewCamera.gameObject
+                    .GetComponent<RadiationBeltCameraRenderer>() == null
+                    ? Game.Instance.FlightScene.ViewManager.MapViewManager.MapViewCamera.gameObject
+                        .AddComponent<RadiationBeltCameraRenderer>()
+                    : Game.Instance.FlightScene.ViewManager.MapViewManager.MapViewCamera.gameObject
+                        .GetComponent<RadiationBeltCameraRenderer>();
+            CameraRenderer.beltRenderer = currentRadiationBelt;
+            this.BeltInstance = GetCurrentRadiationBelt(CurrentFocusPlanet);
+            
         }
         #endregion
 
@@ -165,6 +188,7 @@ namespace Droodism.RadiationBelt
         }
         private void OnSceneLoaded(object sender, SceneEventArgs e)
         {
+            
             if (e.Scene != "Flight")
             {
                 try
@@ -177,7 +201,7 @@ namespace Droodism.RadiationBelt
 
                 return;
             }
-            
+            Mod.Log("manger:OnSceneLoaded");
 
             Subscribe();
 
@@ -202,12 +226,15 @@ namespace Droodism.RadiationBelt
         
         private void OnMapViewInitialized(IMapView view)
         {
+            //TryThisShit();
+        }
 
+        public void TryThisShit()
+        {
             this.BeltList.Clear();
             this.planetRadiusMetersByName.Clear();
             this.planetRadiusScaledByName.Clear();
-            CurrentFocusPlanet = GetCurrentFocusPlanet();
-
+            CurrentFocusPlanet = Game.Instance.FlightScene.CraftNode.Parent.Name;
             try
             {
                 foreach (IPlanetData planetData in Game.Instance.FlightScene.CraftNode.Parent.PlanetData.SolarSystemData.Planets)
@@ -216,9 +243,15 @@ namespace Droodism.RadiationBelt
                     planetRadiusScaledByName[planetData.Name] = planetData.RadiusScaledSpace;
                     AddPlanetRadiationBelt(planetData.Name);
                 }
-                
                 ReFreshCurrentConfig();
-                
+            }
+            catch (Exception e)
+            {
+              Mod.Log("try sh1t phase1 fucked"+e.StackTrace);
+            }
+
+            try
+            {
                 var currentRadiationBelt = GetCurrentRadiationBelt(CurrentFocusPlanet);
                 this.currentRadiationBeltObject = currentRadiationBelt.gameObject;
                 this.CameraRenderer =
@@ -233,11 +266,10 @@ namespace Droodism.RadiationBelt
             }
             catch (Exception e)
             {
-                Mod.Log("OnMapViewInitialized Fucked");
+                Mod.Log("try it  p2 Fucked"+ e);
             }
-
+            
         }
-        
         
         private void AddPlanetRadiationBelt(string PlanetName)
         { 
@@ -557,9 +589,9 @@ namespace Droodism.RadiationBelt
         {
             
             //这个b玩意也蠢,要是你不在当前星球每帧都给你load
-            if (RadiationBeltManager.Instance.CurrentConfig != null &&RadiationBeltManager.Instance.CurrentFocusPlanet== planetName)
+            if (CurrentConfig != null &&CurrentFocusPlanet== planetName)
             {
-                return RadiationBeltManager.Instance.CurrentConfig;
+                return CurrentConfig;
             }
             //要是没有那就手动load一下
             return RadiationBeltConfig.LoadFromFile(planetName);

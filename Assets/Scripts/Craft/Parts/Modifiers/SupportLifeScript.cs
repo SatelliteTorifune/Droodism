@@ -185,12 +185,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             LoadFuelTanks();
             Mod.Log("FlightStart调用LoadFuelTanks");
-
-            this.Data.CumulativeRad = 0;
+            
             //我他妈没在OnInitialLaunch里implement这个函数是为了方便你们这群小逼崽子瞎鸡巴改xml乱搞你们知道吗
             //SetRole();
             this.RadiationBeltConfig = RadiationBeltConfig.LoadFromFile(currentPlanetName);
-
+            
         }
 
         
