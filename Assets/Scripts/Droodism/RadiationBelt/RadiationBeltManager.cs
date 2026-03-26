@@ -200,26 +200,34 @@ namespace Droodism.RadiationBelt
         private ProceduralRadiationBelt GetCurrentRadiationBelt(string nAme)
         {
 
-            if (nAme==null)
+            try
             {
-                Mod.Log("ProceduralRadiationBelt name is null");
-                return  null;
-            }
-
-            if (BeltList==null)
-            {
-                Mod.Log("List is null");
-                return null;
-            }
-            foreach (var prb in BeltList)
-            {
-                if (prb.Parent.name==nAme)
+                if (nAme==null)
                 {
-                    return prb;
+                    Mod.Log("ProceduralRadiationBelt name is null");
+                    return  null;
                 }
+
+                if (BeltList==null)
+                {
+                    Mod.Log("List is null");
+                    return null;
+                }
+                foreach (var prb in BeltList)
+                {
+                    if (prb.Parent.name==nAme)
+                    {
+                        return prb;
+                    }
+                }
+               
+            }
+            catch (Exception e)
+            {
             }
             Mod.Log("NOT FOUND ON list,there are {0} on list",BeltList.Count);
             return null;
+            
         }
 
         private static GameObject GetMapPlanet(string PlanetName)

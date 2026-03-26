@@ -385,12 +385,12 @@ namespace Assets.Scripts
                 if (pd.PartType.Name=="Eva"||pd.PartType.Name=="Eva-Tourist")
                 {
                     var supportLifeData = pd.PartScript.GetModifier<SupportLifeScript>().Data;
-                    oxygenRate -= supportLifeData.OxygenComsumeRate;
-                    h2oRate -= supportLifeData.WaterComsumeRate;
-                    foodRate -= supportLifeData.FoodComsumeRate;
-                    co2Rate += (supportLifeData.OxygenComsumeRate * supportLifeData.evaConsumeEfficiency);
-                    wastedWaterRate += (supportLifeData.WaterComsumeRate * supportLifeData.evaConsumeEfficiency);
-                    solidWasteRate += (supportLifeData.FoodComsumeRate * supportLifeData.evaConsumeEfficiency);
+                    oxygenRate -= supportLifeData.OxygenConsumeRate;
+                    h2oRate -= supportLifeData.WaterConsumeRate;
+                    foodRate -= supportLifeData.FoodConsumeRate;
+                    co2Rate += (supportLifeData.OxygenConsumeRate * supportLifeData.evaConsumeEfficiency);
+                    wastedWaterRate += (supportLifeData.WaterConsumeRate * supportLifeData.evaConsumeEfficiency);
+                    solidWasteRate += (supportLifeData.FoodConsumeRate * supportLifeData.evaConsumeEfficiency);
                 }
 
                 if (pd.PartType.Name=="Generator1")

@@ -63,7 +63,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// <summary>
         /// 这啥啊?
         /// </summary>
-        private DroodismCrewData _droodismCrewData;
 
         public IFuelSource _oxygenSource,_waterSource,_foodSource,_co2Source,_wastedWaterSource,_solidWasteSource;
         
@@ -321,7 +320,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             if (_oxygenSource != null&&UsingInternalOxygen())
             {
-                double num1 = (double)Data.OxygenComsumeRate * frame.DeltaTimeWorld * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1);
+                double num1 = (double)Data.OxygenConsumeRate * frame.DeltaTimeWorld * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1);
                 if (_oxygenSource.IsEmpty)
                 {
                     var localFuelSource = GetLocalFuelSource("Oxygen");
@@ -346,7 +345,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (_co2Source != null && UsingInternalOxygen())
             {
                 
-                double num1 = (double)Data.OxygenComsumeRate * frame.DeltaTimeWorld * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)*1.375*Data.evaConsumeEfficiency;
+                double num1 = (double)Data.OxygenConsumeRate * frame.DeltaTimeWorld * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)*1.375*Data.evaConsumeEfficiency;
                 
                 if (_co2Source.TotalCapacity - _co2Source.TotalFuel <= 0.00001)
                 {
@@ -383,7 +382,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             if (_foodSource != null)
             {
-                double num1 = (double)Data.FoodComsumeRate * frame.DeltaTimeWorld * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1);
+                double num1 = (double)Data.FoodConsumeRate * frame.DeltaTimeWorld * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1);
                 if (_foodSource.IsEmpty)
                 {
                     var localFood = GetLocalFuelSource("Food");
@@ -405,7 +404,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (_solidWasteSource != null)
             {
                 
-                double num1 = (double)Data.FoodComsumeRate * frame.DeltaTimeWorld * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)*1.1*Data.evaConsumeEfficiency*0.04;
+                double num1 = (double)Data.FoodConsumeRate * frame.DeltaTimeWorld * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)*1.1*Data.evaConsumeEfficiency*0.04;
                 
                 if (_solidWasteSource.TotalCapacity - _solidWasteSource.TotalFuel <= 0.00001)
                 {
@@ -442,7 +441,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             if (_waterSource != null)
             {
-                double num1 = (double)Data.WaterComsumeRate * frame.DeltaTimeWorld * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1);
+                double num1 = (double)Data.WaterConsumeRate * frame.DeltaTimeWorld * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1);
                 if (_waterSource.IsEmpty)
                 {
                     var localWater = GetLocalFuelSource("H2O");
@@ -464,7 +463,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (_wastedWaterSource != null)
             {
                 
-                double num1 = (double)Data.WaterComsumeRate * frame.DeltaTimeWorld * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)*1.1*Data.evaConsumeEfficiency;
+                double num1 = (double)Data.WaterConsumeRate * frame.DeltaTimeWorld * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)*1.1*Data.evaConsumeEfficiency;
                 
                 if (_wastedWaterSource.TotalCapacity - _wastedWaterSource.TotalFuel <= 0.00001)
                 {
@@ -1030,34 +1029,34 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 Mod.Log("调用RemoveFuelAmonutInstantly失败,_waterSource有他妈null");
                 return;
             }
-            if (Data.FoodComsumeRate*(time/xishu) > this._foodSource.TotalFuel)
+            if (Data.FoodConsumeRate*(time/xishu) > this._foodSource.TotalFuel)
             {
                 this._foodSource.RemoveFuel(_foodSource.TotalCapacity);
-                Mod.Log("调用RemoveFuelAmonutInstantly,理论:{0}实际{1}",Data.FoodComsumeRate*(time/xishu),this._foodSource.TotalFuel);
+                Mod.Log("调用RemoveFuelAmonutInstantly,理论:{0}实际{1}",Data.FoodConsumeRate*(time/xishu),this._foodSource.TotalFuel);
             }
             else
             {
-                this._foodSource.RemoveFuel(Data.FoodComsumeRate*(time/xishu));
+                this._foodSource.RemoveFuel(Data.FoodConsumeRate*(time/xishu));
             }
             
-            if (Data.WaterComsumeRate*(time/xishu) > this._waterSource.TotalFuel)
+            if (Data.WaterConsumeRate*(time/xishu) > this._waterSource.TotalFuel)
             {
                 this._waterSource.RemoveFuel(_waterSource.TotalCapacity);
             }
             else
             {
-                this._waterSource.RemoveFuel(Data.WaterComsumeRate*(time/xishu));
+                this._waterSource.RemoveFuel(Data.WaterConsumeRate*(time/xishu));
             }
 
             if (UsingInternalOxygen())
             {
-                if (Data.OxygenComsumeRate*(time/xishu) > this._oxygenSource.TotalFuel)
+                if (Data.OxygenConsumeRate*(time/xishu) > this._oxygenSource.TotalFuel)
                 {
                     this._oxygenSource.RemoveFuel(_oxygenSource.TotalCapacity);
                 }
                 else
                 {
-                    this._oxygenSource.RemoveFuel(Data.OxygenComsumeRate*(time/xishu)*0.001);
+                    this._oxygenSource.RemoveFuel(Data.OxygenConsumeRate*(time/xishu)*0.001);
                 }
             }
             
@@ -1083,39 +1082,39 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 Mod.Log("调用AddWastedAmountInstantly失败,_solidWasteSource有他妈null");
             }
-            if (Data.WaterComsumeRate*Data.evaConsumeEfficiency*1.1*(time/xishu) >= this._wastedWaterSource.TotalCapacity-_wastedWaterSource.TotalFuel)
+            if (Data.WaterConsumeRate*Data.evaConsumeEfficiency*1.1*(time/xishu) >= this._wastedWaterSource.TotalCapacity-_wastedWaterSource.TotalFuel)
             {
                 this._wastedWaterSource.AddFuel(this._wastedWaterSource.TotalCapacity-_wastedWaterSource.TotalFuel);
-                Mod.Log("调用AddWastedAmountInstantly,满的,理论:{0}实际{1}",Data.WaterComsumeRate*Data.evaConsumeEfficiency*(time/xishu),this._wastedWaterSource.TotalCapacity-_wastedWaterSource.TotalFuel);
+                Mod.Log("调用AddWastedAmountInstantly,满的,理论:{0}实际{1}",Data.WaterConsumeRate*Data.evaConsumeEfficiency*(time/xishu),this._wastedWaterSource.TotalCapacity-_wastedWaterSource.TotalFuel);
             }
             else
             {
                 this._wastedWaterSource.AddFuel(
-                    0.9 * Data.WaterComsumeRate * Data.evaConsumeEfficiency * (time / xishu));
-                Mod.Log("调用AddWastedAmountInstantly,理论:{0}",Data.WaterComsumeRate*Data.evaConsumeEfficiency*(time/xishu)*0.001);
+                    0.9 * Data.WaterConsumeRate * Data.evaConsumeEfficiency * (time / xishu));
+                Mod.Log("调用AddWastedAmountInstantly,理论:{0}",Data.WaterConsumeRate*Data.evaConsumeEfficiency*(time/xishu)*0.001);
             }
-            if (Data.FoodComsumeRate*Data.evaConsumeEfficiency*1.1*(time/xishu) >= this._solidWasteSource.TotalCapacity-_solidWasteSource.TotalFuel)
+            if (Data.FoodConsumeRate*Data.evaConsumeEfficiency*1.1*(time/xishu) >= this._solidWasteSource.TotalCapacity-_solidWasteSource.TotalFuel)
             {
                 this._solidWasteSource.AddFuel(this._solidWasteSource.TotalCapacity-_solidWasteSource.TotalFuel);
-                Mod.Log("调用AddWastedAmountInstantly,满的,理论:{0}实际{1}",Data.FoodComsumeRate*Data.evaConsumeEfficiency*(time/xishu),this._solidWasteSource.TotalCapacity-_solidWasteSource.TotalFuel);
+                Mod.Log("调用AddWastedAmountInstantly,满的,理论:{0}实际{1}",Data.FoodConsumeRate*Data.evaConsumeEfficiency*(time/xishu),this._solidWasteSource.TotalCapacity-_solidWasteSource.TotalFuel);
             }
             else
             {
-                this._solidWasteSource.AddFuel(Data.FoodComsumeRate*Data.evaConsumeEfficiency*(time/xishu)*1.1*0.00006);
-                Mod.Log("调用AddWastedAmountInstantly,理论:{0}",Data.FoodComsumeRate*Data.evaConsumeEfficiency*(time/xishu)*1.1*0.06);
+                this._solidWasteSource.AddFuel(Data.FoodConsumeRate*Data.evaConsumeEfficiency*(time/xishu)*1.1*0.00006);
+                Mod.Log("调用AddWastedAmountInstantly,理论:{0}",Data.FoodConsumeRate*Data.evaConsumeEfficiency*(time/xishu)*1.1*0.06);
             }
 
             if (UsingInternalOxygen())
             {
-                if (Data.OxygenComsumeRate*Data.evaConsumeEfficiency*1.375*(time/xishu) >= this._co2Source.TotalCapacity-_co2Source.TotalFuel)
+                if (Data.OxygenConsumeRate*Data.evaConsumeEfficiency*1.375*(time/xishu) >= this._co2Source.TotalCapacity-_co2Source.TotalFuel)
                 {
                     this._co2Source.AddFuel(this._co2Source.TotalCapacity-_co2Source.TotalFuel);
-                    Mod.Log("调用AddWastedAmountInstantly,满的,理论:{0}实际{1}",Data.OxygenComsumeRate*Data.evaConsumeEfficiency*(time/xishu),this._co2Source.TotalCapacity-_co2Source.TotalFuel);
+                    Mod.Log("调用AddWastedAmountInstantly,满的,理论:{0}实际{1}",Data.OxygenConsumeRate*Data.evaConsumeEfficiency*(time/xishu),this._co2Source.TotalCapacity-_co2Source.TotalFuel);
                 }
                 else
                 {
-                    this._co2Source.AddFuel(Data.OxygenComsumeRate*Data.evaConsumeEfficiency*(time/xishu)*1.1);
-                    Mod.Log("调用AddWastedAmountInstantly,理论:{0}",Data.OxygenComsumeRate*Data.evaConsumeEfficiency*(time/xishu));
+                    this._co2Source.AddFuel(Data.OxygenConsumeRate*Data.evaConsumeEfficiency*(time/xishu)*1.1);
+                    Mod.Log("调用AddWastedAmountInstantly,理论:{0}",Data.OxygenConsumeRate*Data.evaConsumeEfficiency*(time/xishu));
                 }
             }
             
@@ -1320,7 +1319,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 {
                     float percentage = (float)(localOxygen.TotalFuel / localOxygen.TotalCapacity);
                     string oxygenTextColor = percentage > 0.5 ? "green" : percentage >= 0.25 ? "yellow" : "red";
-                    return $"<color={oxygenTextColor}>"+Mod.GetStopwatchTimeString(localOxygen.TotalFuel / (Data.OxygenComsumeRate * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)));
+                    return $"<color={oxygenTextColor}>"+Mod.GetStopwatchTimeString(localOxygen.TotalFuel / (Data.OxygenConsumeRate * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)));
                 }
                 else if (!UsingInternalOxygen())
                 {
@@ -1346,7 +1345,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 {
                     float waterPercentage = (float)(localWater.TotalFuel / localWater.TotalCapacity);
                     string waterTextColor = waterPercentage > 0.5 ? "green" : waterPercentage >= 0.25 ? "yellow" : "red";
-                    return $"<color={waterTextColor}>"+Mod.GetStopwatchTimeString(localWater.TotalFuel / (Data.WaterComsumeRate * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)));
+                    return $"<color={waterTextColor}>"+Mod.GetStopwatchTimeString(localWater.TotalFuel / (Data.WaterConsumeRate * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)));
                 }
                 return "N/A";
             })));
@@ -1368,7 +1367,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 {
                     float foodPercentage = (float)(localFood.TotalFuel / localFood.TotalCapacity);
                     string foodTextColor = foodPercentage > 0.5 ? "green" : foodPercentage >= 0.25 ? "yellow" : "red";
-                    return $"<color={foodTextColor}>"+Mod.GetStopwatchTimeString(localFood.TotalFuel / (Data.FoodComsumeRate * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)));
+                    return $"<color={foodTextColor}>"+Mod.GetStopwatchTimeString(localFood.TotalFuel / (Data.FoodConsumeRate * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)));
                 }
                 return "N/A";
             })));
@@ -1656,30 +1655,36 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         #endregion
         
         #region 辐射计算
-
-        //OnFlightStart 或者啥的调用
+        
         private void LoadRadiationData()
         {
-            if ( _evaScript.Data.CrewName=="Unassigned")
+            if (Data.DroodismCrewData==null)
             {
-                this._droodismCrewData = null;
-               return;
+                this.Data.CumulativeRad = 0;
+                Mod.Log("Current Drood's DroodismCrewData is null ,return 0");
+                return;
             }
 
-            _droodismCrewData = DroodismCrewDataManager.Instance.GetCrewMember(_evaScript.Data.CrewId);
-            this.Data.CumulativeRad = _droodismCrewData.RadiationRate;
+            this.Data.CumulativeRad = this.Data.DroodismCrewData.RadiationRate;
 
         }
 
         internal void SaveDroodismCrewData(bool saveImmediately = true)
         {
-            if (_droodismCrewData==null)
+            if (Data.DroodismCrewData==null)
             {
                 return;
             }
-            DroodismCrewDataManager.Instance.AddLifetimeRadiation(_evaScript.Data.CrewId, this.Data.CumulativeRad,saveImmediately);
+            DroodismCrewDataManager.Instance.SetLifetimeRadiation(_evaScript.Data.CrewId, this.Data.CumulativeRad,saveImmediately);
         }
 
+        private void CheckInCraftRadiationSource()
+        {
+            foreach (var VARIABLE in PartScript.CraftScript.Data.Assembly.Parts)
+            {
+                
+            }
+        }
         private void CheckRadiationState(in FlightFrameData data)
         {
             Vector3 craftPCIPos = this.PartScript.CraftScript.FlightData.Position.ToVector3();
