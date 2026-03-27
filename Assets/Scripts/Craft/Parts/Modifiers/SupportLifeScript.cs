@@ -113,6 +113,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public string CurrentCumulativeRadiationStats{ get; private set; }
         //辐射值速率
         public string CurrentRadiationRateStats{ get; private set; }
+
+        private float radiationProtection;
         #endregion
 
         #region 逻辑循环啥的
@@ -1678,8 +1680,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             DroodismCrewDataManager.Instance.SetLifetimeRadiation(_evaScript.Data.CrewId, this.Data.CumulativeRad,saveImmediately);
         }
 
+        /// <summary>
+        /// 计算来自craft内部的辐射源
+        /// </summary>
         private void CheckInCraftRadiationSource()
         {
+            return;
             foreach (var VARIABLE in PartScript.CraftScript.Data.Assembly.Parts)
             {
                 
@@ -1702,7 +1708,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 deltaHours = Mod.GetDeltaTimeHours();
             }
 
-            this.RadiationDoseRateRadPerHour = totalRadiationDoseRateRadPerHour;
+            this.RadiationDoseRateRadPerHour = totalRadiationDoseRateRadPerHour*(1-radiationProtection);
             this.Data.CumulativeRad += RadiationDoseRateRadPerHour * deltaHours;
             CurrentCumulativeRadiationStats = GetAcuteBand((float)this.Data.CumulativeRad);
             CurrentRadiationRateStats = GetRadiationRateStats(RadiationDoseRateRadPerHour);

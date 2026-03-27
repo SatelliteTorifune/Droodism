@@ -126,6 +126,7 @@ namespace Assets.Scripts
                 Debug.unityLogger.LogFormat(LogType.Log, context, format, args);
             }
         }
+        
 
     }
 }

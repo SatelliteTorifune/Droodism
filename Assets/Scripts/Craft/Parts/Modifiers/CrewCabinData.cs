@@ -11,10 +11,21 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     public class CrewCabinData : PartModifierData<CrewCabinScript>
     {
         
-        [SerializeField]
-        [PartModifierProperty(true, false)]
-        private double waterComsuptionRate = 1;
-        
+        [SerializeField] [PartModifierProperty(true, false)]
+        private double radiationShieldDuration = 100d;
+        [SerializeField] [PartModifierProperty(true, false)]
+        private double radiationShieldDurationUpperLimit = 100d;
+
+        public double RadiationShieldDuration
+        {
+            get=> radiationShieldDuration;
+            set=> radiationShieldDuration = value;
+        }
+
+        public double RadiationShieldDurationUpperLimit
+        {
+            get => radiationShieldDurationUpperLimit;
+        }
         
     }
 }
