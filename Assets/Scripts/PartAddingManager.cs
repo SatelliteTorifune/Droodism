@@ -21,6 +21,8 @@ namespace Assets.Scripts
         private static readonly string EvaTouristPartName = "Eva-Tourist";
         private static readonly string GeneratorPartName = "Generator1";
         private static readonly string EvaDataModifierName = "EvaData";
+        private static readonly string ChairPartName = "Chair";
+        private static readonly string Cockpit = "Cockpit1";
         private static readonly string SupportLifeDataModifierName = "SupportLifeData";
 
         
@@ -56,7 +58,7 @@ namespace Assets.Scripts
             }
 
             // Process Crew Compartments
-            foreach (var part in craftScript.Data.Assembly.Parts.Where(part => part.GetModifier<CrewCompartmentData>() != null && !part.PartType.Name.Contains(EvaPartName)).ToList())
+            foreach (var part in craftScript.Data.Assembly.Parts.Where(part => part.GetModifier<CrewCompartmentData>() != null && !part.PartType.Name.Contains(EvaPartName)&&!part.PartType.Name.Contains(ChairPartName)).ToList())
             {
                 AddCrewCompartmentPatch(part);
             }
@@ -102,7 +104,7 @@ namespace Assets.Scripts
             {
                 PatchCommandPod(part);
             }
-            else if (part.GetModifier<CrewCompartmentData>() != null && !part.PartType.Name.Contains(EvaPartName))
+            else if (part.GetModifier<CrewCompartmentData>() != null && !part.PartType.Name.Contains(EvaPartName)&&!part.PartType.Name.Contains(ChairPartName))
             {
                 AddCrewCompartmentPatch(part);
             }

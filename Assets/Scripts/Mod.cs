@@ -138,7 +138,7 @@ namespace Assets.Scripts
                 {
                     if (pd.PartType.Name=="Eva"||pd.PartType.Name=="Eva-Tourist")
                     {
-                        pd.PartScript.GetModifier<SupportLifeScript>().RefreshFuelSource();
+                        pd.PartScript.GetModifier<SupportLifeScript>().Refresh();
                     }
                 }
             }

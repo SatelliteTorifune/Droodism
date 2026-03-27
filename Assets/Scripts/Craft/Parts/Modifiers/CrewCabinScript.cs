@@ -51,6 +51,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         private void CheckRadiationState(in FlightFrameData data)
         {
+            if (Data.RadiationShieldDuration<=0)
+            {
+                return;
+            }
             Vector3 craftPCIPos = this.PartScript.CraftScript.FlightData.Position.ToVector3();
             
             RadiationBeltManager.Instance.TryGetDoseRateRadPerHour(this.RadiationBeltConfig,
@@ -65,8 +69,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 deltaHours = Mod.GetDeltaTimeHours();
             }
+            this.Data.RadiationShieldDuration -= totalRadiationDoseRateRadPerHour * deltaHours; 
             
-            this.Data.RadiationShieldDuration -= totalRadiationDoseRateRadPerHour * deltaHours;
+            
            
         }
     }

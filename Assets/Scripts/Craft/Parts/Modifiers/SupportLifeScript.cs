@@ -161,7 +161,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             try
             {
-                RefreshFuelSource();
+                Refresh();
                 Mod.Log("OnInitialLaunch调用RefreshFuelSource");
             }
             catch (Exception e)
@@ -523,7 +523,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// 根据当前场景和EVA状态刷新燃料源。
         /// Refreshes the fuel sources based on the current scene and EVA status.
         /// </summary>
-        public void RefreshFuelSource()
+        public void Refresh()
         {
             if (PartScript == null || PartScript.Modifiers == null)
             {
@@ -534,11 +534,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 try
                 {
-                    CraftRefreshFuelSource();
+                    RefreshFuelSource();
+                    RefreshRadiationCompartment();
                 }
                 catch (Exception e)
                 {
-                    Mod.LogError("RefreshFuelSource调用CraftRefeshFuelSource歇逼了{0}", e);
                 }
                 
             }
@@ -552,7 +552,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// 这个函数的目的非常简单,调用的时候如果是Eva状态就把各个source设定为本地modifier,如果不是就用craft的fuelsource
         /// 但是后面那一坨就出问题了,目前的逻辑是我管你这哪先用craft的,得到null自然就会切换到设置本地modifier那一坨
         /// 这个鸡巴卵子函数的trycatch瞎他妈乱飞,但是I don't give a sh1t,反正it works(on my machine)
-        private void CraftRefreshFuelSource()
+        private void RefreshFuelSource()
         {
             bool isEva = false;
             List<(string, double, double)>DataLocal = new List<(string, double, double)>();
@@ -597,23 +597,20 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     RemoveWaste(_wastedWaterSource, GetLocalFuelSource("Wasted Water"));
                     RemoveWaste(_solidWasteSource, GetLocalFuelSource("Solid Waste"));
                     SaveFuelAmountBuffer();
-                    return;
-                    
                 }
-                HandleFuelSource("Oxygen", Data.DesireOxygenCapacity, Data._oxygenAmountBuffer, ref _oxygenSource);
-                HandleFuelSource("Food", Data.DesireFoodCapacity, Data._foodAmountBuffer, ref _foodSource);
-                HandleFuelSource("H2O", Data.DesireWaterCapacity, Data._waterAmountBuffer, ref _waterSource);
-                HandleFuelSource("CO2", Data.DesireOxygenCapacity*1.1, Data._co2AmountBuffer, ref _co2Source);
-                HandleFuelSource("Wasted Water", Data.DesireWaterCapacity*1.1, Data._wastedWaterAmountBuffer, ref _wastedWaterSource);
-                HandleFuelSource("Solid Waste", Data.DesireFoodCapacity*1.1, Data._solidWasteAmountBuffer, ref _solidWasteSource);
-                SaveFuelAmountBuffer();
-                //Debug.Log("CraftRefreshFuelSource:完成");
+             
                 
             }
             catch (Exception e)
             {
-                Mod.Log("CraftRefreshFuelSource出问题了{0}", e);
             }
+            HandleFuelSource("Oxygen", Data.DesireOxygenCapacity, Data._oxygenAmountBuffer, ref _oxygenSource);
+            HandleFuelSource("Food", Data.DesireFoodCapacity, Data._foodAmountBuffer, ref _foodSource);
+            HandleFuelSource("H2O", Data.DesireWaterCapacity, Data._waterAmountBuffer, ref _waterSource);
+            HandleFuelSource("CO2", Data.DesireOxygenCapacity*1.1, Data._co2AmountBuffer, ref _co2Source);
+            HandleFuelSource("Wasted Water", Data.DesireWaterCapacity*1.1, Data._wastedWaterAmountBuffer, ref _wastedWaterSource);
+            HandleFuelSource("Solid Waste", Data.DesireFoodCapacity*1.1, Data._solidWasteAmountBuffer, ref _solidWasteSource);
+            SaveFuelAmountBuffer();
             void HandleFuelSource(string fuelType, double capacity, double bufferAmount, ref IFuelSource fuelSource)
             {
                 try
@@ -637,7 +634,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                                 }
                                 catch (Exception e)
                                 {
-                                   Mod.Log($"从 CraftRefreshFuelSource 记录 {fuelType} 出错: {e}");
+                                   Mod.Log($"从 RefreshFuelSource 记录 {fuelType} 出错: {e}");
                                 }
                             }
                         }
@@ -674,7 +671,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                                 }
                                 catch (Exception e)
                                 {
-                                   Mod.Log($"从 CraftRefreshFuelSource 记录 {fuelType} 出错: {e}");
+                                   Mod.Log($"从 RefreshFuelSource 记录 {fuelType} 出错: {e}");
                                 }
                             }
                         }
@@ -749,7 +746,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             base.OnCraftLoaded(craftScript, movedToNewCraft);
             if(!Game.InFlightScene)
                 return;
-            RefreshFuelSource();
+            Refresh();
             //Mod.LOG("OnCraftLoaded 调用RefreshFuelSource");
         }
         
@@ -810,7 +807,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             // 强制刷新 CraftFuelSources
             if (Game.InFlightScene && PartScript.CraftScript != null)
             {
-                RefreshFuelSource();
+                Refresh();
                Mod.Log("LoadFuelTank 调用RefreshFuelSource");
             }
            Mod.Log("LoadFuelTanks结束,AddingTankFlag=false");
@@ -1137,7 +1134,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             base.OnCraftStructureChanged(craftScript);
             if (Game.InFlightScene)
             {
-                RefreshFuelSource();
+                Refresh();
                 //Debug.Log("OnCraftStructureChanged调用RefreshFuelSource();");
             }
         }
@@ -1691,6 +1688,26 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 
             }
         }
+
+        private void RefreshRadiationCompartment()
+        {
+            var eva = this.PartScript?.GetModifier<EvaScript>();
+            if (eva.EvaActive||eva.ActiveWhileInCrewCompartment)
+            {
+                radiationProtection = 0;
+                return;
+            }
+            //TODO:耐久度判断
+            if ( eva.CrewCompartment?.PartScript.GetModifier<CrewCabinScript>()!=null)
+            {
+                radiationProtection = 0.8f;
+            }
+           
+        }
+        /// <summary>
+        /// 对辐射剂量计算
+        /// </summary>
+        /// <param name="data"></param>
         private void CheckRadiationState(in FlightFrameData data)
         {
             Vector3 craftPCIPos = this.PartScript.CraftScript.FlightData.Position.ToVector3();
