@@ -16,24 +16,22 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using ModApi.Craft.Parts;
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
-    public class CrewCabinScript :PartModifierScript<CrewCabinData>,IFlightStart,IFlightUpdate
+    public class CrewCabinScript :ResourceProcessorPartScript<CrewCabinData>,IFlightStart,IFlightUpdate
     {
         private RadiationBeltConfig RadiationBeltConfig;
         private string currentPlanetName;
-        public override void OnModifiersCreated()
-        {
-            base.OnModifiersCreated();
-            this.Data.InspectorEnabled = true;
-        }
 
-        public void FlightStart(in FlightFrameData frame)
+        private IFuelSource WaterSource,LiquidHydrogenSouce;
+
+        public override void FlightStart(in FlightFrameData frame)
         {
             this.PartScript.CraftScript.CraftNode.ChangedSoI += OnChangedSOI;
             currentPlanetName = PartScript.CraftScript.CraftNode.Parent.Name;
             RadiationBeltConfig = RadiationBeltConfig.LoadFromFile(currentPlanetName);
+           
         }
 
-        public void FlightUpdate(in FlightFrameData frame)
+        public override void FlightUpdate(in FlightFrameData frame)
         {
             CheckRadiationState(frame);
         }
@@ -41,6 +39,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public override void OnGenerateInspectorModel(PartInspectorModel model)
         {
             base.OnGenerateInspectorModel(model);
+            model.Add<TextModel>(new TextModel("<color=yellow>Radiation Shield Type ", (Func<string>) (() =>this.Data.RadiationShieldType)));
             model.Add<TextModel>(new TextModel("<color=yellow>Radiation Shield Duration ", (Func<string>) (() =>Units.GetPercentageString((float)(this.Data.RadiationShieldDuration/this.Data.RadiationShieldDurationUpperLimit)))));
         }
 
@@ -49,6 +48,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             currentPlanetName = PartScript.CraftScript.CraftNode.Parent.Name;
             RadiationBeltConfig = RadiationBeltConfig.LoadFromFile(currentPlanetName);
         }
+
+        protected override void UpdateFuelSources()
+        {
+            var patchScript = this.PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+            base.UpdateFuelSources();
+            WaterSource = patchScript.WaterFuelSource;
+            LiquidHydrogenSouce = this.GetRegularCraftFuelSource("LH2");
+        }
+
         private void CheckRadiationState(in FlightFrameData data)
         {
             if (Data.RadiationShieldDuration<=0)
@@ -69,10 +77,77 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 deltaHours = Mod.GetDeltaTimeHours();
             }
-            this.Data.RadiationShieldDuration -= totalRadiationDoseRateRadPerHour * deltaHours; 
+            // Compute protection factors by belt
+            float innerProtection = Mathf.Clamp01(GetInnerRadiationProtection());
+            float outerProtection = Mathf.Clamp01(GetOuterRadiationProtection());
+
+            // Effective dose that consumes shield is reduced by protection
+            float effectiveDoseRate =
+                Mathf.Max(0f, innerDoseRateRadPerHour) * (1f - innerProtection) +
+                Mathf.Max(0f, outerDoseRateRadPerHour) * (1f - outerProtection);
+
+            // Fallback: if breakdown per belt is unavailable, use total with averaged protection
+            if (effectiveDoseRate <= 0f && totalRadiationDoseRateRadPerHour > 0f)
+            {
+                float avgProtection = (innerProtection + outerProtection) * 0.5f;
+                effectiveDoseRate = totalRadiationDoseRateRadPerHour * (1f - avgProtection);
+            }
+
+            this.Data.RadiationShieldDuration -= effectiveDoseRate * deltaHours; 
             
             
            
+        }
+        public float GetInnerRadiationProtection()
+        {
+            var t = Data.RadiationShieldType ?? "None";
+            switch (t)
+            {
+                case "None":
+                    return 0f; // no protection
+                case "":
+                    return 0f; // unknown, assume moderate
+                case "Aluminium":
+                    return 0.2f; // inner belt (protons) protection is modest
+                case "PolyEthylene":
+                    return 0.8f; // very good against protons
+                case "Borated PolyEthylene":
+                    return 0.85f; // excellent for protons + neutrons
+                case "Water":
+                    return 0.75f; // good and practical
+                case "Liquid Hydrogen":
+                    return 0.95f; // best theoretical for protons
+                case "Boron Nitride Nanotubes":
+                    return 0.8f; // strong composite option
+                default:
+                    return 0f;
+            }
+        }
+
+        public float GetOuterRadiationProtection()
+        {
+            var t = Data.RadiationShieldType ?? "None";
+            switch (t)
+            {
+                case "None":
+                    return 0f;
+                case "":
+                    return 0f;
+                case "Aluminium":
+                    return 0.6f; // good for electrons
+                case "PolyEthylene":
+                    return 0.6f; // good overall
+                case "Borated PolyEthylene":
+                    return 0.65f; // good with added neutron control
+                case "Water":
+                    return 0.6f;
+                case "Liquid Hydrogen":
+                    return 0.8f; // excellent overall
+                case "Boron Nitride Nanotubes":
+                    return 0.7f; // composite performance
+                default:
+                    return 0f;
+            }
         }
     }
 }

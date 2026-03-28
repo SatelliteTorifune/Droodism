@@ -114,7 +114,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         //辐射值速率
         public string CurrentRadiationRateStats{ get; private set; }
 
-        private float radiationProtection;
+        private float outerRadiationProtection;
+        private float innerRadiationProtection;
         #endregion
 
         #region 逻辑循环啥的
@@ -1692,16 +1693,25 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private void RefreshRadiationCompartment()
         {
             var eva = this.PartScript?.GetModifier<EvaScript>();
+            
             if (eva.EvaActive||eva.ActiveWhileInCrewCompartment)
             {
-                radiationProtection = 0;
+                innerRadiationProtection= outerRadiationProtection = 0;
                 return;
             }
             //TODO:耐久度判断
-            if ( eva.CrewCompartment?.PartScript.GetModifier<CrewCabinScript>()!=null)
+            var crewCabin = eva.CrewCompartment?.PartScript.GetModifier<CrewCabinScript>();
+            if (crewCabin!=null)
             {
-                radiationProtection = 0.8f;
+                outerRadiationProtection =crewCabin.Data.RadiationShieldDuration>0? crewCabin.GetOuterRadiationProtection():0;
+                innerRadiationProtection=crewCabin.Data.RadiationShieldDuration>0? crewCabin.GetInnerRadiationProtection():0;
             }
+
+            if (crewCabin==null)
+            {
+                innerRadiationProtection= outerRadiationProtection = 0;
+            }
+            
            
         }
         /// <summary>
@@ -1725,7 +1735,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 deltaHours = Mod.GetDeltaTimeHours();
             }
 
-            this.RadiationDoseRateRadPerHour = totalRadiationDoseRateRadPerHour*(1-radiationProtection);
+            this.RadiationDoseRateRadPerHour = innerDoseRateRadPerHour*(1-innerRadiationProtection)+outerDoseRateRadPerHour*(1-outerRadiationProtection);
             this.Data.CumulativeRad += RadiationDoseRateRadPerHour * deltaHours;
             CurrentCumulativeRadiationStats = GetAcuteBand((float)this.Data.CumulativeRad);
             CurrentRadiationRateStats = GetRadiationRateStats(RadiationDoseRateRadPerHour);
@@ -1733,6 +1743,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         }
         #endregion
+
+        
         private static string GetAcuteBand(float cumulativeDoseRad)
         {
             if (cumulativeDoseRad >= 500f)

@@ -55,11 +55,17 @@ namespace Assets.Scripts
             foreach (var part in craftScript.Data.Assembly.Parts.Where(part => part.PartType.IsCommandPod && !part.PartType.Name.Contains(EvaPartName)).ToList())
             {
                 PatchCommandPod(part);
+                if (part.GetModifier<CrewCompartmentData>() != null)
+                {
+                    AddCrewCompartmentPatch(part);
+                }
+               
             }
 
             // Process Crew Compartments
-            foreach (var part in craftScript.Data.Assembly.Parts.Where(part => part.GetModifier<CrewCompartmentData>() != null && !part.PartType.Name.Contains(EvaPartName)&&!part.PartType.Name.Contains(ChairPartName)).ToList())
+            foreach (var part in craftScript.Data.Assembly.Parts.Where(part => part.GetModifier<CrewCompartmentData>() != null && !part.PartType.Name.Contains(EvaPartName)).ToList())
             {
+                //&& part.PartType.Name!=ChairPartName)
                 AddCrewCompartmentPatch(part);
             }
 
@@ -103,6 +109,10 @@ namespace Assets.Scripts
             else if (part.PartType.IsCommandPod && !part.PartType.Name.Contains(EvaPartName))
             {
                 PatchCommandPod(part);
+                if (part.GetModifier<CrewCompartmentData>() != null)
+                {
+                    AddCrewCompartmentPatch(part);
+                }
             }
             else if (part.GetModifier<CrewCompartmentData>() != null && !part.PartType.Name.Contains(EvaPartName)&&!part.PartType.Name.Contains(ChairPartName))
             {
@@ -190,14 +200,14 @@ namespace Assets.Scripts
         private static void AddCrewCompartmentPatch(PartData part)
         {
             if (part == null) return;
-
+            
             var targetScript = part.GetModifier<CrewCabinData>();
             if (targetScript == null)
             {
                 targetScript = PartModifierData.CreateFromDefaultXml<CrewCabinData>(part);
-                targetScript.PartPropertiesEnabled = false;
-                targetScript.InspectorEnabled = false;
-               
+                targetScript.PartPropertiesEnabled = true;
+                targetScript.InspectorEnabled = true;
+                targetScript.SetDefaultRadiationShieldType();
             }
         }
 

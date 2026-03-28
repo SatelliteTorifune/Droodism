@@ -19,6 +19,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     private IFuelSource _waterSource, _oxygenSource, _hydrogenSource;
     private Transform _fanTransformBase, _fan1, _fan2;
     private float _fanSpeed;
+    protected Transform Offset { get; set; }
+    protected Vector3 OffsetPositionInverse { get; set; }
 
     
     protected override void UpdateFuelSources()
@@ -89,6 +91,22 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         SetSubPartWithOffset(subPart, Data.PositionOffset, ref _fanTransformBase);
         _fan1 = _fanTransformBase?.Find("fan1");
         _fan2 = _fanTransformBase?.Find("fan2");
+    }
+    private void SetSubPartWithOffset(Transform subPart, Vector3 positionOffset, ref Transform targetTransform)
+    {
+        if (Offset != null)
+        {
+            UnityEngine.Object.Destroy(Offset.gameObject);
+            Offset = null;
+        }
+        targetTransform = subPart;
+        if (targetTransform == null || positionOffset.magnitude <= 0.0f)
+            return;
+
+        Offset = new GameObject("SubPartRotatorOffset").transform;
+        Offset.SetParent(targetTransform.parent, false);
+        Offset.position = targetTransform.TransformPoint(positionOffset);
+        OffsetPositionInverse = Offset.InverseTransformPoint(targetTransform.position);
     }
 }
 }
