@@ -24,11 +24,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public IFuelSource WastedWaterFuelSource { get; set; }
         
         private RadiationBeltConfig Config { get; set; }
+        private float cumulativeDoseRad;
 
         public void FlightStart(in FlightFrameData frame)
         {
             this.PartScript.CraftScript.CraftNode.ChangedSoI += OnChangedSOI;
             this.Config = RadiationBeltConfig.LoadFromFile(this.PartScript.CraftScript.CraftNode.Parent.Name);
+            this.cumulativeDoseRad = 0f;
         }
 
         private void OnChangedSOI(IOrbitNode node)
@@ -39,42 +41,58 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public void FlightUpdate(in FlightFrameData flightFrameData)
         {
+           return;
             string planetName = this.PartScript.CraftScript.CraftNode.Parent.Name;
             
             //我不知道你是啥想法,总之这个东西开启了会每帧都调用从文件load对应的config,损失性能,但是对于debug来说很有用
             if (ModSettings.Instance.ActiveUpdateRadiationBeltConfig)
             {
-                this.Config = GetRuntimeConfigForPlanet(planetName);
+                this.Config = RadiationBeltManager.Instance.GetRuntimeConfigForPlanet(planetName);
             }
             
 
             Vector3 vesselPci = this.PartScript.CraftScript.FlightData.Position.ToVector3();
+            
+            /*
+            RadiationBeltManager.Instance.TryGetTotalBeltIntensityPciMeters(this.Config,
+                planetName,
+                vesselPci,
+                out var totalIntensity,
+                out var innerIntensity,
+                out var outerIntensity);*/
+            RadiationBeltManager.Instance.TryGetDoseRateRadPerHour(this.Config,
+                planetName,
+                vesselPci,
+                out var totalDoseRateRadPerHour,
+                out var innerDoseRateRadPerHour,
+                out var outerDoseRateRadPerHour);
 
-            bool inner = RadiationBeltManager.Instance.TryGetBeltSignedDistancePciMeters(this.Config,
-                planetName, vesselPci, true, out var dIn) && dIn < 0f;
-            bool outer = RadiationBeltManager.Instance.TryGetBeltSignedDistancePciMeters(this.Config,
-                planetName, vesselPci, false, out var dOut) && dOut < 0f;
+            float deltaHours = Mathf.Max(0f, (float)flightFrameData.DeltaTimeWorld) / 3600f;
+            if (deltaHours <= 1e-9f)
+            {
+                deltaHours = Mod.GetDeltaTimeHours();
+            }
+            this.cumulativeDoseRad += totalDoseRateRadPerHour * deltaHours;
+            string acuteBand = GetAcuteBand(this.cumulativeDoseRad, totalDoseRateRadPerHour);
 
-            Game.Instance.FlightScene.FlightSceneUI.ShowMessage($" inner {inner},outer {outer}");
+            Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
+                $"inner({1:F3}/{innerDoseRateRadPerHour:F2} rad/h), " +
+                $"outer({1:F3}/{outerDoseRateRadPerHour:F2} rad/h), " +
+                $"rate {totalDoseRateRadPerHour:F2} rad/h, dose {this.cumulativeDoseRad:F4} rad, +{(totalDoseRateRadPerHour * deltaHours):F6} rad/frame, {acuteBand}");
             
         }
-        /// <summary>
-        /// 考虑到这么写每帧都在load会造成不可忽视的性能损失,config的更新现在交给了调用的modifier在Start和SOI变化时调用
-        /// 缺点只有无法实施调用了
-        /// </summary>
-        /// <param name="planetName"></param>
-        /// <returns></returns>
-        /// RadiationBeltConfig GetRuntimeConfigForPlanet(string planetName)
-        private RadiationBeltConfig GetRuntimeConfigForPlanet(string planetName)
+
+        
+
+        private static string GetAcuteBand(float cumulativeDoseRad, float doseRateRadPerHour)
         {
-            //这个b玩意也蠢,要是你不在当前星球每帧都给你load
-            if (RadiationBeltManager.Instance.CurrentConfig != null &&RadiationBeltManager.Instance.CurrentFocusPlanet== planetName)
-            {
-                return RadiationBeltManager.Instance.CurrentConfig;
-            }
-            //要是没有那就手动load一下
-            return RadiationBeltConfig.LoadFromFile(planetName);
+            if (doseRateRadPerHour > 10f || cumulativeDoseRad >= 500f) return "ARS critical";
+            if (cumulativeDoseRad >= 200f) return "ARS severe";
+            if (cumulativeDoseRad >= 100f) return "ARS mild";
+            return "nominal";
         }
+       
+        
     }
 
 }

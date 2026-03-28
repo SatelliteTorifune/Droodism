@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using Assets.Scripts;
 using ModApi.Flight;
-using ModApi.Flight.Events;
 using ModApi.Flight.MapView;
 using ModApi.GameLoop;
+using ModApi.GameLoop.Interfaces;
 using ModApi.Planet;
 using ModApi.Scenes.Events;
 using UnityEngine;
@@ -32,38 +32,46 @@ namespace Droodism.RadiationBelt
         {
             Instance = this;
         }
-
-       
-
+        
         private void Start()
         { 
             Instance = this;
-            Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
+            Game.Instance.SceneManager.SceneTransitionCompleted += OnSceneTransitionCompleted;
 
         }
+
         
-        private void OnFlightEnded(object sender, FlightEndedEventArgs e)
-        {
-         return;
-            try
-            {
-                BeltList = null;
-                currentRadiationBeltObject = null;
-                BeltInstance = null;
-                CurrentConfig = null;
-            }
-            catch (Exception exception)
-            {
-            }
-            
-        }
 
-        private void OnFlightSceneInitialized(IFlightScene flightScene)
+        public void OnSceneTransitionCompleted(object sender, SceneTransitionEventArgs e)
         {
-           //是的我知道你会很疑惑为什么要这么写
-           //很多辐射带的初始化要等到进入mapView,所以我直接在你进入FlightScene的时候帮你进入mapView一次再切回来
-            Game.Instance.FlightScene.ViewManager.ToggleMapView();
-            Game.Instance.FlightScene.ViewManager.ToggleMapView();
+            if (e.TransitionToScene!="Flight")
+            {
+                return;
+            }
+            this.BeltList.Clear();
+            this.planetRadiusMetersByName.Clear();
+            this.planetRadiusScaledByName.Clear();
+            CurrentFocusPlanet = Game.Instance.FlightScene.CraftNode.Parent.Name;
+            foreach (IPlanetData planetData in Game.Instance.FlightScene.CraftNode.Parent.PlanetData.SolarSystemData.Planets)
+            {
+                planetRadiusMetersByName[planetData.Name] = planetData.Radius;
+                planetRadiusScaledByName[planetData.Name] = planetData.RadiusScaledSpace;
+                AddPlanetRadiationBelt(planetData.Name);
+            }
+
+            this.CurrentConfig = RadiationBeltConfig.LoadFromFile(CurrentFocusPlanet);
+            var currentRadiationBelt = GetCurrentRadiationBelt(CurrentFocusPlanet);
+            this.currentRadiationBeltObject = currentRadiationBelt.gameObject;
+            this.CameraRenderer =
+                Game.Instance.FlightScene.ViewManager.MapViewManager.MapViewCamera.gameObject
+                    .GetComponent<RadiationBeltCameraRenderer>() == null
+                    ? Game.Instance.FlightScene.ViewManager.MapViewManager.MapViewCamera.gameObject
+                        .AddComponent<RadiationBeltCameraRenderer>()
+                    : Game.Instance.FlightScene.ViewManager.MapViewManager.MapViewCamera.gameObject
+                        .GetComponent<RadiationBeltCameraRenderer>();
+            CameraRenderer.beltRenderer = currentRadiationBelt;
+            this.BeltInstance = GetCurrentRadiationBelt(CurrentFocusPlanet);
+            
         }
         #endregion
 
@@ -150,81 +158,6 @@ namespace Droodism.RadiationBelt
                 .AssociatedPlanet.Name;
             return Game.Instance.FlightScene.ViewManager.MapViewManager.MapView.MapViewInspector.SelectedItem.AssociatedPlanet.Name;
         }
-        private void OnSceneLoaded(object sender, SceneEventArgs e)
-        {
-            if (e.Scene != "Flight")
-            {
-                try
-                {
-                    UnSubscribe();
-                }
-                catch (Exception exception)
-                {
-                }
-
-                return;
-            }
-
-            Subscribe();
-
-            //换一个Invoke?
-            void Subscribe()
-            {
-                Game.Instance.FlightScene.FlightEnded += OnFlightEnded;
-                Game.Instance.FlightScene.Initialized += OnFlightSceneInitialized;
-                Game.Instance.FlightScene.ViewManager.MapViewManager.MapView.Initialized += OnMapViewInitialized;
-               
-            }
-
-            void UnSubscribe()
-            {
-                Game.Instance.FlightScene.FlightEnded -= OnFlightEnded;
-                Game.Instance.FlightScene.Initialized -= OnFlightSceneInitialized;
-                Game.Instance.FlightScene.ViewManager.MapViewManager.MapView.Initialized -= OnMapViewInitialized;
-
-            }
-
-        }
-        
-        private void OnMapViewInitialized(IMapView view)
-        {
-
-            this.BeltList.Clear();
-            this.planetRadiusMetersByName.Clear();
-            this.planetRadiusScaledByName.Clear();
-            CurrentFocusPlanet = GetCurrentFocusPlanet();
-
-            try
-            {
-                foreach (IPlanetData planetData in Game.Instance.FlightScene.CraftNode.Parent.PlanetData.SolarSystemData.Planets)
-                {
-                    planetRadiusMetersByName[planetData.Name] = planetData.Radius;
-                    planetRadiusScaledByName[planetData.Name] = planetData.RadiusScaledSpace;
-                    AddPlanetRadiationBelt(planetData.Name);
-                }
-                
-                ReFreshCurrentConfig();
-                
-                var currentRadiationBelt = GetCurrentRadiationBelt(CurrentFocusPlanet);
-                this.currentRadiationBeltObject = currentRadiationBelt.gameObject;
-                this.CameraRenderer =
-                    Game.Instance.FlightScene.ViewManager.MapViewManager.MapViewCamera.gameObject
-                        .GetComponent<RadiationBeltCameraRenderer>() == null
-                        ? Game.Instance.FlightScene.ViewManager.MapViewManager.MapViewCamera.gameObject
-                            .AddComponent<RadiationBeltCameraRenderer>()
-                        : Game.Instance.FlightScene.ViewManager.MapViewManager.MapViewCamera.gameObject
-                            .GetComponent<RadiationBeltCameraRenderer>();
-                CameraRenderer.beltRenderer = currentRadiationBelt;
-                this.BeltInstance = GetCurrentRadiationBelt(CurrentFocusPlanet);
-            }
-            catch (Exception e)
-            {
-                Mod.Log("OnMapViewInitialized Fucked");
-            }
-
-        }
-        
-        
         private void AddPlanetRadiationBelt(string PlanetName)
         { 
             var parentGameObject=GetMapPlanet(PlanetName);
@@ -267,26 +200,34 @@ namespace Droodism.RadiationBelt
         private ProceduralRadiationBelt GetCurrentRadiationBelt(string nAme)
         {
 
-            if (nAme==null)
+            try
             {
-                Mod.Log("ProceduralRadiationBelt name is null");
-                return  null;
-            }
-
-            if (BeltList==null)
-            {
-                Mod.Log("List is null");
-                return null;
-            }
-            foreach (var prb in BeltList)
-            {
-                if (prb.Parent.name==nAme)
+                if (nAme==null)
                 {
-                    return prb;
+                    Mod.Log("ProceduralRadiationBelt name is null");
+                    return  null;
                 }
+
+                if (BeltList==null)
+                {
+                    Mod.Log("List is null");
+                    return null;
+                }
+                foreach (var prb in BeltList)
+                {
+                    if (prb.Parent.name==nAme)
+                    {
+                        return prb;
+                    }
+                }
+               
+            }
+            catch (Exception e)
+            {
             }
             Mod.Log("NOT FOUND ON list,there are {0} on list",BeltList.Count);
             return null;
+            
         }
 
         private static GameObject GetMapPlanet(string PlanetName)
@@ -401,6 +342,107 @@ namespace Droodism.RadiationBelt
             return true;
         }
 
+        public bool TryGetBeltIntensityPciMeters(RadiationBeltConfig cfg,
+            string planetName,
+            Vector3 pciPositionMeters,
+            bool inInnerBelt,
+            out float intensity,
+            out float signedDistance)
+        {
+            intensity = 0f;
+            if (!TryGetBeltSignedDistancePciMeters(cfg, planetName, pciPositionMeters, inInnerBelt, out signedDistance))
+            {
+                return false;
+            }
+
+            if (signedDistance >= 0f)
+            {
+                intensity = 0f;
+                return true;
+            }
+
+            float edgeWidth = inInnerBelt
+                ? Mathf.Max(1e-4f, cfg.innerIntensityEdgeWidth)
+                : Mathf.Max(1e-4f, cfg.outerIntensityEdgeWidth);
+            float exponent = inInnerBelt
+                ? Mathf.Max(1e-4f, cfg.innerIntensityExponent)
+                : Mathf.Max(1e-4f, cfg.outerIntensityExponent);
+            float baseIntensity = inInnerBelt
+                ? Mathf.Max(0f, cfg.innerBaseIntensity)
+                : Mathf.Max(0f, cfg.outerBaseIntensity);
+
+            // signedDistance is normalized in planetary radii; deeper inside => higher intensity.
+            float depth01 = Mathf.Clamp01((-signedDistance) / edgeWidth);
+            float shaped = Mathf.Pow(depth01, exponent);
+            intensity = baseIntensity * shaped;
+            return true;
+        }
+
+        public bool TryGetTotalBeltIntensityPciMeters(RadiationBeltConfig cfg,
+            string planetName,
+            Vector3 pciPositionMeters,
+            out float totalIntensity,
+            out float innerIntensity,
+            out float outerIntensity)
+        {
+            totalIntensity = 0f;
+            innerIntensity = 0f;
+            outerIntensity = 0f;
+
+            bool innerOk = TryGetBeltIntensityPciMeters(cfg, planetName, pciPositionMeters, true, out innerIntensity, out _);
+            bool outerOk = TryGetBeltIntensityPciMeters(cfg, planetName, pciPositionMeters, false, out outerIntensity, out _);
+            if (!innerOk && !outerOk)
+            {
+                return false;
+            }
+
+            totalIntensity = innerIntensity + outerIntensity;
+            return true;
+        }
+
+        public bool TryGetDoseRateRadPerHour(RadiationBeltConfig cfg,
+            string planetName,
+            Vector3 pciPositionMeters,
+            out float totalDoseRateRadPerHour,
+            out float innerDoseRateRadPerHour,
+            out float outerDoseRateRadPerHour)
+        {
+            totalDoseRateRadPerHour = 0f;
+            innerDoseRateRadPerHour = 0f;
+            outerDoseRateRadPerHour = 0f;
+
+            if (!TryGetTotalBeltIntensityPciMeters(cfg, planetName, pciPositionMeters, out _, out float innerIntensity, out float outerIntensity))
+            {
+                return false;
+            }
+
+            float innerBase = Mathf.Max(1e-6f, cfg.innerBaseIntensity);
+            float outerBase = Mathf.Max(1e-6f, cfg.outerBaseIntensity);
+            float innerPeak = Mathf.Max(0f, cfg.innerPeakDoseRateRadPerHour);
+            float outerPeak = Mathf.Max(0f, cfg.outerPeakDoseRateRadPerHour);
+
+            innerDoseRateRadPerHour = innerPeak * Mathf.Clamp01(innerIntensity / innerBase);
+            outerDoseRateRadPerHour = outerPeak * Mathf.Clamp01(outerIntensity / outerBase);
+            totalDoseRateRadPerHour = innerDoseRateRadPerHour + outerDoseRateRadPerHour;
+            return true;
+        }
+
+        public bool TryGetDoseRateSievertPerHour(RadiationBeltConfig cfg,
+            string planetName,
+            Vector3 pciPositionMeters,
+            out float totalDoseRateSvPerHour,
+            float qualityFactor = 1.5f)
+        {
+            totalDoseRateSvPerHour = 0f;
+            if (!TryGetDoseRateRadPerHour(cfg, planetName, pciPositionMeters, out float totalRadPerHour, out _, out _))
+            {
+                return false;
+            }
+
+            totalDoseRateSvPerHour = totalRadPerHour * 0.01f * Mathf.Max(0f, qualityFactor);
+            return true;
+        }
+
         
 
         
@@ -437,6 +479,17 @@ namespace Droodism.RadiationBelt
             return Mathf.Max(d1, -d2) + (cfg.outerDeform > 0.001f
                 ? (Mathf.Sin(p.x * 5.0f) * Mathf.Sin(p.y * 7.0f) * Mathf.Sin(p.z * 6.0f)) * cfg.outerDeform
                 : 0.0f);
+        }
+        public RadiationBeltConfig GetRuntimeConfigForPlanet(string planetName)
+        {
+            
+            //这个b玩意也蠢,要是你不在当前星球每帧都给你load
+            if (CurrentConfig != null &&CurrentFocusPlanet== planetName)
+            {
+                return CurrentConfig;
+            }
+            //要是没有那就手动load一下
+            return RadiationBeltConfig.LoadFromFile(planetName);
         }
     }
     

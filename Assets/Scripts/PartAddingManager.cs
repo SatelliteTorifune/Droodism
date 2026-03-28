@@ -21,6 +21,8 @@ namespace Assets.Scripts
         private static readonly string EvaTouristPartName = "Eva-Tourist";
         private static readonly string GeneratorPartName = "Generator1";
         private static readonly string EvaDataModifierName = "EvaData";
+        private static readonly string ChairPartName = "Chair";
+        private static readonly string Cockpit = "Cockpit1";
         private static readonly string SupportLifeDataModifierName = "SupportLifeData";
 
         
@@ -53,11 +55,17 @@ namespace Assets.Scripts
             foreach (var part in craftScript.Data.Assembly.Parts.Where(part => part.PartType.IsCommandPod && !part.PartType.Name.Contains(EvaPartName)).ToList())
             {
                 PatchCommandPod(part);
+                if (part.GetModifier<CrewCompartmentData>() != null)
+                {
+                    AddCrewCompartmentPatch(part);
+                }
+               
             }
 
             // Process Crew Compartments
             foreach (var part in craftScript.Data.Assembly.Parts.Where(part => part.GetModifier<CrewCompartmentData>() != null && !part.PartType.Name.Contains(EvaPartName)).ToList())
             {
+                //&& part.PartType.Name!=ChairPartName)
                 AddCrewCompartmentPatch(part);
             }
 
@@ -101,8 +109,12 @@ namespace Assets.Scripts
             else if (part.PartType.IsCommandPod && !part.PartType.Name.Contains(EvaPartName))
             {
                 PatchCommandPod(part);
+                if (part.GetModifier<CrewCompartmentData>() != null)
+                {
+                    AddCrewCompartmentPatch(part);
+                }
             }
-            else if (part.GetModifier<CrewCompartmentData>() != null && !part.PartType.Name.Contains(EvaPartName))
+            else if (part.GetModifier<CrewCompartmentData>() != null && !part.PartType.Name.Contains(EvaPartName)&&!part.PartType.Name.Contains(ChairPartName))
             {
                 AddCrewCompartmentPatch(part);
             }
@@ -139,7 +151,6 @@ namespace Assets.Scripts
                 supportLifeData = PartModifierData.CreateFromDefaultXml<SupportLifeData>(part);
                 supportLifeData.PartPropertiesEnabled = true;
                 supportLifeData.InspectorEnabled = true;
-                //LOG($"Added SupportLifeData to part {part.Name}");
             }
         }
 
@@ -156,7 +167,6 @@ namespace Assets.Scripts
                 lsgData = PartModifierData.CreateFromDefaultXml<LifeSupportGeneratorData>(part);
                 lsgData.PartPropertiesEnabled = false;
                 lsgData.InspectorEnabled = true;
-                //LOG($"Added LifeSupportGeneratorData to part {part.Name}");
             }
 
             var waterData = part.GetModifier<Water_DesalinationData>();
@@ -165,7 +175,6 @@ namespace Assets.Scripts
                 waterData = PartModifierData.CreateFromDefaultXml<Water_DesalinationData>(part);
                 waterData.PartPropertiesEnabled = true;
                 waterData.InspectorEnabled = true;
-                //LOG($"Added Water_DesalinationData to part {part.Name}");
             }
         }
 
@@ -182,7 +191,6 @@ namespace Assets.Scripts
                 targetScript = PartModifierData.CreateFromDefaultXml<STCommandPodPatchData>(part);
                 targetScript.PartPropertiesEnabled = false;
                 targetScript.InspectorEnabled = false;
-                //LOG($"Patched CommandPod {part.Name} with STCommandPodPatchData");
             }
         }
 
@@ -192,14 +200,14 @@ namespace Assets.Scripts
         private static void AddCrewCompartmentPatch(PartData part)
         {
             if (part == null) return;
-
+            
             var targetScript = part.GetModifier<CrewCabinData>();
             if (targetScript == null)
             {
                 targetScript = PartModifierData.CreateFromDefaultXml<CrewCabinData>(part);
-                targetScript.PartPropertiesEnabled = false;
-                targetScript.InspectorEnabled = false;
-                //LOG($"Added CrewCabinData to part {part.Name}");
+                targetScript.PartPropertiesEnabled = true;
+                targetScript.InspectorEnabled = true;
+                targetScript.SetDefaultRadiationShieldType();
             }
         }
 

@@ -2,6 +2,7 @@ using System.Xml.Linq;
 using Assets.Packages.DevConsole;
 using Assets.Scripts.Craft;
 using Assets.Scripts.Craft.Parts.Modifiers;
+using Assets.Scripts.Droodism;
 using Assets.Scripts.Droodism.UserInterface;
 using Assets.Scripts.Flight;
 using ModApi.Scenes.Events;
@@ -57,6 +58,7 @@ namespace Assets.Scripts
             DroodismGO.AddComponent<DroodismUIManager>();
             DroodismGO.AddComponent<RadiationBeltManager>();
             DroodismGO.AddComponent<RadiationBeltDebugUI>();
+            DroodismGO.AddComponent<DroodismCrewDataManager>();
             GameObject.DontDestroyOnLoad(DroodismGO);
             DroodismGO.SetActive(true);
             
@@ -104,6 +106,7 @@ namespace Assets.Scripts
             base.OnModInitialized();
             var harmony = new Harmony("com.SatelliteTorifune.Droodism");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
+            CrewManagerSyncPatches.Apply(harmony);
             Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
             Game.Instance.SceneManager.SceneTransitionCompleted+=OnSceneTransitionCompleted;
             //注册一下指令
@@ -135,7 +138,7 @@ namespace Assets.Scripts
                 {
                     if (pd.PartType.Name=="Eva"||pd.PartType.Name=="Eva-Tourist")
                     {
-                        pd.PartScript.GetModifier<SupportLifeScript>().RefreshFuelSource();
+                        pd.PartScript.GetModifier<SupportLifeScript>().Refresh();
                     }
                 }
             }

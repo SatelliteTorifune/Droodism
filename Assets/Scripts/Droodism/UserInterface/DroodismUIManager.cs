@@ -331,6 +331,19 @@ namespace Assets.Scripts.Droodism.UserInterface
                 CrewInspectorGroup.Add<TextModel>(new TextModel("Mission Time",
                     (Func<string>)(() => Mod.GetStopwatchTimeString(supportLifeScript.MissionDurationTime)),
                     tooltip: eva.Data.CrewName + ";s mission time since launch."));
+                CrewInspectorGroup.Add<TextModel>(new TextModel("Radiation Dose",
+                    (Func<string>)(() => $"{supportLifeScript.Data.CumulativeRad:F4} rad"),
+                    tooltip: eva.Data.CrewName + ";s Current Radiation Dose"));
+                CrewInspectorGroup.Add<TextModel>(new TextModel("Radiation Stats",
+                    (Func<string>)(() => $"{supportLifeScript.CurrentCumulativeRadiationStats}"),
+                    tooltip: eva.Data.CrewName + ";s Current Radiation Cumulative Does Stats"));
+                CrewInspectorGroup.Add<TextModel>(new TextModel("Radiation Rate",
+                    (Func<string>)(() => $"{supportLifeScript.RadiationDoseRateRadPerHour:F2} rad/h"),
+                    tooltip: eva.Data.CrewName + ";s Current Radiation Increase Rate Per Hour"));
+                CrewInspectorGroup.Add<TextModel>(new TextModel("Radiation Rate Stats",
+                    (Func<string>)(() => $"{supportLifeScript.CurrentRadiationRateStats}"),
+                    tooltip: eva.Data.CrewName + ";s Current Radiation Rate Stats,if it's red, watch out!"));
+               
                 CrewInspectorGroup.Add<TextModel>(new TextModel("", () => ""));
             }
         }
