@@ -1275,7 +1275,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 Game.Instance == null || Game.Instance.Settings?.Game?.Flight == null)
             {
                 return;
-            } // 基于累计剂量阈值分三级施加持续伤害；按当前剂量率与实际经过时间缩放
+            } 
 
             float dtWorld = (float)frame.DeltaTimeWorld;
             if (dtWorld <= 0f)
@@ -1287,6 +1287,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 return;
             }
+            //下面开始写
 
         }
         #endregion

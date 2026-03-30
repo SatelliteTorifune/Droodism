@@ -245,9 +245,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             this.Script.SaveDroodismCrewData();
         }
-
-        
-
         #endregion
     }
 }

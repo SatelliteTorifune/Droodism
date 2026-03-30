@@ -1,7 +1,10 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
+using Assets.Scripts.Craft.Parts.Modifiers.Fuselage;
 using ModApi.Design.PartProperties;
+using ModApi.GameLoop;
+using ModApi.GameLoop.Interfaces;
 using ModApi.Math;
 
 
@@ -26,6 +29,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         [SerializeField]  [DesignerPropertySpinner(Label = "<color=yellow>Radiation Shield Type</color>", Order = 0, Tooltip = "The type of Radiation Shield this Compartment brings.")]
         private string radiationShieldType = "None";
 
+        // MassDry 由其它 modifier（如 ScalablePodData / CrewCompartmentData）参与计算时，直接在 getter 里读会出现“缩放后不刷新”的问题。
+        // 用缓存值 + 结构变化回调来保证质量会随结构/缩放更新。
+        [SerializeField] [PartModifierProperty(true, false)]
+        private float _cachedShieldMassDry = 0f;
+
         public double RadiationShieldDuration
         {
             get=> radiationShieldDuration;
@@ -42,6 +50,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public double RadiationShieldDurationUpperLimit
         {
             get => radiationShieldDurationUpperLimit;
+            set
+            {
+                radiationShieldDurationUpperLimit = value;
+            }
         }
 
         public string RadiationShieldType
@@ -76,7 +88,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             switch (type)
             {
                 case "None": return 0d;
-                case "Aluminium": return 80d;                 // 电子屏蔽较好，整体预算较低
+                case "Aluminium": return 180d;                
                 case "PolyEthylene": return 150d;             // 轻且对质子更优
                 case "Borated PolyEthylene": return 160d;     // 复合吸收中子，略高
                 case "Water": return 120d;                    // 多功能，适中
@@ -95,6 +107,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 this.OnPropertyChangedInDesigner();
                 d.Manager.RefreshUI();
+                this._cachedShieldMassDry = this.ComputeShieldMassDry();
+                this.Part?.PartScript?.CraftScript?.SetStructureChanged();
             }));
             d.OnValueLabelRequested(() => this.radiationShieldDuration, s => RadiationShieldDurationUpperLimit==0?
                 "NaN":
@@ -105,6 +119,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 if (clamped < 0d) clamped = 0d;
                 this.radiationShieldDuration = clamped;
                 d.Manager.RefreshUI();
+                this._cachedShieldMassDry = this.ComputeShieldMassDry();
+                this.Part?.PartScript?.CraftScript?.SetStructureChanged();
             }));
         }
 
@@ -131,19 +147,21 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             switch (this.RadiationShieldType)
             {
-                case "None" : return 1f;
-                    break;
-                case "Aluminium" : return 1f;
-                    break;
-                case "PolyEthylene" : return 1f;
-                    break;
-                case "Borated PolyEthylene" : return 1f;
-                    break;
-                case "Liquid Hydrogen" : return 1f;
-                    break;
-                case "Boron Nitride Nanotubes" : return 1f;
-                    break;
-                default: return 0f;
+                case "None" : 
+                    return 1f;
+                case "Aluminium":               
+                    return 1.2f;
+                case "Water":               
+                    return 1.0f;
+                case "PolyEthylene":            
+                    return 0.34f;  
+                case "Borated PolyEthylene":    
+                    return 0.37f;
+                case "Liquid Hydrogen":         
+                    return 0.026f; 
+                case "Boron Nitride Nanotubes": 
+                    return 0.52f; 
+                default: return 1f;
             }
             
         }
@@ -182,19 +200,73 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             return a <= b ? a : b;
         }
 
+        internal float CachedShieldMassDry
+        {
+            get => _cachedShieldMassDry;
+            set => _cachedShieldMassDry = value;
+        }
+
+        internal float ComputeShieldMassDry()
+        {
+            if (this.Part == null) return 0f;
+            if (this.RadiationShieldType == "None") return 0f;
+
+            var upperLimit = this.RadiationShieldDurationUpperLimit;
+            if (upperLimit <= 0d)
+            {
+                upperLimit = GetShieldDurabilityUpperLimitByType(this.RadiationShieldType);
+            }
+            if (upperLimit <= 0d) return 0f;
+
+            var clampedDuration = this.RadiationShieldDuration;
+            if (clampedDuration < 0d) clampedDuration = 0d;
+            if (clampedDuration > upperLimit) clampedDuration = upperLimit;
+
+            var percent = clampedDuration / upperLimit; // [0,1]
+            if (double.IsNaN(percent) || double.IsInfinity(percent)) return 0f;
+
+            float volume = 0f;
+            var fuselage = this.Part.GetModifier<FuselageData>();
+            if (fuselage != null)
+            {
+                volume = fuselage.Volume;
+            }
+            else
+            {
+                var scalablePod = this.Part.GetModifier<ScalablePodData>();
+                if (scalablePod != null) volume = scalablePod.TotalVolume;
+            }
+
+            var crewCompartment = this.Part.GetModifier<CrewCompartmentData>();
+            var capacity = crewCompartment != null ? crewCompartment.Capacity : 0;
+            
+            return volume * capacity * this.GetMassFactor() * 0.05f * (float)percent;
+        }
+
+        protected override void OnInitialized()
+        {
+            base.OnInitialized();
+            _cachedShieldMassDry = ComputeShieldMassDry();
+        }
+
+        
         //10等于1吨,这个MassDry会相加到这个part的质量里面
+        //0.025
         public override float MassDry
         {
             get
             {
-                return 500;
-                if (this.RadiationShieldType=="None")
-                {
-                    return base.MassDry;
-                }
-                
-                return base.MassDry*(float)(this.RadiationShieldDuration / this.RadiationShieldDurationUpperLimit * this.RadiationShieldDuration * this.RadiationShieldDuration * GetMassFactor());
+                if (_cachedShieldMassDry == 0f && this.RadiationShieldType != "None")
+                    _cachedShieldMassDry = ComputeShieldMassDry();
+                return _cachedShieldMassDry;
             }
         }
+
+        internal void RebuildShield(double d)
+        {
+            this.radiationShieldDuration = d;
+        }
+        
+        
     }
 }

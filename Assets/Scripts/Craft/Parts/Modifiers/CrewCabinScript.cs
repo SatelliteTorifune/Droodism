@@ -1,3 +1,4 @@
+using Assets.Scripts.Craft.Parts.Modifiers.Fuselage;
 using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
 using Droodism.RadiationBelt;
 using ModApi;
@@ -17,8 +18,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using ModApi.Craft.Parts;
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
-    public class CrewCabinScript :ResourceProcessorPartScript<CrewCabinData>,IAnalyzePerformance
+    public class CrewCabinScript :ResourceProcessorPartScript<CrewCabinData>
     {
+        private bool _recalcShieldMassGuard;
         private RadiationBeltConfig RadiationBeltConfig;
         private string currentPlanetName;
 
@@ -35,6 +37,18 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public override void FlightUpdate(in FlightFrameData frame)
         {
             CheckRadiationState(frame);
+        }
+
+        public override void DesignerStart(in DesignerFrameData frame)
+        {
+            base.DesignerStart(in frame);
+            TryRefreshCachedShieldMassAndRecalcIfNeeded();
+        }
+
+        public override void OnCraftStructureChanged(ICraftScript craftScript)
+        {
+            base.OnCraftStructureChanged(craftScript);
+            TryRefreshCachedShieldMassAndRecalcIfNeeded();
         }
 
         public override void OnGenerateInspectorModel(PartInspectorModel model)
@@ -95,11 +109,27 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 Mathf.Max(0f, innerDoseRateRadPerHour) * (1f - innerProtection) +
                 Mathf.Max(0f, outerDoseRateRadPerHour) * (1f - outerProtection);
 
-            this.Data.RadiationShieldDuration -= effectiveDoseRate * deltaHours; 
+            this.Data.RadiationShieldDuration -= effectiveDoseRate * deltaHours*0.1f; 
             
             
            
         }
+
+        private void TryRefreshCachedShieldMassAndRecalcIfNeeded()
+        {
+            if (_recalcShieldMassGuard) return;
+            if (this.Data == null || this.PartScript?.CraftScript == null) return;
+
+            var newMass = this.Data.ComputeShieldMassDry();
+            var oldMass = this.Data.CachedShieldMassDry;
+            if (Mathf.Abs(newMass - oldMass) < 1e-5f) return;
+
+            this.Data.CachedShieldMassDry = newMass;
+            _recalcShieldMassGuard = true;
+            this.PartScript.CraftScript.SetStructureChanged();
+            _recalcShieldMassGuard = false;
+        }
+
         public float GetInnerRadiationProtection()
         {
             var t = Data.RadiationShieldType ?? "None";
@@ -108,7 +138,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 case "None":
                     return 0f; // no protection
                 case "":
-                    return 0f; // unknown, assume moderate
+                    return 0f; 
                 case "Aluminium":
                     return 0.2f; // inner belt (protons) protection is modest
                 case "PolyEthylene":
@@ -159,7 +189,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 "Radiation Duration", 
                 () => (float)(this.Data.RadiationShieldDuration / this.Data.RadiationShieldDurationUpperLimit)));
         }
+
+        public void RefillWater()
+        {
+            var toFill=this.Data.RadiationShieldDurationUpperLimit-Data.RadiationShieldDurationUpperLimit;
+            
+        }
         
         public bool UsesMachNumber { get; }
+        
     }
 }
