@@ -56,6 +56,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             base.OnGenerateInspectorModel(model);
             model.Add<TextModel>(new TextModel("<color=yellow>Radiation Shield Type ", (Func<string>) (() =>this.Data.RadiationShieldType)));
             model.Add<TextModel>(new TextModel("<color=yellow>Radiation Shield Duration ", (Func<string>) (() =>Data.RadiationShieldDurationUpperLimit==0?"NaN":Units.GetPercentageString((float)(this.Data.RadiationShieldDuration/this.Data.RadiationShieldDurationUpperLimit)))));
+            if (this.Data.RadiationShieldType == "Water" || Data.RadiationShieldType == "Liquid Hydrogen")
+            {
+                model.Add<TextButtonModel>(new TextButtonModel("Refill Shield", (Action<TextButtonModel>)(b => this.RefillWater())));
+            }
         }
 
         private void OnChangedSOI(IOrbitNode orbit)
@@ -71,15 +75,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             WaterSource = patchScript.WaterFuelSource;
             LiquidHydrogenSouce = this.GetRegularCraftFuelSource("LH2");
         }
-
-        private void WaterAndHydrogen()
-        {
-            if (this.Data.RadiationShieldType=="Water"&&this.WaterSource!=null)
-            {
-                
-            }
-        }
-
+        
         private void CheckRadiationState(in FlightFrameData data)
         {
             if (Data.RadiationShieldDuration<=0)
@@ -192,8 +188,42 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public void RefillWater()
         {
-            var toFill=this.Data.RadiationShieldDurationUpperLimit-Data.RadiationShieldDurationUpperLimit;
-            
+            if (this.Data == null) return;
+
+            var upper = this.Data.RadiationShieldDurationUpperLimit;
+            var current = this.Data.RadiationShieldDuration;
+            var missingDurability = upper - current;
+            if (missingDurability <= 0d) return;
+
+            IFuelSource refillSource = null;
+            double durabilityPerFuelUnit = 0d;
+            switch (this.Data.RadiationShieldType)
+            {
+                case "Water":
+                    refillSource = this.WaterSource;
+                    durabilityPerFuelUnit = 0.8d;
+                    break;
+                case "Liquid Hydrogen":
+                    refillSource = this.LiquidHydrogenSouce;
+                    durabilityPerFuelUnit = 0.65d;
+                    break;
+                default:
+                    return;
+            }
+
+            if (refillSource == null || durabilityPerFuelUnit <= 0d || refillSource.TotalFuel <= 0d) return;
+
+            // 需要的资源量 = 缺失耐久 / 每单位资源可恢复的耐久。
+            var requiredFuelAmount = missingDurability / durabilityPerFuelUnit;
+            var removedFuelAmount = refillSource.RemoveFuel(requiredFuelAmount);
+            if (removedFuelAmount <= 0d) return;
+
+            var restoredDurability = removedFuelAmount * durabilityPerFuelUnit;
+            var rebuilt = Math.Min(upper, current + restoredDurability);
+            this.Data.RebuildShield(rebuilt);
+
+            // 护盾耐久变化会改变 MassDry（按百分比），刷新一次结构。
+            TryRefreshCachedShieldMassAndRecalcIfNeeded();
         }
         
         public bool UsesMachNumber { get; }
