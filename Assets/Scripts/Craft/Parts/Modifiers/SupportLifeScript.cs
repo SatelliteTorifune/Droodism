@@ -54,17 +54,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// 当前小蓝人是否处在休眠
         /// </summary>
         public bool IsHibernating { get; private set; }
-
-        /// <summary>
-        ///当前小蓝人的CrewCompartment,目前没用到
-        /// </summary>
-        private CrewCompartmentScript droodCrewCompartmentScript;
+        
 
         /// <summary>
         /// 这啥啊?
         /// </summary>
-
-        public IFuelSource _oxygenSource,_waterSource,_foodSource,_co2Source,_wastedWaterSource,_solidWasteSource;
+        private IFuelSource _oxygenSource,_waterSource,_foodSource,_co2Source,_wastedWaterSource,_solidWasteSource;
         
         
         
@@ -74,11 +69,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         private string currentPlanetName;
 
-        /// <summary>
-        /// 当前行星的数据接口。
-        /// Data interface for the current planet.
-        /// </summary>
-        private IPlanetData planetData;
+        
         /// <summary>
         /// 小蓝人的钩爪
         /// 本来我想做成类似那种钩爪钩到craft自动补充氧气啥的,但是这个鸡巴script的数学判断啥的弔毛玩意我他妈看不懂一点
@@ -86,7 +77,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         private GrapplingHookScript _grapplingHook;
         
-        FlightSceneScript _flightSceneScript;
 
         /// <summary>
         /// 小蓝人目前的任务时长,从初次发射开始算的
@@ -193,7 +183,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 isTourist = true;
             }
             _evaScript = GetComponent<EvaScript>();
-            droodCrewCompartmentScript = GetComponent<CrewCompartmentScript>();
             UpdateCurrentPlanet();
             Game.Instance.FlightScene.CraftNode.ChangedSoI += OnSoiChanged;
             
@@ -230,6 +219,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
 
             CheckRadiationState(frame);
+            DamageRadiation(frame);
 
             if (Data.ParachuteTypes!="None"&&Data.AutoDeployEnabled)
             {
@@ -1278,6 +1268,27 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     false, 2f);
             }
         }
+
+        private void DamageRadiation(in FlightFrameData  frame)
+        {
+            if (_evaScript == null || PartScript == null ||
+                Game.Instance == null || Game.Instance.Settings?.Game?.Flight == null)
+            {
+                return;
+            } // 基于累计剂量阈值分三级施加持续伤害；按当前剂量率与实际经过时间缩放
+
+            float dtWorld = (float)frame.DeltaTimeWorld;
+            if (dtWorld <= 0f)
+            {
+                return;
+            }
+            float impactScale = (float)(Setting<float>)Game.Instance.Settings.Game.Flight.ImpactDamageScale;
+            if (impactScale <= 0f)
+            {
+                return;
+            }
+
+        }
         #endregion
 
         #region UI
@@ -1743,7 +1754,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         }
         #endregion
-
         
         private static string GetAcuteBand(float cumulativeDoseRad)
         {

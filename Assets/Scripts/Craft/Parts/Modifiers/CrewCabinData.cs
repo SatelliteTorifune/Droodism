@@ -1,14 +1,14 @@
-
 using System.Collections.Generic;
-using System.Windows.Forms;
+using System.Linq.Expressions;
+using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using ModApi.Design.PartProperties;
+using ModApi.Math;
 
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
     using System;
     using ModApi.Craft.Parts;
-    using Assets.Scripts;
     using ModApi.Craft.Parts.Attributes;
     using UnityEngine;
 
@@ -18,7 +18,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     public class CrewCabinData : PartModifierData<CrewCabinScript>
     {
         
-        [SerializeField] [PartModifierProperty(true, false)]
+        [SerializeField] [DesignerPropertySlider(10f, 200f, 90, Label = "<color=yellow>Radiation Shield Amount",Order=1, Tooltip = "Current Radiation Shield Amount of this Crew Compartment, could greatly impact the mass of this part")]
         private double radiationShieldDuration = 100d;
         [SerializeField] [PartModifierProperty(true, false)]
         private double radiationShieldDurationUpperLimit = 100d;
@@ -52,8 +52,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// <summary>
         /// 根据护盾材料为耐久上限设定一个默认值，并对当前耐久进行钳制。
         /// </summary>
-        private void ApplyShieldMaterialDefaults()
+        private void ApplyShieldMaterialDefaultDuration()
         {
+            
             radiationShieldDurationUpperLimit = GetShieldDurabilityUpperLimitByType(radiationShieldType);
             if (radiationShieldDuration > radiationShieldDurationUpperLimit)
             {
@@ -66,8 +67,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
 
         /// <summary>
-        /// 不同材料的最大耐久（单位与消耗计算一致，作为可用“预算”上限）。
-        /// 数值可按平衡需要再调整。
+        /// 不同材料的最大耐久
+        /// 数值可按平衡需要再调整,
         /// 这个b override不想写一点
         /// </summary>
         public static double GetShieldDurabilityUpperLimitByType(string type)
@@ -90,7 +91,29 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             base.OnDesignerInitialization(d);
             d.OnValueLabelRequested<string>(() => this.radiationShieldType, x => x);
             d.OnSpinnerValuesRequested<string>(() => this.radiationShieldType, this.GetSpinnerValues);
+            d.OnPropertyChanged<string>((Expression<Func<string>>) (() => this.radiationShieldType), (Action<string, string>) ((newVal, oldVal) =>
+            {
+                this.OnPropertyChangedInDesigner();
+                d.Manager.RefreshUI();
+            }));
+            d.OnValueLabelRequested(() => this.radiationShieldDuration, s => RadiationShieldDurationUpperLimit==0?
+                "NaN":
+                Units.GetPercentageString((float)(this.Min(s, this.RadiationShieldDurationUpperLimit) /RadiationShieldDurationUpperLimit)));
+            d.OnPropertyChanged<double>((Expression<Func<double>>) (() => this.radiationShieldDuration), (Action<double, double>) ((newVal, oldVal) =>
+            {
+                var clamped = this.Min(newVal, this.RadiationShieldDurationUpperLimit);
+                if (clamped < 0d) clamped = 0d;
+                this.radiationShieldDuration = clamped;
+                d.Manager.RefreshUI();
+            }));
         }
+
+        private void OnPropertyChangedInDesigner()
+        {
+            this.ApplyShieldMaterialDefaultDuration();
+        }
+
+
 
         private void GetSpinnerValues(List<string> shieldTypes)
         {
@@ -104,28 +127,44 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             shieldTypes.Add("Boron Nitride Nanotubes");
         }
 
+        internal float GetMassFactor()
+        {
+            switch (this.RadiationShieldType)
+            {
+                case "None" : return 1f;
+                    break;
+                case "Aluminium" : return 1f;
+                    break;
+                case "PolyEthylene" : return 1f;
+                    break;
+                case "Borated PolyEthylene" : return 1f;
+                    break;
+                case "Liquid Hydrogen" : return 1f;
+                    break;
+                case "Boron Nitride Nanotubes" : return 1f;
+                    break;
+                default: return 0f;
+            }
+            
+        }
+        
+
         public void SetDefaultRadiationShieldType()
         {
             var partType = this.Part.PartType.Name;
             switch (partType)
             {
-                case "Vroz Space Capsule" :
-                    this.radiationShieldType = "Aluminium";
+                case "Vroz Space Capsule" : this.radiationShieldType = "Aluminium";
                     break;
-                case "Vroz Orbital Module" :
-                    this.radiationShieldType = "Aluminium"; 
+                case "Vroz Orbital Module" : this.radiationShieldType = "Aluminium"; 
                     break;
-                case "Komodo Capsule":
-                    this.radiationShieldType = "PolyEthylene"; 
+                case "Komodo Capsule": this.radiationShieldType = "PolyEthylene"; 
                     break;
-                case "Space Capsule":
-                    this.radiationShieldType = "Aluminium"; 
+                case "Space Capsule": this.radiationShieldType = "Aluminium"; 
                     break;
-                case "CrewCompartment":
-                    this.radiationShieldType = "None"; 
+                case "CrewCompartment": this.radiationShieldType = "None"; 
                     break;
-                case "Patriot Capsule":
-                    this.radiationShieldType = "Borated PolyEthylene"; 
+                case "Patriot Capsule": this.radiationShieldType = "Borated PolyEthylene"; 
                     break;
                 default:
                     this.radiationShieldType = "None";
@@ -133,7 +172,29 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     
             }
 
-            ApplyShieldMaterialDefaults();
+            ApplyShieldMaterialDefaultDuration();
+        }
+
+        private double Min(double a, double b)
+        {
+            // NaN -> treat as "upper" so the clamp result is deterministic.
+            if (double.IsNaN(a)) return b;
+            return a <= b ? a : b;
+        }
+
+        //10等于1吨,这个MassDry会相加到这个part的质量里面
+        public override float MassDry
+        {
+            get
+            {
+                return 500;
+                if (this.RadiationShieldType=="None")
+                {
+                    return base.MassDry;
+                }
+                
+                return base.MassDry*(float)(this.RadiationShieldDuration / this.RadiationShieldDurationUpperLimit * this.RadiationShieldDuration * this.RadiationShieldDuration * GetMassFactor());
+            }
         }
     }
 }

@@ -3,9 +3,11 @@ using ModApi.Craft.Parts;
 using ModApi.GameLoop;
 using ModApi.GameLoop.Interfaces;
 using RootMotion.FinalIK;
+using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
+using ModApi.Ui.Inspector;
 using UnityEngine;
 
-public abstract class ResourceProcessorPartScript<T> : PartModifierScript<T>, IFlightStart, IFlightUpdate, IDesignerStart,IFlightFixedUpdate
+public abstract class ResourceProcessorPartScript<T> : PartModifierScript<T>, IFlightStart, IAnalyzePerformance, IFlightUpdate, IDesignerStart,IFlightFixedUpdate
     where T : PartModifierData
 {
     protected IFuelSource BatterySource { get; private set; }
@@ -83,5 +85,10 @@ public abstract class ResourceProcessorPartScript<T> : PartModifierScript<T>, IF
         return null;
     }
 
-    
+    public virtual void OnGeneratePerformanceAnalysisModel(GroupModel groupModel)
+    {
+        
+    }
+
+    public bool UsesMachNumber { get; }
 }

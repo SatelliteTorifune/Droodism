@@ -1,3 +1,4 @@
+using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
 using Droodism.RadiationBelt;
 using ModApi;
 using ModApi.Craft;
@@ -16,7 +17,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using ModApi.Craft.Parts;
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
-    public class CrewCabinScript :ResourceProcessorPartScript<CrewCabinData>,IFlightStart,IFlightUpdate
+    public class CrewCabinScript :ResourceProcessorPartScript<CrewCabinData>,IAnalyzePerformance
     {
         private RadiationBeltConfig RadiationBeltConfig;
         private string currentPlanetName;
@@ -40,7 +41,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             base.OnGenerateInspectorModel(model);
             model.Add<TextModel>(new TextModel("<color=yellow>Radiation Shield Type ", (Func<string>) (() =>this.Data.RadiationShieldType)));
-            model.Add<TextModel>(new TextModel("<color=yellow>Radiation Shield Duration ", (Func<string>) (() =>Units.GetPercentageString((float)(this.Data.RadiationShieldDuration/this.Data.RadiationShieldDurationUpperLimit)))));
+            model.Add<TextModel>(new TextModel("<color=yellow>Radiation Shield Duration ", (Func<string>) (() =>Data.RadiationShieldDurationUpperLimit==0?"NaN":Units.GetPercentageString((float)(this.Data.RadiationShieldDuration/this.Data.RadiationShieldDurationUpperLimit)))));
         }
 
         private void OnChangedSOI(IOrbitNode orbit)
@@ -55,6 +56,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             base.UpdateFuelSources();
             WaterSource = patchScript.WaterFuelSource;
             LiquidHydrogenSouce = this.GetRegularCraftFuelSource("LH2");
+        }
+
+        private void WaterAndHydrogen()
+        {
+            if (this.Data.RadiationShieldType=="Water"&&this.WaterSource!=null)
+            {
+                
+            }
         }
 
         private void CheckRadiationState(in FlightFrameData data)
@@ -85,13 +94,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             float effectiveDoseRate =
                 Mathf.Max(0f, innerDoseRateRadPerHour) * (1f - innerProtection) +
                 Mathf.Max(0f, outerDoseRateRadPerHour) * (1f - outerProtection);
-
-            // Fallback: if breakdown per belt is unavailable, use total with averaged protection
-            if (effectiveDoseRate <= 0f && totalRadiationDoseRateRadPerHour > 0f)
-            {
-                float avgProtection = (innerProtection + outerProtection) * 0.5f;
-                effectiveDoseRate = totalRadiationDoseRateRadPerHour * (1f - avgProtection);
-            }
 
             this.Data.RadiationShieldDuration -= effectiveDoseRate * deltaHours; 
             
@@ -149,5 +151,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     return 0f;
             }
         }
+
+        public override void OnGeneratePerformanceAnalysisModel(GroupModel groupModel)
+        {
+            groupModel.Add<TextModel>(new TextModel("<color=yellow>Radiation Shield Type</color>",(Func<string>) (()=> this.Data.RadiationShieldType),tooltip: "Current Crew Compartment's Ant-Radiation Material Type"));
+            groupModel.Add<ProgressBarModel>(new ProgressBarModel(()=>
+                "Radiation Duration", 
+                () => (float)(this.Data.RadiationShieldDuration / this.Data.RadiationShieldDurationUpperLimit)));
+        }
+        
+        public bool UsesMachNumber { get; }
     }
 }

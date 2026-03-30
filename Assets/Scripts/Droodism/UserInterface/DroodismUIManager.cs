@@ -130,8 +130,7 @@ namespace Assets.Scripts.Droodism.UserInterface
 
         double fuelPercentage = (currentFuel / fuelSource.TotalCapacity);
         bool isWasted = (fuelTypeId.Contains("Waste") || fuelTypeId.Contains("CO2"));
-        string FuelAmountPercentagestr = Mod.Instance.FormatFuel(fuelSource.TotalFuel * fuelDensity, _massTypes) + "/" +
-                                         Mod.Instance.FormatFuel(fuelSource.TotalCapacity * fuelDensity, _massTypes);
+        string FuelAmountPercentagestr = Mod.Instance.FormatFuel(fuelSource.TotalFuel * fuelDensity, _massTypes) + "/" + Mod.Instance.FormatFuel(fuelSource.TotalCapacity * fuelDensity, _massTypes);
         double fuelConsumption = (currentFuel - previousFuel) / Game.Instance.FlightScene.TimeManager.DeltaTime;
         string fuelConsumptionStr = Mod.Instance.FormatFuel(fuelConsumption * fuelDensity, _massTypes) + "/s";
 
