@@ -408,7 +408,7 @@ namespace Assets.Scripts
                                     h2oRate += data.WaterConvertEfficiency * pd.PartScript.GetModifier<GeneratorScript>().Data.FuelFlow;
                                 }
                                 break;
-                            //TODO:懒得写了,什么时候正儿八经解决这个我再补上
+                            //
                         }
                     }
                    

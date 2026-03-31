@@ -212,15 +212,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
 
         #region 调参和参数
-        private void UpdateParameters()
-        {
-            SupportLifeScript supportLifeScript = _pilot.PartScript.GetModifier<SupportLifeScript>();
-            kForward = supportLifeScript.a;
-            kDrag = supportLifeScript.b;
-            maxLiftForce = supportLifeScript.c;
-            liftBaseCoeff = supportLifeScript.d;
-            sideSlipDamping = supportLifeScript.e;
-        }
+       
         public float kForward = 10f;
         public float kDrag = 0.15f;
         public float maxLiftForce = 3f;

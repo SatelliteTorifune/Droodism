@@ -1287,8 +1287,52 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 return;
             }
-            //下面开始写
 
+            float damageMultiplier = 0f;
+            string damageReason = "";
+            if (this.RadiationDoseRateRadPerHour > 5f) // Only start checking for damage when rate exceeds 5 rad/h
+            {
+                float rateFactor = Mathf.Clamp(this.RadiationDoseRateRadPerHour / 50f, 0f, 4f);
+                if (this.Data.CumulativeRad >= this.Data.RadiationDamageThresholdLevel3)
+                {
+                    damageMultiplier = 0.05f * (1 + rateFactor); // Severe damage amplified by rate
+                    damageReason = "<color=red>severe cumulative radiation exposure</color>";
+                }
+                else if (this.Data.CumulativeRad >= this.Data.RadiationDamageThresholdLevel2)
+                {
+                    damageMultiplier = 0.001f * (1 + rateFactor); // Moderate damage amplified by rate
+                    damageReason = "<color=orange>moderate cumulative radiation exposure</color>";
+                }
+                else if (this.Data.CumulativeRad >= this.Data.RadiationDamageThresholdLevel1)
+                {
+                    damageMultiplier = 0.00025f * (1 + rateFactor); // Mild damage amplified by rate
+                    damageReason = "<color=yellow>mild cumulative radiation exposure</color>";
+                }
+                else
+                {
+                    // For low cumulative radiation, only high rates cause damage
+                    if (this.RadiationDoseRateRadPerHour > 30f)
+                    {
+                        damageMultiplier = 0.05f * rateFactor; // Minor damage from high rate alone
+                        damageReason = "<color=purple>high radiation rate exposure</color>";
+                    }
+                }
+            }
+
+            if (this.Data.CumulativeRad >= this.Data.RadiationDamageThresholdLevel3)
+            {
+                damageMultiplier = 0.05f;
+                damageReason = "<color=red><size=120%>severe cumulative radiation exposure</color></size>";
+            }
+
+            if (damageMultiplier > 0f)
+            {
+                this.PartScript.TakeDamage(damageMultiplier * dtWorld * impactScale);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
+                    $"<color=red>Crew Member {_evaScript.Data.CrewName}(id:{this.PartScript.Data.Id}) is taking damage due to {damageReason} " +"<br>"+
+                    $"he/she has {Mod.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / (damageMultiplier * impactScale))} left",
+                    false, 2f);
+            }
         }
         #endregion
 
@@ -1444,38 +1488,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     }), 100, 3000, true,true)).ValueFormatter = (Func<float, string>) (x => Units.GetDistanceString(x));
                 }
             }
-
-            #region 临时调参用
-
-            var groupModel1 = new GroupModel("<color=red><size=115%>ParachutePID Settings");
-            var sliderModel1 = new SliderModel("kForward", (Func<float>) (() => a), (Action<float>) (v => a = v), -2, 2, false);
-            var sliderModel2 = new SliderModel("kDrag", (Func<float>) (() => b), (Action<float>) (v => b = v), -2, 2, false);
-            var sliderModel3 = new SliderModel("maxLiftForce", (Func<float>) (() => c), (Action<float>) (v => c = v), -2, 2, false);
-            var sliderModel4 = new SliderModel("liftBaseCoeff", (Func<float>) (() => d), (Action<float>) (v => d = v), -2, 2, false);
-            var sliderModel5 = new SliderModel("sideSlipDamping", (Func<float>) (() => e), (Action<float>) (v => e = v), -2, 2, false);
-            var sliderModel6 = new SliderModel("maxSideForce", (Func<float>) (() => f), (Action<float>) (v => f = v), -2, 2, false);
-            groupModel1.Add(sliderModel1);
-            groupModel1.Add(sliderModel2);
-            groupModel1.Add(sliderModel3);
-            groupModel1.Add(sliderModel4);
-            groupModel1.Add(sliderModel5);
             
-            //remove before release
-            //model.Add(groupModel1);
-
-            #endregion
             
         }
-        #endregion
-
-        #region Temporary PID Tuning Fields
-        
-        public float a;
-        public float b;
-        public float c;
-        public float d;
-        public float e;
-        public float f;
         #endregion
         
         #region 插旗和开伞
@@ -1711,7 +1726,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 innerRadiationProtection= outerRadiationProtection = 0;
                 return;
             }
-            //TODO:耐久度判断
+          
             var crewCabin = eva.CrewCompartment?.PartScript.GetModifier<CrewCabinScript>();
             if (crewCabin!=null)
             {
@@ -1732,11 +1747,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// <param name="data"></param>
         private void CheckRadiationState(in FlightFrameData data)
         {
-            Vector3 craftPCIPos = this.PartScript.CraftScript.FlightData.Position.ToVector3();
             
             RadiationBeltManager.Instance.TryGetDoseRateRadPerHour(this.RadiationBeltConfig,
                 currentPlanetName,
-                craftPCIPos,
+                PartScript.CraftScript.FlightData.Position.ToVector3(),
                 out var totalRadiationDoseRateRadPerHour,
                 out var innerDoseRateRadPerHour,
                 out var outerDoseRateRadPerHour);
@@ -1799,3 +1813,4 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     }
    
 }
+

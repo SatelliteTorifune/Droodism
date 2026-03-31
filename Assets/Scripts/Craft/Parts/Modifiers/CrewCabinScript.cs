@@ -20,7 +20,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using UnityEngine;
     public class CrewCabinScript :ResourceProcessorPartScript<CrewCabinData>
     {
-        private bool _recalcShieldMassGuard;
+        private bool _recalcShieldMassFlag;
         private RadiationBeltConfig RadiationBeltConfig;
         private string currentPlanetName;
 
@@ -113,7 +113,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private void TryRefreshCachedShieldMassAndRecalcIfNeeded()
         {
-            if (_recalcShieldMassGuard) return;
+            if (_recalcShieldMassFlag) return;
             if (this.Data == null || this.PartScript?.CraftScript == null) return;
 
             var newMass = this.Data.ComputeShieldMassDry();
@@ -121,9 +121,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (Mathf.Abs(newMass - oldMass) < 1e-5f) return;
 
             this.Data.CachedShieldMassDry = newMass;
-            _recalcShieldMassGuard = true;
+            _recalcShieldMassFlag = true;
             this.PartScript.CraftScript.SetStructureChanged();
-            _recalcShieldMassGuard = false;
+            _recalcShieldMassFlag = false;
         }
 
         public float GetInnerRadiationProtection()
@@ -221,12 +221,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             var restoredDurability = removedFuelAmount * durabilityPerFuelUnit;
             var rebuilt = Math.Min(upper, current + restoredDurability);
             this.Data.RebuildShield(rebuilt);
-
-            // 护盾耐久变化会改变 MassDry（按百分比），刷新一次结构。
             TryRefreshCachedShieldMassAndRecalcIfNeeded();
         }
         
-        public bool UsesMachNumber { get; }
+        
         
     }
 }

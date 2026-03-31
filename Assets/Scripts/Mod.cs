@@ -144,7 +144,7 @@ namespace Assets.Scripts
             }
             catch (Exception)
             {
-              //TODO 爱鸡巴throw就丢
+              
             }
             
         }
