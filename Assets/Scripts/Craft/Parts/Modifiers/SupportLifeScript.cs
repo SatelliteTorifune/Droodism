@@ -171,20 +171,19 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             
             Mod.Log("FlightStart");
+            base.OnInitialized();
             Game.Instance.FlightScene.FlightEnded+=OnFlightEnded;
-            Game.Instance.FlightScene.CraftNode.ChangedSoI += OnSoiChanged;
             Game.Instance.FlightScene.PlayerChangedSoi += OnPlayerChangedSoi;
             Game.Instance.FlightScene.CraftNode.PhysicsDisabled += OnPhysicsDisabled;
             Game.Instance.FlightScene.CraftNode.PhysicsEnabled += OnPhysicsEnabled;
-            base.OnInitialized();
+        
             this.Data.InspectorEnabled = true;
             if (this.PartScript.Data.PartType.Name == "Eva-Tourist")
             {
                 isTourist = true;
             }
-            _evaScript = GetComponent<EvaScript>();
+            _evaScript = this.PartScript.GetModifier<EvaScript>();
             UpdateCurrentPlanet();
-            Game.Instance.FlightScene.CraftNode.ChangedSoI += OnSoiChanged;
             
             LoadFuelTanks();
             Mod.Log("FlightStart调用LoadFuelTanks");
@@ -226,6 +225,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 AutoDeployParachute();
             }
             MissionDurationTime = (long)Game.Instance.FlightScene.FlightState.Time - Data.MissionStartTime;
+            if (this.RadiationBeltConfig==null)
+            {
+                Mod.Log("Radiation Belt config is null");
+            }
         }
         #endregion
         
@@ -1172,8 +1175,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             try
             {
-                currentPlanetName = Game.Instance.FlightScene?.CraftNode.CraftScript.FlightData.Orbit.Parent.PlanetData
+                currentPlanetName = this.PartScript.CraftScript.FlightData.Orbit.Parent.PlanetData
                     .Name;
+                Mod.Log("currentPlanetName update"+currentPlanetName);
             }
             catch (Exception e)
             {
@@ -1183,18 +1187,26 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         }
 
+        private void UpdateCurrentPlanet(string name)
+        {
+            if (!Game.InFlightScene)
+            {
+                return;
+            }
+            try
+            {
+                currentPlanetName = name;
+            }
+            catch (Exception e)
+            {
+                Mod.Log("UpdateCurrentPlanet (string)调用出问题了{0}", e);
+            }
+            this.RadiationBeltConfig = RadiationBeltConfig.LoadFromFile(name);
+        }
+
         private void OnPlayerChangedSoi(ICraftNode craftNode, IOrbitNode orbitNode)
         {
-            UpdateCurrentPlanet();
-           
-        }
-        /// <summary>
-        /// SOI变化时的事件处理程序，更新当前行星。
-        /// Event handler for when the sphere of influence changes, updates the current planet.
-        /// </summary>
-        private void OnSoiChanged(IOrbitNode source)
-        {
-            UpdateCurrentPlanet();
+            UpdateCurrentPlanet(orbitNode.Name);
         }
         
 
@@ -1747,14 +1759,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// <param name="data"></param>
         private void CheckRadiationState(in FlightFrameData data)
         {
-            
+
             RadiationBeltManager.Instance.TryGetDoseRateRadPerHour(this.RadiationBeltConfig,
                 currentPlanetName,
                 PartScript.CraftScript.FlightData.Position.ToVector3(),
                 out var totalRadiationDoseRateRadPerHour,
                 out var innerDoseRateRadPerHour,
                 out var outerDoseRateRadPerHour);
-            
             float deltaHours = Mathf.Max(0f, (float)data.DeltaTimeWorld) / 3600f;
             if (deltaHours <= 1e-9f)
             {
@@ -1765,7 +1776,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             this.Data.CumulativeRad += RadiationDoseRateRadPerHour * deltaHours;
             CurrentCumulativeRadiationStats = GetAcuteBand((float)this.Data.CumulativeRad);
             CurrentRadiationRateStats = GetRadiationRateStats(RadiationDoseRateRadPerHour);
-
 
         }
         #endregion

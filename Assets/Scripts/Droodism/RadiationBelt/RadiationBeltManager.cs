@@ -429,24 +429,6 @@ namespace Droodism.RadiationBelt
             return true;
         }
 
-        public bool TryGetDoseRateSievertPerHour(RadiationBeltConfig cfg,
-            string planetName,
-            Vector3 pciPositionMeters,
-            out float totalDoseRateSvPerHour,
-            float qualityFactor = 1.5f)
-        {
-            totalDoseRateSvPerHour = 0f;
-            if (!TryGetDoseRateRadPerHour(cfg, planetName, pciPositionMeters, out float totalRadPerHour, out _, out _))
-            {
-                return false;
-            }
-
-            totalDoseRateSvPerHour = totalRadPerHour * 0.01f * Mathf.Max(0f, qualityFactor);
-            return true;
-        }
-
-        
-
         
 
         private static float EvaluateInnerSignedDistance(RadiationBeltConfig cfg, Vector3 p)
