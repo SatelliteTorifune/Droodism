@@ -15,6 +15,7 @@ using static ModApi.Common.Game;
 using static ModApi.Craft.Parts.PartData;
 using Assembly = System.Reflection.Assembly;
 using Droodism.RadiationBelt;
+using ModApi.Ui.Inspector;
 
 namespace Assets.Scripts
 {
@@ -61,8 +62,10 @@ namespace Assets.Scripts
             DroodismGO.AddComponent<DroodismCrewDataManager>();
             GameObject.DontDestroyOnLoad(DroodismGO);
             DroodismGO.SetActive(true);
+            Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.MapView, OnBuildMapViewInspectorPanel);
             
         }
+        
 
         private void OnSceneLoaded(object sender, SceneEventArgs e)
         {

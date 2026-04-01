@@ -75,6 +75,8 @@ namespace Droodism.RadiationBelt
         }
         #endregion
 
+       
+        
         public string CurrentFocusPlanet { get; private set; }
         //这个其实很蠢,我手动写了一个切换时更新的
         void Update()

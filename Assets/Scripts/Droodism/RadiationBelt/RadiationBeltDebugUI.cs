@@ -16,9 +16,9 @@ namespace Droodism.RadiationBelt
         private IInspectorPanel inspectorPanel;
         private InspectorModel inspectorModel;
 
-        public bool ShowGeneral { get; private set; } = true;
-        public bool ShowInner { get; private set; }= true;
-        public bool ShowOuter { get; private set; }= true;
+        public bool ShowGeneral { get; set; } = true;
+        public bool ShowInner { get; set; }= true;
+        public bool ShowOuter { get; set; }= true;
         
         private void Awake()
         {
@@ -54,7 +54,7 @@ namespace Droodism.RadiationBelt
         }
          public void CreateInspectorPanel()
          {
-             inspectorModel = new InspectorModel("Radiation Belt Inspector", "<color=red>Radiation Belt Inspector");
+             inspectorModel = new InspectorModel("Radiation Belt Inspector", "<color=red>Radiation Belt Debug Inspector");
 
              #region Debug
              inspectorModel.Add(new TextButtonModel("Force Rebuild Inspector", (b) =>

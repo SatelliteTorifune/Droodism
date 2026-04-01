@@ -96,7 +96,7 @@ namespace Assets.Scripts
 
         public static void Log(object message)
         {
-            if (ModSettings.Instance.ShowDevLog)
+            if (ModSettings.Instance.DebugMode)
             {
                 Debug.unityLogger.Log(message);
             }
@@ -104,7 +104,7 @@ namespace Assets.Scripts
 
         public static void Log(string format, params object[] args)
         {
-            if (ModSettings.Instance.ShowDevLog)
+            if (ModSettings.Instance.DebugMode)
             {
                 Debug.unityLogger.LogFormat(LogType.Log, format, args);
             }
@@ -112,7 +112,7 @@ namespace Assets.Scripts
 
         public static void LogError(string format, params object[] args)
         {
-            if (ModSettings.Instance.ShowDevLog)
+            if (ModSettings.Instance.DebugMode)
             {
                 Debug.unityLogger.LogFormat(LogType.Log, format, args);
                 Debug.LogFormat(Environment.StackTrace);
@@ -121,7 +121,7 @@ namespace Assets.Scripts
 
         public static void Log(UnityEngine.Object context, string format, params object[] args)
         {
-            if (ModSettings.Instance.ShowDevLog)
+            if (ModSettings.Instance.DebugMode)
             {
                 Debug.unityLogger.LogFormat(LogType.Log, context, format, args);
             }
