@@ -55,7 +55,7 @@ namespace Assets.Scripts
                 .SetDefault(false);
             DebugMode=CreateBool("Toggle Debug Mode")
                 .SetDescription("Enable some log in dev console,and toggle some hidden option")
-                .SetDefault(true);
+                .SetDefault(false);
             AltNavBallColor=CreateBool("Alt Nav Ball Color")
                 .SetDescription("Use Alt Nav Ball Color")
                 .SetDefault(false);

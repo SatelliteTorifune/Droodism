@@ -9,13 +9,15 @@ using ModApi.Scenes.Events;
 using HarmonyLib;
 using ModApi.Craft;
 using ModApi.Flight.Sim;
-using ModApi.Math;
+using System.IO;
 using ModApi.State;
 using static ModApi.Common.Game;
 using static ModApi.Craft.Parts.PartData;
 using Assembly = System.Reflection.Assembly;
 using Droodism.RadiationBelt;
 using ModApi.Ui.Inspector;
+using System.Xml.Serialization;
+using UnityEngine.UI;
 
 namespace Assets.Scripts
 {
@@ -63,6 +65,8 @@ namespace Assets.Scripts
             GameObject.DontDestroyOnLoad(DroodismGO);
             DroodismGO.SetActive(true);
             Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.MapView, OnBuildMapViewInspectorPanel);
+            CheckDefaultConfig();
+            
             
         }
         
@@ -178,8 +182,50 @@ namespace Assets.Scripts
             flag.AllowPlayerControl = false;
             Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Planted Flag at <color=green> {Game.Instance.FlightScene.CraftNode.Parent.Name} </color>'s surface,at {(ConvertPlanetPositionToLatLongAgl(position).x)}° , {(ConvertPlanetPositionToLatLongAgl(position).y)}° ",true,120f);
         }
-        
-        
+
+        private void CheckDefaultConfig()
+        {
+            var folderPath = GetConfigFolderPath();
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+            SetUp("Cylero");
+            SetUp("Droo");
+            SetUp("Earth");
+            SetUp("Miros");
+            SetUp("Nebra");
+            SetUp("Oord");
+            SetUp("Orcus");
+            SetUp("Sergeaa");
+            SetUp("Taurus");
+            SetUp("Tydos");
+            SetUp("Urados");
+            SetUp("Vulco");
+            void SetUp(string planet)
+            {
+                var asset = Mod.ResourceLoader.LoadAsset<TextAsset>("Assets/Resources/DefaultRadiationBeltConfigs/"+planet+".xml");
+                if (asset != null)
+                {
+                    var targetPath = Path.Combine(folderPath, planet+".xml");
+                    if (!File.Exists(targetPath))
+                    {
+                        File.WriteAllText(targetPath, asset.text, Encoding.UTF8);
+                    }
+                }
+            }
+            
+        }
+        private  static string GetConfigFolderPath()
+        {
+            string folderPath = Application.persistentDataPath + RadiationBeltConfig.CONFIG_FOLDER;
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+            return folderPath;
+            
+        }
         
         
     }
