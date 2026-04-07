@@ -1,12 +1,15 @@
 using System.Linq.Expressions;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
+using Assets.Scripts.Droodism;
 using ModApi.Craft.Propulsion;
 using ModApi.Design.PartProperties;
 using Assets.Scripts.State;
 using ModApi.Math;
+using UnityEngine.Serialization;
 
 //去你妈的我要躺在床上对着梅莉的蕾丝边小白袜撸管子,谁他妈想写这东西
 //不是这都他妈啥啊
+//吗的为啥我要把序列化相关写这里?
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
     using System;
@@ -25,15 +28,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     {
         private static bool isTourist;
         
-        [SerializeField] [PartModifierProperty(true, false)]
-        private float _oxygenComsumeRate=1f;
-        [SerializeField][PartModifierProperty(true, false)]
-        private float _foodComsumeRate=1f;
-        [SerializeField][PartModifierProperty(true, false)]
-        private float _waterComsumeRate=1f;
+        [FormerlySerializedAs("_oxygenComsumeRate")] [SerializeField] [PartModifierProperty(true, false)]
+        private float oxygenConsumeRate=1f;
+        [FormerlySerializedAs("_foodComsumeRate")] [SerializeField][PartModifierProperty(true, false)]
+        private float foodConsumeRate=1f;
+        [FormerlySerializedAs("_waterComsumeRate")] [SerializeField][PartModifierProperty(true, false)]
+        private float waterConsumeRate=1f;
         
-        [SerializeField] [PartModifierProperty(true, false)]
-        private float _oxygenDamageScale=1f;
+        [FormerlySerializedAs("_oxygenDamageScale")] [SerializeField] [PartModifierProperty(true, false)]
+        private float oxygenDamageScale=1f;
         [SerializeField][PartModifierProperty(true, false)]
         private float foodDamageScale=1f;
         [SerializeField][PartModifierProperty(true, false)]
@@ -62,7 +65,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         [DesignerPropertySlider(100f, 1000f, 60, Label = "<color=#FFB600>Auto Deploy Height</color>",Order = 3, Tooltip = "Height for auto parachute deployment in Agl")]
         private float autoDeployHeight = 500f;
         
-        
+        [SerializeField][PartModifierProperty(true, false)]
+        private double cumulativeRad=0f;
         [SerializeField][PartModifierProperty]
         public long MissionStartTime=0;
         [SerializeField][PartModifierProperty]
@@ -81,28 +85,34 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         [SerializeField] [PartModifierProperty(true, false)]
         public double _solidWasteAmountBuffer=0f;
         [SerializeField] [PartModifierProperty(true, false)]
-        public double evaConsumeEfficiency=0.3f;
+        public float evaConsumeEfficiency=0.3f;
+        [SerializeField] [PartModifierProperty(true, false)]
+        public float radiationDamageThresholdLevel1=100f;
+        [SerializeField] [PartModifierProperty(true, false)]
+        public float radiationDamageThresholdLevel2=400f;
+        [SerializeField] [PartModifierProperty(true, false)]
+        public float radiationDamageThresholdLevel3=800f;
         
-        public float OxygenComsumeRate
+        public float OxygenConsumeRate
         {
-            get =>IsLegal(this._oxygenComsumeRate)*0.007f; 
-            private set=>this._oxygenComsumeRate = value;
+            get =>IsLegal(this.oxygenConsumeRate)*0.007f; 
+            private set=>this.oxygenConsumeRate = value;
         }
-        public float FoodComsumeRate
+        public float FoodConsumeRate
         {
-            get=>this.IsLegal(_foodComsumeRate)*0.0000058f;
-            set=>this._foodComsumeRate = value;
+            get=>this.IsLegal(foodConsumeRate)*0.0000058f;
+            set=>this.foodConsumeRate = value;
         }
 
-        public float WaterComsumeRate
+        public float WaterConsumeRate
         {
-            get => IsLegal(_waterComsumeRate)*0.0000347f;
-            set => this._waterComsumeRate = value;
+            get => IsLegal(waterConsumeRate)*0.0000347f;
+            set => this.waterConsumeRate = value;
         }
         public float OxygenDamageScale
         {
-            get=>IsLegal(this._oxygenDamageScale)*0.35f;
-            set=>this._oxygenDamageScale = value;
+            get=>IsLegal(this.oxygenDamageScale)*0.35f;
+            set=>this.oxygenDamageScale = value;
         }
         public float FoodDamageScale
         {
@@ -134,11 +144,31 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             set=>this.desireWaterCapacity = value;
         }
 
+        public double CumulativeRad
+        {
+            get=>this.cumulativeRad;
+            set=>this.cumulativeRad=value;
+        }
+        
         public string ParachuteTypes
         {
             get => this._parachuteType;
         }
 
+        public float RadiationDamageThresholdLevel1
+        {
+            get => radiationDamageThresholdLevel1;
+        }
+
+        public float RadiationDamageThresholdLevel2
+        {
+            get => radiationDamageThresholdLevel2;
+        }
+
+        public float RadiationDamageThresholdLevel3
+        {
+            get => radiationDamageThresholdLevel3;
+        }
         private float IsLegal(float value)
         {
             return value>0?value:1;
@@ -164,6 +194,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             get => autoDeployHeight;
             set => autoDeployHeight=value;
         }
+        public DroodismCrewData  DroodismCrewData{get;private set;}
         protected override void OnDesignerInitialization(IDesignerPartPropertiesModifierInterface d)
         {
             base.OnDesignerInitialization(d);
@@ -195,30 +226,25 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         #region functions
         
-        public CrewData crewData
-        {
-            get;
-            set;
-        }
-        private int _crewId = 0;
-        public int CrewId => this._crewId;
-
+        
         protected override void OnInitialized()
         {
             base.OnInitialized();
-            return;
-          
+            var evaData = Part.GetModifier<EvaData>();
+            
+            DroodismCrewData =
+                evaData.CrewName=="Unassigned"?
+                    null:
+                    DroodismCrewDataManager.Instance.GetCrewMember(evaData.CrewId);
+
         }
         
         public override void OnPartRecovered()
         {
             base.OnPartRecovered();
-            return;
             
+            this.Script.SaveDroodismCrewData();
         }
-
-        
-
         #endregion
     }
 }

@@ -80,7 +80,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             if (_compartment==null)
             {
-                Debug.Log("_compartment is null");
                 return;
             }
             

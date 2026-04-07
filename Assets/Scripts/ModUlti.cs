@@ -75,39 +75,58 @@ namespace Assets.Scripts
                 return (totalFuel * 1e-3).ToString("0.00") + format[1];
             return totalFuel.ToString("0.00") + format[0];
         }
-
-        public static void LOG(object message)
+        
+        public static float GetDeltaTimeHours()
         {
-            if (ModSettings.Instance.ShowDevLog)
+            float deltaSeconds = 0f;
+            if (Game.Instance?.FlightScene?.TimeManager != null)
+            {
+                deltaSeconds = Mathf.Max(0f, (float)Game.Instance.FlightScene.TimeManager.DeltaTime);
+            }
+            if (deltaSeconds <= 1e-6f)
+            {
+                deltaSeconds = Mathf.Max(0f, Time.deltaTime);
+            }
+            if (deltaSeconds <= 1e-6f)
+            {
+                deltaSeconds = Mathf.Max(0f, Time.unscaledDeltaTime);
+            }
+            return deltaSeconds / 3600f;
+        }
+
+        public static void Log(object message)
+        {
+            if (ModSettings.Instance.DebugMode)
             {
                 Debug.unityLogger.Log(message);
             }
         }
 
-        public static void LOG(string format, params object[] args)
+        public static void Log(string format, params object[] args)
         {
-            if (ModSettings.Instance.ShowDevLog)
+            if (ModSettings.Instance.DebugMode)
             {
                 Debug.unityLogger.LogFormat(LogType.Log, format, args);
             }
         }
 
-        public static void LOGError(string format, params object[] args)
+        public static void LogError(string format, params object[] args)
         {
-            if (ModSettings.Instance.ShowDevLog)
+            if (ModSettings.Instance.DebugMode)
             {
                 Debug.unityLogger.LogFormat(LogType.Log, format, args);
                 Debug.LogFormat(Environment.StackTrace);
             }
         }
 
-        public static void LOG(UnityEngine.Object context, string format, params object[] args)
+        public static void Log(UnityEngine.Object context, string format, params object[] args)
         {
-            if (ModSettings.Instance.ShowDevLog)
+            if (ModSettings.Instance.DebugMode)
             {
                 Debug.unityLogger.LogFormat(LogType.Log, context, format, args);
             }
         }
+        
 
     }
 }

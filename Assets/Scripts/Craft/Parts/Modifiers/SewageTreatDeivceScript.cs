@@ -97,7 +97,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             Transform transform = ((Component) this).transform.Find("Scalar");
             if (transform == null)
             {
-                Debug.LogWarning("Unable to find Scalar transform");
                 return;
             }
 

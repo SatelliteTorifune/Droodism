@@ -3,14 +3,15 @@ using ModApi.Craft.Parts;
 using ModApi.GameLoop;
 using ModApi.GameLoop.Interfaces;
 using RootMotion.FinalIK;
+using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
+using ModApi.Ui.Inspector;
 using UnityEngine;
 
-public abstract class ResourceProcessorPartScript<T> : PartModifierScript<T>, IFlightStart, IFlightUpdate, IDesignerStart,IFlightFixedUpdate
+public abstract class ResourceProcessorPartScript<T> : PartModifierScript<T>, IFlightStart, IAnalyzePerformance, IFlightUpdate, IDesignerStart,IFlightFixedUpdate
     where T : PartModifierData
 {
     protected IFuelSource BatterySource { get; private set; }
-    protected Transform Offset { get; private set; }
-    protected Vector3 OffsetPositionInverse { get; set; }
+  
 
     public virtual void FlightStart(in FlightFrameData frame)
     {
@@ -84,20 +85,10 @@ public abstract class ResourceProcessorPartScript<T> : PartModifierScript<T>, IF
         return null;
     }
 
-    protected void SetSubPartWithOffset(Transform subPart, Vector3 positionOffset, ref Transform targetTransform)
+    public virtual void OnGeneratePerformanceAnalysisModel(GroupModel groupModel)
     {
-        if (Offset != null)
-        {
-            UnityEngine.Object.Destroy(Offset.gameObject);
-            Offset = null;
-        }
-        targetTransform = subPart;
-        if (targetTransform == null || positionOffset.magnitude <= 0.0f)
-            return;
-
-        Offset = new GameObject("SubPartRotatorOffset").transform;
-        Offset.SetParent(targetTransform.parent, false);
-        Offset.position = targetTransform.TransformPoint(positionOffset);
-        OffsetPositionInverse = Offset.InverseTransformPoint(targetTransform.position);
+        
     }
+
+    public bool UsesMachNumber { get; }
 }

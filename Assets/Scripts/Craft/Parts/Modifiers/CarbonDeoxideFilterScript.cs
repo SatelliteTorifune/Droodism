@@ -58,13 +58,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 		{
 			if ( FanA == null )
 			{
-				Debug.LogFormat( "FanA is null" );
 				return;
 			}
 
 			if ( FanB == null )
 			{
-				Debug.LogFormat( "FanB is null" );
 				return;
 			}
 			float b = 0.0f;

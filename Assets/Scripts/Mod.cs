@@ -2,16 +2,22 @@ using System.Xml.Linq;
 using Assets.Packages.DevConsole;
 using Assets.Scripts.Craft;
 using Assets.Scripts.Craft.Parts.Modifiers;
+using Assets.Scripts.Droodism;
+using Assets.Scripts.Droodism.UserInterface;
 using Assets.Scripts.Flight;
 using ModApi.Scenes.Events;
 using HarmonyLib;
 using ModApi.Craft;
 using ModApi.Flight.Sim;
-using ModApi.Math;
+using System.IO;
 using ModApi.State;
 using static ModApi.Common.Game;
 using static ModApi.Craft.Parts.PartData;
 using Assembly = System.Reflection.Assembly;
+using Droodism.RadiationBelt;
+using ModApi.Ui.Inspector;
+using System.Xml.Serialization;
+using UnityEngine.UI;
 
 namespace Assets.Scripts
 {
@@ -51,12 +57,19 @@ namespace Assets.Scripts
         public override void OnModLoaded()
         {
             base.OnModLoaded();
-            GameObject DroodismUI=new GameObject("DroodismUI");
-            DroodismUI.AddComponent<DroodismUIManager>();
-            //DroodismUI.AddComponent<DroodismCrewMananger>();
-            GameObject.DontDestroyOnLoad(DroodismUI);
-            DroodismUI.SetActive(true);
+            GameObject DroodismGO=new GameObject("DroodismUI");
+            DroodismGO.AddComponent<DroodismUIManager>();
+            DroodismGO.AddComponent<RadiationBeltManager>();
+            DroodismGO.AddComponent<RadiationBeltDebugUI>();
+            DroodismGO.AddComponent<DroodismCrewDataManager>();
+            GameObject.DontDestroyOnLoad(DroodismGO);
+            DroodismGO.SetActive(true);
+            Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.MapView, OnBuildMapViewInspectorPanel);
+            CheckDefaultConfig();
+            
+            
         }
+        
 
         private void OnSceneLoaded(object sender, SceneEventArgs e)
         {
@@ -74,13 +87,13 @@ namespace Assets.Scripts
                 {
                     ModApi.Common.Game.Instance.FlightScene.CraftChanged += OnCraftChanged;
                     PatchCraft(ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript as CraftScript);
-                    LOG("OnSceneLoaded更新Drood数量");
+                    Log("OnSceneLoaded更新Drood数量");
                     那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花();
-                    LOG("OnSceneLoaded执行doShit");
+                    Log("OnSceneLoaded执行doShit");
                 }
                 catch (Exception e1)
                 {
-                    LOG("你要干啥{0}", e1);
+                    Log("你要干啥{0}", e1);
                 }
             }
 
@@ -100,12 +113,25 @@ namespace Assets.Scripts
             base.OnModInitialized();
             var harmony = new Harmony("com.SatelliteTorifune.Droodism");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
+            CrewManagerSyncPatches.Apply(harmony);
             Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
             Game.Instance.SceneManager.SceneTransitionCompleted+=OnSceneTransitionCompleted;
-            //Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.FlightView,OnBuildFlightViewInspectorPanel);
             //注册一下指令
             DevConsoleApi.RegisterCommand("RefreshFuelSource",那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花);
             DevConsoleApi.RegisterCommand("ManualRefreshInstance",ManualRefreshInstance);
+            DevConsoleApi.RegisterCommand("RBUI", () =>
+            {
+                if (!Game.InFlightScene)
+                {
+                  return;   
+                }
+                if (!Game.Instance.FlightScene.ViewManager.MapViewManager.MapView.Visible)
+                {
+                    return;   
+                }
+                RadiationBeltDebugUI.Instance.OnToggleInspectorPanelState();
+            });
+           
             
         }
 
@@ -119,13 +145,13 @@ namespace Assets.Scripts
                 {
                     if (pd.PartType.Name=="Eva"||pd.PartType.Name=="Eva-Tourist")
                     {
-                        pd.PartScript.GetModifier<SupportLifeScript>().RefreshFuelSource();
+                        pd.PartScript.GetModifier<SupportLifeScript>().Refresh();
                     }
                 }
             }
             catch (Exception)
             {
-              //TODO 爱鸡巴throw就丢
+              
             }
             
         }
@@ -156,8 +182,50 @@ namespace Assets.Scripts
             flag.AllowPlayerControl = false;
             Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Planted Flag at <color=green> {Game.Instance.FlightScene.CraftNode.Parent.Name} </color>'s surface,at {(ConvertPlanetPositionToLatLongAgl(position).x)}° , {(ConvertPlanetPositionToLatLongAgl(position).y)}° ",true,120f);
         }
-        
-        
+
+        private void CheckDefaultConfig()
+        {
+            var folderPath = GetConfigFolderPath();
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+            SetUp("Cylero");
+            SetUp("Droo");
+            SetUp("Earth");
+            SetUp("Miros");
+            SetUp("Nebra");
+            SetUp("Oord");
+            SetUp("Orcus");
+            SetUp("Sergeaa");
+            SetUp("Taurus");
+            SetUp("Tydos");
+            SetUp("Urados");
+            SetUp("Vulco");
+            void SetUp(string planet)
+            {
+                var asset = Mod.ResourceLoader.LoadAsset<TextAsset>("Assets/Resources/DefaultRadiationBeltConfigs/"+planet+".xml");
+                if (asset != null)
+                {
+                    var targetPath = Path.Combine(folderPath, planet+".xml");
+                    if (!File.Exists(targetPath))
+                    {
+                        File.WriteAllText(targetPath, asset.text, Encoding.UTF8);
+                    }
+                }
+            }
+            
+        }
+        private  static string GetConfigFolderPath()
+        {
+            string folderPath = Application.persistentDataPath + RadiationBeltConfig.CONFIG_FOLDER;
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+            return folderPath;
+            
+        }
         
         
     }

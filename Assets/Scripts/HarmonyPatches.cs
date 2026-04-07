@@ -6,6 +6,7 @@ using Assets.Scripts.Craft.Fuel;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using Assets.Scripts.Design;
+using Assets.Scripts.Droodism.UserInterface;
 using Assets.Scripts.Flight.UI;
 using HarmonyLib;
 using ModApi.Craft;
@@ -61,12 +62,12 @@ namespace Assets.Scripts
                     }
                     else
                     {
-                        Debug.LogError("[EvaScriptPatch] Failed to find _fuelTank field via reflection.");
+                      LogError("[EvaScriptPatch] Failed to find _fuelTank field via reflection.");
                     }
                 }
                 catch (System.Exception e)
                 {
-                    Debug.LogError($"[EvaScriptPatch] Error in Postfix patch: {e.Message}");
+                   LogError($"[EvaScriptPatch] Error in Postfix patch: {e.Message}");
                 }
             }
         }
@@ -133,14 +134,14 @@ namespace Assets.Scripts
 
                     if (inspectorPanel == null)
                     {
-                        Debug.LogError("InspectorPanel is null, cannot add TEXT group.");
+                       LogError("InspectorPanel is null, cannot add TEXT group.");
                         return;
                     }
 
                     var inspectorModel = inspectorPanel.Model;
                     if (inspectorModel == null)
                     {
-                        Debug.LogError("InspectorModel is null, cannot add TEXT group.");
+                       LogError("InspectorModel is null, cannot add TEXT group.");
                         return;
                     }
 
@@ -187,7 +188,7 @@ namespace Assets.Scripts
                 }
                 catch (Exception e)
                 {
-                    LOG("Droodism.CraftPerformanceAnalysis failed", e);
+                    Log("Droodism.CraftPerformanceAnalysis failed", e);
                 }
             }
         }

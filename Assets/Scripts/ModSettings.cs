@@ -37,7 +37,8 @@ namespace Assets.Scripts
         //public NumericSetting<float> TestSetting1 { get; private set; }
         public BoolSetting ConsumeResourceWhenUnloaded { get; set; }
         public BoolSetting UseLegacyUI { get; set; }
-        public BoolSetting ShowDevLog { get; set; }
+        public BoolSetting DebugMode { get; set; }
+        public BoolSetting ActiveUpdateRadiationBeltConfig { get; set; }
         
         public BoolSetting AltNavBallColor { get; set; }
 
@@ -50,13 +51,16 @@ namespace Assets.Scripts
                 .SetDescription("Drood will still Consume Resource Even the Craft is Unloaded.<br>known bug the time calculate went a <size=125%><color=red>LITTLE BIT</color></size> wrong way")
                 .SetDefault(false);
             UseLegacyUI=CreateBool("Use Legacy UI")
-                .SetDescription("Game will use the old UI")
+                .SetDescription("Mod will use the Legacy UI from older version of Droodism")
                 .SetDefault(false);
-            ShowDevLog=CreateBool("show development log in dev console")
-                .SetDescription("")
-                .SetDefault(true);
+            DebugMode=CreateBool("Toggle Debug Mode")
+                .SetDescription("Enable some log in dev console,and toggle some hidden option")
+                .SetDefault(false);
             AltNavBallColor=CreateBool("Alt Nav Ball Color")
                 .SetDescription("Use Alt Nav Ball Color")
+                .SetDefault(false);
+            ActiveUpdateRadiationBeltConfig=CreateBool("Active Update Radiation Belt Config")
+                .SetDescription("Active Update Radiation Belt Config(Cause Performance loss,but better for debugging)")
                 .SetDefault(false);
         }
     }
