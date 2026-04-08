@@ -27,18 +27,38 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         [SerializeField]  
         [DesignerPropertySlider(0.1f, 1f, 10, Label = "Generation Rate", Tooltip = "Determines the rate which the chemical reactor processes fuel.")]
         private float generationRate = 0.3f;
+        
         [SerializeField]
         [DesignerPropertyLabel(Order = 3, PreserveState = false, NeverSerialize = true)]
         private string reactionDescription;
+
+        [SerializeField] [PartModifierProperty]
+        private float batteryConsumption = 0.4f;
+        
+        [SerializeField] [PartModifierProperty]
+        public float data1 = 0.4f;
+        [SerializeField] [PartModifierProperty]
+        public float data2 = 0.4f;
+        [SerializeField] [PartModifierProperty]
+        public float data3 = 0.4f;
+        [SerializeField] [PartModifierProperty]
+        public float data4 = 0.4f;
 
         public string ReactorType
         {
             get => reactorType;
         }
+        public float GenerationRate
+        {
+            get => generationRate;
+        }
+        public float BatteryConsumption
+        {
+            get => batteryConsumption;
+        }
         protected override void OnDesignerInitialization(IDesignerPartPropertiesModifierInterface d)
         {
-            d.OnValueLabelRequested<string>(() => this.reactorType, x => x);
-           
+            d.OnValueLabelRequested<string>(() => this.reactorType, x => this.GetReactorName());
             d.OnValueLabelRequested<string>((Expression<Func<string>>) (() => this.reactionDescription), (Func<string, string>) (x => GetReactorTypeDescription()));
             d.OnSpinnerValuesRequested<string>(() => this.reactorType, this.GetSpinnerValues);
             d.OnPropertyChanged<string>((Expression<Func<string>>) (() => this.reactorType), (Action<string, string>) ((newVal, oldVal) => this.OnPropertyChangedInDesigner()));
@@ -49,15 +69,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             this.reactionDescription=GetReactorTypeDescription();
             this.Part.PartScript.CraftScript.SetStructureChanged();
         }
-        private void GetSpinnerValues(List<string> reactorTypes)
-        {
-            reactorTypes.Clear();
-            reactorTypes.Add("LH2+LOX=Hydrolox");
-            reactorTypes.Add("N2+LH2=N2H4");
-            reactorTypes.Add("N2");
-        }
 
-        internal string GetReactorTypeDescription()
+        private string GetReactorTypeDescription()
         {
             switch (this.reactorType)
             {
@@ -65,8 +78,32 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     return "Hydrolox Generating:Use Liquid Hydrogen and HP Oxygen to generate Hydrolox";
                 case "N2+LH2=N2H4":
                     return "Monopropellant Generating<br>Use Nitrogen and LH2 to generate Monopropellant";
-                case "N2":
-                    return "<color=green>Nitrogen</color>";
+                case "H2O+CO2+LOX=Methanelox":
+                    return "Methalox Generating<br>Use Water, Carbon Dioxide and High Pressure Oxygen to generate Methalox";
+                default:
+                    return this.reactorType;
+            }
+        }
+        private void GetSpinnerValues(List<string> reactorTypes)
+        {
+            reactorTypes.Clear();
+            reactorTypes.Add("LH2+LOX=Hydrolox");
+            reactorTypes.Add("N2+LH2=N2H4");
+            reactorTypes.Add("H2O+CO2+LOX=Methanelox");
+        }
+        
+        
+
+        internal string GetReactorName()
+        {
+            switch (this.reactorType)
+            {
+                case "LH2+LOX=Hydrolox":
+                    return "<color=yellow>LH2</color>+<color=yellow>LOX</color>=<br><color=green>Hydrolox</color>";
+                case "N2+LH2=N2H4":
+                    return "<color=yellow>N2</color>+<color=yellow>LH2</color>=<br><color=green>N2H4</color>";
+                case "H2O+CO2+LOX=Methanelox":
+                    return "<color=yellow>H2O</color>+<color=yellow>CO2</color>+<color=yellow>LOX</color>=<br><color=green>Methalox</color>";
                 default:
                     return this.reactorType;
             }
