@@ -15,6 +15,6 @@ MonoBehaviour:
   _careerModeOnly: 0
   _displayName: In-Situ Resource Utilization
   _displayOrder: 17
-  _icon: {fileID: 0}
+  _icon: {fileID: 21300000, guid: 262afa532df57864e87d32bdde32587d, type: 3}
   _id: In-Situ Resource Utilization
   _tooltip: 

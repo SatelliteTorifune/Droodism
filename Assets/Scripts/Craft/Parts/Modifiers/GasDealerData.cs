@@ -45,12 +45,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             d.OnValueLabelRequested<string>(() => this.gasType, x => GetSpinnerNames());
             d.OnSpinnerValuesRequested<string>(() => this.gasType, this.GetSpinnerValues);
         }
-        private void GetSpinnerValues(List<string> shieldTypes)
+        private void GetSpinnerValues(List<string> gasType)
         {
-            shieldTypes.Clear();
-            shieldTypes.Add("O2");
-            shieldTypes.Add("CO2");
-            shieldTypes.Add("N2");
+            gasType.Clear();
+            gasType.Add("O2");
+            gasType.Add("CO2");
+            gasType.Add("N2");
         }
 
         internal string GetSpinnerNames()

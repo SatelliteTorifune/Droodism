@@ -80,7 +80,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Data:
     _activationGroup: 0
-    _category: {fileID: 11400000, guid: 7d2b6f557b8767544a162f30e61d22b6, type: 2}
+    _category: {fileID: 11400000, guid: 4bfc71c0b9c1253428ca08e136ecc26f, type: 2}
     _description: A gravity ring could hole 10 crew
     _displayOrder: 0
     _iconPath: Assets/Content/Craft/Parts/GravityRingIcon.png
