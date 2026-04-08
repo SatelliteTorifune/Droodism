@@ -15,17 +15,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     public class Water_DesalinationScript : ResourceProcessorPartScript<Water_DesalinationData>
     {
         private IFuelSource waterFuelSource;
-        public bool IsGenerator{get;private set;}
-        public bool IsRightType{get;private set;}
+        private bool isGenerator;
+        private bool isRightType;
         public override void FlightStart(in FlightFrameData frame)
         {
             base.FlightStart(frame);
             if (this.PartScript.Data.PartType.Name.Contains("Generator"))
             {
-                IsGenerator = true;
+                isGenerator = true;
                 if (this.PartScript.GetModifier<GeneratorScript>().Data.FuelType.Id=="LOX/LH2"||this.PartScript.GetModifier<GeneratorScript>().Data.FuelType.Id=="LOX/CH4")
                 {
-                    IsRightType = true;
+                    isRightType = true;
                 }
             }
         }
@@ -45,7 +45,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return;
             }
 
-            if (IsGenerator&&!IsRightType)
+            if (isGenerator&&!isRightType)
             {
                 return;
             }

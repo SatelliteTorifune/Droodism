@@ -18,6 +18,12 @@
     </Fuel>
     <Fuel id="Wasted Water" name="Wasted Water" gamma="0" density="1.05" molecularWeight="34" combustionTemperature="0" price="0" explosivePower="0" description="Wasted Water Drood Generated">
       <Visual exhaustColor="#00000000" exhaustColorTip="#00000000" exhaustColorShock="#00000000" exhaustColorFlame="#00000000" exhaustColorSoot="#00000000" exhaustColorSmoke="#ffffff00" globalIntensity ="0" shockIntensity="-20" rimShade="0" />
+    </Fuel>    
+    <Fuel id="N2" name="Nitrogen" gamma="0" density="0.00125" molecularWeight="28" combustionTemperature="0" price="100" explosivePower="0" description="Nitrogen gas">
+      <Visual exhaustColor="#00000000" exhaustColorTip="#00000000" exhaustColorShock="#00000000" exhaustColorFlame="#00000000" exhaustColorSoot="#00000000" exhaustColorSmoke="#ffffff00" globalIntensity ="0" shockIntensity="-20" rimShade="0" />
+    </Fuel>
+    <Fuel id="HPN2" name="High Pressure Nitrogen" gamma="0" density="0.0525" molecularWeight="28" combustionTemperature="0" price="0" explosivePower="0" description="High Pressure Nitrogen with larger density for storage">
+      <Visual exhaustColor="#00000000" exhaustColorTip="#00000000" exhaustColorShock="#00000000" exhaustColorFlame="#00000000" exhaustColorSoot="#00000000" exhaustColorSmoke="#ffffff00" globalIntensity ="0" shockIntensity="-20" rimShade="0" />
     </Fuel>
     <Fuel id="Solid Waste" name="Solid Waste" gamma="0" density="2" molecularWeight="100" combustionTemperature="0" price="0" explosivePower="15" description="Solid Waste Drood Generated,or you can call it sh1t">
       <Visual exhaustColor="#00000000" exhaustColorTip="#00000000" exhaustColorShock="#00000000" exhaustColorFlame="#00000000" exhaustColorSoot="#00000000" exhaustColorSmoke="#ffffff00" globalIntensity ="0" shockIntensity="-20" rimShade="0" />
