@@ -411,10 +411,7 @@ namespace Assets.Scripts
                             //
                         }
                     }
-                   
                     
-                    //TODO 添加Kerolox/Jet 二氧化碳
-                    //TODO 添加液氧甲烷 的水和二氧化碳
                 }
 
                 if (pd.PartType.Name=="ElectrolyticDevice")

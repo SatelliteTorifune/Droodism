@@ -30,6 +30,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public override void FlightUpdate(in FlightFrameData frame)
         {
+            if (_particleSystem==null)
+            {
+                Mod.Log("return");
+                return;
+            }
             if (!PartScript.Data.Activated)
             {
                 _particleSystem.Stop();

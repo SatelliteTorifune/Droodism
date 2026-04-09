@@ -185,6 +185,8 @@ MonoBehaviour:
     _versionsAllowed: 
     reactorType: LH2+LOX=Hydrolox
     generationRate: 0.3
+    reactionDescription: 
+    batteryConsumption: 0.4
 --- !u!114 &5039420349654781179
 MonoBehaviour:
   m_ObjectHideFlags: 0

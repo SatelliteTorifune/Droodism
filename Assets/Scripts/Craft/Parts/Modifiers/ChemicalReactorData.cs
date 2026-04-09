@@ -35,14 +35,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         [SerializeField] [PartModifierProperty]
         private float batteryConsumption = 0.4f;
         
-        [SerializeField] [PartModifierProperty]
-        public float data1 = 0.4f;
-        [SerializeField] [PartModifierProperty]
-        public float data2 = 0.4f;
-        [SerializeField] [PartModifierProperty]
-        public float data3 = 0.4f;
-        [SerializeField] [PartModifierProperty]
-        public float data4 = 0.4f;
 
         public string ReactorType
         {
@@ -75,11 +67,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             switch (this.reactorType)
             {
                 case "LH2+LOX=Hydrolox":
-                    return "Hydrolox Generating:Use Liquid Hydrogen and HP Oxygen to generate Hydrolox";
+                    return "Hydrolox Generating:Use Liquid Hydrogen and High Pressure Oxygen to generate Hydrolox";
                 case "N2+LH2=N2H4":
-                    return "Monopropellant Generating<br>Use Nitrogen and LH2 to generate Monopropellant";
+                    return "Monopropellant Generating<br>Use High Pressure Nitrogen and LH2 to generate Monopropellant";
                 case "H2O+CO2+LOX=Methanelox":
-                    return "Methalox Generating<br>Use Water, Carbon Dioxide and High Pressure Oxygen to generate Methalox";
+                    return "Methalox Generating<br>Use Water,High Pressure Carbon Dioxide and High Pressure Oxygen to generate Methalox";
                 default:
                     return this.reactorType;
             }
