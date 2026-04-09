@@ -12,7 +12,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
     public class MethaloxGeneratorScript : ResourceProcessorPartScript<MethaloxGeneratorData>
     {
-        private IFuelSource HPco2Source,HPoxygenSource,waterSource,methaneloxSource;
+        private IFuelSource HPco2Source,waterSource,methaneloxSource;
         private ParticleSystem _particleSystem;
         private Transform _particleSystemTransform;
         
@@ -22,7 +22,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             base.UpdateFuelSources();
             HPco2Source = GetRegularCraftFuelSource("HPCO2");
-            HPoxygenSource = GetRegularCraftFuelSource("HPOxygen");
             waterSource = this.PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>()
                 .WaterFuelSource;
             methaneloxSource = GetRegularCraftFuelSource("LOX/CH4");
@@ -44,13 +43,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         protected override void WorkingLogic(in FlightFrameData frame)
         {
-            if (BatterySource==null||HPco2Source==null||HPoxygenSource==null||waterSource==null||methaneloxSource==null)
+            if (BatterySource==null||HPco2Source==null||waterSource==null||methaneloxSource==null)
             {
                 _particleSystem.Stop();
                 return;
             }
 
-            if (BatterySource.IsEmpty||HPco2Source.IsEmpty||HPoxygenSource.IsEmpty||waterSource.IsEmpty||methaneloxSource.TotalCapacity-methaneloxSource.TotalFuel<0.00001f)
+            if (BatterySource.IsEmpty||HPco2Source.IsEmpty||waterSource.IsEmpty||methaneloxSource.TotalCapacity-methaneloxSource.TotalFuel<0.00001f)
             {
                 _particleSystem.Stop();
                 return;
@@ -58,7 +57,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
             BatterySource.RemoveFuel(Data.BatteryConsumption*frame.DeltaTimeWorld);
             HPco2Source.RemoveFuel(Data.Hpco2Consumption*frame.DeltaTimeWorld);
-            HPoxygenSource.RemoveFuel(Data.HpoxygenConsumption*frame.DeltaTimeWorld);
             waterSource.RemoveFuel(Data.WaterConsumption*frame.DeltaTimeWorld);
             methaneloxSource.AddFuel(Data.MethaneloxGeneration*frame.DeltaTimeWorld);
             if (_particleSystem!=null)

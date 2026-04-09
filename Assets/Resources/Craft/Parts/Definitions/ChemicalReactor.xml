@@ -14,7 +14,7 @@
     </SubpartTypes>
   </PartType>
   <DesignerParts>
-    <DesignerPart name="ChemicalReactor" category="In-Situ Resource Utilization" description="" order="0" showInDesigner="true" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
+    <DesignerPart name="ChemicalReactor" category="In-Situ Resource Utilization" description="A Tiny Chemical Reactor for ISRU use,pick the right reaction type before put it into use." order="0" showInDesigner="true" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
       <Assembly>
         <Parts>
           <Part id="1" partType="ChemicalReactor" position="0,0,0" rotation="0,0,0">

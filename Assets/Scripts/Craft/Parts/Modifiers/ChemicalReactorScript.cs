@@ -41,7 +41,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 case "N2+LH2=N2H4":
                     MonopropellantWorkingLogic(frame);
                     break;
-                case "H2O+CO2+LOX=Methanelox":
+                case "H2O+CO2=Methanelox":
                     MethaloxWorkingLogic(frame);
                     break;
             }
@@ -98,13 +98,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         private void MethaloxWorkingLogic(in FlightFrameData frame)
         {
-            if (methaneloxSource == null||waterSource==null||HPco2Source==null||HPOxygenSource==null)
+            if (methaneloxSource == null||waterSource==null||HPco2Source==null)
             {
                 _particleSystem.Stop();
                 return;
             }
 
-            if (!waterSource.IsEmpty&&!HPco2Source.IsEmpty&&!HPOxygenSource.IsEmpty&&(methaneloxSource.TotalCapacity - methaneloxSource.TotalFuel > 1E-06)&&
+            if (!waterSource.IsEmpty&&!HPco2Source.IsEmpty&&(methaneloxSource.TotalCapacity - methaneloxSource.TotalFuel > 1E-06)&&
                 BatterySource is
                 {
                     IsEmpty: false
@@ -113,7 +113,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 PlayEffects();
                 waterSource.RemoveFuel(Data.GenerationRate* frame.DeltaTimeWorld*0.45f);
                 HPco2Source.RemoveFuel(Data.GenerationRate* frame.DeltaTimeWorld*3.6f);
-                HPOxygenSource.RemoveFuel(Data.GenerationRate* frame.DeltaTimeWorld*2.1);
                 methaneloxSource.AddFuel(Data.GenerationRate * frame.DeltaTimeWorld*0.85f);
                 BatterySource.RemoveFuel(Data.GenerationRate * frame.DeltaTimeWorld*Data.BatteryConsumption*28200);
             }
@@ -130,10 +129,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             this.WorkingType = Data.ReactorType;
             switch (WorkingType)
             {
-                case "H2O+CO2+LOX=Methanelox":
+                case "H2O+CO2=Methanelox":
                     HPco2Source = GetRegularCraftFuelSource("HPCO2");
                     waterSource=this.PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>().WaterFuelSource;
-                    HPOxygenSource=GetRegularCraftFuelSource("HPOxygen");
                     methaneloxSource = GetRegularCraftFuelSource("LOX/CH4");
                     break;
                 case "N2+LH2=N2H4":
@@ -181,7 +179,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             base.OnGenerateInspectorModel(model);
             switch (this.WorkingType)
             {
-                case "H2O+CO2+LOX=Methanelox":
+                case "H2O+CO2=Methanelox":
                     model.Add<TextModel>(new TextModel("<color=green>Methanelox Mass Flow", (Func<string>)(() =>
                     {
                         return Units.GetMassFlowRateString(this.PartScript.Data.Activated?Data.GenerationRate*0.85f * methaneloxSource.FuelType.Density:0);
@@ -195,10 +193,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     {
                         return Units.GetMassFlowRateString(this.PartScript.Data.Activated?Data.GenerationRate*3.6f * HPco2Source.FuelType.Density:0);
                     }), tooltip: "The kilograms of CO2 being reacted per second.")));
-                    model.Add(new TextModel("<color=yellow>Oxygen Mass Flow", (Func<string>)(() =>
-                    {
-                        return Units.GetMassFlowRateString(this.PartScript.Data.Activated?Data.GenerationRate*2.1f * HPOxygenSource.FuelType.Density:0);
-                    }), tooltip: "The kilograms of High Pressure Oxygen being reacted per second."));
                     break;
                 case ("N2+LH2=N2H4"):
                     model.Add(new TextModel("<color=green>Monopropellant Mass Flow", (Func<string>)(() =>

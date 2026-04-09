@@ -70,8 +70,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     return "Hydrolox Generating:Use Liquid Hydrogen and High Pressure Oxygen to generate Hydrolox";
                 case "N2+LH2=N2H4":
                     return "Monopropellant Generating<br>Use High Pressure Nitrogen and LH2 to generate Monopropellant";
-                case "H2O+CO2+LOX=Methanelox":
-                    return "Methalox Generating<br>Use Water,High Pressure Carbon Dioxide and High Pressure Oxygen to generate Methalox";
+                case "H2O+CO2=Methanelox":
+                    return "Methalox Generating<br>Use Water,High Pressure Carbon Dioxide to generate Methalox";
                 default:
                     return this.reactorType;
             }
@@ -81,7 +81,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             reactorTypes.Clear();
             reactorTypes.Add("LH2+LOX=Hydrolox");
             reactorTypes.Add("N2+LH2=N2H4");
-            reactorTypes.Add("H2O+CO2+LOX=Methanelox");
+            reactorTypes.Add("H2O+CO2=Methanelox");
         }
         
         
@@ -94,8 +94,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     return "<color=yellow>LH2</color>+<color=yellow>LOX</color>=<br><color=green>Hydrolox</color>";
                 case "N2+LH2=N2H4":
                     return "<color=yellow>N2</color>+<color=yellow>LH2</color>=<br><color=green>N2H4</color>";
-                case "H2O+CO2+LOX=Methanelox":
-                    return "<color=yellow>H2O</color>+<color=yellow>CO2</color>+<color=yellow>LOX</color>=<br><color=green>Methalox</color>";
+                case "H2O+CO2=Methanelox":
+                    return "<color=yellow>H2O</color>+<color=yellow>CO2</color>=<br><color=green>Methalox</color>";
                 default:
                     return this.reactorType;
             }
