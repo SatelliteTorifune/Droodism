@@ -1,27 +1,24 @@
 using ModApi.Craft;
 using ModApi.Craft.Parts;
-using Assets.Scripts.State;
 using Assets.Scripts.Flight;
 using ModApi.GameLoop;
 using ModApi.GameLoop.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
+using System.Windows.Forms;
 using System.Xml.Linq;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using Assets.Scripts.Droodism;
 using Droodism.RadiationBelt;
 using ModApi.Flight.Events;
 using ModApi.Flight.GameView;
-using ModApi.Planet;
 using UnityEngine;
 using ModApi.Flight.Sim;
 using ModApi.Flight.UI;
 using ModApi.Math;
 using ModApi.Settings.Core;
 using ModApi.Ui.Inspector;
-using UnityEngine.Serialization;
 using Assembly = ModApi.Craft.Assembly;
 
 //鸡巴的我自己都看不懂我写的是什么鸡巴玩意了你还指望我给你写注释吗?
@@ -1363,7 +1360,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             var localSolidWaste = GetLocalFuelSource("Solid Waste");
             base.OnGenerateInspectorModel(model);
             //单独看任务时间的
+            if (!this.isTourist)
+            {
+                model.Add<TextModel>(new TextModel("<color=yellow>Crew Role", (Func<string>) (() =>Data.DroodismCrewData==null?"Unknow":Data.DroodismCrewData.CrewRole.ToString())));
+            }
             model.Add<TextModel>(new TextModel("<color=yellow>Mission Time", (Func<string>) (() =>Mod.GetStopwatchTimeString(MissionDurationTime))));
+            //维生资源
             GroupModel lifeSupportGroupModel = new GroupModel("<color=green><size=115%>Life Support Info");
             
             lifeSupportGroupModel.Add<TextModel>(new TextModel("Remain Oxygen", (Func<string>) (() =>
@@ -1458,6 +1460,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             model.AddGroup(lifeSupportGroupModel);
 
+            //辐射强度
             GroupModel RadiationInspector = new GroupModel("<color=yellow><size=115%>Radiation Inspector");
             RadiationInspector.Add<TextModel>(new TextModel("Current Radiation Dose", (Func<string>) (() => $"{this.Data.CumulativeRad:F4} rad")));
             RadiationInspector.Add<TextModel>(new TextModel("Current Radiation Dose Stats", (Func<string>) (() => CurrentCumulativeRadiationStats)));
@@ -1466,6 +1469,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             model.AddGroup(RadiationInspector);
 
+            //插旗与开伞
             if (!isTourist)
             {
                 TextButtonModel textButtonModel1 =
@@ -1500,8 +1504,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     }), 100, 3000, true,true)).ValueFormatter = (Func<float, string>) (x => Units.GetDistanceString(x));
                 }
             }
-            
-            
+
+            if (this.Data.DroodismCrewData.CrewRole == DroodType.Engineer)
+            {
+                model.Add(new TextButtonModel("Repair", (Action<TextButtonModel>)(b => { this.RepairPart(); })));
+            }
         }
         #endregion
         
@@ -1714,7 +1721,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 return;
             }
-            DroodismCrewDataManager.Instance.SetLifetimeRadiation(_evaScript.Data.CrewId, this.Data.CumulativeRad,saveImmediately);
+
+            try
+            {
+                DroodismCrewDataManager.Instance.SetLifetimeRadiation(_evaScript.Data.CrewId, this.Data.CumulativeRad,saveImmediately);
+            }
+            catch (Exception e)
+            {
+            }
+            
         }
 
         /// <summary>
@@ -1778,7 +1793,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             CurrentRadiationRateStats = GetRadiationRateStats(RadiationDoseRateRadPerHour);
 
         }
-        #endregion
+       
         
         private static string GetAcuteBand(float cumulativeDoseRad)
         {
@@ -1820,6 +1835,24 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return"<color=green>nominal";
             }
         }
+        #endregion
+
+        #region 修复
+
+        private void RepairPart()
+        {
+            //todo 这个b具体逻辑是啥啊
+            foreach (var pd in PartScript.CraftScript.Data.Assembly.Parts)
+            {
+                if (pd.Damage>0)
+                {
+                    pd.Damage = 0;
+                }
+            }
+           
+        }
+
+        #endregion
     }
    
 }

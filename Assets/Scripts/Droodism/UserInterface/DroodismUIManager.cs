@@ -327,6 +327,7 @@ namespace Assets.Scripts.Droodism.UserInterface
             if (supportLifeScript != null)
             {
                 CrewInspectorGroup.Add<TextModel>(new TextModel("Crew Name", () => eva.Data.CrewName));
+                CrewInspectorGroup.Add(new TextModel("Crew Role", () => supportLifeScript.Data.DroodismCrewData==null?"Unknow":supportLifeScript.Data.DroodismCrewData.CrewRole.ToString()));
                 CrewInspectorGroup.Add<TextModel>(new TextModel("Mission Time",
                     (Func<string>)(() => Mod.GetStopwatchTimeString(supportLifeScript.MissionDurationTime)),
                     tooltip: eva.Data.CrewName + ";s mission time since launch."));

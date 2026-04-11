@@ -7,6 +7,7 @@ using UnityEngine;
 using ModApi.GameLoop;
 using System.Reflection;
 using ModApi.Scenes.Events;
+using Random = UnityEngine.Random;
 
 namespace Assets.Scripts.Droodism
 {
@@ -196,10 +197,7 @@ namespace Assets.Scripts.Droodism
             Save();
             return member;
         }
-
-        public DroodismCrewData CreateCrewMember(DroodType crewRole, double lifetimeRadiation = 0)
-            => throw new InvalidOperationException("CreateCrewMember(DroodType, ...) is not supported: it would create a crew entry without a game crew id.");
-
+        
         public DroodismCrewData GetCrewMember(int crewId)
         {
             return _members.FirstOrDefault(m => m.CrewID == crewId);
@@ -220,33 +218,11 @@ namespace Assets.Scripts.Droodism
             }
         }
 
-        public void AddLifetimeRadiation(int crewId, double delta, bool saveImmediately = true)
+        
+        private DroodType GetRandomDroodPost()
         {
-            var member = GetCrewMember(crewId);
-            if (member == null)
-            {
-                // 确保条目存在且 name/id 来自游戏 crew manager
-                if (!TryGetGameCrewInfo(crewId, out var name, out var role))
-                {
-                    // 游戏里没有这个 crewId，直接忽略，避免写出错误的 id/name
-                    return;
-                }
-
-                member = new DroodismCrewData
-                {
-                    CrewID = crewId,
-                    CrewName = name,
-                    CrewRole = role,
-                    RadiationRate = 0
-                };
-                _members.Add(member);
-            }
-
-            member.RadiationRate += delta;
-            if (saveImmediately)
-            {
-                Save();
-            }
+            int i = new System.Random().Next(0, 2);
+            return (DroodType)i;
         }
 
         public void Save()
@@ -382,7 +358,7 @@ namespace Assets.Scripts.Droodism
                         {
                             CrewID = crewId,
                             CrewName = crewName,
-                            CrewRole = DroodType.Pilot,
+                            CrewRole = GetRandomDroodPost(),
                             RadiationRate = 0
                         });
                     }
@@ -426,7 +402,7 @@ namespace Assets.Scripts.Droodism
                     {
                         CrewID = crewId,
                         CrewName = crewName,
-                        CrewRole = byNameRoleDefault(),
+                        CrewRole = GetRandomDroodPost(),
                         RadiationRate = 0
                     };
                 }
@@ -438,11 +414,7 @@ namespace Assets.Scripts.Droodism
             _members.Clear();
             _members.AddRange(newMembers);
             _nextCrewMemberId = maxId.HasValue ? maxId.Value + 1 : 1;
-
-            DroodType byNameRoleDefault()
-            {
-                return _members.Count > 0 ? _members[0].CrewRole : DroodType.Pilot;
-            }
+            
         }
 
         private bool TryGetGameCrewIdNameLookup(out Dictionary<int, string> lookup)
@@ -489,39 +461,6 @@ namespace Assets.Scripts.Droodism
             catch
             {
                 lookup.Clear();
-                return false;
-            }
-        }
-
-        private bool TryGetGameCrewInfo(int crewId, out string crewName, out DroodType role)
-        {
-            crewName = null;
-            role = DroodType.Pilot;
-
-            if (_gameCrewNameById.TryGetValue(crewId, out var cachedName))
-            {
-                crewName = cachedName;
-                return true;
-            }
-
-            try
-            {
-                if (!TryGetGameCrewIdNameLookup(out var lookup))
-                {
-                    return false;
-                }
-
-                if (!lookup.TryGetValue(crewId, out crewName) || string.IsNullOrWhiteSpace(crewName))
-                {
-                    return false;
-                }
-
-                // role 目前不强依赖（你的需求只强调 name/id），所以给个默认值
-                return true;
-            }
-            catch
-            {
-                crewName = null;
                 return false;
             }
         }
