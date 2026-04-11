@@ -2,6 +2,8 @@ using ModApi;
 using ModApi.Craft;
 using ModApi.Design;
 using ModApi.GameLoop;
+using ModApi.Math;
+using ModApi.Ui.Inspector;
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
@@ -53,13 +55,21 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         if (!BatterySource.IsEmpty && !_waterSource.IsEmpty && _oxygenSource.TotalCapacity - _oxygenSource.TotalFuel > 0.000001f)
         {
             _waterSource.RemoveFuel(Data.WaterComsuptionRate * frame.DeltaTimeWorld);
-            BatterySource.RemoveFuel(Data.OxygenGenerationRate * frame.DeltaTimeWorld);
-            _oxygenSource.AddFuel(Data.PowerConsumptionRate * frame.DeltaTimeWorld);
+            BatterySource.RemoveFuel(Data.PowerConsumptionRate * frame.DeltaTimeWorld);
+            _oxygenSource.AddFuel(Data.OxygenGenerationRate * frame.DeltaTimeWorld);
             if (_hydrogenSource != null && _hydrogenSource.TotalCapacity - _hydrogenSource.TotalFuel > 0.000001f)
             {
                 _hydrogenSource.AddFuel(Data.HydrogenGenerationRate * frame.DeltaTimeWorld);
             }
         }
+    }
+    public override void OnGenerateInspectorModel(PartInspectorModel model)
+    {
+        base.OnGenerateInspectorModel(model);
+        model.Add<TextModel>(new TextModel("<color=yellow>Water Consumption Rate ", (Func<string>)(() => Units.GetMassString(PartScript.Data.Activated?(float)Data.WaterComsuptionRate*_waterSource.FuelType.Density*0.00025f:0))));
+        model.Add<TextModel>(new TextModel("<color=yellow>Oxygen Generation Rate ", (Func<string>)(() => Units.GetMassString(PartScript.Data.Activated?(float)Data.OxygenGenerationRate*_oxygenSource.FuelType.Density*0.145f:0))));
+        model.Add<TextModel>(new TextModel("<color=green>Power Consumption Rate ", (Func<string>)(() => Units.GetPowerString(PartScript.Data.Activated?(float)Data.PowerConsumptionRate*231f:0))));
+
     }
 
     protected override void WorkingAnimation(bool active)
@@ -108,5 +118,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         Offset.position = targetTransform.TransformPoint(positionOffset);
         OffsetPositionInverse = Offset.InverseTransformPoint(targetTransform.position);
     }
+
+    
+
+ 
 }
 }

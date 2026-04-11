@@ -1,6 +1,8 @@
 using ModApi.Craft;
 using ModApi.Craft.Parts.Modifiers;
 using ModApi.GameLoop;
+using ModApi.Math;
+using ModApi.Ui.Inspector;
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {

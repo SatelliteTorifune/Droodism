@@ -13,7 +13,7 @@
     </SubpartTypes>
   </PartType>
   <DesignerParts>
-    <DesignerPart name="Water Pump" category="LifeSupport" description="Put this into water to refill the water" order="0" showInDesigner="true" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
+    <DesignerPart name="Water Pump" category="In-Situ Resource Utilization" description="Put this into water to refill the water" order="0" showInDesigner="true" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
       <Assembly>
         <Parts>
           <Part id="1" partType="WaterPump" position="0,0,0" rotation="0,0,0">
