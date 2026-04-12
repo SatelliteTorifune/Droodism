@@ -41,7 +41,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private float foodDamageScale=1f;
         [SerializeField][PartModifierProperty(true, false)]
         private float waterDamageScale=1f;
-        
+
+        [SerializeField] [DesignerPropertyLabel(Order=-2)]
+        private string crewRoleName = "Unknow";
+        [SerializeField] [DesignerPropertyLabel(Order=-1)]
+        private string crewRadiationDoes = "Unknow";
         [SerializeField] 
         [DesignerPropertySlider(0.1f, 3f, 30, Label = "<color=green>Oxygen</color> Carry Amount(days)",Order = 4, Tooltip = "How much <color=green>Oxygen</color> Drood himself/herself will carry when Eva.")]
         private float desireOxygenCapacity = 0.2f;
@@ -58,9 +62,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         [DesignerPropertySlider(100f, 1000f, 60, Label = "Min Deploy Height",Order=1, Tooltip = "Minimum height for parachute deployment")]
         private float minDeployHeight = 250f;
 
-        [SerializeField] 
-        [DesignerPropertyToggleButton(Label = "<color=#FFB600>Auto Deploy Parachute</color>",Order = 2,Tooltip = "Auto Deploy Parachute or not")]
-        private bool autoDeployEnabled = true;
+        [SerializeField]
+        [DesignerPropertyToggleButton(Label = "<color=#FFB600>Auto Deploy Parachute</color>", Order = 2,
+            Tooltip = "Auto Deploy Parachute or not")]
+        private bool autoDeployEnabled;
         [SerializeField] 
         [DesignerPropertySlider(100f, 1000f, 60, Label = "<color=#FFB600>Auto Deploy Height</color>",Order = 3, Tooltip = "Height for auto parachute deployment in Agl")]
         private float autoDeployHeight = 500f;
@@ -213,6 +218,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 this.minDeployHeight = Mathf.Min(this.autoDeployHeight, this.minDeployHeight);
                 d.Manager.RefreshUI();
             }));
+            d.OnVisibilityRequested<string>((Expression<Func<string>>) (() => this.crewRoleName), (Func<bool, bool>) (x => !this.Part.GetModifier<EvaData>().IsTourist));
+            d.OnVisibilityRequested<string>((Expression<Func<string>>) (() => this.crewRadiationDoes), (Func<bool, bool>) (x => !this.Part.GetModifier<EvaData>().IsTourist));
         }
 
 
@@ -230,15 +237,32 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         protected override void OnInitialized()
         {
             base.OnInitialized();
-            var evaData = Part.GetModifier<EvaData>();
-            
-            DroodismCrewData =
-                evaData.CrewName=="Unassigned"?
-                    null:
-                    DroodismCrewDataManager.Instance.GetCrewMember(evaData.CrewId);
+            SetDroodismCrewData();
 
         }
+
+        public void SetDroodismCrewData()
+        {
+            var evaData = Part.GetModifier<EvaData>();
+            DroodismCrewData =
+                evaData.CrewName == "Unassigned"
+                    ? null
+                    : DroodismCrewDataManager.Instance.GetCrewMember(evaData.CrewId);
+            this.crewRoleName = DroodismCrewData == null ? "<color=yellow>Crew Role</color>: Unknow" : GetCrewRoleName();
+            this.crewRadiationDoes=DroodismCrewData == null ? "<color=yellow>Radiation Dose: Unknow" : "<color=yellow>Radiation Dose:"+(DroodismCrewData.RadiationRate.ToString("f1")+" rad");
+        }
+
+        private string GetCrewRoleName()
+        {
+            string Description = DroodismCrewData.CrewRole == DroodType.Engineer ? "Enginner Could Fix Parts" :
+                DroodismCrewData.CrewRole == DroodType.Scientist ? "Scientist Could Increase more Science Experiment outcome(LMAO i didn't even implement this)" :
+                "Basic Drood which is good at taking control of the shit";
+            string color = DroodismCrewData.CrewRole == DroodType.Engineer ? "#00DD9F" :
+                DroodismCrewData.CrewRole == DroodType.Scientist ? "#62BF05" : "#BF2605";
+            return "<color=yellow>Crew Role</color>: "+"<color="+color+">"+DroodismCrewData.CrewRole+"</color><br>"+Description;
+        }
         
+
         public override void OnPartRecovered()
         {
             base.OnPartRecovered();

@@ -45,7 +45,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// 引用EvaScript组件,来获取这个小蓝人的一些乱七八糟的狗屎鸡巴数据玩意
         /// Reference to the EvaScript component,get current part's eva data and other stuff
         /// </summary>
-        private EvaScript _evaScript;
+        internal EvaScript _evaScript;
         
         /// <summary>
         /// 当前小蓝人是否处在休眠
@@ -114,6 +114,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             base.OnModifiersCreated();
             this.Data.PartPropertiesEnabled = true;
+            this._evaScript = PartScript.GetModifier<EvaScript>();
         }
         
 
@@ -1205,7 +1206,34 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             UpdateCurrentPlanet(orbitNode.Name);
         }
-        
+
+        /// <summary>
+        /// Called when a part this modifier is attached to is pulled out in the designer.  This is called before DesignerStart() and while the previous part is still selected.
+        /// </summary>
+        /// <param name="assembly">The assembly this modifier's part is within (will contain all parts if contained in a sub-assembly).</param>
+        public override void OnDesignerPullout(Assembly assembly)
+        {
+            base.OnDesignerPullout(assembly);
+            var eva = this.PartScript.GetModifier<EvaScript>();
+            if (!eva.Data.RequiresCrewMember)
+            {
+              return;
+            }
+
+            Data.SetDroodismCrewData();
+        }
+
+        public override void OnCloned()
+        {
+            base.OnCloned();
+            var eva = this.PartScript.GetModifier<EvaScript>();
+            if (!eva.Data.RequiresCrewMember)
+            {
+                return;
+            }
+            Data.SetDroodismCrewData();
+        }
+
 
         #endregion
 
@@ -1856,4 +1884,3 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     }
    
 }
-
