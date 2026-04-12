@@ -9,6 +9,7 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
+using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
 using Assets.Scripts.Droodism;
 using Droodism.RadiationBelt;
 using ModApi.Flight.Events;
@@ -1510,11 +1511,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                         Data.AutoDeployEnabled=b;
                     },"Enable Auto Deployment"));
                     model.Add(new SliderModel("Auto Deploy Height", (Func<float>) (() => this.Data.AutoDeployHeight), (Action<float>) (s => this.Data.AutoDeployHeight = s), 100, 3000, true,true)).ValueFormatter = (Func<float, string>) (x => Units.GetDistanceString(x));
-                    model.Add<TextButtonModel>(new TextButtonModel("<color=red>Manual Deploy ParaGlider", (Action<TextButtonModel>)(b => this.DeployParaglider())));
+                  
                     model.Add(new SliderModel("Fully Deploy Height", (Func<float>) (() => Mathf.Min(Data.MinDeployHeight, Data.AutoDeployHeight)), (Action<float>) (s =>
                     {
                         this.Data.MinDeployHeight = Mathf.Min(s, Data.AutoDeployHeight);
                     }), 100, 3000, true,true)).ValueFormatter = (Func<float, string>) (x => Units.GetDistanceString(x));
+                    model.Add<TextButtonModel>(new TextButtonModel("<color=red>Manual Deploy ParaGlider", (Action<TextButtonModel>)(b => this.DeployParaglider())));
                 }
 
                 if (Data.ParachuteTypes=="Parachute")
@@ -1531,6 +1533,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                         this.Data.MinDeployHeight = Mathf.Min(s, Data.AutoDeployHeight);
                     }), 100, 3000, true,true)).ValueFormatter = (Func<float, string>) (x => Units.GetDistanceString(x));
                 }
+            }
+
+            if (isTourist)
+            {
+                return;
             }
 
             if (this.Data.DroodismCrewData.CrewRole == DroodType.Engineer)
@@ -1653,7 +1660,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
            
             Vector3 orgVelocity = this.PartScript.BodyScript.RigidBody.velocity;
-            Quaternion orgRotation = this.PartScript.BodyScript.RigidBody.rotation;
             Vector3 orgAngularVelocity = this.PartScript.BodyScript.RigidBody.angularVelocity; // 修正这里！
             
             Vector3 orgEularAngle=this.PartScript.Transform.eulerAngles;
@@ -1689,12 +1695,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         #region Paraglider
         private PartScript CreateParachutePartScript()
         {
-            //Assembly assembly=new Assembly(ParachutePartElementWithPosition(orgPosition), 15, Game.Instance.PartTypes);
             Assembly assembly=new Assembly(ParachutePartElement(), 15, Game.Instance.PartTypes);
             CraftBuilder.CreatePartGameObjects(assembly.Parts, PartScript.CraftScript);
             PartData part = assembly.Parts[0];
             PartScript partScript = part.PartScript as PartScript;
-            partScript.UpdateAttachPoints();
+            partScript?.UpdateAttachPoints();
             PartScript.CraftScript.Data.Assembly.Absorb(assembly);
             //pop.Attach(partScript.GetModifier<PopulationScript>());
             return partScript;
@@ -1704,7 +1709,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             DesignerPart designerpart = Game.Instance.CachedDesignerParts.Parts.First(d => d.Name == (Data.ParachuteTypes=="ParaGlider"?"Glider":"DroodParachute"));
             XElement assembly = new XElement("Assembly", designerpart.AssemblyElement.Element("Parts"));
-            //Mod.LOG($"看这里:{assembly.ToString()}");
             return assembly;
         }
         private PartGroupScript CreatePopPartGroup(BodyScript bodyScript, PartScript partScript, int id)
@@ -1869,18 +1873,40 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private void RepairPart()
         {
-            //todo 这个b具体逻辑是啥啊
-            foreach (var pd in PartScript.CraftScript.Data.Assembly.Parts)
+            var part = Game.Instance.FlightScene.ViewManager.GameView.SelectedPart;
+            if (part==null)
             {
-                if (pd.Damage>0)
-                {
-                    pd.Damage = 0;
-                }
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage("No part selected", false, 3f);
+                return;
             }
-           
+            
+            if (part.Data.PartType.Name==("Eva")||part.Data.PartType.Name==("Eva-Tourist"))
+            {
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage("Can't Repair Drood", false, 3f);
+                return;
+            }
+            if ((part.GameObject.transform.position - this.PartScript.GameObject.transform.position).magnitude > 5f)
+            {
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Selected {part.Data.PartType.Name} is too far away to repair.", false, 3f);
+                return;
+            }
+
+            if (part.Data.Damage <= 0)
+            {
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Selected {part.Data.PartType.Name} doesn't need to be repaired.", false, 3f);
+                return;
+            }
+
+            part.Data.Damage = 0;
+             Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Repaired part {part.Data.PartType.Name}.", false, 3f);
+
         }
 
         #endregion
+
+       
+
+        public bool UsesMachNumber { get; }
     }
    
 }

@@ -251,7 +251,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             this.crewRoleName = DroodismCrewData == null ? "<color=yellow>Crew Role</color>: Unknow" : GetCrewRoleName();
             this.crewRadiationDoes=DroodismCrewData == null ? "<color=yellow>Radiation Dose: Unknow" : "<color=yellow>Radiation Dose:"+(DroodismCrewData.RadiationRate.ToString("f1")+" rad");
         }
-
         private string GetCrewRoleName()
         {
             string Description = DroodismCrewData.CrewRole == DroodType.Engineer ? "Enginner Could Fix Parts" :
