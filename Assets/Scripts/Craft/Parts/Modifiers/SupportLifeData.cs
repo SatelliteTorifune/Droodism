@@ -97,7 +97,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public float radiationDamageThresholdLevel2=400f;
         [SerializeField] [PartModifierProperty(true, false)]
         public float radiationDamageThresholdLevel3=800f;
-        
+
+        [SerializeField] [PartModifierProperty]
+        public float utilizationFactor = 300;
+        public float UtilizationFactor
+        {
+            get => this.utilizationFactor;
+            set => this.utilizationFactor = value;
+        }
         public float OxygenConsumeRate
         {
             get =>IsLegal(this.oxygenConsumeRate)*0.007f; 

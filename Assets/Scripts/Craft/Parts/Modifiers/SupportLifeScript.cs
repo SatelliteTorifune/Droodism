@@ -6,7 +6,6 @@ using ModApi.GameLoop.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Forms;
 using System.Xml.Linq;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
@@ -32,6 +31,7 @@ using Assembly = ModApi.Craft.Assembly;
 //2025 10 22 我希望这是我最后一次碰这个class
 //2025 11 10 Welcome back ,I will  fix this piece of shit once and for all.
 //2026 3 23 孩子们我又回来了,猜猜我又拉了什么屎?
+//2026 4 13 不是,我怎么还在给这个b玩意加东西
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
@@ -1501,9 +1501,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             //插旗与开伞
             if (!isTourist)
             {
-                TextButtonModel textButtonModel1 =
-                    new TextButtonModel("Plant Flag", (Action<TextButtonModel>)(b => this.PlantFlagClick()));
-                model.Add<TextButtonModel>(textButtonModel1);
+                model.Add<TextButtonModel>(new TextButtonModel("Plant Flag", (Action<TextButtonModel>)(b => this.PlantFlagClick())));
                 if (Data.ParachuteTypes=="ParaGlider")
                 {
                     model.Add(new ToggleModel("Auto Deploy ParaGlider",()=>Data.AutoDeployEnabled,b=>
@@ -1534,6 +1532,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     }), 100, 3000, true,true)).ValueFormatter = (Func<float, string>) (x => Units.GetDistanceString(x));
                 }
             }
+            //特殊能力这一块
 
             if (isTourist)
             {
@@ -1542,7 +1541,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
             if (this.Data.DroodismCrewData.CrewRole == DroodType.Engineer)
             {
+                model.Add(new TextModel("Remain Repairing Tools",(Func<string>) (() => $"{this.Data.UtilizationFactor:F1}")));
                 model.Add(new TextButtonModel("Repair", (Action<TextButtonModel>)(b => { this.RepairPart(); })));
+            }
+
+            if (this.Data.DroodismCrewData.CrewRole == DroodType.Pilot)
+            {
+                model.Add(new TextModel("TODO",(Func<string>) (() => $"{this.Data.UtilizationFactor:F1}")));
+                model.Add(new TextButtonModel("TODO2", (Action<TextButtonModel>)(b => { this.RepairPart(); })));
             }
         }
         #endregion
@@ -1897,10 +1903,26 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return;
             }
 
+            if (part.Data.Damage>this.Data.UtilizationFactor)
+            {
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Not Enough Repairing Tools for Selected {part.Data.PartType.Name}", false, 3f);
+                part.Data.Damage-=this.Data.UtilizationFactor;
+                Data.utilizationFactor = 0;
+                return;
+            }
+            Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Repaired {part.Data.PartType.Name} Part, using {part.Data.Damage:F1} Repairing Tools.", false, 3f);
+            Data.UtilizationFactor -= part.Data.Damage;
             part.Data.Damage = 0;
-             Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Repaired part {part.Data.PartType.Name}.", false, 3f);
+            
+            
 
         }
+
+        #endregion
+
+        #region MyRegion
+
+        
 
         #endregion
 
