@@ -224,9 +224,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 AutoDeployParachute();
             }
             MissionDurationTime = (long)Game.Instance.FlightScene.FlightState.Time - Data.MissionStartTime;
-            if (this.RadiationBeltConfig==null)
+            if (isRepairing)
             {
-                Mod.Log("Radiation Belt config is null");
+                RepairPartWorkingLogic(frame,Game.Instance.FlightScene.ViewManager.GameView.SelectedPart.Data );
             }
         }
         #endregion
@@ -1534,7 +1534,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             //特殊能力这一块
 
-            if (isTourist)
+            if (isTourist||this.Data.DroodismCrewData==null)
             {
                 return;
             }
@@ -1883,45 +1883,78 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (part==null)
             {
                 Game.Instance.FlightScene.FlightSceneUI.ShowMessage("No part selected", false, 3f);
+                isRepairing = false;
                 return;
             }
             
             if (part.Data.PartType.Name==("Eva")||part.Data.PartType.Name==("Eva-Tourist"))
             {
                 Game.Instance.FlightScene.FlightSceneUI.ShowMessage("Can't Repair Drood", false, 3f);
+                isRepairing = false;
                 return;
             }
             if ((part.GameObject.transform.position - this.PartScript.GameObject.transform.position).magnitude > 5f)
             {
                 Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Selected {part.Data.PartType.Name} is too far away to repair.", false, 3f);
+                isRepairing = false;
                 return;
             }
 
             if (part.Data.Damage <= 0)
             {
                 Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Selected {part.Data.PartType.Name} doesn't need to be repaired.", false, 3f);
+                isRepairing = false;
                 return;
             }
 
-            if (part.Data.Damage>this.Data.UtilizationFactor)
-            {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Not Enough Repairing Tools for Selected {part.Data.PartType.Name}", false, 3f);
-                part.Data.Damage-=this.Data.UtilizationFactor;
-                Data.utilizationFactor = 0;
-                return;
-            }
-            Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Repaired {part.Data.PartType.Name} Part, using {part.Data.Damage:F1} Repairing Tools.", false, 3f);
-            Data.UtilizationFactor -= part.Data.Damage;
-            part.Data.Damage = 0;
-            
-            
+            isRepairing = true;
+
+
 
         }
 
         #endregion
 
-        #region MyRegion
+        #region Misc
 
+        private bool isRepairing;
+        private void RepairPartWorkingLogic(in FlightFrameData data,PartData pd)
+        {
+            if (pd==null)
+            {
+                isRepairing = false;
+                return;
+            }
+            if ((pd.PartScript.GameObject.transform.position - this.PartScript.GameObject.transform.position).magnitude > 5f)
+            {
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Repairing Process Is Interrupted: {pd.PartType.Name} is too far away from engineer", false, 3f);
+                isRepairing = false;
+                return;
+            }
+            
+            if (pd.Damage<=0)
+            {
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Repairing Process Completed for {pd.PartType.Name}.", false, 3f);
+                isRepairing = false;
+                return;
+            }
+
+            if (Data.UtilizationFactor<=0)
+            {
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Repairing Process Is Interrupted:Not Enough Repairing Tools for {pd.PartType.Name}", false, 4f);
+                isRepairing = false;
+                return;
+            }
+            
+            if (Data.UtilizationFactor>0)
+            {
+               Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Repairing {pd.PartType.Name}:Progress {Units.GetPercentageString(Mathf.Clamp01((100f - pd.Damage) / 100f))}", false, 3f);
+                float num = (float)data.DeltaTimeWorld * 2f;
+                Data.UtilizationFactor -=num ;
+                pd.Damage -= num;
+            }
+           
+        }
         
 
         #endregion
