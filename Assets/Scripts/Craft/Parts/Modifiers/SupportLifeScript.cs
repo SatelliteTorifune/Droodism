@@ -37,16 +37,16 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 {
     public class SupportLifeScript : 
         PartModifierScript<SupportLifeData>,
-        IDesignerStart,
         IFlightStart,
-        IFlightUpdate
+        IFlightUpdate,
+        IFlightFixedUpdate
     {
         #region 引用属性字段
         /// <summary>
         /// 引用EvaScript组件,来获取这个小蓝人的一些乱七八糟的狗屎鸡巴数据玩意
         /// Reference to the EvaScript component,get current part's eva data and other stuff
         /// </summary>
-        internal EvaScript _evaScript;
+        internal EvaScript evaScript;
         
         /// <summary>
         /// 当前小蓝人是否处在休眠
@@ -59,23 +59,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         private IFuelSource _oxygenSource,_waterSource,_foodSource,_co2Source,_wastedWaterSource,_solidWasteSource;
         
-        
-        
         /// <summary>
         /// 当前所在行星的名称。
         /// Name of the current planet the craft is on.
         /// </summary>
         private string currentPlanetName;
-
         
-        /// <summary>
-        /// 小蓝人的钩爪
-        /// 本来我想做成类似那种钩爪钩到craft自动补充氧气啥的,但是这个鸡巴script的数学判断啥的弔毛玩意我他妈看不懂一点
-        /// what can i say,Torifune out.
-        /// </summary>
-        private GrapplingHookScript _grapplingHook;
-        
-
         /// <summary>
         /// 小蓝人目前的任务时长,从初次发射开始算的
         /// </summary>
@@ -90,7 +79,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// 当前计算辐射值累计的配置模型
         /// Config Model for Calculating Radiation Level
         /// </summary>
-        public RadiationBeltConfig RadiationBeltConfig;
+        public RadiationBeltConfig RadiationBeltConfig { get; private set; }
 
         /// <summary>
         /// 当前辐射每小时吸收速率
@@ -115,18 +104,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             base.OnModifiersCreated();
             this.Data.PartPropertiesEnabled = true;
-            this._evaScript = PartScript.GetModifier<EvaScript>();
+            this.evaScript = PartScript.GetModifier<EvaScript>();
         }
         
-
-        /// <summary>
-        /// 实现IDesignerStart接口，在设计器场景开始时调用。
-        /// Implements the IDesignerStart interface, called at the start of the designer scene.
-        /// </summary>
-        void IDesignerStart.DesignerStart(in DesignerFrameData frame)
-        {
-            base.OnInitialized();
-        }
+        
         
         /// <summary>
         /// 不好意思因为我的代码水平就是一坨屎所以OnInitialLaunch和FlightStart里面的代码很奇异搞笑
@@ -137,18 +118,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             Data.MissionStartTime = (long)Game.Instance.FlightScene.FlightState.Time;
             Mod.Log("OnInitialLaunch");
             base.OnInitialLaunch();
-            if (this.PartScript.Data.PartType.Name == "Eva-Tourist")
-            {
-                isTourist = true;
-            }
             Data._foodAmountBuffer=this.Data.DesireFoodCapacity;
             Data._oxygenAmountBuffer=this.Data.DesireOxygenCapacity;
             Data._waterAmountBuffer=this.Data.DesireWaterCapacity;
             Data._co2AmountBuffer=0;
             Data._wastedWaterAmountBuffer=0;
             Data._solidWasteAmountBuffer=0;
-            UpdateCurrentPlanet();
-            
             try
             {
                 Refresh();
@@ -158,7 +133,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 Mod.Log("OnInitialLaunch调用RefreshFuelSource出问题了{0}", e);
             }
-
             Data.LastLoadTime = (long)FlightSceneScript.Instance.FlightState.Time;
             
         }
@@ -168,7 +142,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         void IFlightStart.FlightStart(in FlightFrameData frame)
         {
-            
             Mod.Log("FlightStart");
             base.OnInitialized();
             Game.Instance.FlightScene.FlightEnded+=OnFlightEnded;
@@ -181,7 +154,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 isTourist = true;
             }
-            _evaScript = this.PartScript.GetModifier<EvaScript>();
+            evaScript = this.PartScript.GetModifier<EvaScript>();
             UpdateCurrentPlanet();
             
             LoadFuelTanks();
@@ -219,15 +192,23 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             CheckRadiationState(frame);
             DamageRadiation(frame);
 
-            if (Data.ParachuteTypes!="None"&&Data.AutoDeployEnabled)
-            {
-                AutoDeployParachute();
-            }
+            
             MissionDurationTime = (long)Game.Instance.FlightScene.FlightState.Time - Data.MissionStartTime;
             if (isRepairing)
             {
                 RepairPartWorkingLogic(frame,Game.Instance.FlightScene.ViewManager.GameView.SelectedPart.Data );
             }
+        }
+
+        void IFlightFixedUpdate.FlightFixedUpdate(in FlightFrameData frame)
+        {
+            if (frame.DeltaTimeWorld == 0.0) 
+                return;
+            if (Data.ParachuteTypes!="None"&&Data.AutoDeployEnabled)
+            {
+                AutoDeployParachute();
+            }
+            
         }
         #endregion
         
@@ -238,7 +219,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         private void UpdateRunningStatus()
         {
-            if (_evaScript.EvaActive && _evaScript.IsPlayerCraft && !_evaScript.IsWalking && _evaScript.IsGroundedTerrain && PartScript.CraftScript.SurfaceVelocity.magnitude >= 0.8)
+            if (evaScript.EvaActive && evaScript.IsPlayerCraft && !evaScript.IsWalking && evaScript.IsGroundedTerrain && PartScript.CraftScript.SurfaceVelocity.magnitude >= 0.8)
             {
                 isRunning = true;
             }
@@ -552,7 +533,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             //Mod.LOG("调用CraftRefeshFuelSource 开始");
             try
             {
-                if (PartScript.CraftScript.ActiveCommandPod.Part.PartScript==PartScript&&!_evaScript.ActiveWhileInCrewCompartment)
+                if (PartScript.CraftScript.ActiveCommandPod.Part.PartScript==PartScript&&!evaScript.ActiveWhileInCrewCompartment)
                 {
                     isEva = true;
                     IsHibernating = false;
@@ -740,7 +721,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if(!Game.InFlightScene)
                 return;
             Refresh();
-            //Mod.LOG("OnCraftLoaded 调用RefreshFuelSource");
+            Mod.Log("OnCraftLoaded 调用RefreshFuelSource");
         }
         
         /// <summary>
@@ -801,9 +782,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (Game.InFlightScene && PartScript.CraftScript != null)
             {
                 Refresh();
-               Mod.Log("LoadFuelTank 调用RefreshFuelSource");
+                Mod.Log("LoadFuelTank 调用RefreshFuelSource");
             }
-           Mod.Log("LoadFuelTanks结束,AddingTankFlag=false");
+            Mod.Log("LoadFuelTanks结束");
             
             
         }
@@ -1128,7 +1109,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (Game.InFlightScene)
             {
                 Refresh();
-                //Debug.Log("OnCraftStructureChanged调用RefreshFuelSource();");
+                Mod.Log("OnCraftStructureChanged调用RefreshFuelSource();");
             }
         }
 
@@ -1151,7 +1132,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     currentPlanetName==("Earth") || currentPlanetName==("Nebra") ||
                     currentPlanetName==("Laythe") || currentPlanetName==("Oord"))
                 {
-                    if(_evaScript.IsInWater && PartScript.CraftScript.FlightData.AltitudeAboveSeaLevel < 0.1)
+                    if(evaScript.IsInWater && PartScript.CraftScript.FlightData.AltitudeAboveSeaLevel < 0.1)
                     {
                         return true;
                     }
@@ -1248,11 +1229,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// <param name="DamageScale">伤害的大小。Scale of the damage.</param>
         private void DamageDrood(IFuelSource _fuelSource, FlightFrameData frame, float DamageScale)
         {
-            if (_fuelSource == null || _evaScript == null || PartScript == null || 
+            if (_fuelSource == null || evaScript == null || PartScript == null || 
                 Game.Instance == null || Game.Instance.Settings?.Game?.Flight == null)
             {
                Mod.Log("DamageDrood: null object found: - " +
-                               $"_fuelSource={_fuelSource != null}, _evaScript={_evaScript != null}, " +
+                               $"_fuelSource={_fuelSource != null}, evaScript={evaScript != null}, " +
                                $"PartScript={PartScript != null}, Game.Instance={Game.Instance != null}, Settings={Game.Instance?.Settings != null}");
                 return;
             }
@@ -1270,7 +1251,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 {
                     this.PartScript.TakeDamage(num2 * Game.Instance.Settings.Game.Flight.ImpactDamageScale, PartDamageType.Basic);
                     Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
-                        $"<color=red>Crew Member {_evaScript.Data.CrewName}(id:{this.PartScript.Data.Id}) is taking damage because running out of {_fuelSource.FuelType.Name}, " +
+                        $"<color=red>Crew Member {evaScript.Data.CrewName}(id:{this.PartScript.Data.Id}) is taking damage because running out of {_fuelSource.FuelType.Name}, " +
                         $"he/she has {Mod.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / ((isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1) * DamageScale))} left",
                         false, 2f);
                 }
@@ -1279,11 +1260,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private void DamageWaste(IFuelSource _fuelSource, FlightFrameData frame, float DamageScale)
         {
-            if (_fuelSource == null || _evaScript == null || PartScript == null ||
+            if (_fuelSource == null || evaScript == null || PartScript == null ||
                 Game.Instance == null || Game.Instance.Settings?.Game?.Flight == null)
             {
                Mod.Log("DamageWaste: null object found: - " +
-                               $"_fuelSource={_fuelSource != null}, _evaScript={_evaScript != null}, " +
+                               $"_fuelSource={_fuelSource != null}, evaScript={evaScript != null}, " +
                                $"PartScript={PartScript != null}, Game.Instance={Game.Instance != null}, Settings={Game.Instance?.Settings != null}");
                 return;
             }
@@ -1301,7 +1282,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 this.PartScript.TakeDamage(num2 * Game.Instance.Settings.Game.Flight.ImpactDamageScale,
                     PartDamageType.Basic);
                 Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
-                    $"<color=red>Crew Member {_evaScript.Data.CrewName}(id:{this.PartScript.Data.Id}) is taking damage because {_fuelSource.FuelType.Name} level is too high, " +
+                    $"<color=red>Crew Member {evaScript.Data.CrewName}(id:{this.PartScript.Data.Id}) is taking damage because {_fuelSource.FuelType.Name} level is too high, " +
                     $"he/she has {Mod.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / ((isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1) * DamageScale))} left",
                     false, 2f);
             }
@@ -1309,7 +1290,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private void DamageRadiation(in FlightFrameData  frame)
         {
-            if (_evaScript == null || PartScript == null ||
+            if (evaScript == null || PartScript == null ||
                 Game.Instance == null || Game.Instance.Settings?.Game?.Flight == null)
             {
                 return;
@@ -1367,7 +1348,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 this.PartScript.TakeDamage(damageMultiplier * dtWorld * impactScale);
                 Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
-                    $"<color=red>Crew Member {_evaScript.Data.CrewName}(id:{this.PartScript.Data.Id}) is taking damage due to {damageReason} " +"<br>"+
+                    $"<color=red>Crew Member {evaScript.Data.CrewName}(id:{this.PartScript.Data.Id}) is taking damage due to {damageReason} " +"<br>"+
                     $"he/she has {Mod.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / (damageMultiplier * impactScale))} left",
                     false, 2f);
             }
@@ -1414,7 +1395,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             lifeSupportGroupModel.Add<TextModel>(new TextModel("Oxygen Supply Time", (Func<string>) (() =>
             {
-                if (UsingInternalOxygen() && localOxygen != null && _evaScript != null)
+                if (UsingInternalOxygen() && localOxygen != null && evaScript != null)
                 {
                     float percentage = (float)(localOxygen.TotalFuel / localOxygen.TotalCapacity);
                     string oxygenTextColor = percentage > 0.5 ? "green" : percentage >= 0.25 ? "yellow" : "red";
@@ -1440,7 +1421,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             lifeSupportGroupModel.Add<TextModel>(new TextModel("Water Supply Time", (Func<string>) (() =>
             {
-                if (localWater != null && _evaScript != null)
+                if (localWater != null && evaScript != null)
                 {
                     float waterPercentage = (float)(localWater.TotalFuel / localWater.TotalCapacity);
                     string waterTextColor = waterPercentage > 0.5 ? "green" : waterPercentage >= 0.25 ? "yellow" : "red";
@@ -1462,7 +1443,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
             lifeSupportGroupModel.Add<TextModel>(new TextModel("Food Supply Time", (Func<string>) (() =>
             {
-                if (localFood != null && _evaScript != null)
+                if (localFood != null && evaScript != null)
                 {
                     float foodPercentage = (float)(localFood.TotalFuel / localFood.TotalCapacity);
                     string foodTextColor = foodPercentage > 0.5 ? "green" : foodPercentage >= 0.25 ? "yellow" : "red";
@@ -1501,7 +1482,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             //插旗与开伞
             if (!isTourist)
             {
-                model.Add<TextButtonModel>(new TextButtonModel("Plant Flag", (Action<TextButtonModel>)(b => this.PlantFlagClick())));
+                
                 if (Data.ParachuteTypes=="ParaGlider")
                 {
                     model.Add(new ToggleModel("Auto Deploy ParaGlider",()=>Data.AutoDeployEnabled,b=>
@@ -1539,17 +1520,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return;
             }
 
+            if (this.Data.DroodismCrewData.CrewRole == DroodType.Pilot)
+            {
+                model.Add<TextButtonModel>(new TextButtonModel("Plant Flag", (Action<TextButtonModel>)(b => this.PlantFlagClick())));
+            }
+
             if (this.Data.DroodismCrewData.CrewRole == DroodType.Engineer)
             {
                 model.Add(new TextModel("Remain Repairing Tools",(Func<string>) (() => $"{this.Data.UtilizationFactor:F1}")));
                 model.Add(new TextButtonModel("Repair", (Action<TextButtonModel>)(b => { this.RepairPart(); })));
             }
-
-            if (this.Data.DroodismCrewData.CrewRole == DroodType.Pilot)
-            {
-                model.Add(new TextModel("TODO",(Func<string>) (() => $"{this.Data.UtilizationFactor:F1}")));
-                model.Add(new TextButtonModel("TODO2", (Action<TextButtonModel>)(b => { this.RepairPart(); })));
-            }
+            
         }
         #endregion
         
@@ -1559,17 +1540,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
            
             bool isEva()
             {
-                if (_evaScript.EvaActive)
+                if (evaScript.EvaActive)
                 {
-                    return !_evaScript.ActiveWhileInCrewCompartment;
-                }return _evaScript.PartScript.CraftScript.Data.Assembly.Parts.Count == 1 && _evaScript.PartScript.CraftScript.RootPart.Data.PartType.Name.Contains("Eva");
+                    return !evaScript.ActiveWhileInCrewCompartment;
+                }return evaScript.PartScript.CraftScript.Data.Assembly.Parts.Count == 1 && evaScript.PartScript.CraftScript.RootPart.Data.PartType.Name.Contains("Eva");
             }
-            if (!isEva()||_evaScript.IsGrounded||_evaScript.IsInWater||_evaScript.PartScript.CraftScript.FlightData.AltitudeAboveGroundLevel<=10||_evaScript.PartScript.CraftScript.FlightData.AtmosphereSample.AirDensity<=0.01||_evaScript.PartScript.CraftScript.FlightData.SurfaceVelocityMagnitude >= _evaScript.PartScript.CraftScript.FlightData.AtmosphereSample.SpeedOfSound||_evaScript.PartScript.CraftScript.FlightData.VerticalSurfaceVelocity>0)
+            if (!isEva()||evaScript.IsGrounded||evaScript.IsInWater||evaScript.PartScript.CraftScript.FlightData.AltitudeAboveGroundLevel<=10||evaScript.PartScript.CraftScript.FlightData.AtmosphereSample.AirDensity<=0.01||evaScript.PartScript.CraftScript.FlightData.SurfaceVelocityMagnitude >= evaScript.PartScript.CraftScript.FlightData.AtmosphereSample.SpeedOfSound||evaScript.PartScript.CraftScript.FlightData.VerticalSurfaceVelocity>0)
             {
                 return;
             }
 
-            if (_evaScript.PartScript.CraftScript.FlightData.AltitudeAboveGroundLevel>Data.AutoDeployHeight)
+            if (evaScript.PartScript.CraftScript.FlightData.AltitudeAboveGroundLevel>Data.AutoDeployHeight)
             {
                 return;
             }
@@ -1579,7 +1560,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             ICraftScript craftScript = this.PartScript.CraftScript;
             IFlightSceneUI ui = ModApi.Common.Game.Instance.FlightScene.FlightSceneUI;
-            if (!(craftScript.Data.Assembly.Parts.Count == 1 &&craftScript.RootPart.Data.PartType.Name.Contains("Eva"))&&_evaScript.ActiveWhileInCrewCompartment)
+            if (!(craftScript.Data.Assembly.Parts.Count == 1 &&craftScript.RootPart.Data.PartType.Name.Contains("Eva"))&&evaScript.ActiveWhileInCrewCompartment)
             {
                 ui.ShowMessage("Can Not Plant Flag,Not in Eva",false,10);
                 return;
@@ -1595,7 +1576,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return;
             }
 
-            if (_evaScript.IsInWater)
+            if (evaScript.IsInWater)
             {
                 ui.ShowMessage("Can Not Plant Flag,Drood is in water",false,10);
                 return;
@@ -1610,9 +1591,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
             bool isEva()
             {
-                if (_evaScript.EvaActive)
+                if (evaScript.EvaActive)
                 {
-                    return !_evaScript.ActiveWhileInCrewCompartment;
+                    return !evaScript.ActiveWhileInCrewCompartment;
                 }return craftScript.Data.Assembly.Parts.Count == 1 && craftScript.RootPart.Data.PartType.Name.Contains("Eva");
                 
                 
@@ -1622,7 +1603,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 ui.ShowMessage("Can Not Deploy Parachute,Not in Eva",false,10);
                 return;
             }
-            if (_evaScript.IsGrounded)
+            if (evaScript.IsGrounded)
             {
                 ui.ShowMessage("Can Not Deploy Parachute,Drood is Grounded",false,10);
                 return;
@@ -1646,7 +1627,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return;
             }
             
-            if (_evaScript.IsInWater)
+            if (evaScript.IsInWater)
             {
                 ui.ShowMessage("Can Not Deploy Parachute,Drood is in water",false,10);
                 return;
@@ -1688,14 +1669,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
             //看这
             CraftBuilder.CalculateInertiaTensors(bodyScript, false);
-            //_evaScript.OnNodeLoaded();
-            _evaScript.OnPreNodeLoaded();
+            //evaScript.OnNodeLoaded();
+            evaScript.OnPreNodeLoaded();
             
             parachutePartScript.BodyScript.RigidBody.velocity = orgVelocity;
             //parachutePartScript.BodyScript.RigidBody.rotation = orgRotation;
             parachutePartScript.Transform.eulerAngles = orgEularAngle;
             parachutePartScript.BodyScript.RigidBody.angularVelocity = orgAngularVelocity;
-            _evaScript.LoadIntoCrewCompartment(parachutePartScript.GetModifier<CrewCompartmentScript>(), null, announceBoarding: false);
+            evaScript.LoadIntoCrewCompartment(parachutePartScript.GetModifier<CrewCompartmentScript>(), null, announceBoarding: false);
             
         }
         #region Paraglider
@@ -1762,7 +1743,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
             try
             {
-                DroodismCrewDataManager.Instance.SetLifetimeRadiation(_evaScript.Data.CrewId, this.Data.CumulativeRad,saveImmediately);
+                DroodismCrewDataManager.Instance.SetLifetimeRadiation(evaScript.Data.CrewId, this.Data.CumulativeRad,saveImmediately);
             }
             catch (Exception e)
             {
@@ -1803,7 +1784,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 innerRadiationProtection= outerRadiationProtection = 0;
             }
-            
            
         }
         /// <summary>
@@ -1836,42 +1816,24 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private static string GetAcuteBand(float cumulativeDoseRad)
         {
             if (cumulativeDoseRad >= 500f)
-            {
                 return"<color=red>Critical";
-            }
-            else if (cumulativeDoseRad >= 200f)
-            {
+            if (cumulativeDoseRad >= 200f)
                 return"<color=orange>Severe";
-            }
-            else if (cumulativeDoseRad >= 100f)
-            {
+            if (cumulativeDoseRad >= 100f)
                 return"<color=yellow>Mild";
-            }
-            else
-            {
-                return"<color=green>nominal";
-            }
+            return"<color=green>nominal";
             
         }
 
         private static string GetRadiationRateStats(float rate)
         {
             if (rate > 10f)
-            {
                 return"<color=red>Critical";
-            }
-            else if (rate > 5f)
-            {
-                return"<color=orange>Severe";
-            }
-            else if (rate > 1f)
-            {
+            if (rate > 5f)
+                return"<color=orange>Severe"; 
+            if (rate > 1f)
                 return"<color=yellow>Mild";
-            }
-            else
-            {
-                return"<color=green>nominal";
-            }
+            return"<color=green>nominal";
         }
         #endregion
 

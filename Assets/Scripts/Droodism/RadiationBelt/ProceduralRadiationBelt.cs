@@ -31,9 +31,7 @@ namespace Droodism.RadiationBelt
         {
             if (isRegenerating || config == null) return;
             isRegenerating = true;
-
-            Mod.Log("Rebuilding Meshes");
-
+            Mod.Log($"ReBuilding meshes for {Parent.name}");
             try
             {
                 Func<Vector3, float> innerSDF = Inner_func;
@@ -51,12 +49,11 @@ namespace Droodism.RadiationBelt
 
                 innerMesh = await innerTask;
                 outerMesh = await outerTask;
-
-                Mod.Log("Rebuilding Complete");
+                Mod.Log($"ReBuilding Complete for {Parent.name}");
             }
             catch (System.Exception ex)
             {
-                Mod.LogError($"Rebuilding failed: {ex.Message}");
+                Mod.LogError($"Rebuilding failed: {ex.StackTrace}");
             }
             finally
             {
@@ -66,7 +63,7 @@ namespace Droodism.RadiationBelt
 
         #region  今天拼了
     
-        public float Inner_func(Vector3 p)
+        private float Inner_func(Vector3 p)
         {
             float innerCompression = Mathf.Max(0.01f, config.innerCompression);
             float innerExtension = Mathf.Max(0.01f, config.innerExtension);
@@ -81,7 +78,7 @@ namespace Droodism.RadiationBelt
             return Mathf.Max(d1, -d2) + (config.innerDeform > 0.001 ? (Mathf.Sin(p.x * 5.0f) * Mathf.Sin(p.y * 7.0f) * Mathf.Sin(p.z * 6.0f)) * config.innerDeform : 0.0f);
         }
 
-        public Vector3 Inner_domain()
+        private Vector3 Inner_domain()
         {
             float p = Mathf.Max((config.innerDist + config.innerRadius), (config.innerBorderDist + config.innerBorderRadius));
             float innerDeformXY = Mathf.Max(0.01f, config.innerDeformXY);
@@ -93,7 +90,7 @@ namespace Droodism.RadiationBelt
             return new Vector3((w / innerCompression + w / innerExtension) * 0.5f, Mathf.Max(config.innerRadius, config.innerBorderRadius), w) * (1.0f + Mathf.Max(0f, config.innerDeform));
         }
 
-        public Vector3 Inner_offset()
+        private Vector3 Inner_offset()
         {
             float p = Mathf.Max((config.innerDist + config.innerRadius), (config.innerBorderDist + config.innerBorderRadius));
             float innerDeformXY = Mathf.Max(0.01f, config.innerDeformXY);
@@ -105,7 +102,7 @@ namespace Droodism.RadiationBelt
             return new Vector3(w / innerCompression - (w / innerCompression + w / innerExtension) * 0.5f, 0.0f, 0.0f);
         }
 
-        public float Outer_func(Vector3 p)
+        private float Outer_func(Vector3 p)
         {
             float outerCompression = Mathf.Max(0.01f, config.outerCompression);
             float outerExtension = Mathf.Max(0.01f, config.outerExtension);
@@ -120,7 +117,7 @@ namespace Droodism.RadiationBelt
             return Mathf.Max(d1, -d2) + (config.outerDeform > 0.001 ? (Mathf.Sin(p.x * 5.0f) * Mathf.Sin(p.y * 7.0f) * Mathf.Sin(p.z * 6.0f)) * config.outerDeform : 0.0f);
         }
 
-        public Vector3 Outer_domain()
+        private Vector3 Outer_domain()
         {
             float p = Mathf.Max((config.outerDist + config.outerRadius), (config.outerBorderDist + config.outerBorderRadius));
             float outerDeformXY = Mathf.Max(0.01f, config.outerDeformXY);
@@ -132,7 +129,7 @@ namespace Droodism.RadiationBelt
             return new Vector3((w / outerCompression + w / outerExtension) * 0.5f, Mathf.Max(config.outerRadius, config.outerBorderRadius), w) * (1.0f + Mathf.Max(0f, config.outerDeform));
         }
 
-        public Vector3 Outer_offset()
+        private Vector3 Outer_offset()
         {
             float p = Mathf.Max((config.outerDist + config.outerRadius), (config.outerBorderDist + config.outerBorderRadius));
             float outerDeformXY = Mathf.Max(0.01f, config.outerDeformXY);
