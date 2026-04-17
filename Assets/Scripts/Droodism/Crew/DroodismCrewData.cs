@@ -6,7 +6,7 @@ using System.Xml.Linq;
 using System.Xml.Serialization;
 using UnityEngine;
 
-namespace Assets.Scripts.Droodism
+namespace Assets.Scripts.Droodism.Crew
 {
     [SerializeField]
     public class DroodismCrewData

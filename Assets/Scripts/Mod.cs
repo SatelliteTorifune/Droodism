@@ -17,6 +17,7 @@ using Assembly = System.Reflection.Assembly;
 using Droodism.RadiationBelt;
 using ModApi.Ui.Inspector;
 using System.Xml.Serialization;
+using Assets.Scripts.Droodism.Crew;
 using UnityEngine.UI;
 
 namespace Assets.Scripts

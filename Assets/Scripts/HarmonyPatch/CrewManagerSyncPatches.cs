@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using Assets.Scripts.Droodism;
+using Assets.Scripts.Droodism.Crew;
 using HarmonyLib;
 using UnityEngine;
 

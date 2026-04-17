@@ -10,6 +10,7 @@ using System.Xml.Linq;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
 using Assets.Scripts.Droodism;
+using Assets.Scripts.Droodism.Crew;
 using Droodism.RadiationBelt;
 using ModApi.Flight.Events;
 using ModApi.Flight.GameView;

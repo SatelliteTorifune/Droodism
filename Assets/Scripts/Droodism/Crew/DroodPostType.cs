@@ -1,4 +1,4 @@
-namespace Assets.Scripts.Droodism
+namespace Assets.Scripts.Droodism.Crew
 {
     public enum DroodType
     {

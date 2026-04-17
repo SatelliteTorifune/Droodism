@@ -6,7 +6,6 @@ namespace Droodism.RadiationBelt
     {
         public ProceduralRadiationBelt beltRenderer; 
 
-
         private int lastRenderedFrame = -1;
 
         void OnPostRender()
@@ -49,9 +48,6 @@ namespace Droodism.RadiationBelt
                 Matrix4x4 renderMatrix = beltRenderer.transform.localToWorldMatrix * Matrix4x4.Scale(Vector3.one * radiusScale);
                 beltRenderer.outerMesh?.Render(renderMatrix);
             }
-           
-            
-            
         }
     }
 }

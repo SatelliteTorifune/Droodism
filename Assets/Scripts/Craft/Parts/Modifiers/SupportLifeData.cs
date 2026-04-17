@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using Assets.Scripts.Droodism;
+using Assets.Scripts.Droodism.Crew;
 using ModApi.Craft.Propulsion;
 using ModApi.Design.PartProperties;
 using Assets.Scripts.State;

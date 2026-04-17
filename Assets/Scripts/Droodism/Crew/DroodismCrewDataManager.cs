@@ -9,7 +9,7 @@ using System.Reflection;
 using ModApi.Scenes.Events;
 using Random = UnityEngine.Random;
 
-namespace Assets.Scripts.Droodism
+namespace Assets.Scripts.Droodism.Crew
 {
     public class DroodismCrewDataManager:MonoBehaviour
     {
