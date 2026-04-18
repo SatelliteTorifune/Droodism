@@ -60,8 +60,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             void Deploy(in FlightFrameData frame)
             {
-                
-
                 float targetExtent = -1.4f;
                 float targetRotation = 0;
                 if (Data.CurrentExtentPercent == targetExtent&&Data.CurrentRotation == targetRotation)

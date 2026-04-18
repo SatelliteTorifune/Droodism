@@ -114,7 +114,7 @@ MonoBehaviour:
     _version: 1
     _versionLast: 1
     _versionsAllowed: 
-    _autoActivateIfNoStageOrActivationGroup: 1
+    _autoActivateIfNoStageOrActivationGroup: 0
     _buoyancyBaseScale: 1
     _buoyancyUserScale: 1
     _castShadows: 1
@@ -156,7 +156,7 @@ MonoBehaviour:
     _raiseWaterEventsEvenIfNotBuoyant: 0
     _renderQueue: 0
     _stageActivationType: 0
-    _supportsActivation: 0
+    _supportsActivation: 1
     _supportsTransparency: 1
     _thermalMassRatio: 1
     _tutorialId: 
@@ -181,3 +181,8 @@ MonoBehaviour:
     _version: 1
     _versionLast: 1
     _versionsAllowed: 
+    positionOffset1: {x: 0, y: 0, z: 0}
+    deploySpeed: 15
+    _currentEnabledPercent: 0
+    _currentEnabledPercent2: 0
+    _currentEnabledPercent3: 0

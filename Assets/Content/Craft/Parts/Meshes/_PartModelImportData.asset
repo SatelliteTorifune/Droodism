@@ -12,4 +12,81 @@ MonoBehaviour:
   m_Script: {fileID: 2135884626, guid: c37b925f2b4978342b2e0b83a8fa404a, type: 3}
   m_Name: _PartModelImportData
   m_EditorClassIdentifier: 
-  _models: []
+  _models:
+  - _id: m1
+    _meshes:
+    - _id: Miner-1_mesh
+      _initialized: 1
+      _isCollider: 0
+      _antiDistortion: 0
+      _mesh: {fileID: 1238743255507139437, guid: 6c4d5aaa87b797840a933fd1c50f58f1, type: 3}
+      _sortOrderOverride: 
+      _submeshMap: 0000000001000000
+      _subpartId: 0
+    _model: {fileID: 919132149155446097, guid: 6c4d5aaa87b797840a933fd1c50f58f1, type: 3}
+  - _id: m2
+    _meshes:
+    - _id: Miner-1_mesh
+      _initialized: 1
+      _isCollider: 0
+      _antiDistortion: 0
+      _mesh: {fileID: 1238743255507139437, guid: 082771938be7bef45a2470a78b3791a8, type: 3}
+      _sortOrderOverride: 
+      _submeshMap: 0000000001000000
+      _subpartId: 0
+    _model: {fileID: 919132149155446097, guid: 082771938be7bef45a2470a78b3791a8, type: 3}
+  - _id: m3
+    _meshes:
+    - _id: Miner-1_mesh.001
+      _initialized: 1
+      _isCollider: 0
+      _antiDistortion: 0
+      _mesh: {fileID: -5190693142839769410, guid: 6beb0f3f3dd06404aaa48355bff6410b, type: 3}
+      _sortOrderOverride: 
+      _submeshMap: 0000000001000000
+      _subpartId: 0
+    _model: {fileID: 919132149155446097, guid: 6beb0f3f3dd06404aaa48355bff6410b, type: 3}
+  - _id: m4
+    _meshes:
+    - _id: Miner-2_mesh
+      _initialized: 1
+      _isCollider: 0
+      _antiDistortion: 0
+      _mesh: {fileID: 2827237087287105171, guid: 5dfc058e259a2dd47bdcecfb2502edc3, type: 3}
+      _sortOrderOverride: 
+      _submeshMap: 0000000001000000
+      _subpartId: 0
+    _model: {fileID: 919132149155446097, guid: 5dfc058e259a2dd47bdcecfb2502edc3, type: 3}
+  - _id: m5
+    _meshes:
+    - _id: Miner-1_mesh
+      _initialized: 1
+      _isCollider: 0
+      _antiDistortion: 0
+      _mesh: {fileID: 1238743255507139437, guid: b43bdebc4aceb744e9bc169511513cdb, type: 3}
+      _sortOrderOverride: 
+      _submeshMap: 0000000001000000
+      _subpartId: 0
+    _model: {fileID: 919132149155446097, guid: b43bdebc4aceb744e9bc169511513cdb, type: 3}
+  - _id: m6
+    _meshes:
+    - _id: Miner-1_mesh
+      _initialized: 1
+      _isCollider: 0
+      _antiDistortion: 0
+      _mesh: {fileID: 1238743255507139437, guid: 15b379d4529ec8842ac7d31193f9ac91, type: 3}
+      _sortOrderOverride: 
+      _submeshMap: 00000000
+      _subpartId: 0
+    _model: {fileID: 919132149155446097, guid: 15b379d4529ec8842ac7d31193f9ac91, type: 3}
+  - _id: m7
+    _meshes:
+    - _id: Miner-1_mesh
+      _initialized: 1
+      _isCollider: 0
+      _antiDistortion: 0
+      _mesh: {fileID: 1238743255507139437, guid: c02b3955dc6d9e34faa278cc2a387906, type: 3}
+      _sortOrderOverride: 
+      _submeshMap: 0000000001000000
+      _subpartId: 0
+    _model: {fileID: 919132149155446097, guid: c02b3955dc6d9e34faa278cc2a387906, type: 3}
