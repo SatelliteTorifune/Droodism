@@ -23,26 +23,32 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public override void FlightUpdate(in FlightFrameData frame)
         {
-            bool active = isDeployed && PartScript.Data.Activated && !BatterySource.IsEmpty;
-            if (Data.CurrentEnabledPercent1 <1)
-            {
-                this.isDeployed = false;
-            }
-            
-            if (PartScript.Data.Activated)
+            bool shouldBeActive = PartScript.Data.Activated && !BatterySource.IsEmpty;
+
+            // 部署逻辑
+            if (shouldBeActive)
             {
                 Deploy(frame);
             }
-
-            if (PartScript.Data.Activated&&!isDeploying&&isDeployed)
+            // 收起逻辑
+            else
             {
                 UnDeploy(frame);
             }
 
-            if (isDeployed&&!isDeploying)
+            // 只有完全展开且激活时才工作
+            if (isDeployed && shouldBeActive && Data.CurrentEnabledPercent3 >= 0.99f)
             {
-                WorkingAnimation(PartScript.Data.Activated,frame);
+                WorkingAnimation(true, frame);
             }
+            else
+            {
+                WorkingAnimation(false, frame);
+            }
+
+            // 更新部署状态
+            isDeployed = Data.CurrentEnabledPercent3 >= 0.99f;
+            isDeploying = Data.CurrentEnabledPercent1 < 1f || Data.CurrentEnabledPercent2 < 1f || Data.CurrentEnabledPercent3 < 1f;
         }
         
         void Deploy(in FlightFrameData frame)
@@ -88,13 +94,62 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             
         }
-        
+
         void UnDeploy(in FlightFrameData frame)
         {
-            return;
-            this.Data.CurrentEnabledPercent1 = Mathf.MoveTowards(this.Data.CurrentEnabledPercent1, 0, frame.DeltaTime * this.Data.DeploySpeed);
-            mainBase.localRotation = Quaternion.Euler(Vector3.Lerp(new Vector3(120,0,0),
-                new Vector3(0, 0, 0), Data.CurrentEnabledPercent1));
+            if (Data.CurrentEnabledPercent3 > 0)
+            {
+                this.Data.CurrentEnabledPercent3 = Mathf.MoveTowards(this.Data.CurrentEnabledPercent3, 0,
+                    frame.DeltaTime * this.Data.DeploySpeed);
+                drillStut.localRotation = Quaternion.Euler(Vector3.Lerp(new Vector3(0, 0, 0),
+                    new Vector3(0, 0, 45), Data.CurrentEnabledPercent3));
+
+                nail.transform.localPosition = Vector3.Lerp(new Vector3(0, 0, 0),
+                    new Vector3(0, 0, 0.35f), Data.CurrentEnabledPercent3);
+                nail2.transform.localPosition = Vector3.Lerp(new Vector3(0, 0, 0),
+                    new Vector3(0, 0, -0.35f), Data.CurrentEnabledPercent3);
+                driller.transform.localPosition = Vector3.Lerp(new Vector3(2f, -0.087f, 0.166f),
+                    new Vector3(0.6f, -0.087f, 0.166f), Data.CurrentEnabledPercent3);
+                this.isDeployed = false;
+            }
+
+            if (Data.CurrentEnabledPercent2 > 0&&Data.CurrentEnabledPercent3==0)
+            {
+                this.Data.CurrentEnabledPercent2 = Mathf.MoveTowards(this.Data.CurrentEnabledPercent2, 0,
+                    frame.DeltaTime * this.Data.DeploySpeed);
+                drillBody.localRotation = Quaternion.Euler(Vector3.Lerp(new Vector3(0, 0, 0),
+                    new Vector3(0, 90, 0), Data.CurrentEnabledPercent2));
+                groudFix2.localRotation = Quaternion.Euler(Vector3.Lerp(new Vector3(0, 0, 0),
+                    new Vector3(0, 90, 0), Data.CurrentEnabledPercent2));
+            }
+
+            if (Data.CurrentEnabledPercent1 > 0&Data.CurrentEnabledPercent2==0&Data.CurrentEnabledPercent3==0)
+            {
+                this.Data.CurrentEnabledPercent1 = Mathf.MoveTowards(this.Data.CurrentEnabledPercent1, 0,
+                    frame.DeltaTime * this.Data.DeploySpeed);
+                mainBase.localRotation = Quaternion.Euler(Vector3.Lerp(new Vector3(0, 0, 0),
+                    new Vector3(120, 0, 0), Data.CurrentEnabledPercent1));
+                groudFix1.localRotation = Quaternion.Euler(Vector3.Lerp(new Vector3(180, 0, 0),
+                    new Vector3(-30, 0, 0), Data.CurrentEnabledPercent1));
+            }
+
+            if (Data.CurrentEnabledPercent1 <= 0.001f &&
+                Data.CurrentEnabledPercent2 <= 0.001f &&
+                Data.CurrentEnabledPercent3 <= 0.001f)
+            {
+                Data.CurrentEnabledPercent1 = 0f;
+                Data.CurrentEnabledPercent2 = 0f;
+                Data.CurrentEnabledPercent3 = 0f;
+
+                this.isDeployed = false;
+                this.isDeploying = false;
+
+                mainBase.localRotation = Quaternion.Euler(0, 0, 0);
+                groudFix1.localRotation = Quaternion.Euler(180, 0, 0);
+                drillBody.localRotation = Quaternion.Euler(0, 0, 0);
+                groudFix2.localRotation = Quaternion.Euler(0, 0, 0);
+                drillStut.localRotation = Quaternion.Euler(0, 0, 0);
+            }
         }
 
         private float _currentAngle;
@@ -103,24 +158,24 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private void WorkingAnimation(bool active, in FlightFrameData frameData)
         {
-            Data.WorkingSpeed = Mathf.Lerp(Data.WorkingSpeed, active ? 1f : 0f, frameData.DeltaTime * 3f);
+            Data.WorkingSpeed = Mathf.Lerp(Data.WorkingSpeed, active ? 1f : 0f, (float)frameData.DeltaTimeWorld * 3f);
             
             //if this is too low,get this transform back to 0
             if (Data.WorkingSpeed < 0.001f)
             {
-                _currentAngle = Mathf.Lerp(_currentAngle, 0f, frameData.DeltaTime * 5f);
-                _currentRotation= Mathf.Lerp(_currentRotation, 0f, frameData.DeltaTime * 5f);
+                _currentAngle = Mathf.Lerp(_currentAngle, 0f, (float)frameData.DeltaTimeWorld * 5f);
+                _currentRotation= Mathf.Lerp(_currentRotation, 0f, (float)frameData.DeltaTimeWorld * 5f);
                 drillHead.localRotation = Quaternion.Euler(0, 0, _currentAngle);
                 drillPiston.localRotation = Quaternion.Euler(0f, 0f, _currentAngle * -1);
                 driller.Rotate(_currentRotation,0,0);
                 return;
             }
             
-            _animationTime += frameData.DeltaTime * Data.WorkingSpeed * 2.5f;
+            _animationTime += (float)frameData.DeltaTimeWorld * Data.WorkingSpeed * 2.5f;
             float targetAngle = Mathf.Sin(_animationTime) * 20f * (1f + 0.15f * Mathf.Sin(_animationTime * 2f));
-            float targetRotation = 5* Mathf.Lerp(Data.WorkingSpeed, active ? 1f : 0f, frameData.DeltaTime * 3f);
-            _currentAngle = Mathf.Lerp(_currentAngle, targetAngle, frameData.DeltaTime * 12f);
-            _currentRotation = Mathf.Lerp(_currentRotation, targetRotation, frameData.DeltaTime * 12f);
+            float targetRotation = 5* Mathf.Lerp(Data.WorkingSpeed, active ? 1f : 0f, (float)frameData.DeltaTimeWorld * 3f);
+            _currentAngle = Mathf.Lerp(_currentAngle, targetAngle, (float)frameData.DeltaTimeWorld * 12f);
+            _currentRotation = Mathf.Lerp(_currentRotation, targetRotation, (float)frameData.DeltaTimeWorld * 12f);
             drillHead.localRotation = Quaternion.Euler(0f, 0f, _currentAngle);
             drillPiston.localRotation = Quaternion.Euler(0f, 0f, _currentAngle * -1);
             driller.Rotate(_currentRotation,0,0);

@@ -75,12 +75,18 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// Flags indicating if the crew member is running or if they are a tourist.
         /// </summary>
         public bool isRunning, isTourist;
+       
 
         /// <summary>
         /// 当前计算辐射值累计的配置模型
         /// Config Model for Calculating Radiation Level
         /// </summary>
         public RadiationBeltConfig RadiationBeltConfig { get; private set; }
+        
+        /// <summary>
+        /// 指示小蓝人是否可以被治疗。
+        /// </summary>
+        public bool CanHeal { get; private set; }
 
         /// <summary>
         /// 当前辐射每小时吸收速率
@@ -304,12 +310,16 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     if (localFuelSource.IsEmpty)
                     {
                         DamageDrood(_oxygenSource, frame, Data.OxygenDamageScale);
+                        CanHeal = false;
                     }
+                    
+                    
                     localFuelSource.RemoveFuel(num1);
                 }
                 else
                 {
                     _oxygenSource.RemoveFuel(num1);
+                    CanHeal = true;
                 }
                 
             }
@@ -335,7 +345,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     if (localFuelSource.TotalCapacity - localFuelSource.TotalFuel <= 0.00001)
                     {
                         DamageWaste(_co2Source, frame, Data.OxygenDamageScale);
+                        CanHeal = false;
+
                     }
+                    
+                    
                     if (!_oxygenSource.IsEmpty)
                     {
                         localFuelSource.AddFuel(num1);
@@ -345,6 +359,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
                 else
                 {
+                    CanHeal=true;
                     if (!_oxygenSource.IsEmpty)
                     {
                         _co2Source.AddFuel(num1);
@@ -366,11 +381,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     if (localFood.IsEmpty)
                     {
                         DamageDrood(_foodSource, frame, Data.FoodDamageScale);
+                        CanHeal = false;
                     }
                     localFood.RemoveFuel(num1);
                 }
                 else
                 {
+                    CanHeal = true;
                     _foodSource.RemoveFuel(num1);
                 }
             }
@@ -394,6 +411,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     if (localFuelSource.TotalCapacity - localFuelSource.TotalFuel <= 0.00001)
                     {
                         DamageWaste(_solidWasteSource, frame, Data.FoodDamageScale);
+                        CanHeal = false;
                     }
                     if (!_foodSource.IsEmpty)
                     {
@@ -404,6 +422,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
                 else
                 {
+                    CanHeal=true;
                     if (!_foodSource.IsEmpty)
                     {
                         _solidWasteSource.AddFuel(num1);
@@ -425,11 +444,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     if (localWater.IsEmpty)
                     {
                         DamageDrood(_waterSource, frame, Data.WaterDamageScale);
+                        CanHeal = false;
                     }
                     localWater.RemoveFuel(num1);
                 }
                 else
                 {
+                    CanHeal = true;
                     _waterSource.RemoveFuel(num1);
                 }
             }
@@ -453,7 +474,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     if (localFuelSource.TotalCapacity - localFuelSource.TotalFuel <= 0.00001)
                     {
                         DamageWaste(_wastedWaterSource, frame, Data.WaterDamageScale);
+                        CanHeal = false;
                     }
+
                     if (!_waterSource.IsEmpty)
                     {
                         localFuelSource.AddFuel(num1);
@@ -463,6 +486,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
                 else
                 {
+                    CanHeal=true;
                     if (!_waterSource.IsEmpty)
                     {
                         _wastedWaterSource.AddFuel(num1);
@@ -1335,6 +1359,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     {
                         damageMultiplier = 0.05f * rateFactor; // Minor damage from high rate alone
                         damageReason = "<color=purple>high radiation rate exposure</color>";
+                       
                     }
                 }
             }
@@ -1343,6 +1368,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 damageMultiplier = 0.05f;
                 damageReason = "<color=red><size=120%>severe cumulative radiation exposure</color></size>";
+                CanHeal = false;
+            }
+            else
+            {
+                CanHeal = true;
             }
 
             if (damageMultiplier > 0f)
@@ -1354,6 +1384,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     false, 2f);
             }
         }
+        
         #endregion
 
         #region UI
@@ -1893,6 +1924,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             if (pd==null)
             {
+                isRepairing = false;
+                return;
+            }
+            if (pd.PartType.Name==("Eva")||pd.PartType.Name==("Eva-Tourist"))
+            {
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Can not heal a drood", false, 3f);
                 isRepairing = false;
                 return;
             }

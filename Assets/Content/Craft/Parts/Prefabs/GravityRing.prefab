@@ -5355,10 +5355,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: PartType
       objectReference: {fileID: 0}
-    - target: {fileID: 7990908676862513522, guid: 9681a9416d63ca64587bfa89899c447b, type: 3}
-      propertyPath: Data._description
-      value: A gravity ring could hole 10 crew,Need High Pressure N2 to deploy
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
