@@ -1582,6 +1582,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 ui.ShowMessage("Can Not Plant Flag,Drood is in water",false,10);
                 return;
             }
+
+            if (this.Data.UtilizationFactor<300)
+            {
+                ui.ShowMessage("Can Not Plant Flag,This Drood had already plant one!",false,10);
+                return;
+            }
+
+            Data.UtilizationFactor = 0f;
             Mod.Instance.SpawnFlag();
         }
         

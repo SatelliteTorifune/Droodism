@@ -28,9 +28,11 @@
     <Fuel id="Solid Waste" name="Solid Waste" gamma="0" density="2" molecularWeight="100" combustionTemperature="0" price="0" explosivePower="15" description="Solid Waste Drood Generated,or you can call it sh1t">
       <Visual exhaustColor="#00000000" exhaustColorTip="#00000000" exhaustColorShock="#00000000" exhaustColorFlame="#00000000" exhaustColorSoot="#00000000" exhaustColorSmoke="#ffffff00" globalIntensity ="0" shockIntensity="-20" rimShade="0" />
     </Fuel>
+    <Fuel id="Ore" name="Ore" gamma="0" density="3.8" storageOverhead="1.2" molecularWeight="120" combustionTemperature="3450" price="0" explosivePower="0" fuelTransferRate="0" description="Heavy Raw Solid Ore mined by mining machines,require further processing to be used as fuel">
+      <Visual exhaustColor="#ffc181ff" exhaustColorExpanded="#ffc181ff" exhaustColorTip="#ffb64da0" exhaustColorShock="#ffc74cff" exhaustColorFlame="#ff6a00ff" exhaustColorSoot="#3d0000ff" exhaustColorSmoke="#ffffffff" globalIntensity ="10" shockIntensity="0.1" rimShade="0" smokeOffset="0" />
+    </Fuel>
   </Fuels>
   <RocketEngines />
   <RocketNozzles />
-  
   <Grains />
 </Propulsion>

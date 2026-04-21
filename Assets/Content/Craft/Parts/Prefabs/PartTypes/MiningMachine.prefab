@@ -182,7 +182,8 @@ MonoBehaviour:
     _versionLast: 1
     _versionsAllowed: 
     positionOffset1: {x: 0, y: 0, z: 0}
-    deploySpeed: 15
-    _currentEnabledPercent: 0
+    deploySpeed: 1
+    currentEnabledPercent1: 0
     _currentEnabledPercent2: 0
     _currentEnabledPercent3: 0
+    workingSpeed: 0

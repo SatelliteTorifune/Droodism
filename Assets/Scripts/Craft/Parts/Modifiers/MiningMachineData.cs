@@ -32,12 +32,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
       
 
-        [SerializeField] [PartModifierProperty]
-        private float _currentEnabledPercent;
-        public float CurrentEnabledPercent
+        [FormerlySerializedAs("_currentEnabledPercent")] [SerializeField] [PartModifierProperty]
+        private float currentEnabledPercent1;
+        public float CurrentEnabledPercent1
         {
-            get => this._currentEnabledPercent;
-            set => this._currentEnabledPercent = value;
+            get => this.currentEnabledPercent1;
+            set => this.currentEnabledPercent1 = value;
         }
         
         [SerializeField] [PartModifierProperty]
@@ -54,6 +54,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             get => this._currentEnabledPercent3;
             set => this._currentEnabledPercent3 = value;
+        }
+
+        [SerializeField] [PartModifierProperty]
+        private float workingSpeed=1;
+
+        public float WorkingSpeed
+        {
+            get => this.workingSpeed;
+            set => this.workingSpeed = value;
         }
     }
 }

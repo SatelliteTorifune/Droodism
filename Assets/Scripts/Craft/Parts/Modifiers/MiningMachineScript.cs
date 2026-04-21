@@ -19,15 +19,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private Vector3 _offsetPositionInverse;
 
         private bool isDeployed, isDeploying;
-        protected override void WorkingAnimation(bool active)
-        {
-            base.WorkingAnimation(active);
-        }
+        
 
         public override void FlightUpdate(in FlightFrameData frame)
         {
             bool active = isDeployed && PartScript.Data.Activated && !BatterySource.IsEmpty;
-            if (Data.CurrentEnabledPercent <1)
+            if (Data.CurrentEnabledPercent1 <1)
             {
                 this.isDeployed = false;
             }
@@ -41,23 +38,37 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 UnDeploy(frame);
             }
+
+            if (isDeployed&&!isDeploying)
+            {
+                WorkingAnimation(PartScript.Data.Activated,frame);
+            }
         }
         
         void Deploy(in FlightFrameData frame)
         {
-            this.isDeploying = true;
-            this.Data.CurrentEnabledPercent = Mathf.MoveTowards(this.Data.CurrentEnabledPercent, 1, frame.DeltaTime * this.Data.DeploySpeed);
+            if(Data.CurrentEnabledPercent3 >= 1)
+            {
+                this.isDeployed = true;
+                this.isDeploying = false;
+                return;
+            }
+            
+            this.Data.CurrentEnabledPercent1 = Mathf.MoveTowards(this.Data.CurrentEnabledPercent1, 1, frame.DeltaTime * this.Data.DeploySpeed);
             mainBase.localRotation = Quaternion.Euler(Vector3.Lerp(new Vector3(0, 0, 0),
-                new Vector3(120, 0, 0), Data.CurrentEnabledPercent));
+                new Vector3(120, 0, 0), Data.CurrentEnabledPercent1));
             groudFix1.localRotation = Quaternion.Euler(Vector3.Lerp(new Vector3(180, 0, 0),
-                new Vector3(-30, 0,0), Data.CurrentEnabledPercent));
-            if (Data.CurrentEnabledPercent >= 1)
+                new Vector3(-30, 0,0), Data.CurrentEnabledPercent1));
+            
+            if (Data.CurrentEnabledPercent1 >= 1)
             {
                 this.Data.CurrentEnabledPercent2 = Mathf.MoveTowards(this.Data.CurrentEnabledPercent2, 1, frame.DeltaTime * this.Data.DeploySpeed);
                 drillBody.localRotation = Quaternion.Euler(Vector3.Lerp(new Vector3(0, 0, 0),
                     new Vector3(0, 90, 0), Data.CurrentEnabledPercent2));
                 groudFix2.localRotation = Quaternion.Euler(Vector3.Lerp(new Vector3(0, 0, 0),
                     new Vector3(0, 90, 0), Data.CurrentEnabledPercent2));
+                this.isDeploying = true;
+                this.isDeployed = false;
             }
 
             if (Data.CurrentEnabledPercent2 >= 1)
@@ -72,17 +83,47 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     new Vector3(0, 0,-0.35f), Data.CurrentEnabledPercent3);
                 driller.transform.localPosition=Vector3.Lerp(new Vector3(2f, -0.087f, 0.166f),
                     new Vector3(0.6f, -0.087f, 0.166f), Data.CurrentEnabledPercent3);
+                this.isDeploying = true;
+                this.isDeployed = false;
             }
             
-           
         }
         
         void UnDeploy(in FlightFrameData frame)
         {
             return;
-            this.Data.CurrentEnabledPercent = Mathf.MoveTowards(this.Data.CurrentEnabledPercent, 0, frame.DeltaTime * this.Data.DeploySpeed);
+            this.Data.CurrentEnabledPercent1 = Mathf.MoveTowards(this.Data.CurrentEnabledPercent1, 0, frame.DeltaTime * this.Data.DeploySpeed);
             mainBase.localRotation = Quaternion.Euler(Vector3.Lerp(new Vector3(120,0,0),
-                new Vector3(0, 0, 0), Data.CurrentEnabledPercent));
+                new Vector3(0, 0, 0), Data.CurrentEnabledPercent1));
+        }
+
+        private float _currentAngle;
+        private float _currentRotation;
+        private float _animationTime;      
+
+        private void WorkingAnimation(bool active, in FlightFrameData frameData)
+        {
+            Data.WorkingSpeed = Mathf.Lerp(Data.WorkingSpeed, active ? 1f : 0f, frameData.DeltaTime * 3f);
+            
+            //if this is too low,get this transform back to 0
+            if (Data.WorkingSpeed < 0.001f)
+            {
+                _currentAngle = Mathf.Lerp(_currentAngle, 0f, frameData.DeltaTime * 5f);
+                _currentRotation= Mathf.Lerp(_currentRotation, 0f, frameData.DeltaTime * 5f);
+                drillHead.localRotation = Quaternion.Euler(0, 0, _currentAngle);
+                drillPiston.localRotation = Quaternion.Euler(0f, 0f, _currentAngle * -1);
+                driller.Rotate(_currentRotation,0,0);
+                return;
+            }
+            
+            _animationTime += frameData.DeltaTime * Data.WorkingSpeed * 2.5f;
+            float targetAngle = Mathf.Sin(_animationTime) * 20f * (1f + 0.15f * Mathf.Sin(_animationTime * 2f));
+            float targetRotation = 5* Mathf.Lerp(Data.WorkingSpeed, active ? 1f : 0f, frameData.DeltaTime * 3f);
+            _currentAngle = Mathf.Lerp(_currentAngle, targetAngle, frameData.DeltaTime * 12f);
+            _currentRotation = Mathf.Lerp(_currentRotation, targetRotation, frameData.DeltaTime * 12f);
+            drillHead.localRotation = Quaternion.Euler(0f, 0f, _currentAngle);
+            drillPiston.localRotation = Quaternion.Euler(0f, 0f, _currentAngle * -1);
+            driller.Rotate(_currentRotation,0,0);
         }
 
         protected override void UpdateComponents()
@@ -103,8 +144,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 drillBody=groudFix1.Find("drillBody");
                 groudFix2=drillBody.Find("groudFix2");
                 nail2=groudFix2.Find("nail2");
-                drillPiston=drillBody.Find("drillPiston");
                 drillHead=drillBody.Find("drillHead");
+                drillPiston=drillHead.Find("drillPiston");
                 drillStut=drillBody.Find("drillStut");
                 driller=drillStut.Find("driller");
             }
