@@ -1,5 +1,3 @@
-using UnityEngine.Serialization;
-
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
     using System;
@@ -12,21 +10,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using UnityEngine;
 
     [Serializable]
-    [DesignerPartModifier("MiningMachine")]
-    [PartModifierTypeId("MiningMachine")]
-    public class MiningMachineData : PartModifierData<MiningMachineScript>
+    [DesignerPartModifier("Flag")]
+    [PartModifierTypeId("Flag")]
+    public class FlagData : PartModifierData<FlagScript>
     {
-        
-        [FormerlySerializedAs("deployRotationSpeed")] [SerializeField] [PartModifierProperty]
-        private float deploySpeed =1f;
-        
-        public float DeploySpeed
-        {
-            get => deploySpeed*0.3f;
-        }
-      
-
-        [FormerlySerializedAs("_currentEnabledPercent")] [SerializeField] [PartModifierProperty]
+        [SerializeField] [PartModifierProperty]
         private float currentEnabledPercent1;
         public float CurrentEnabledPercent1
         {
@@ -49,14 +37,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             get => this._currentEnabledPercent3;
             set => this._currentEnabledPercent3 = value;
         }
-
-        [SerializeField] [PartModifierProperty]
-        private float workingSpeed=1;
-
-        public float WorkingSpeed
+        public float DeploySpeed
         {
-            get => this.workingSpeed;
-            set => this.workingSpeed = value;
+            get =>0.5f;
         }
     }
 }

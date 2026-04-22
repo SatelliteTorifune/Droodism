@@ -17,7 +17,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
 
         private ParticleSystem drillBodyPS;
-        private Transform _offset;
 
         private bool isDeployed, isDeploying;
         
@@ -213,9 +212,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             foreach (string n in strArray)
                 subPart = subPart.Find(n) ?? subPart;
             if (subPart.name == strArray[strArray.Length - 1])
-                this.SetSubPart(subPart);
+                mainBase=(subPart);
             else
-                this.SetSubPart(Utilities.FindFirstGameObjectMyselfOrChildren("MeshBase/MainBase", this.gameObject)?.transform);
+                mainBase=(Utilities.FindFirstGameObjectMyselfOrChildren("MeshBase/MainBase", this.gameObject)?.transform);
 
             if (mainBase!=null)
             {
@@ -232,20 +231,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 //PS
                 drillBodyPS = drillBodyPT.GetComponent<ParticleSystem>();
             }
-        }
-        private void SetSubPart(Transform subPart)
-        {
-            if ((UnityEngine.Object) this._offset != (UnityEngine.Object) null)
-            {
-                UnityEngine.Object.Destroy((UnityEngine.Object) this._offset.gameObject);
-                this._offset = (Transform) null;
-            }
-            this.mainBase = subPart;
-            if (!((UnityEngine.Object) this.mainBase != (UnityEngine.Object) null) || (double) this.Data.PositionOffset1.magnitude <= 0.0)
-                return;
-            this._offset = new GameObject("SubPartRotatorOffset").transform;
-            this._offset.SetParent(this.mainBase.parent, false);
-            this._offset.position = this.mainBase.TransformPoint(Data.PositionOffset1);
         }
 
     }
