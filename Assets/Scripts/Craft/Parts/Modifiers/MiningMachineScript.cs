@@ -13,10 +13,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
     public class MiningMachineScript : ResourceProcessorPartScript<MiningMachineData>
     {
-        private Transform mainBase, groudFix1, groudFix2, nail, nail2, drillBody, drillHead, driller, drillStut,drillPiston;
-        
+        private Transform mainBase, groudFix1, groudFix2, nail, nail2, drillBody, drillHead, driller, drillStut,drillPiston,drillBodyPT;
+
+
+        private ParticleSystem drillBodyPS;
         private Transform _offset;
-        private Vector3 _offsetPositionInverse;
 
         private bool isDeployed, isDeploying;
         
@@ -40,10 +41,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (isDeployed && shouldBeActive && Data.CurrentEnabledPercent3 >= 0.99f)
             {
                 WorkingAnimation(true, frame);
+                WorkingParticle(true);
             }
             else
             {
                 WorkingAnimation(false, frame);
+                WorkingParticle(false);
             }
 
             // 更新部署状态
@@ -181,6 +184,28 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             driller.Rotate(_currentRotation,0,0);
         }
 
+        private void WorkingParticle(bool active)
+        {
+           
+            if (active)
+            {
+                if (PartScript.CraftScript.FlightData.AtmosphereSample.AirDensity>0)
+                {
+                    if (!drillBodyPS.isPlaying)
+                    {
+                        drillBodyPS.Play();
+                    }
+                  
+                }
+               
+            }
+
+            else
+            {
+                drillBodyPS.Stop();
+            }
+        }
+
         protected override void UpdateComponents()
         {
             string[] strArray = "MeshBase/MainBase".Split('/', StringSplitOptions.None);
@@ -203,6 +228,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 drillPiston=drillHead.Find("drillPiston");
                 drillStut=drillBody.Find("drillStut");
                 driller=drillStut.Find("driller");
+                drillBodyPT = drillBody.Find("drillBodyPT");
+                //PS
+                drillBodyPS = drillBodyPT.GetComponent<ParticleSystem>();
             }
         }
         private void SetSubPart(Transform subPart)
@@ -218,7 +246,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             this._offset = new GameObject("SubPartRotatorOffset").transform;
             this._offset.SetParent(this.mainBase.parent, false);
             this._offset.position = this.mainBase.TransformPoint(Data.PositionOffset1);
-            this._offsetPositionInverse = this._offset.InverseTransformPoint(this.mainBase.position);
         }
 
     }
