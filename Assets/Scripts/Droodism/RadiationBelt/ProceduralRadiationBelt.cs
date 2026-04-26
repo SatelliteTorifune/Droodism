@@ -31,7 +31,7 @@ namespace Droodism.RadiationBelt
         {
             if (isRegenerating || config == null) return;
             isRegenerating = true;
-            Mod.Log($"ReBuilding meshes for {Parent.name}");
+            Mod.Log($"ReBuilding Radiation Belt meshes for {Parent.name}");
             try
             {
                 Func<Vector3, float> innerSDF = Inner_func;
@@ -49,7 +49,7 @@ namespace Droodism.RadiationBelt
 
                 innerMesh = await innerTask;
                 outerMesh = await outerTask;
-                Mod.Log($"ReBuilding Complete for {Parent.name}");
+                Mod.Log($"ReBuilding Radiation Belt Mesh Complete for {Parent.name}");
             }
             catch (System.Exception ex)
             {

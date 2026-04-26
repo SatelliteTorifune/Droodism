@@ -58,6 +58,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return;
             }
             
+            if (!pd.GetModifier<SupportLifeData>().Script.CanHeal)
+            {
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Healing Process Is Interrupted: {pd.GetModifier<EvaData>().CrewName} is taking damage" , false, 4f);
+                isHealing = false;
+                return;
+            }
+            
             if (Data.HealHp>0)
             {
                 Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Healing {pd.GetModifier<EvaData>().CrewName} : Progress {Units.GetPercentageString(Mathf.Clamp01((100f - pd.Damage) / 100f))}", false, 3f);
@@ -99,6 +106,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (part.Data.Damage <= 0)
             {
                 Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Selected Crew {part.GetModifier<EvaScript>().Data.CrewName} is pretty healthy.", false, 3f);
+                isHealing = false;
+                return;
+            }
+            if (!part.GetModifier<SupportLifeScript>().CanHeal)
+            {
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Selected Crew {part.GetModifier<EvaScript>().Data.CrewName} is taking damage" , false, 4f);
                 isHealing = false;
                 return;
             }

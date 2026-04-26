@@ -56,12 +56,20 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public bool IsHibernating { get; private set; }
         
 
-        /// <summary>
-        /// 这啥啊?
-        /// </summary>
-        private IFuelSource _oxygenSource,_waterSource,_foodSource,_co2Source,_wastedWaterSource,_solidWasteSource;
-        
-        private IFuelSource  _oxygenLocalSource,_waterLocalSource,_foodLocalSource,_co2LocalSource,_wastedLocalWaterSource,_solidLocalWasteSource;
+        public IFuelSource OxygenSource { get; private set; }
+        public IFuelSource WaterSource { get; private set; }
+        public IFuelSource FoodSource { get; private set; }
+        public IFuelSource Co2Source { get; private set; }
+        public IFuelSource WastedWaterSource { get; private set; }
+        public IFuelSource SolidWasteSource { get; private set; }
+
+
+        public IFuelSource OxygenLocalSource { get; private set; }
+        public IFuelSource WaterLocalSource { get; private set; }
+        public IFuelSource FoodLocalSource { get; private set; }
+        public IFuelSource Co2LocalSource { get; private set; }
+        public IFuelSource WastedWaterLocalSource { get; private set; }
+        public IFuelSource SolidWasteLocalSource { get; private set; }
         
         /// <summary>
         /// 当前所在行星的名称。
@@ -186,6 +194,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (frame.DeltaTimeWorld == 0.0) 
                 return;
             UpdateRunningStatus();
+            CheckRadiationState(frame);
+            DamageRadiation(frame);
+            UpdateHealingStatus();
             if (!IsHibernating)
             {
                 if (!UsingInternalOxygen())
@@ -198,11 +209,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 this.RadiationBeltConfig = RadiationBeltManager.Instance.GetRuntimeConfigForPlanet(currentPlanetName);
             }
-
-            CheckRadiationState(frame);
-            DamageRadiation(frame);
-            UpdateHealingStatus();
-
             
             MissionDurationTime = (long)Game.Instance.FlightScene.FlightState.Time - Data.MissionStartTime;
             if (isRepairing)
@@ -245,17 +251,20 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         private void UpdateHealingStatus()
         {
-            bool flag1=_oxygenLocalSource.IsEmpty||_foodLocalSource.IsEmpty||_waterLocalSource.IsEmpty;
-            bool flag2=_co2LocalSource.TotalCapacity-_co2LocalSource.TotalFuel<=0.00001||_wastedLocalWaterSource.TotalCapacity-_wastedLocalWaterSource.TotalFuel<=0.00001||_solidLocalWasteSource.TotalCapacity-_solidLocalWasteSource.TotalFuel<=0.00001;
-            bool flag3=this.Data.CumulativeRad >= this.Data.RadiationDamageThresholdLevel3;
-            if (flag1 || flag2 || flag3)
+            if (OxygenLocalSource == null || FoodLocalSource == null || WaterLocalSource == null ||
+                Co2LocalSource == null || WastedWaterLocalSource == null || SolidWasteLocalSource == null)
             {
                 this.CanHeal = false;
+                return;
             }
-            else
-            {
-                this.CanHeal = true;
-            }
+
+            bool lackInput = OxygenLocalSource.IsEmpty || FoodLocalSource.IsEmpty || WaterLocalSource.IsEmpty;
+            bool wasteIsFull = Co2LocalSource.TotalCapacity - Co2LocalSource.TotalFuel <= 0.00001 ||
+                              WastedWaterLocalSource.TotalCapacity - WastedWaterLocalSource.TotalFuel <= 0.00001 ||
+                              SolidWasteLocalSource.TotalCapacity - SolidWasteLocalSource.TotalFuel <= 0.00001;
+            bool severeRadiation = this.Data.CumulativeRad >= this.Data.RadiationDamageThresholdLevel3;
+
+            this.CanHeal = !(lackInput || wasteIsFull || severeRadiation);
         }
         public override void OnPartDestroyed()
         {
@@ -323,206 +332,121 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// <param name="frame">飞行帧数据。Flight frame data.</param>
         private void ConsumptionLogic(in FlightFrameData frame)
         {
-            if (_oxygenSource != null&&UsingInternalOxygen())
+            if (OxygenLocalSource == null || FoodLocalSource == null || WaterLocalSource == null ||
+                Co2LocalSource == null || WastedWaterLocalSource == null || SolidWasteLocalSource == null)
             {
-                double num1 = (double)Data.OxygenConsumeRate * frame.DeltaTimeWorld * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1);
-                if (_oxygenSource.IsEmpty)
+                if (!_isCraftLoading)
                 {
-                    var localFuelSource = GetLocalFuelSource("Oxygen");
-                    if (localFuelSource.IsEmpty)
-                    {
-                        DamageDrood(_oxygenSource, frame, Data.OxygenDamageScale);
-                       
-                    }
-                    
-                    
-                    localFuelSource.RemoveFuel(num1);
+                    LoadFuelTanks();
+                    Refresh();
+                    Mod.Log("ConsumptionLogic缺少local source，已调用LoadFuelTanks和Refresh");
                 }
-                else
-                {
-                    _oxygenSource.RemoveFuel(num1);
-                   
-                }
-                
-            }
-            else
-            {
-                if (_oxygenSource == null)
-                    Mod.Log("_oxygenSource is Null");
             }
 
-            if (_co2Source != null && UsingInternalOxygen())
-            {
-                
-                double num1 = (double)Data.OxygenConsumeRate * frame.DeltaTimeWorld * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)*1.375*Data.evaConsumeEfficiency;
-                
-                if (_co2Source.TotalCapacity - _co2Source.TotalFuel <= 0.00001)
-                {
-                    var localFuelSource = GetLocalFuelSource("CO2");
-                    if (localFuelSource == null)
-                    {
-                        Mod.Log("local CO2 is Null");
-                        return;
-                    }
-                    if (localFuelSource.TotalCapacity - localFuelSource.TotalFuel <= 0.00001)
-                    {
-                        DamageWaste(_co2Source, frame, Data.OxygenDamageScale);
-                       
-
-                    }
-                    
-                    
-                    if (!_oxygenSource.IsEmpty)
-                    {
-                        localFuelSource.AddFuel(num1);
-                    }
-                    
-                }
-
-                else
-                {
-                    
-                    if (!_oxygenSource.IsEmpty)
-                    {
-                        _co2Source.AddFuel(num1);
-                    }
-                    
-                }
-            }
-            else
-            {
-                if (_co2Source == null)
-                    Mod.Log("_co2Source is Null");
-            }
-            if (_foodSource != null)
-            {
-                double num1 = (double)Data.FoodConsumeRate * frame.DeltaTimeWorld * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1);
-                if (_foodSource.IsEmpty)
-                {
-                    var localFood = GetLocalFuelSource("Food");
-                    if (localFood.IsEmpty)
-                    {
-                        DamageDrood(_foodSource, frame, Data.FoodDamageScale);
-                       
-                    }
-                    localFood.RemoveFuel(num1);
-                }
-                else
-                {
-                   
-                    _foodSource.RemoveFuel(num1);
-                }
-            }
-            else
-            {
-                Mod.Log("_foodSource is Null");
-            }
-            if (_solidWasteSource != null)
-            {
-                
-                double num1 = (double)Data.FoodConsumeRate * frame.DeltaTimeWorld * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)*1.1*Data.evaConsumeEfficiency*0.04;
-                
-                if (_solidWasteSource.TotalCapacity - _solidWasteSource.TotalFuel <= 0.00001)
-                {
-                    var localFuelSource = GetLocalFuelSource("Solid Waste");
-                    if (localFuelSource == null)
-                    {
-                        Mod.Log("local Solid Waste is Null");
-                        return;
-                    }
-                    if (localFuelSource.TotalCapacity - localFuelSource.TotalFuel <= 0.00001)
-                    {
-                        DamageWaste(_solidWasteSource, frame, Data.FoodDamageScale);
-                       
-                    }
-                    if (!_foodSource.IsEmpty)
-                    {
-                        localFuelSource.AddFuel(num1);
-                    }
-                    
-                }
-
-                else
-                {
-                    
-                    if (!_foodSource.IsEmpty)
-                    {
-                        _solidWasteSource.AddFuel(num1);
-                    }
-                    
-                }
-            }
-            else
-            {
-                if (_solidWasteSource == null)
-                    Mod.Log("_solidWasteSource is Null");
-            }
-            if (_waterSource != null)
-            {
-                double num1 = (double)Data.WaterConsumeRate * frame.DeltaTimeWorld * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1);
-                if (_waterSource.IsEmpty)
-                {
-                    var localWater = GetLocalFuelSource("H2O");
-                    if (localWater.IsEmpty)
-                    {
-                        DamageDrood(_waterSource, frame, Data.WaterDamageScale);
-                       
-                    }
-                    localWater.RemoveFuel(num1);
-                }
-                else
-                {
-                   
-                    _waterSource.RemoveFuel(num1);
-                }
-            }
-            else
-            {
-                Mod.Log("_waterSource is Null");
-            }
-            if (_wastedWaterSource != null)
-            {
-                
-                double num1 = (double)Data.WaterConsumeRate * frame.DeltaTimeWorld * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)*1.1*Data.evaConsumeEfficiency;
-                
-                if (_wastedWaterSource.TotalCapacity - _wastedWaterSource.TotalFuel <= 0.00001)
-                {
-                    var localFuelSource = GetLocalFuelSource("Wasted Water");
-                    if (localFuelSource == null)
-                    {
-                        Mod.Log("local Wasted Water is Null");
-                        return;
-                    }
-                    if (localFuelSource.TotalCapacity - localFuelSource.TotalFuel <= 0.00001)
-                    {
-                        DamageWaste(_wastedWaterSource, frame, Data.WaterDamageScale);
-                       
-                    }
-
-                    if (!_waterSource.IsEmpty)
-                    {
-                        localFuelSource.AddFuel(num1);
-                    }
-                    
-                }
-
-                else
-                {
-                    
-                    if (!_waterSource.IsEmpty)
-                    {
-                        _wastedWaterSource.AddFuel(num1);
-                    }
-                    
-                }
-            }
+            bool usingInternalOxygen = UsingInternalOxygen();
+            double baseRate = frame.DeltaTimeWorld * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1);
 
             
-            if (_co2Source==null||_oxygenSource==null||_foodSource==null||_waterSource==null||_wastedWaterSource==null||_solidWasteSource==null)
+            if (usingInternalOxygen)
             {
-               LoadFuelTanks();
-              Mod.Log("ConsumptionLogic调用LoadFuelTanks");
+                double oxygenConsumeAmount = (double)Data.OxygenConsumeRate * baseRate;
+                bool oxygenConsumed = ConsumeInputResource(OxygenSource, OxygenLocalSource, oxygenConsumeAmount, frame, Data.OxygenDamageScale);
+                if (oxygenConsumed)
+                {
+                    double co2Amount = oxygenConsumeAmount * 1.375 * Data.evaConsumeEfficiency;
+                    ProduceWasteResource(Co2Source, Co2LocalSource, co2Amount, frame, Data.OxygenDamageScale);
+                }
             }
+
+            double foodConsumeAmount = (double)Data.FoodConsumeRate * baseRate;
+            bool foodConsumed = ConsumeInputResource(FoodSource, FoodLocalSource, foodConsumeAmount, frame, Data.FoodDamageScale);
+            if (foodConsumed)
+            {
+                double solidWasteAmount = foodConsumeAmount * 1.1 * Data.evaConsumeEfficiency * 0.04;
+                ProduceWasteResource(SolidWasteSource, SolidWasteLocalSource, solidWasteAmount, frame, Data.FoodDamageScale);
+            }
+
+            double waterConsumeAmount = (double)Data.WaterConsumeRate * baseRate;
+            bool waterConsumed = ConsumeInputResource(WaterSource, WaterLocalSource, waterConsumeAmount, frame, Data.WaterDamageScale);
+            if (waterConsumed)
+            {
+                double wastedWaterAmount = waterConsumeAmount * 1.1 * Data.evaConsumeEfficiency;
+                ProduceWasteResource(WastedWaterSource, WastedWaterLocalSource, wastedWaterAmount, frame, Data.WaterDamageScale);
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="craftSource"></param>
+        /// <param name="localSource"></param>
+        /// <param name="amount"></param>
+        /// <param name="frame"></param>
+        /// <param name="damageScale"></param>
+        /// <returns></returns>
+
+        private bool ConsumeInputResource(IFuelSource craftSource, IFuelSource localSource, double amount, in FlightFrameData frame, float damageScale)
+        {
+            if (amount <= 0)
+            {
+                return false;
+            }
+            //判断用哪个IFuelSource
+            //如果craftSource存在且非空就用这个
+            IFuelSource source = craftSource != null && !craftSource.IsEmpty ? craftSource : localSource;
+            if (source == null)
+            {
+                if (craftSource != null)
+                {
+                    DamageDrood(craftSource, frame, damageScale);
+                }
+                else if (localSource != null)
+                {
+                    DamageDrood(localSource, frame, damageScale);
+                }
+                return false;
+            }
+
+            if (source.IsEmpty)
+            {
+                DamageDrood(source, frame, damageScale);
+                return false;
+            }
+
+            source.RemoveFuel(amount);
+            return true;
+        }
+
+        private void ProduceWasteResource(IFuelSource craftSource, IFuelSource localSource, double amount, in FlightFrameData frame, float damageScale)
+        {
+            if (amount <= 0)
+            {
+                return;
+            }
+
+            IFuelSource target = craftSource != null && craftSource.TotalCapacity - craftSource.TotalFuel > 0.00001
+                ? craftSource
+                : localSource;
+
+            if (target == null)
+            {
+                if (craftSource != null)
+                {
+                    DamageWaste(craftSource, frame, damageScale);
+                }
+                else if (localSource != null)
+                {
+                    DamageWaste(localSource, frame, damageScale);
+                }
+                return;
+            }
+
+            if (target.TotalCapacity - target.TotalFuel <= 0.00001)
+            {
+                DamageWaste(target, frame, damageScale);
+                return;
+            }
+
+            target.AddFuel(amount);
         }
 
         /// <summary>
@@ -575,155 +499,124 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// 这个鸡巴卵子函数的trycatch瞎他妈乱飞,但是I don't give a sh1t,反正it works(on my machine)
         private void RefreshFuelSource()
         {
-            bool isEva = false;
-            List<(string, double, double)>DataLocal = new List<(string, double, double)>();
-            //Mod.LOG("调用CraftRefeshFuelSource 开始");
-            try
+            bool isEva = IsActiveEvaOutsideCompartment();
+            
+            if (isEva)
             {
-                if (PartScript.CraftScript.ActiveCommandPod.Part.PartScript==PartScript&&!evaScript.ActiveWhileInCrewCompartment)
-                {
-                    isEva = true;
-                    IsHibernating = false;
-                    //Mod.LOG("这个drood是ActiveCommandPod");
-                    _oxygenSource=_waterSource=_foodSource=_co2Source=_wastedWaterSource=_solidWasteSource=null;
-                }
-                
-                try
-                {
-                    if (isEva==false)
-                    {
-                        IsHibernating = false;
-                        var stCommandPodPatchScript = PartScript.GetModifier<EvaScript>().CrewCompartment?.PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
-                        _oxygenSource = stCommandPodPatchScript?.OxygenFuelSource;
-                        _foodSource = stCommandPodPatchScript?.FoodFuelSource;
-                        _waterSource = stCommandPodPatchScript?.WaterFuelSource;
-                        _co2Source = stCommandPodPatchScript?.CO2FuelSource;
-                        _wastedWaterSource = stCommandPodPatchScript?.WastedWaterFuelSource;
-                        _solidWasteSource = stCommandPodPatchScript?.SolidWasteFuelSource;
-                    }
-                }
-                catch (Exception e)
-                {
-                   Mod.Log("CraftRefreshSource:No Eva part:{0}",e);
-                }
-                
-               
-                if (_oxygenSource != null && _foodSource != null && _waterSource != null&&_co2Source!= null&& _wastedWaterSource!= null&& _solidWasteSource != null)
-                {
-                    Mod.Log("调用CraftRefeshFuelSource 刷新完成 Oxygen:{0},Food:{1},Water:{2},CO2:{3},WastedWater:{4},SolidWaste:{5}", _oxygenSource.TotalFuel, _foodSource.TotalFuel, _waterSource.TotalFuel, _co2Source.TotalFuel, _wastedWaterSource.TotalFuel, _solidWasteSource.TotalFuel);
-                    ReFill(_oxygenSource, GetLocalFuelSource("Oxygen"));
-                    ReFill(_foodSource, GetLocalFuelSource("Food"));
-                    ReFill(_waterSource, GetLocalFuelSource("H2O"));
-                    RemoveWaste(_co2Source, GetLocalFuelSource("CO2"));
-                    RemoveWaste(_wastedWaterSource, GetLocalFuelSource("Wasted Water"));
-                    RemoveWaste(_solidWasteSource, GetLocalFuelSource("Solid Waste"));
-                    SaveFuelAmountBuffer();
-                }
-             
-                
+                IsHibernating = false;
+                ClearCraftFuelSources();
             }
-            catch (Exception e)
+            else
             {
+                RefreshCraftFuelSources();
             }
-            HandleFuelSource("Oxygen", Data.DesireOxygenCapacity, Data._oxygenAmountBuffer, ref _oxygenSource);
-            HandleFuelSource("Food", Data.DesireFoodCapacity, Data._foodAmountBuffer, ref _foodSource);
-            HandleFuelSource("H2O", Data.DesireWaterCapacity, Data._waterAmountBuffer, ref _waterSource);
-            HandleFuelSource("CO2", Data.DesireOxygenCapacity*1.1, Data._co2AmountBuffer, ref _co2Source);
-            HandleFuelSource("Wasted Water", Data.DesireWaterCapacity*1.1, Data._wastedWaterAmountBuffer, ref _wastedWaterSource);
-            HandleFuelSource("Solid Waste", Data.DesireFoodCapacity*1.1, Data._solidWasteAmountBuffer, ref _solidWasteSource);
+
+            RefreshLocalFuelSourceCache();
+            SyncCraftAndLocalFuelSources();
+
+            OxygenSource = SelectActiveFuelSource("Oxygen", OxygenSource, OxygenLocalSource, false);
+            FoodSource = SelectActiveFuelSource("Food", FoodSource, FoodLocalSource, false);
+            WaterSource = SelectActiveFuelSource("H2O", WaterSource, WaterLocalSource, false);
+            Co2Source = SelectActiveFuelSource("CO2", Co2Source, Co2LocalSource, true);
+            WastedWaterSource = SelectActiveFuelSource("Wasted Water", WastedWaterSource, WastedWaterLocalSource, true);
+            SolidWasteSource = SelectActiveFuelSource("Solid Waste", SolidWasteSource, SolidWasteLocalSource, true);
+
             SaveFuelAmountBuffer();
-            _oxygenLocalSource=GetLocalFuelSource("Oxygen");
-            _foodLocalSource=GetLocalFuelSource("Food");
-            _waterLocalSource=GetLocalFuelSource("H2O");
-            _co2LocalSource=GetLocalFuelSource("CO2");
-            _wastedWaterSource=GetLocalFuelSource("Wasted Water");
-            _solidWasteSource=GetLocalFuelSource("Solid Waste");
-            void HandleFuelSource(string fuelType, double capacity, double bufferAmount, ref IFuelSource fuelSource)
+            bool IsActiveEvaOutsideCompartment()
+            {
+                return PartScript?.CraftScript?.ActiveCommandPod?.Part?.PartScript == PartScript && !evaScript.ActiveWhileInCrewCompartment;
+            }
+    
+            void ClearCraftFuelSources()
+            {
+                OxygenSource = null;
+                WaterSource = null;
+                FoodSource = null;
+                Co2Source = null;
+                WastedWaterSource = null;
+                SolidWasteSource = null;
+            }
+    
+            void RefreshCraftFuelSources()
             {
                 try
                 {
-                    if (fuelType=="Wasted Water"||fuelType=="Solid Waste"||fuelType=="CO2")
-                    {
-                        if (fuelSource == null || fuelSource.TotalCapacity-fuelSource.TotalFuel <=0.00001)
-                        {
-                            fuelSource = GetLocalFuelSource(fuelType);
-                            if (fuelSource != null)
-                            {
-                                //Debug.Log($"设置为本地 {fuelType}");
-                            }
-                            else
-                            {
-                                Mod.Log($"未找到 {fuelType} 类型的 FuelSource");
-                                try
-                                {
-                                    DataLocal.Add((fuelType, capacity, bufferAmount));
-                                   Mod.Log($"已记录 {fuelType} 类型");
-                                }
-                                catch (Exception e)
-                                {
-                                   Mod.Log($"从 RefreshFuelSource 记录 {fuelType} 出错: {e}");
-                                }
-                            }
-                        }
-                        else
-                        {
-                            if (fuelSource!=null&&GetLocalFuelSource(fuelType)!=null)
-                            {
-                                RemoveWaste(fuelSource, GetLocalFuelSource(fuelType));
-                            }
-                            else
-                            {
-                                Mod.Log($"未找到 {fuelType} 类型的 FuelSource,无法调用RemoveWaste");
-                            }
-                           
-                        
-                        }
-                    }
-                    else
-                    {
-                        if (fuelSource == null || fuelSource.IsEmpty)
-                        {
-                            fuelSource = GetLocalFuelSource(fuelType);
-                            if (fuelSource != null)
-                            {
-                                //Debug.Log($"设置为本地 {fuelType}");
-                            }
-                            else
-                            {
-                                Mod.Log($"未找到 {fuelType} 类型的 FuelSource");
-                                try
-                                {
-                                    DataLocal.Add((fuelType, capacity, bufferAmount));
-                                   Mod.Log($"已记录 {fuelType} 类型");
-                                }
-                                catch (Exception e)
-                                {
-                                   Mod.Log($"从 RefreshFuelSource 记录 {fuelType} 出错: {e}");
-                                }
-                            }
-                        }
-                        else
-                        {
-                            if (fuelSource!=null&&GetLocalFuelSource(fuelType)!=null)
-                            {
-                                ReFill(fuelSource, GetLocalFuelSource(fuelType));
-                            }
-                            else
-                            {
-                                Mod.Log($"未找到 {fuelType} 类型的 FuelSource,无法调用RemoveWaste");
-                            }
-                        
-                        } 
-                    }
-                    
+                    var patch = PartScript.GetModifier<EvaScript>().CrewCompartment?.PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+                    OxygenSource = patch?.OxygenFuelSource;
+                    FoodSource = patch?.FoodFuelSource;
+                    WaterSource = patch?.WaterFuelSource;
+                    Co2Source = patch?.CO2FuelSource;
+                    WastedWaterSource = patch?.WastedWaterFuelSource;
+                    SolidWasteSource = patch?.SolidWasteFuelSource;
                 }
                 catch (Exception e)
                 {
-                   Mod.Log($"处理 {fuelType} FuelSource 出错: {e}");
+                    Mod.Log("CraftRefreshSource::{0}", e);
                 }
+            }
+    
+            void RefreshLocalFuelSourceCache()
+            {
+                OxygenLocalSource = GetLocalFuelSource("Oxygen");
+                FoodLocalSource = GetLocalFuelSource("Food");
+                WaterLocalSource = GetLocalFuelSource("H2O");
+                Co2LocalSource = GetLocalFuelSource("CO2");
+                WastedWaterLocalSource = GetLocalFuelSource("Wasted Water");
+                SolidWasteLocalSource = GetLocalFuelSource("Solid Waste");
             }
             
+            void SyncCraftAndLocalFuelSources()
+            {
+                TrySyncPair(OxygenSource, OxygenLocalSource, false);
+                TrySyncPair(FoodSource, FoodLocalSource, false);
+                TrySyncPair(WaterSource, WaterLocalSource, false);
+                TrySyncPair(Co2Source, Co2LocalSource, true);
+                TrySyncPair(WastedWaterSource, WastedWaterLocalSource, true);
+                TrySyncPair(SolidWasteSource, SolidWasteLocalSource, true);
+            }
+            
+            void TrySyncPair(IFuelSource craftSource, IFuelSource localSource, bool wasteMode)
+            {
+                if (craftSource == null || localSource == null)
+                {
+                    return;
+                }
+    
+                if (wasteMode)
+                {
+                    if (craftSource.TotalCapacity - craftSource.TotalFuel > 0.00001 && localSource.TotalFuel > 0.00001)
+                    {
+                        RemoveWaste(craftSource, localSource);
+                    }
+                    return;
+                }
+                if (!craftSource.IsEmpty && localSource.TotalCapacity - localSource.TotalFuel > 0.00001)
+                {
+                    ReFill(craftSource, localSource);
+                }
+    
+               
+            }
+    
+            //从本地和craft中选一个
+            IFuelSource SelectActiveFuelSource(string fuelType, IFuelSource craftSource, IFuelSource localSource, bool wasteMode)
+            {
+                bool craftUnavailable = craftSource == null || (wasteMode ? craftSource.TotalCapacity - craftSource.TotalFuel <= 0.00001 : craftSource.IsEmpty);
+                if (!craftUnavailable)
+                {
+                    return craftSource;
+                }
+    
+                if (localSource == null)
+                {
+                    Mod.Log($"SelectActiveFuelSource: {fuelType} local source is null, defer tank creation to LoadFuelTanks");
+                }
+    
+                return localSource;
+            }
         }
+
+        
 
         
         /// <summary>
@@ -770,11 +663,19 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         public override void OnCraftLoaded(ICraftScript craftScript, bool movedToNewCraft)
         {
-            base.OnCraftLoaded(craftScript, movedToNewCraft);
-            if(!Game.InFlightScene)
-                return;
-            Refresh();
-            Mod.Log("OnCraftLoaded 调用RefreshFuelSource");
+            _isCraftLoading = true;
+            try
+            {
+                base.OnCraftLoaded(craftScript, movedToNewCraft);
+                if(!Game.InFlightScene)
+                    return;
+                Refresh();
+                Mod.Log("OnCraftLoaded 调用RefreshFuelSource");
+            }
+            finally
+            {
+                _isCraftLoading = false;
+            }
         }
         
         /// <summary>
@@ -787,42 +688,42 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             List<(string, double, double)> DataLocal = new List<(string, double, double)>();
             Mod.Log("LoadFuelTanks调用");
-            _oxygenSource = GetLocalFuelSource("Oxygen");
-            _foodSource = GetLocalFuelSource("Food");
-            _waterSource = GetLocalFuelSource("H2O");
-            _co2Source = GetLocalFuelSource("CO2");
-            _wastedWaterSource = GetLocalFuelSource("Wasted Water");
-            _solidWasteSource = GetLocalFuelSource("Solid Waste");
-            if (_oxygenSource != null && _waterSource != null && _foodSource != null && _co2Source != null &&
-                _wastedWaterSource != null && _solidWasteSource != null)
+            OxygenSource = GetLocalFuelSource("Oxygen");
+            FoodSource = GetLocalFuelSource("Food");
+            WaterSource = GetLocalFuelSource("H2O");
+            Co2Source = GetLocalFuelSource("CO2");
+            WastedWaterSource = GetLocalFuelSource("Wasted Water");
+            SolidWasteSource = GetLocalFuelSource("Solid Waste");
+            if (OxygenSource != null && WaterSource != null && FoodSource != null && Co2Source != null &&
+                WastedWaterSource != null && SolidWasteSource != null)
             {
                 //Debug.Log("有本地燃料源");
                 return;
             }
 
-            if (_oxygenSource == null)
+            if (OxygenSource == null)
             {
                 DataLocal.Add(("Oxygen", this.Data.DesireOxygenCapacity, Data._oxygenAmountBuffer));
             }
-            if (_foodSource == null)
+            if (FoodSource == null)
             {
                 DataLocal.Add(("Food", this.Data.DesireFoodCapacity, Data._foodAmountBuffer));
             }
-            if (_waterSource == null)
+            if (WaterSource == null)
             {
                 DataLocal.Add(("H2O", this.Data.DesireWaterCapacity, Data._waterAmountBuffer));
             }
-            if (_co2Source == null)
+            if (Co2Source == null)
             {
                 DataLocal.Add(("CO2", 0.42*600, Data._co2AmountBuffer));
             }
 
-            if (_wastedWaterSource == null)
+            if (WastedWaterSource == null)
             {
                 DataLocal.Add(("Wasted Water", 3*0.35f, Data._wastedWaterAmountBuffer));
             }
 
-            if (_solidWasteSource == null)
+            if (SolidWasteSource == null)
             {
                 DataLocal.Add(("Solid Waste", 0.1f, Data._solidWasteAmountBuffer));
             }
@@ -1012,7 +913,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             try
             {
-                if (_oxygenSource != null && _foodSource != null && _foodSource != null)
+                if (OxygenSource != null && FoodSource != null && FoodSource != null)
                 {
                     Data._oxygenAmountBuffer = GetLocalFuelSource("Oxygen").TotalFuel;
                     Data._foodAmountBuffer =  GetLocalFuelSource("Food").TotalFuel;
@@ -1040,49 +941,49 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             double xishu=360;
             var time= Game.Instance.FlightScene.FlightState.Time-Data.LastLoadTime;
             Mod.Log("调用RemoveFuelAmonutInstantly ,间隔{0}",time);
-            if (this._oxygenSource == null)
+            if (this.OxygenSource == null)
             {
                 Mod.Log("调用RemoveFuelAmonutInstantly失败,_oxygenSource有他妈null");
                 return;
             }
-            if (this._foodSource == null)
+            if (this.FoodSource == null)
             {
                 Mod.Log("调用RemoveFuelAmonutInstantly失败,_foodSource有他妈null");
                 return;
             }
-            if (this._waterSource == null)
+            if (this.WaterSource == null)
             {
                 Mod.Log("调用RemoveFuelAmonutInstantly失败,_waterSource有他妈null");
                 return;
             }
-            if (Data.FoodConsumeRate*(time/xishu) > this._foodSource.TotalFuel)
+            if (Data.FoodConsumeRate*(time/xishu) > this.FoodSource.TotalFuel)
             {
-                this._foodSource.RemoveFuel(_foodSource.TotalCapacity);
-                Mod.Log("调用RemoveFuelAmonutInstantly,理论:{0}实际{1}",Data.FoodConsumeRate*(time/xishu),this._foodSource.TotalFuel);
+                this.FoodSource.RemoveFuel(FoodSource.TotalCapacity);
+                Mod.Log("调用RemoveFuelAmonutInstantly,理论:{0}实际{1}",Data.FoodConsumeRate*(time/xishu),this.FoodSource.TotalFuel);
             }
             else
             {
-                this._foodSource.RemoveFuel(Data.FoodConsumeRate*(time/xishu));
+                this.FoodSource.RemoveFuel(Data.FoodConsumeRate*(time/xishu));
             }
             
-            if (Data.WaterConsumeRate*(time/xishu) > this._waterSource.TotalFuel)
+            if (Data.WaterConsumeRate*(time/xishu) > this.WaterSource.TotalFuel)
             {
-                this._waterSource.RemoveFuel(_waterSource.TotalCapacity);
+                this.WaterSource.RemoveFuel(WaterSource.TotalCapacity);
             }
             else
             {
-                this._waterSource.RemoveFuel(Data.WaterConsumeRate*(time/xishu));
+                this.WaterSource.RemoveFuel(Data.WaterConsumeRate*(time/xishu));
             }
 
             if (UsingInternalOxygen())
             {
-                if (Data.OxygenConsumeRate*(time/xishu) > this._oxygenSource.TotalFuel)
+                if (Data.OxygenConsumeRate*(time/xishu) > this.OxygenSource.TotalFuel)
                 {
-                    this._oxygenSource.RemoveFuel(_oxygenSource.TotalCapacity);
+                    this.OxygenSource.RemoveFuel(OxygenSource.TotalCapacity);
                 }
                 else
                 {
-                    this._oxygenSource.RemoveFuel(Data.OxygenConsumeRate*(time/xishu)*0.001);
+                    this.OxygenSource.RemoveFuel(Data.OxygenConsumeRate*(time/xishu)*0.001);
                 }
             }
             
@@ -1093,53 +994,53 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             double xishu=360;
             var time= Game.Instance.FlightScene.FlightState.Time-Data.LastLoadTime;
             Mod.Log("AddWastedAmountInstantly ,间隔{0}",time);
-            if (this._co2Source == null)
+            if (this.Co2Source == null)
             {
                 Mod.Log("调用AddWastedAmountInstantly失败,_co2Source有他妈null");
                 return;
             }
 
-            if (_wastedWaterSource==null)
+            if (WastedWaterSource==null)
             {
                 Mod.Log("调用AddWastedAmountInstantly失败,_wastedWaterSource有他妈null");
             }
 
-            if (_solidWasteSource == null)
+            if (SolidWasteSource == null)
             {
                 Mod.Log("调用AddWastedAmountInstantly失败,_solidWasteSource有他妈null");
             }
-            if (Data.WaterConsumeRate*Data.evaConsumeEfficiency*1.1*(time/xishu) >= this._wastedWaterSource.TotalCapacity-_wastedWaterSource.TotalFuel)
+            if (Data.WaterConsumeRate*Data.evaConsumeEfficiency*1.1*(time/xishu) >= this.WastedWaterSource.TotalCapacity-WastedWaterSource.TotalFuel)
             {
-                this._wastedWaterSource.AddFuel(this._wastedWaterSource.TotalCapacity-_wastedWaterSource.TotalFuel);
-                Mod.Log("调用AddWastedAmountInstantly,满的,理论:{0}实际{1}",Data.WaterConsumeRate*Data.evaConsumeEfficiency*(time/xishu),this._wastedWaterSource.TotalCapacity-_wastedWaterSource.TotalFuel);
+                this.WastedWaterSource.AddFuel(this.WastedWaterSource.TotalCapacity-WastedWaterSource.TotalFuel);
+                Mod.Log("调用AddWastedAmountInstantly,满的,理论:{0}实际{1}",Data.WaterConsumeRate*Data.evaConsumeEfficiency*(time/xishu),this.WastedWaterSource.TotalCapacity-WastedWaterSource.TotalFuel);
             }
             else
             {
-                this._wastedWaterSource.AddFuel(
+                this.WastedWaterSource.AddFuel(
                     0.9 * Data.WaterConsumeRate * Data.evaConsumeEfficiency * (time / xishu));
                 Mod.Log("调用AddWastedAmountInstantly,理论:{0}",Data.WaterConsumeRate*Data.evaConsumeEfficiency*(time/xishu)*0.001);
             }
-            if (Data.FoodConsumeRate*Data.evaConsumeEfficiency*1.1*(time/xishu) >= this._solidWasteSource.TotalCapacity-_solidWasteSource.TotalFuel)
+            if (Data.FoodConsumeRate*Data.evaConsumeEfficiency*1.1*(time/xishu) >= this.SolidWasteSource.TotalCapacity-SolidWasteSource.TotalFuel)
             {
-                this._solidWasteSource.AddFuel(this._solidWasteSource.TotalCapacity-_solidWasteSource.TotalFuel);
-                Mod.Log("调用AddWastedAmountInstantly,满的,理论:{0}实际{1}",Data.FoodConsumeRate*Data.evaConsumeEfficiency*(time/xishu),this._solidWasteSource.TotalCapacity-_solidWasteSource.TotalFuel);
+                this.SolidWasteSource.AddFuel(this.SolidWasteSource.TotalCapacity-SolidWasteSource.TotalFuel);
+                Mod.Log("调用AddWastedAmountInstantly,满的,理论:{0}实际{1}",Data.FoodConsumeRate*Data.evaConsumeEfficiency*(time/xishu),this.SolidWasteSource.TotalCapacity-SolidWasteSource.TotalFuel);
             }
             else
             {
-                this._solidWasteSource.AddFuel(Data.FoodConsumeRate*Data.evaConsumeEfficiency*(time/xishu)*1.1*0.00006);
+                this.SolidWasteSource.AddFuel(Data.FoodConsumeRate*Data.evaConsumeEfficiency*(time/xishu)*1.1*0.00006);
                 Mod.Log("调用AddWastedAmountInstantly,理论:{0}",Data.FoodConsumeRate*Data.evaConsumeEfficiency*(time/xishu)*1.1*0.06);
             }
 
             if (UsingInternalOxygen())
             {
-                if (Data.OxygenConsumeRate*Data.evaConsumeEfficiency*1.375*(time/xishu) >= this._co2Source.TotalCapacity-_co2Source.TotalFuel)
+                if (Data.OxygenConsumeRate*Data.evaConsumeEfficiency*1.375*(time/xishu) >= this.Co2Source.TotalCapacity-Co2Source.TotalFuel)
                 {
-                    this._co2Source.AddFuel(this._co2Source.TotalCapacity-_co2Source.TotalFuel);
-                    Mod.Log("调用AddWastedAmountInstantly,满的,理论:{0}实际{1}",Data.OxygenConsumeRate*Data.evaConsumeEfficiency*(time/xishu),this._co2Source.TotalCapacity-_co2Source.TotalFuel);
+                    this.Co2Source.AddFuel(this.Co2Source.TotalCapacity-Co2Source.TotalFuel);
+                    Mod.Log("调用AddWastedAmountInstantly,满的,理论:{0}实际{1}",Data.OxygenConsumeRate*Data.evaConsumeEfficiency*(time/xishu),this.Co2Source.TotalCapacity-Co2Source.TotalFuel);
                 }
                 else
                 {
-                    this._co2Source.AddFuel(Data.OxygenConsumeRate*Data.evaConsumeEfficiency*(time/xishu)*1.1);
+                    this.Co2Source.AddFuel(Data.OxygenConsumeRate*Data.evaConsumeEfficiency*(time/xishu)*1.1);
                     Mod.Log("调用AddWastedAmountInstantly,理论:{0}",Data.OxygenConsumeRate*Data.evaConsumeEfficiency*(time/xishu));
                 }
             }
@@ -1343,8 +1244,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private void DamageRadiation(in FlightFrameData  frame)
         {
-            if (evaScript == null || PartScript == null ||
-                Game.Instance == null || Game.Instance.Settings?.Game?.Flight == null)
+            if (evaScript == null || PartScript == null)
             {
                 return;
             } 
@@ -1948,6 +1848,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         #region Misc
 
         private bool isRepairing;
+        private bool _isCraftLoading;
         private void RepairPartWorkingLogic(in FlightFrameData data,PartData pd)
         {
             if (pd==null)
