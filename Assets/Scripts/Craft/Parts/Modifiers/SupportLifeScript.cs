@@ -33,6 +33,7 @@ using Assembly = ModApi.Craft.Assembly;
 //2025 11 10 Welcome back ,I will  fix this piece of shit once and for all.
 //2026 3 23 孩子们我又回来了,猜猜我又拉了什么屎?
 //2026 4 13 不是,我怎么还在给这个b玩意加东西
+//2026 4 26 这个破fuelSource刷新的还在追我
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
@@ -59,6 +60,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// 这啥啊?
         /// </summary>
         private IFuelSource _oxygenSource,_waterSource,_foodSource,_co2Source,_wastedWaterSource,_solidWasteSource;
+        
+        private IFuelSource  _oxygenLocalSource,_waterLocalSource,_foodLocalSource,_co2LocalSource,_wastedLocalWaterSource,_solidLocalWasteSource;
         
         /// <summary>
         /// 当前所在行星的名称。
@@ -198,6 +201,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
             CheckRadiationState(frame);
             DamageRadiation(frame);
+            UpdateHealingStatus();
 
             
             MissionDurationTime = (long)Game.Instance.FlightScene.FlightState.Time - Data.MissionStartTime;
@@ -233,6 +237,24 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             else
             {
                 isRunning = false;
+            }
+        }
+
+        /// <summary>
+        /// 检测这这个小蓝人能不能被治疗
+        /// </summary>
+        private void UpdateHealingStatus()
+        {
+            bool flag1=_oxygenLocalSource.IsEmpty||_foodLocalSource.IsEmpty||_waterLocalSource.IsEmpty;
+            bool flag2=_co2LocalSource.TotalCapacity-_co2LocalSource.TotalFuel<=0.00001||_wastedLocalWaterSource.TotalCapacity-_wastedLocalWaterSource.TotalFuel<=0.00001||_solidLocalWasteSource.TotalCapacity-_solidLocalWasteSource.TotalFuel<=0.00001;
+            bool flag3=this.Data.CumulativeRad >= this.Data.RadiationDamageThresholdLevel3;
+            if (flag1 || flag2 || flag3)
+            {
+                this.CanHeal = false;
+            }
+            else
+            {
+                this.CanHeal = true;
             }
         }
         public override void OnPartDestroyed()
@@ -310,7 +332,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     if (localFuelSource.IsEmpty)
                     {
                         DamageDrood(_oxygenSource, frame, Data.OxygenDamageScale);
-                        CanHeal = false;
+                       
                     }
                     
                     
@@ -319,7 +341,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 else
                 {
                     _oxygenSource.RemoveFuel(num1);
-                    CanHeal = true;
+                   
                 }
                 
             }
@@ -345,7 +367,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     if (localFuelSource.TotalCapacity - localFuelSource.TotalFuel <= 0.00001)
                     {
                         DamageWaste(_co2Source, frame, Data.OxygenDamageScale);
-                        CanHeal = false;
+                       
 
                     }
                     
@@ -359,7 +381,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
                 else
                 {
-                    CanHeal=true;
+                    
                     if (!_oxygenSource.IsEmpty)
                     {
                         _co2Source.AddFuel(num1);
@@ -381,13 +403,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     if (localFood.IsEmpty)
                     {
                         DamageDrood(_foodSource, frame, Data.FoodDamageScale);
-                        CanHeal = false;
+                       
                     }
                     localFood.RemoveFuel(num1);
                 }
                 else
                 {
-                    CanHeal = true;
+                   
                     _foodSource.RemoveFuel(num1);
                 }
             }
@@ -411,7 +433,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     if (localFuelSource.TotalCapacity - localFuelSource.TotalFuel <= 0.00001)
                     {
                         DamageWaste(_solidWasteSource, frame, Data.FoodDamageScale);
-                        CanHeal = false;
+                       
                     }
                     if (!_foodSource.IsEmpty)
                     {
@@ -422,7 +444,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
                 else
                 {
-                    CanHeal=true;
+                    
                     if (!_foodSource.IsEmpty)
                     {
                         _solidWasteSource.AddFuel(num1);
@@ -444,13 +466,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     if (localWater.IsEmpty)
                     {
                         DamageDrood(_waterSource, frame, Data.WaterDamageScale);
-                        CanHeal = false;
+                       
                     }
                     localWater.RemoveFuel(num1);
                 }
                 else
                 {
-                    CanHeal = true;
+                   
                     _waterSource.RemoveFuel(num1);
                 }
             }
@@ -474,7 +496,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     if (localFuelSource.TotalCapacity - localFuelSource.TotalFuel <= 0.00001)
                     {
                         DamageWaste(_wastedWaterSource, frame, Data.WaterDamageScale);
-                        CanHeal = false;
+                       
                     }
 
                     if (!_waterSource.IsEmpty)
@@ -486,7 +508,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
                 else
                 {
-                    CanHeal=true;
+                    
                     if (!_waterSource.IsEmpty)
                     {
                         _wastedWaterSource.AddFuel(num1);
@@ -610,6 +632,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             HandleFuelSource("Wasted Water", Data.DesireWaterCapacity*1.1, Data._wastedWaterAmountBuffer, ref _wastedWaterSource);
             HandleFuelSource("Solid Waste", Data.DesireFoodCapacity*1.1, Data._solidWasteAmountBuffer, ref _solidWasteSource);
             SaveFuelAmountBuffer();
+            _oxygenLocalSource=GetLocalFuelSource("Oxygen");
+            _foodLocalSource=GetLocalFuelSource("Food");
+            _waterLocalSource=GetLocalFuelSource("H2O");
+            _co2LocalSource=GetLocalFuelSource("CO2");
+            _wastedWaterSource=GetLocalFuelSource("Wasted Water");
+            _solidWasteSource=GetLocalFuelSource("Solid Waste");
             void HandleFuelSource(string fuelType, double capacity, double bufferAmount, ref IFuelSource fuelSource)
             {
                 try
@@ -1368,11 +1396,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 damageMultiplier = 0.05f;
                 damageReason = "<color=red><size=120%>severe cumulative radiation exposure</color></size>";
-                CanHeal = false;
+               
             }
             else
             {
-                CanHeal = true;
+               
             }
 
             if (damageMultiplier > 0f)

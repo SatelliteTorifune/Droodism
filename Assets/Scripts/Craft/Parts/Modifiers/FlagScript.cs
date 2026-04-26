@@ -13,18 +13,22 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
     public class FlagScript : PartModifierScript<FlagData>,IFlightUpdate,IFlightStart
     {
-        private Transform FlagBase;
+        private Transform FlagBase,FlagS1;
         public void FlightStart(in FlightFrameData frame)
         {
             UpdateComponents();
         }
+
+        private float test = 0f;
         void IFlightUpdate.FlightUpdate(in FlightFrameData frame)
         {
             Deploy(frame);
         }
         void Deploy(in FlightFrameData frame)
         {
-            
+            test += 0.01f;
+            FlagS1.transform.localPosition=new Vector3(0,test+1,0);
+            Mod.Log( FlagS1.transform.localPosition);
         }
         private void UpdateComponents()
         {
@@ -40,10 +44,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
             if (FlagBase!=null)
             {
+                FlagS1=FlagBase.Find("FlagS1");
                Mod.Log("goodset");
             }
         }
-
         
     }
 }

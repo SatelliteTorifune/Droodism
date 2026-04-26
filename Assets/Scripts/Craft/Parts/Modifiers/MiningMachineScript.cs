@@ -233,5 +233,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
         }
 
+        private void Test()
+        {
+        }
+
     }
 }
