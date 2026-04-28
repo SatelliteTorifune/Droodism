@@ -74,8 +74,7 @@ public abstract class ResourceProcessorPartScript<T> : PartModifierScript<T>, IF
 
     protected IFuelSource GetRegularCraftFuelSource(string fuelType)
     {
-        var craftSources = PartScript.CraftScript.FuelSources.FuelSources;
-        foreach (var source in craftSources)
+        foreach (var source in PartScript.CraftScript.FuelSources.FuelSources)
         {
             if (source.FuelType.Id == fuelType)
             {

@@ -1,11 +1,6 @@
-using System.Reflection;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
-using Assets.Scripts.Flight.GameView.Cameras;
-using Assets.Scripts.Ui.Crew;
 using HarmonyLib;
-using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace Assets.Scripts
 {

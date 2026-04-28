@@ -15,7 +15,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
    
     public class ChemicalReactorScript : ResourceProcessorPartScript<ChemicalReactorData>
     {
-        private IFuelSource HPOxygenSource,co2Source,HPco2Source,lH2Source,hydroloxSource,monoSource,methaneloxSource,HPNitrogenSource,waterSource;
+        private IFuelSource LqdOxygenSource,co2Source,HPco2Source,lH2Source,hydroloxSource,monoSource,methaneloxSource,HPNitrogenSource,waterSource;
         private Transform _particleSystemTransform;
         private ParticleSystem _particleSystem;
         
@@ -49,20 +49,20 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private void HydroloxWorkingLogic(in FlightFrameData frame)
         {
-            if (lH2Source == null||HPOxygenSource == null||hydroloxSource == null)
+            if (lH2Source == null||LqdOxygenSource == null||hydroloxSource == null)
             {
                 _particleSystem.Stop();
                 return;  
             }
                
-            if (!lH2Source.IsEmpty&&!HPOxygenSource.IsEmpty&&(hydroloxSource.TotalCapacity - hydroloxSource.TotalFuel > 1E-06)&&
+            if (!lH2Source.IsEmpty&&!LqdOxygenSource.IsEmpty&&(hydroloxSource.TotalCapacity - hydroloxSource.TotalFuel > 1E-06)&&
                 BatterySource is
                 {
                     IsEmpty: false
                 })
             { 
                 lH2Source.RemoveFuel(Data.GenerationRate* frame.DeltaTimeWorld*12f);
-                HPOxygenSource.RemoveFuel(Data.GenerationRate* frame.DeltaTimeWorld*22f);
+                LqdOxygenSource.RemoveFuel(Data.GenerationRate* frame.DeltaTimeWorld*3f);
                 hydroloxSource.AddFuel(0.972*Data.GenerationRate * frame.DeltaTimeWorld*18f);
                 BatterySource.RemoveFuel(Data.GenerationRate * frame.DeltaTimeWorld*Data.BatteryConsumption*4000);
                 PlayEffects();
@@ -141,12 +141,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     break;
                 case "LH2+LOX=Hydrolox":
                     lH2Source = GetRegularCraftFuelSource("LH2");
-                    HPOxygenSource=GetRegularCraftFuelSource("HPOxygen");
+                    LqdOxygenSource=GetRegularCraftFuelSource("LqdOxygen");
                     hydroloxSource=GetRegularCraftFuelSource("LOX/LH2");
                     break;
                     
             }
-            var patch = PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
             monoSource = this.PartScript.CommandPod.MonoFuelSource;
         }
         protected override void UpdateComponents()
@@ -216,11 +215,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     model.Add(new TextModel("<color=yellow>LH2 Mass Flow", (Func<string>)(() =>
                     {
                         return Units.GetMassFlowRateString(this.PartScript.Data.Activated?Data.GenerationRate*12f * lH2Source.FuelType.Density:0);
-                    }), tooltip: "The kilograms of LH2 being reacted per second."));
+                    }), tooltip: "The kilograms of Liquid Hydrogen being reacted per second."));
                     model.Add(new TextModel("<color=yellow>Oxygen Mass Flow", (Func<string>)(() =>
                     {
-                        return Units.GetMassFlowRateString(this.PartScript.Data.Activated?Data.GenerationRate*22f * HPOxygenSource.FuelType.Density:0);
-                    }), tooltip: "The kilograms of High Pressure Oxygen being reacted per second."));
+                        return Units.GetMassFlowRateString(this.PartScript.Data.Activated?Data.GenerationRate*3f * LqdOxygenSource.FuelType.Density:0);
+                    }), tooltip: "The kilograms of Liquid Oxygen being reacted per second."));
                     break;
             }
         }

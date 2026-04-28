@@ -67,7 +67,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             switch (this.reactorType)
             {
                 case "LH2+LOX=Hydrolox":
-                    return "Hydrolox Generating:Use Liquid Hydrogen and High Pressure Oxygen to generate Hydrolox";
+                    return "Hydrolox Generating:Use Liquid Hydrogen and Liquid Oxygen to generate Hydrolox";
                 case "N2+LH2=N2H4":
                     return "Monopropellant Generating<br>Use High Pressure Nitrogen and LH2 to generate Monopropellant";
                 case "H2O+CO2=Methanelox":
