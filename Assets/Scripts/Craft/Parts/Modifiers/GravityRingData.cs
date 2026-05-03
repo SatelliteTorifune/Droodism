@@ -24,6 +24,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public float ExtendSpeed = 0.2f;
         [SerializeField] [DesignerPropertySlider(1f, 30f,30, Label = "Deploy Rotation Speed")]
         private float deployRotationSpeed = 15f;
+
+        [SerializeField] [PartModifierProperty]
+        private bool isDeployed;
+
+        [SerializeField] [PartModifierProperty]
+        private bool stayDeployed;
        
         public float RotationSpeed = 0f;
         
@@ -37,14 +43,22 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             get => currentExtentPercent;
             set => currentExtentPercent = value;
         }
-        
+
+        public bool IsDeployed
+        {
+            get => isDeployed;
+            set => isDeployed = value;
+        }
 
         public Vector3 PositionOffset1
         {
             get => positionOffset1;
         }
 
-        
-        
+        public bool StayDeployed
+        {
+            get => stayDeployed;
+            set => stayDeployed = value;
+        }
     }
 }
