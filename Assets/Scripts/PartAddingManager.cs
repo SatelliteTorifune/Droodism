@@ -61,11 +61,10 @@ namespace Assets.Scripts
                 }
                
             }
-
+            
             // Process Crew Compartments
-            foreach (var part in craftScript.Data.Assembly.Parts.Where(part => part.GetModifier<CrewCompartmentData>() != null && !part.PartType.Name.Contains(EvaPartName)).ToList())
+            foreach (var part in craftScript.Data.Assembly.Parts.Where(part => part.GetModifier<CrewCompartmentData>() != null&&!part.PartType.Name.Contains(ChairPartName) && !part.PartType.Name.Contains(EvaPartName)).ToList())
             {
-                //&& part.PartType.Name!=ChairPartName)
                 AddCrewCompartmentPatch(part);
             }
 

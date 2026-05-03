@@ -16,7 +16,7 @@
     </SubpartTypes>
   </PartType>
   <DesignerParts>
-    <DesignerPart name="&lt;color=green&gt;GravityRing" category="LifeSupport" description="A gravity ring could hole 10 crew" order="0" showInDesigner="true" iconType="Resource" iconPath="Assets/Content/Craft/Parts/GravityRingIcon.png" snapshotDistanceScaler="100" snapshotRotation="30,30,0">
+    <DesignerPart name="&lt;color=green&gt;GravityRing" category="Command" description="A gravity ring could hole 10 crew,Need High Pressure N2 to deploy" order="0" showInDesigner="true" iconType="Resource" iconPath="Assets/Content/Craft/Parts/GravityRingIcon.png" snapshotDistanceScaler="100" snapshotRotation="30,30,0">
       <Assembly>
         <Parts>
           <Part id="1" partType="GravityRing" position="0,0,0" rotation="0,0,0">

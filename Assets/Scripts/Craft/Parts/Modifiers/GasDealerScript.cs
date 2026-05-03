@@ -1,4 +1,3 @@
-using Assets.Packages.DevConsole.Commands.Arguments;
 using ModApi;
 using ModApi.Audio;
 using ModApi.Craft;
@@ -33,7 +32,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private IFuelSource batterySource;
         private bool emergencyGasDepressurization=false;
         private bool isFunctional=true;
-        public bool isOxygen = true;
+       
         public bool isPressuring { get;private set; }  
 
         void IDesignerStart.DesignerStart(in DesignerFrameData frame)
@@ -82,7 +81,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return;
             //理论上来说Data.GasFlowRate * lowPressureGasSource.FuelType.Density/highPressureGasSource.FuelType.Density这么写是完全没毛病的,但是出于一种我也不知道的玄学原因,游戏会发癫,凭空给我生成fuel,所以最快的解决方法就算直接*0.973,然后对外宣称这是正常损耗,这样完全不会有人怀疑对吧
             //哈哈,我他妈真是天才.
-            if (isPressuring&&!lowPressureGasSource.IsEmpty&&highPressureGasSource.TotalCapacity - highPressureGasSource.TotalFuel > 1E-06&&batterySource!=null&&!batterySource.IsEmpty)
+            if (isPressuring&&!lowPressureGasSource.IsEmpty&&(highPressureGasSource.TotalCapacity - highPressureGasSource.TotalFuel > 1E-06)&&batterySource!=null&&!batterySource.IsEmpty)
             { 
                 lowPressureGasSource.RemoveFuel(Data.GasFlowRate* frame.DeltaTimeWorld);
                 
@@ -161,52 +160,23 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public void RefreshFuelSources()
         {
             batterySource = PartScript.BatteryFuelSource;
-            if (isOxygen)
+            var patchScript = PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+            switch (this.Data.GasType)
             {
-                highPressureGasSource = GetCraftFuelSource("HPOxygen");
-                try
-                {
-                    var patchScript = PartScript?.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
-                    if (patchScript == null)
-                    {
-                        lowPressureGasSource = null;
-                    }
-
-                    if (patchScript != null)
-                    {
-                        lowPressureGasSource = patchScript.OxygenFuelSource;
-
-                    }
-
-                }
-                catch (Exception)
-                {
-                    lowPressureGasSource = null;
-                }
+                case "O2" :
+                    highPressureGasSource = GetCraftFuelSource("HPOxygen") == null?GetCraftFuelSource("LqdOxygen"):GetCraftFuelSource("HPOxygen");
+                    lowPressureGasSource=patchScript.OxygenFuelSource;
+                    break;
+                case "CO2" :
+                    highPressureGasSource = GetCraftFuelSource("HPCO2");
+                    lowPressureGasSource =  patchScript.CO2FuelSource;
+                    break;
+                case "N2" :
+                    highPressureGasSource = GetCraftFuelSource("HPN2");
+                    lowPressureGasSource =  GetCraftFuelSource("N2");
+                    break;
             }
-            if (!isOxygen)
-            {
-                highPressureGasSource = GetCraftFuelSource("HPCO2");
-                try
-                {
-                    var patchScript = PartScript?.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
-                    if (patchScript == null)
-                    {
-                        lowPressureGasSource = null;
-                    }
-
-                    if (patchScript != null)
-                    {
-                        lowPressureGasSource = patchScript.CO2FuelSource;
-
-                    }
-
-                }
-                catch (Exception)
-                {
-                    lowPressureGasSource = null;
-                }
-            }
+            
         }
         public override void OnCraftStructureChanged(ICraftScript craftScript)
                  {
@@ -237,20 +207,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public override void OnGenerateInspectorModel(PartInspectorModel model)
         {
             base.OnGenerateInspectorModel(model);
-            var changeMode=new ToggleModel("Switch to Oxygen Fuel Type", () => isOxygen, (Action<bool>) (b=>
-            {
-                isOxygen = b;
-                RefreshFuelSources();
-            }),"Determines this part is in dealing with Carbon dioxide or Oxygen");
             var engaging = new LabelButtonModel("<color=yellow>Emergency Depressurization", b =>
             {
                 if (isFunctional)
                 {
                     emergencyGasDepressurization = true;
-                    changeMode.Visible = false;
-                    string msg = isOxygen
-                        ? "<color=yellow>Emergency Depressurization Sequence Initiated<br>All Oxygen in the High Pressure Gas Tank and Low Pressure Gas Tank is releasing</color>.<br>This action is <color=red><size=110%>irreversible</size></color>"
-                        : "<color=yellow>Emergency Depressurization Sequence Initiated<br>All Carbon Dioxide in the High Pressure Gas Tank and Low Pressure Gas Tank is releasing</color>.<br>This action is <color=red><size=110%>irreversible</size></color>";
+                    string msg = "<color=yellow>Emergency Depressurization Sequence Initiated<br>All " +
+                                 this.Data.GetSpinnerNames() +
+                                 " in the High Pressure Gas Tank and Low Pressure Gas Tank is releasing</color>.<br>This action is <color=red><size=110%>irreversible</size></color>";
                     Game.Instance.FlightScene.FlightSceneUI.ShowMessage(msg,false,10);
                 }
 
@@ -262,11 +226,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             });
             engaging.ButtonLabel ="<color=yellow>Engage";
             engaging.Tooltip="Release All Gas in the High Pressure Gas Tank and Low Pressure Gas Tank,this action is <color=red><size=110%>irreversible</size></color> and will disable all other functions of this part. use it with caution.";
-            if (!emergencyGasDepressurization)
-            {
-                
-                model.Add(changeMode);
-            }
             if (!isPressuring)
             {
                 if (!isFunctional)

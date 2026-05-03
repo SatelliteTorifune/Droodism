@@ -27,9 +27,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         [FormerlySerializedAs("waterComsumption")] [SerializeField] [PartModifierProperty(true, false)]
         private float waterConsumption=1f;
-
-        [FormerlySerializedAs("hpoxygenComsumption")] [SerializeField] [PartModifierProperty(true, false)]
-        private float hpoxygenConsumption=1f;
+        
 
         public float BatteryConsumption
         {
@@ -50,11 +48,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             get => this.waterConsumption*0.004f;
         }
-
-        public float HpoxygenConsumption
-        {
-            get => this.hpoxygenConsumption*0.015f;
-        }
+        
         
 
     }

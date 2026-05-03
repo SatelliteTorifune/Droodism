@@ -80,7 +80,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Data:
     _activationGroup: 0
-    _category: {fileID: 11400000, guid: 7d2b6f557b8767544a162f30e61d22b6, type: 2}
+    _category: {fileID: 11400000, guid: 4bfc71c0b9c1253428ca08e136ecc26f, type: 2}
     _description: Wanna make your crew sleep for a little bit longer? this is what
       you want
     _displayOrder: 0

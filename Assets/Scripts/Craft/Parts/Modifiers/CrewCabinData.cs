@@ -195,7 +195,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private double Min(double a, double b)
         {
-            // NaN -> treat as "upper" so the clamp result is deterministic.
             if (double.IsNaN(a)) return b;
             return a <= b ? a : b;
         }

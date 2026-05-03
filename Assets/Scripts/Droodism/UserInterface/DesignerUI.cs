@@ -10,7 +10,7 @@ namespace Assets.Scripts
     public partial class Mod:GameMod
     {
         public static readonly string[] _massTypes = { "g", "kg", "t", "kt" };
-        private static List<string> fuelTypes = new List<string> { "Oxygen", "H2O", "Food", "CO2", "Wasted Water", "Solid Waste","HPOxygen","HPCO2"};
+        private static List<string> fuelTypes = new List<string> { "Oxygen", "H2O", "Food", "CO2", "Wasted Water", "Solid Waste"};
 
         private static string GetFuelAmountInDesigner(string fuelId,bool isWaste)
         {

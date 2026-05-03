@@ -1,3 +1,4 @@
+using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using ModApi;
 using ModApi.GameLoop;
 
@@ -11,7 +12,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
 
-    public class GravityRingScript : PartModifierScript<GravityRingData>, IFlightUpdate, IFlightStart
+    public class GravityRingScript : ResourceProcessorPartScript<GravityRingData>
     {
         private Transform _mainBase, _rotateBase;
         private Transform _sideA, _struc1A, _struc2A, _struc3A,_struc4A, _ringA;
@@ -20,27 +21,45 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private Transform _sideD, _struc1D, _struc2D, _struc3D,_struc4D, _ringD;
         private Transform _offset;
         private Vector3 _offsetPositionInverse;
+
+        private IFuelSource hPN2Source;
         
         private string partState;
         
         public bool isDeployed=false;
+
         
-        public void FlightUpdate(in FlightFrameData frame)
+        public override void FlightUpdate(in FlightFrameData frame)
         {
-            RotatingBase(isDeployed&&PartScript.Data.Activated);
-            if (PartScript.Data.Activated)
+            bool active = isDeployed && PartScript.Data.Activated && !BatterySource.IsEmpty;
+            RotatingBase(active);
+            if (active)
+            {
+                this.BatterySource.RemoveFuel(this.Data.DeployRotationSpeed* frame.DeltaTimeWorld * 20f);
+               
+            }
+            
+            if (PartScript.Data.Activated&&!hPN2Source.IsEmpty && !BatterySource.IsEmpty)
             {
                 Deploy(frame);
+                if (!isDeployed)
+                {
+                    ConsumeHPN2(frame);
+                }
             }
 
-            if (!PartScript.Data.Activated) 
+
+            else
             {
                 Undeploy(frame);
             }
+            void ConsumeHPN2(in FlightFrameData frame)
+            {
+               this.hPN2Source.RemoveFuel(frame.DeltaTimeWorld * 10f);
+               this.BatterySource.RemoveFuel(this.Data.ExtendSpeed * frame.DeltaTimeWorld * 40f);
+            }
             void Deploy(in FlightFrameData frame)
             {
-                
-
                 float targetExtent = -1.4f;
                 float targetRotation = 0;
                 if (Data.CurrentExtentPercent == targetExtent&&Data.CurrentRotation == targetRotation)
@@ -98,11 +117,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
             }
         }
-
-        public void FlightStart(in FlightFrameData frame)
-        { 
-            UpdateComponents();
-        }
+        
         
 
         #region Animation Methods
@@ -113,13 +128,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 return;
             }
-           Data.RotationSpeed = Mathf.Lerp(Data.RotationSpeed, active ?0.1f : 0.0f, Time.deltaTime * 0.4f);
+            Data.RotationSpeed = Mathf.Lerp(Data.RotationSpeed, active ?0.1f : 0.0f, Time.deltaTime * 0.4f);
 
            if (Mathf.Abs(Data.RotationSpeed) > 0.01f)
            {
                float yAngle = -(Data.RotationSpeed * 360.0f * 3.0f) * Time.deltaTime;
                _rotateBase.Rotate(0.0f, yAngle * (Data.IsReverse ? -1 : 1), 0.0f); 
            }
+          
                    
                
         }
@@ -155,7 +171,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         #endregion
 
         #region PrefabSetup Methods
-        private void UpdateComponents()
+        protected override void UpdateComponents()
         {
             string[] strArray = "Base/RotateBase".Split('/', StringSplitOptions.None);
             Transform subPart = this.transform;
@@ -195,19 +211,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 _struc3D = _struc2D.Find("Strut3");
                 _struc4D = _struc3D.Find("Strut4");
                 _ringD = _struc4D.Find("Ring");
-
-                
-                
-
-
-
             }
 
             
         }
 
 
-        public void SetSubPart(Transform subPart)
+        private void SetSubPart(Transform subPart)
         {
             if ((UnityEngine.Object) this._offset != (UnityEngine.Object) null)
             {
@@ -225,6 +235,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         #endregion
 
+        protected override void UpdateFuelSources()
+        {
+            base.UpdateFuelSources();
+            hPN2Source = GetRegularCraftFuelSource("HPN2");
+        }
         
 
 }

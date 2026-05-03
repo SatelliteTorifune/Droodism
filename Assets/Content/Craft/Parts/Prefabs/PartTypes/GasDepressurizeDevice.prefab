@@ -185,3 +185,4 @@ MonoBehaviour:
     _versionsAllowed: 
     gasFlowRate: 1
     batteryConsumption: 1
+    gasType: O2
