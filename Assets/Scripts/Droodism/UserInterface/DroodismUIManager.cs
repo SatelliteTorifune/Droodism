@@ -519,8 +519,7 @@ namespace Assets.Scripts.Droodism.UserInterface
 
         public IFuelSource GetIFuelSourceByID(string fuelTypeId)
         {
-            switch (ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Data.PartType.Name
-                        .Contains("Eva") &&
+            switch (ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Data.GetModifier<SupportLifeData>()!=null &&
                     ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.Data.Assembly.Parts.Count == 1
                         ? "Eva"
                         : "Other")
@@ -546,6 +545,21 @@ namespace Assets.Scripts.Droodism.UserInterface
                         var patchScript = Game.Instance.FlightScene.CraftNode.CraftScript.ActiveCommandPod.Part
                             .PartScript
                             .GetModifier<STCommandPodPatchScript>();
+                        if (patchScript==null)
+                        {
+                            foreach (var modifier in ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.RootPart
+                                         .Modifiers)
+                            {
+                                if (modifier.GetData().Name.Contains("FuelTank"))
+                                {
+                                    FuelTankScript fts = modifier as FuelTankScript;
+                                    if (fts.FuelType.Id == fuelTypeId)
+                                    {
+                                        return fts;
+                                    }
+                                }
+                            }
+                        }
 
                         switch (fuelTypeId)
                         {
