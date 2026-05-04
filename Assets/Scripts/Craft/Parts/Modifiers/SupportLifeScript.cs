@@ -160,8 +160,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         void IFlightStart.FlightStart(in FlightFrameData frame)
         {
-            Mod.Log("FlightStart");
-            base.OnInitialized();
             Game.Instance.FlightScene.FlightEnded+=OnFlightEnded;
             Game.Instance.FlightScene.PlayerChangedSoi += OnPlayerChangedSoi;
             Game.Instance.FlightScene.CraftNode.PhysicsDisabled += OnPhysicsDisabled;
@@ -199,7 +197,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             UpdateHealingStatus();
             if (!IsHibernating)
             {
-                if (!UsingInternalOxygen())
+                if (!UsingInternalOxygen() )   
                 {
                     AutoRefillLogic(frame);
                 }
