@@ -1,9 +1,13 @@
 # 待办事项
+# 重构
 
+## 关于SupportLife.cs
+> Drood身上的FuelTank是罪魁祸首
 ### Bug相关
 
 > UI显示
 > >吗的这里的bug是真的多啊我操
+>
 
 # ISRU
 

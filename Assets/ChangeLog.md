@@ -7,3 +7,7 @@
 # 2026 5 5
 >增加了光电反应器零件展开状态保存功能
 
+# 2026 5 6
+>修复了 游戏尝试在PlanetStudio中创建辐射带Inspector Panel的bug
+
+>移除了Legacy UI的相关代码

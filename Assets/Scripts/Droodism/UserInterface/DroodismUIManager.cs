@@ -23,7 +23,6 @@ namespace Assets.Scripts.Droodism.UserInterface
     {
 
         public const string droodismBottomId = "toggle-droodism-ui-bottom";
-        public LegacyDroodismUI LegacyDroodismUIIntance;
         public static DroodismUIManager Instance;
 
         private IInspectorPanel inspectorPanel;
@@ -85,25 +84,12 @@ namespace Assets.Scripts.Droodism.UserInterface
                 return;
             }
 
-            if (ModSettings.Instance.UseLegacyUI)
+            foreach (var id in fuelTypeIDList)
             {
-                LegacyDroodismUIIntance.SetMainUIVisibility(Game.Instance.FlightScene.FlightSceneUI.Visible);
-                if (LegacyDroodismUIIntance.mainPanelVisible)
+                var source = GetIFuelSourceByID(id);
+                if (source != null)
                 {
-                    LegacyDroodismUIIntance.UpdateFuelPercentageItemTemplate();
-                }
-            }
-
-            if (!ModSettings.Instance.UseLegacyUI)
-            {
-                LegacyDroodismUIIntance.SetMainUIVisibility(false);
-                foreach (var id in fuelTypeIDList)
-                {
-                    var source = GetIFuelSourceByID(id);
-                    if (source != null)
-                    {
-                        UpdateFuelTemplateItem(source);
-                    }
+                    UpdateFuelTemplateItem(source);
                 }
             }
         }
@@ -195,10 +181,7 @@ namespace Assets.Scripts.Droodism.UserInterface
         {
             if (e.Scene == "Flight")
             {
-
-                LegacyDroodismUIIntance = Game.Instance.UserInterface.BuildUserInterfaceFromResource<LegacyDroodismUI>(
-                    "Droodism/Flight/DroodismInspectPanel",
-                    (script, controller) => script.OnLayoutRebuilt(controller));
+                
                 UpdateInfo();
                 CreateInspectorPanel();
                 inspectorPanel.Visible = false;
@@ -266,24 +249,16 @@ namespace Assets.Scripts.Droodism.UserInterface
         public void OnToggleDroodismInspectorPanelState()
         {
 
-            if (ModSettings.Instance.UseLegacyUI)
+            UpdateInfo();
+            try
             {
-                LegacyDroodismUIIntance.OnTogglePanelState();
+                inspectorPanel.Visible = !inspectorPanel.Visible;
             }
-
-            if (!ModSettings.Instance.UseLegacyUI)
+            catch (Exception)
             {
-                UpdateInfo();
-                try
-                {
-                    inspectorPanel.Visible = !inspectorPanel.Visible;
-                }
-                catch (Exception)
-                {
 
-                    CreateInspectorPanel();
-                    inspectorPanel.Visible = !inspectorPanel.Visible;
-                }
+                CreateInspectorPanel();
+                inspectorPanel.Visible = !inspectorPanel.Visible;
             }
         }
 
