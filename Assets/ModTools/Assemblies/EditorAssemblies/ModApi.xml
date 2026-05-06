@@ -35907,7 +35907,7 @@
             <param name="eventType">Type of the event.</param>
             <param name="eventData">The event data.</param>
         </member>
-        <member name="P:ModApi.Flight.GameView.GameViewPointerEvent.CrewData">
+        <member name="P:ModApi.Flight.GameView.GameViewPointerEvent.EventData">
             <summary>
             Gets the event data.
             </summary>
@@ -67975,13 +67975,6 @@
             <summary>
             Reloads the current scene.
             </summary>
-        </member>
-        <member name="M:ModApi.Scenes.ISceneManager.TrackForMemoryLeak(System.Object)">
-            <summary>
-            Tracks the specified object for a memory leak.
-            Tracked objects will log an error if they are still alive after a scene transition.
-            </summary>
-            <param name="obj">The object to track.</param>
         </member>
         <member name="T:ModApi.Scenes.LoadingScreenTextureDisposalMethod">
             <summary>
