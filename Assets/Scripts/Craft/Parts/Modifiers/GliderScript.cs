@@ -10,6 +10,7 @@ using ModApi.GameLoop;
 using RootMotion.FinalIK;
 using ModApi.Flight.UI;
 using Panteleymonov;
+using UnityEditor;
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
@@ -21,7 +22,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
 
-    public class GliderScript : PartModifierScript<GliderData>,IFlightUpdate,IFlightStart,IFlightFixedUpdate
+    public class GliderScript : PartModifierScript<GliderData>,IFlightStart,IFlightFixedUpdate
     {
         private Transform 
             LeftHandTransform,
@@ -52,6 +53,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public void FlightStart(in FlightFrameData frame)
         {
             ui = Game.Instance.FlightScene.FlightSceneUI;
+            _crewCompartment = PartScript.GetModifier<CrewCompartmentScript>();
             this.parachuteMeshTransform.transform.localScale =new Vector3(10, 100, 10);
             if (Data.Part.PartType.Id=="DroodParachute")
             {
@@ -61,38 +63,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         }
         
-        public void FlightUpdate(in FlightFrameData frame)
-        {
-           
-            try
-            {
-                if (isGround())
-                {
-                    foreach (var eva in _crewCompartment.Crew)
-                    {
-                       
-                        _crewCompartment.UnloadCrewMember(eva,this.PartScript.CraftScript.CraftNode.IsPlayer || (!PartScript.CraftScript.CraftNode.IsPlayer && Game.Instance.FlightScene.CraftNode
-                            .CraftScript.ActiveCommandPod.EvaScript.IsFpsActive));
-                        ui.ShowMessage($"{eva.Data.CrewMember.Name} has landed on the ground");
-                    }
-                }
-                
-                if (_crewCompartment.Crew.Count==0)
-                {
-                    this.PartScript.BodyScript.ExplodePart(this.PartScript, -1);
-                }
-            }
-            catch (Exception e)
-            {
-                //since this shit is called every frame,so, when the part kills itself, it will throw an exception,so,just ignore it asshole lmao
-                Mod.Log("(note:this is not a bug,it an intentional game design,so,just ignore it)GliderScript.FlightUpdate: " + e);
-            }
-            
-        }
+       
 
         private bool isGround()
         {
-            return this.PartScript.CraftScript.FlightData.AltitudeAboveGroundLevel<1.5||PartScript.CraftScript.FlightData.Grounded||(this.PartScript.CraftScript.FlightData.SurfaceVelocityMagnitude < 0.1&&PartScript.CraftScript.FlightData.AccelerationMagnitude < 0.1);
+            return this.PartScript.CraftScript.FlightData.AltitudeAboveGroundLevel<1.5||PartScript.CraftScript.FlightData.Grounded||(this.PartScript.CraftScript.FlightData.SurfaceVelocityMagnitude < 0.01&&PartScript.CraftScript.FlightData.AccelerationMagnitude < 0.01);
         }
         public void FlightFixedUpdate(in FlightFrameData frame)
         {
@@ -100,11 +75,32 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 return;
             }
+            if (_crewCompartment.Crew.Count==0)
+            {
+                this.PartScript.BodyScript.ExplodePart(this.PartScript, -1);
+            }
             MinFullDeployHeight = this._pilot.PartScript.GetModifier<SupportLifeScript>().Data.MinDeployHeight;
             if (isGround())
             {
-                return;
+                try
+                {
+                    foreach (var eva in _crewCompartment.Crew)
+                    {
+                    
+                        _crewCompartment.UnloadCrewMember(eva,this.PartScript.CraftScript.CraftNode.IsPlayer || (!PartScript.CraftScript.CraftNode.IsPlayer && Game.Instance.FlightScene.CraftNode
+                            .CraftScript.ActiveCommandPod.EvaScript.IsFpsActive));
+                        eva.PartScript.GetModifier<SupportLifeScript>().Data.AutoDeployEnabled = false;
+                        ui.ShowMessage($"{eva.Data.CrewMember.Name} has landed on the ground");
+                    }
+                    return;
+                }
+                catch (Exception e)
+                {
+                  //这不是bug,这是特意的
+                }
+               
             }
+            
 
             OpenPercent = (parachuteMeshTransform.transform.localScale.x * parachuteMeshTransform.transform.localScale.y)/ 1e4f;
             

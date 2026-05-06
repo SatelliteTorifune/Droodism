@@ -29,18 +29,18 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     {
         private static bool isTourist;
         
-        [FormerlySerializedAs("_oxygenComsumeRate")] [SerializeField] [PartModifierProperty(true, false)]
+        [FormerlySerializedAs("_oxygenComsumeRate")] [SerializeField] [PartModifierProperty]
         private float oxygenConsumeRate=1f;
-        [FormerlySerializedAs("_foodComsumeRate")] [SerializeField][PartModifierProperty(true, false)]
+        [FormerlySerializedAs("_foodComsumeRate")] [SerializeField][PartModifierProperty]
         private float foodConsumeRate=1f;
-        [FormerlySerializedAs("_waterComsumeRate")] [SerializeField][PartModifierProperty(true, false)]
+        [FormerlySerializedAs("_waterComsumeRate")] [SerializeField][PartModifierProperty]
         private float waterConsumeRate=1f;
         
-        [FormerlySerializedAs("_oxygenDamageScale")] [SerializeField] [PartModifierProperty(true, false)]
+        [FormerlySerializedAs("_oxygenDamageScale")] [SerializeField] [PartModifierProperty]
         private float oxygenDamageScale=1f;
-        [SerializeField][PartModifierProperty(true, false)]
+        [SerializeField][PartModifierProperty]
         private float foodDamageScale=1f;
-        [SerializeField][PartModifierProperty(true, false)]
+        [SerializeField][PartModifierProperty]
         private float waterDamageScale=1f;
 
         [SerializeField] [DesignerPropertyLabel(Order=-2)]
@@ -71,32 +71,32 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         [DesignerPropertySlider(100f, 1000f, 60, Label = "<color=#FFB600>Auto Deploy Height</color>",Order = 3, Tooltip = "Height for auto parachute deployment in Agl")]
         private float autoDeployHeight = 500f;
         
-        [SerializeField][PartModifierProperty(true, false)]
+        [SerializeField][PartModifierProperty]
         private double cumulativeRad=0f;
         [SerializeField][PartModifierProperty]
         public long MissionStartTime=0;
         [SerializeField][PartModifierProperty]
         public long LastLoadTime=0;
         
-        [SerializeField] [PartModifierProperty(true, false)]
+        [SerializeField] [PartModifierProperty]
         public double _oxygenAmountBuffer=0f;
-        [SerializeField] [PartModifierProperty(true, false)]
+        [SerializeField] [PartModifierProperty]
         public double _foodAmountBuffer=0f;
-        [SerializeField] [PartModifierProperty(true, false)]
+        [SerializeField] [PartModifierProperty]
         public double _waterAmountBuffer = 0f;
-        [SerializeField] [PartModifierProperty(true, false)]
+        [SerializeField] [PartModifierProperty]
         public double _co2AmountBuffer=0f;
-        [SerializeField] [PartModifierProperty(true, false)]
+        [SerializeField] [PartModifierProperty]
         public double _wastedWaterAmountBuffer=0f;
-        [SerializeField] [PartModifierProperty(true, false)]
+        [SerializeField] [PartModifierProperty]
         public double _solidWasteAmountBuffer=0f;
-        [SerializeField] [PartModifierProperty(true, false)]
+        [SerializeField] [PartModifierProperty]
         public float evaConsumeEfficiency=0.3f;
-        [SerializeField] [PartModifierProperty(true, false)]
+        [SerializeField] [PartModifierProperty]
         public float radiationDamageThresholdLevel1=100f;
-        [SerializeField] [PartModifierProperty(true, false)]
+        [SerializeField] [PartModifierProperty]
         public float radiationDamageThresholdLevel2=400f;
-        [SerializeField] [PartModifierProperty(true, false)]
+        [SerializeField] [PartModifierProperty]
         public float radiationDamageThresholdLevel3=800f;
 
         [SerializeField] [PartModifierProperty]
@@ -155,6 +155,21 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             get=>this.IsLegal(this.desireWaterCapacity)*3;
             set=>this.desireWaterCapacity = value;
+        }
+
+        public float DesireCO2Capacity
+        {
+            get => 252f;
+        }
+
+        public float DesireWastedWaterCapacity
+        {
+            get => 1.05f;
+        }
+
+        public float DesireSolidWasteCapacity
+        {
+            get => 0.1f;
         }
 
         public double CumulativeRad
@@ -259,6 +274,70 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             this.crewRoleName = DroodismCrewData == null ? "<color=yellow>Crew Role</color>: Unknow" : GetCrewRoleName();
             this.crewRadiationDoes=DroodismCrewData == null ? "<color=yellow>Radiation Dose: Unknow" : "<color=yellow>Radiation Dose:"+(DroodismCrewData.RadiationRate.ToString("f1")+" rad");
         }
+
+        /// <summary>维生罐最大容量（与旧 AddTank 逻辑一致，单位与 buffer 一致）。</summary>
+        public double GetLifeSupportCapacity(string fuelTypeId)
+        {
+            switch (fuelTypeId)
+            {
+                case "Oxygen": return DesireOxygenCapacity;
+                case "Food": return DesireFoodCapacity;
+                case "H2O": return DesireWaterCapacity;
+                case "CO2": return 0.42 * 600.0;
+                case "Wasted Water": return 3.0 * 0.35;
+                case "Solid Waste": return 0.1;
+                default: return 0.0;
+            }
+        }
+
+        public double GetLifeSupportFuelAmount(string fuelTypeId)
+        {
+            switch (fuelTypeId)
+            {
+                case "Oxygen": return _oxygenAmountBuffer;
+                case "Food": return _foodAmountBuffer;
+                case "H2O": return _waterAmountBuffer;
+                case "CO2": return _co2AmountBuffer;
+                case "Wasted Water": return _wastedWaterAmountBuffer;
+                case "Solid Waste": return _solidWasteAmountBuffer;
+                default: return 0.0;
+            }
+        }
+
+        public void SetLifeSupportFuelAmount(string fuelTypeId, double value)
+        {
+            double cap = GetLifeSupportCapacity(fuelTypeId);
+            if (cap <= 0.0)
+                return;
+            value = Math.Max(0.0, Math.Min(value, cap));
+            switch (fuelTypeId)
+            {
+                case "Oxygen": _oxygenAmountBuffer = value; break;
+                case "Food": _foodAmountBuffer = value; break;
+                case "H2O": _waterAmountBuffer = value; break;
+                case "CO2": _co2AmountBuffer = value; break;
+                case "Wasted Water": _wastedWaterAmountBuffer = value; break;
+                case "Solid Waste": _solidWasteAmountBuffer = value; break;
+            }
+        }
+
+        public void AddLifeSupportFuel(string fuelTypeId, double delta)
+        {
+            if (Math.Abs(delta) < 1e-12)
+                return;
+            SetLifeSupportFuelAmount(fuelTypeId, GetLifeSupportFuelAmount(fuelTypeId) + delta);
+        }
+
+        public void ClampLifeSupportBuffersToCapacity()
+        {
+            _oxygenAmountBuffer = Math.Min(_oxygenAmountBuffer, GetLifeSupportCapacity("Oxygen"));
+            _foodAmountBuffer = Math.Min(_foodAmountBuffer, GetLifeSupportCapacity("Food"));
+            _waterAmountBuffer = Math.Min(_waterAmountBuffer, GetLifeSupportCapacity("H2O"));
+            _co2AmountBuffer = Math.Min(_co2AmountBuffer, GetLifeSupportCapacity("CO2"));
+            _wastedWaterAmountBuffer = Math.Min(_wastedWaterAmountBuffer, GetLifeSupportCapacity("Wasted Water"));
+            _solidWasteAmountBuffer = Math.Min(_solidWasteAmountBuffer, GetLifeSupportCapacity("Solid Waste"));
+        }
+
         private string GetCrewRoleName()
         {
             string Description = DroodismCrewData.CrewRole == DroodType.Engineer ? "Enginner Could Fix Parts" :

@@ -79,7 +79,7 @@ namespace Assets.Scripts.Droodism.UserInterface
 
         void Update()
         {
-            if (LegacyDroodismUIIntance == null || !Game.InFlightScene)
+            if (!Game.InFlightScene)
             {
                 return;
             }
@@ -500,20 +500,13 @@ namespace Assets.Scripts.Droodism.UserInterface
                         : "Other")
             {
                 case "Eva":
-                    foreach (var modifier in ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.RootPart
-                                 .Modifiers)
-                    {
-                        if (modifier.GetData().Name.Contains("FuelTank"))
-                        {
-                            FuelTankScript fts = modifier as FuelTankScript;
-                            if (fts.FuelType.Id == fuelTypeId)
-                            {
-                                return fts;
-                            }
-                        }
-                    }
+                {
+                  //TODO implement this shit
+                    var root = ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.RootPart;
+                    
 
                     break;
+                }
                 case "Other":
                     try
                     {

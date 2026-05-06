@@ -227,7 +227,6 @@ namespace Droodism.RadiationBelt
             catch (Exception e)
             {
             }
-            Mod.Log("NOT FOUND ON list,there are {0} on list",BeltList.Count);
             return null;
             
         }

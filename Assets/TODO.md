@@ -2,13 +2,15 @@
 # 重构
 
 ## 关于SupportLife.cs
-> Drood身上的FuelTank是罪魁祸首
+> 完善一下RemoveFuelAmonutInstantly和AddWastedAmountInstantly
 ### Bug相关
 
 > UI显示
-> >吗的这里的bug是真的多啊我操
+> 适配重构后的SupportLifeScript.cs中的数据
 >
 
+# 小蓝人有机物分类回收装置
+>适配重构后的SupportLifeScript.cs中的数据
 # ISRU
 
 ## 大矿机
