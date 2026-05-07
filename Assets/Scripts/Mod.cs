@@ -149,7 +149,7 @@ namespace Assets.Scripts
                 fs.Rebuild(ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript);
             }); 
             
-            DevConsoleApi.RegisterCommand("Remove", () =>
+            DevConsoleApi.RegisterCommand("TestRefresh", () =>
             {
                 try
                 {
@@ -159,7 +159,7 @@ namespace Assets.Scripts
                     {
                         if (pd.GetModifier<SupportLifeData>()!=null)
                         {
-                            //pd.GetModifier<SupportLifeData>().Script.Test();
+                            pd.GetModifier<SupportLifeData>().Script.Refresh();
                         }
                     }
                 }

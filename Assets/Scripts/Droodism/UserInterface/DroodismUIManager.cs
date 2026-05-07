@@ -5,6 +5,7 @@ using System.Xml.Linq;
 using Assets.Scripts.Craft.Parts;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
+using JetBrains.Annotations;
 using ModApi.Ui;
 using ModApi.Craft;
 using ModApi.Craft.Parts;
@@ -340,7 +341,7 @@ namespace Assets.Scripts.Droodism.UserInterface
                     Resizable = true,
                 });
 
-            void addFuelTypeTemplateItem(string fuelTypeId)
+            void  addFuelTypeTemplateItem(string fuelTypeId)
             {
                 IFuelSource fuelSource = GetIFuelSourceByID(fuelTypeId);
                 bool isWasted = fuelTypeId.Contains("Wasted") || fuelTypeId == "CO2";
@@ -491,7 +492,7 @@ namespace Assets.Scripts.Droodism.UserInterface
 
 
         #endregion
-
+        
         public IFuelSource GetIFuelSourceByID(string fuelTypeId)
         {
             switch (ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Data.GetModifier<SupportLifeData>()!=null &&

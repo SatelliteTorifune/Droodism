@@ -283,9 +283,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 case "Oxygen": return DesireOxygenCapacity;
                 case "Food": return DesireFoodCapacity;
                 case "H2O": return DesireWaterCapacity;
-                case "CO2": return 0.42 * 600.0;
-                case "Wasted Water": return 3.0 * 0.35;
-                case "Solid Waste": return 0.1;
+                case "CO2": return DesireCO2Capacity;
+                case "Wasted Water": return DesireWastedWaterCapacity;
+                case "Solid Waste": return DesireSolidWasteCapacity;
                 default: return 0.0;
             }
         }
@@ -327,16 +327,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return;
             SetLifeSupportFuelAmount(fuelTypeId, GetLifeSupportFuelAmount(fuelTypeId) + delta);
         }
-
-        public void ClampLifeSupportBuffersToCapacity()
-        {
-            _oxygenAmountBuffer = Math.Min(_oxygenAmountBuffer, GetLifeSupportCapacity("Oxygen"));
-            _foodAmountBuffer = Math.Min(_foodAmountBuffer, GetLifeSupportCapacity("Food"));
-            _waterAmountBuffer = Math.Min(_waterAmountBuffer, GetLifeSupportCapacity("H2O"));
-            _co2AmountBuffer = Math.Min(_co2AmountBuffer, GetLifeSupportCapacity("CO2"));
-            _wastedWaterAmountBuffer = Math.Min(_wastedWaterAmountBuffer, GetLifeSupportCapacity("Wasted Water"));
-            _solidWasteAmountBuffer = Math.Min(_solidWasteAmountBuffer, GetLifeSupportCapacity("Solid Waste"));
-        }
+        
 
         private string GetCrewRoleName()
         {

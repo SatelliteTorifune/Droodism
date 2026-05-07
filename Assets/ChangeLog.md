@@ -2,6 +2,11 @@
 >大量重构了SupportLifeScript.cs的维生相关底层逻辑
 > >使用Data内相关字段代替并模拟了FuelTank的IFuelSource接口
 
+>修复了 SupportLifeScript.ConsumeInputResource中的一处空引用
+
+>修复了 SupportLifeScript中RemoveFuelAmountInstantly和AddWastedAmountInstantly两个函数
+
+>对SacrificeScript进行了适配重构后SupportLifeScript的修改
 # 2026 5 6
 >修复了 游戏尝试在PlanetStudio中创建辐射带Inspector Panel的bug
 

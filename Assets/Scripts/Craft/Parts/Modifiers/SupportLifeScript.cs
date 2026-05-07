@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
-using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
 using Assets.Scripts.Droodism;
 using Assets.Scripts.Droodism.Crew;
 using Droodism.RadiationBelt;
@@ -344,7 +343,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 DamageDrood(fuelTypeName, frame, damageScale);
             }
 
-            if (!craftSource.IsEmpty)
+            if (craftSource!=null&&!craftSource.IsEmpty)
             {
                 craftSource.RemoveFuel(amount);
                 return true;
@@ -382,7 +381,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 DamageWaste(fuelTypeName, frame, damageScale);
             }
 
-            if (craftSource.TotalCapacity - craftSource.TotalFuel > 0.00001)
+            if (craftSource!=null&&craftSource.TotalCapacity - craftSource.TotalFuel > 0.00001)
             {
                 craftSource.AddFuel(amount);
             }
@@ -602,8 +601,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             if (ModSettings.Instance.ConsumeResourceWhenUnloaded==true&&!IsHibernating)
             {
-                //TODO 完善这俩破函数
-                RemoveFuelAmonutInstantly();
+                
+                RemoveFuelAmountInstantly();
                 AddWastedAmountInstantly();
             }
             
@@ -680,89 +679,142 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         }
         
-        private void RemoveFuelAmonutInstantly()
+        private void RemoveFuelAmountInstantly()
         {
-                
-            double xishu=360;
-            var time= Game.Instance.FlightScene.FlightState.Time-Data.LastLoadTime;
-            Mod.Log("调用RemoveFuelAmonutInstantly ,间隔{0}",time);
-            if (Data.FoodConsumeRate*(time/xishu) > this.FoodSource.TotalFuel)
-            {
-                this.FoodSource.RemoveFuel(FoodSource.TotalCapacity);
-                Mod.Log("调用RemoveFuelAmonutInstantly,理论:{0}实际{1}",Data.FoodConsumeRate*(time/xishu),this.FoodSource.TotalFuel);
-            }
-            else
-            {
-                this.FoodSource.RemoveFuel(Data.FoodConsumeRate*(time/xishu));
-            }
             
-            if (Data.WaterConsumeRate*(time/xishu) > this.WaterSource.TotalFuel)
-            {
-                this.WaterSource.RemoveFuel(WaterSource.TotalCapacity);
-            }
-            else
-            {
-                this.WaterSource.RemoveFuel(Data.WaterConsumeRate*(time/xishu));
-            }
+            Mod.Log("调用RemoveFuelAmountInstantly ,间隔{0}", Game.Instance.FlightScene.FlightState.Time-Data.LastLoadTime);
 
+            double amount = (Game.Instance.FlightScene.FlightState.Time - Data.LastLoadTime) / 1;
             if (UsingInternalOxygen())
             {
-                if (Data.OxygenConsumeRate*(time/xishu) > this.OxygenSource.TotalFuel)
+                if (OxygenSource!=null)
                 {
-                    this.OxygenSource.RemoveFuel(OxygenSource.TotalCapacity);
+                    if (amount*Data.OxygenConsumeRate>OxygenSource.TotalFuel)
+                    {
+                        OxygenSource.RemoveFuel(OxygenSource.TotalCapacity);
+                        double remain=amount-OxygenSource.TotalFuel;
+                        Data.AddLifeSupportFuel("Oxygen", remain>Data.DesireOxygenCapacity?-Data._oxygenAmountBuffer:-remain);
+                    }
+                }
+                if(OxygenSource==null||OxygenSource.IsEmpty)
+                {
+                    Data.AddLifeSupportFuel("Oxygen", amount*Data.OxygenConsumeRate>Data.DesireOxygenCapacity?-Data._oxygenAmountBuffer:-amount*Data.OxygenConsumeRate);
+                   
+                }
+            }
+            if (WaterSource!=null)
+            {
+                if (amount*Data.WaterConsumeRate>WaterSource.TotalFuel)
+                {
+                    WaterSource.RemoveFuel(WaterSource.TotalCapacity);
+                    double remain=amount-WaterSource.TotalFuel;
+                    Data.AddLifeSupportFuel("H2O", remain>Data.DesireWaterCapacity?-Data._waterAmountBuffer:-remain);
                 }
                 else
                 {
-                    this.OxygenSource.RemoveFuel(Data.OxygenConsumeRate*(time/xishu)*0.001);
+                    WaterSource.RemoveFuel(amount * Data.WaterConsumeRate);
                 }
             }
+
+            if (WaterSource==null||WaterSource.IsEmpty)
+            {
+                Data.AddLifeSupportFuel("H2O", amount*Data.WaterConsumeRate>Data.DesireWaterCapacity?-Data._waterAmountBuffer:-amount*Data.WaterConsumeRate);
+                   
+            }
+            
+            if (FoodSource!=null)
+            {
+                if (amount*Data.FoodConsumeRate>FoodSource.TotalFuel)
+                {
+                    FoodSource.RemoveFuel(FoodSource.TotalCapacity);
+                    double remain=amount-FoodSource.TotalFuel;
+                    Data.AddLifeSupportFuel("Food", remain>Data.DesireFoodCapacity?-Data._foodAmountBuffer:-remain);
+                }
+                else
+                {
+                    FoodSource.RemoveFuel(amount*Data.FoodConsumeRate);
+                }
+            }
+
+            if (FoodSource==null||FoodSource.IsEmpty)
+            {
+                Data.AddLifeSupportFuel("Food", amount*Data.FoodConsumeRate>Data.DesireFoodCapacity?-Data._foodAmountBuffer:-amount*Data.FoodConsumeRate);
+                   
+            }
+            
             
         }
         
         private void AddWastedAmountInstantly()
         {
-            double xishu=360;
-            var time= Game.Instance.FlightScene.FlightState.Time-Data.LastLoadTime;
-            Mod.Log("AddWastedAmountInstantly ,间隔{0}",time);
-            
-            if (Data.WaterConsumeRate*Data.evaConsumeEfficiency*1.1*(time/xishu) >= this.WastedWaterSource.TotalCapacity-WastedWaterSource.TotalFuel)
-            {
-                this.WastedWaterSource.AddFuel(this.WastedWaterSource.TotalCapacity-WastedWaterSource.TotalFuel);
-                Mod.Log("调用AddWastedAmountInstantly,满的,理论:{0}实际{1}",Data.WaterConsumeRate*Data.evaConsumeEfficiency*(time/xishu),this.WastedWaterSource.TotalCapacity-WastedWaterSource.TotalFuel);
-            }
-            else
-            {
-                this.WastedWaterSource.AddFuel(
-                    0.9 * Data.WaterConsumeRate * Data.evaConsumeEfficiency * (time / xishu));
-                Mod.Log("调用AddWastedAmountInstantly,理论:{0}",Data.WaterConsumeRate*Data.evaConsumeEfficiency*(time/xishu)*0.001);
-            }
-            if (Data.FoodConsumeRate*Data.evaConsumeEfficiency*1.1*(time/xishu) >= this.SolidWasteSource.TotalCapacity-SolidWasteSource.TotalFuel)
-            {
-                this.SolidWasteSource.AddFuel(this.SolidWasteSource.TotalCapacity-SolidWasteSource.TotalFuel);
-                Mod.Log("调用AddWastedAmountInstantly,满的,理论:{0}实际{1}",Data.FoodConsumeRate*Data.evaConsumeEfficiency*(time/xishu),this.SolidWasteSource.TotalCapacity-SolidWasteSource.TotalFuel);
-            }
-            else
-            {
-                this.SolidWasteSource.AddFuel(Data.FoodConsumeRate*Data.evaConsumeEfficiency*(time/xishu)*1.1*0.00006);
-                Mod.Log("调用AddWastedAmountInstantly,理论:{0}",Data.FoodConsumeRate*Data.evaConsumeEfficiency*(time/xishu)*1.1*0.06);
-            }
-
+            double amount =(Game.Instance.FlightScene.FlightState.Time - Data.LastLoadTime) / 1;
+            Mod.Log("AddWastedAmountInstantly ,间隔{0}.这啥{1}",Game.Instance.FlightScene.FlightState.Time-Data.LastLoadTime,amount);
+            double co2ToAdd = Data.OxygenConsumeRate * Data.evaConsumeEfficiency * 1.375 * amount;
+            double wastedWaterToAdd = 1.1 * Data.WaterConsumeRate * Data.evaConsumeEfficiency * amount;
+            double solidWasteToAdd = Data.FoodConsumeRate * Data.evaConsumeEfficiency * 1.1 * amount;
             if (UsingInternalOxygen())
             {
-                if (Data.OxygenConsumeRate*Data.evaConsumeEfficiency*1.375*(time/xishu) >= this.Co2Source.TotalCapacity-Co2Source.TotalFuel)
+                
+                if (Co2Source != null)
                 {
-                    this.Co2Source.AddFuel(this.Co2Source.TotalCapacity-Co2Source.TotalFuel);
-                    Mod.Log("调用AddWastedAmountInstantly,满的,理论:{0}实际{1}",Data.OxygenConsumeRate*Data.evaConsumeEfficiency*(time/xishu),this.Co2Source.TotalCapacity-Co2Source.TotalFuel);
+                   
+                    if ( co2ToAdd>= this.Co2Source.TotalCapacity - Co2Source.TotalFuel)
+                    {
+                        Co2Source.AddFuel(Co2Source.TotalCapacity - Co2Source.TotalFuel);
+                        double remain = amount - (Co2Source.TotalCapacity - Co2Source.TotalFuel);
+                        Data.AddLifeSupportFuel("CO2",remain>Data.DesireCO2Capacity-Data._co2AmountBuffer?Data.DesireCO2Capacity-Data._co2AmountBuffer:remain);
+                    }
+                    else
+                    {
+                        Co2Source.AddFuel(co2ToAdd);
+                    }
+                }
+
+                if (Co2Source==null||Co2Source.IsEmpty)
+                {
+                    double remain = co2ToAdd;
+                    Data.AddLifeSupportFuel("CO2",remain>Data.DesireCO2Capacity-Data._co2AmountBuffer?Data.DesireCO2Capacity-Data._co2AmountBuffer:remain);
+                }
+            }
+            if (WastedWaterSource != null)
+            {
+                   
+                if ( wastedWaterToAdd>=
+                     this.WastedWaterSource.TotalCapacity - WastedWaterSource.TotalFuel)
+                {
+                    WastedWaterSource.AddFuel(WastedWaterSource.TotalCapacity - WastedWaterSource.TotalFuel);
+                    double remain = amount - (WastedWaterSource.TotalCapacity - WastedWaterSource.TotalFuel);
+                    Data.AddLifeSupportFuel("Wasted Water",remain>Data.DesireWastedWaterCapacity-Data._wastedWaterAmountBuffer?Data.DesireWastedWaterCapacity-Data._wastedWaterAmountBuffer:remain);
                 }
                 else
                 {
-                    this.Co2Source.AddFuel(Data.OxygenConsumeRate*Data.evaConsumeEfficiency*(time/xishu)*1.1);
-                    Mod.Log("调用AddWastedAmountInstantly,理论:{0}",Data.OxygenConsumeRate*Data.evaConsumeEfficiency*(time/xishu));
+                    WastedWaterSource.AddFuel(wastedWaterToAdd);
                 }
             }
+            if (WastedWaterSource==null||WastedWaterSource.IsEmpty)
+            {
+                Data.AddLifeSupportFuel("Wasted Water",wastedWaterToAdd>Data.DesireWastedWaterCapacity-Data._wastedWaterAmountBuffer?Data.DesireWastedWaterCapacity-Data._wastedWaterAmountBuffer:wastedWaterToAdd);
+            }
             
-            
-            
+            if (SolidWasteSource != null)
+            {
+                   
+                if ( solidWasteToAdd>=
+                     this.SolidWasteSource.TotalCapacity - SolidWasteSource.TotalFuel)
+                {
+                    SolidWasteSource.AddFuel(SolidWasteSource.TotalCapacity - SolidWasteSource.TotalFuel);
+                    double remain = amount - (SolidWasteSource.TotalCapacity - SolidWasteSource.TotalFuel);
+                    Data.AddLifeSupportFuel("Solid Waste",remain>Data.DesireSolidWasteCapacity-Data._solidWasteAmountBuffer?Data.DesireSolidWasteCapacity-Data._solidWasteAmountBuffer:remain);
+                }
+                else
+                {
+                    SolidWasteSource.AddFuel(solidWasteToAdd);
+                }
+            }
+            if (SolidWasteSource==null||SolidWasteSource.IsEmpty)
+            {
+                Data.AddLifeSupportFuel("Solid Waste",solidWasteToAdd>Data.DesireSolidWasteCapacity-Data._solidWasteAmountBuffer?Data.DesireSolidWasteCapacity-Data._solidWasteAmountBuffer:solidWasteToAdd);
+            }
         }
         #endregion
         
@@ -1004,10 +1056,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 damageMultiplier = 0.05f;
                 damageReason = "<color=red><size=120%>severe cumulative radiation exposure</color></size>";
-               
-            }
-            else
-            {
                
             }
 
@@ -1312,7 +1360,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             #region 我不想看
         
             
-            // Step 3: 创建 Body 和 Group（此时 script 存在）
             BodyData body = CraftBuilder.CreateBodyData(new List<PartData>(){parachutePartScript.Data}, PartScript.CraftScript.Transform);
             CraftScript craftScript = PartScript.CraftScript as CraftScript;
             craftScript?.Data.Assembly.AddBody(body);

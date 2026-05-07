@@ -9,7 +9,7 @@ Shader "Jundroo/SR Standard/SrStandardObjectShader"
 
         [Space(20)][Header(Normal Map Options)]
         _normalMap("Normal Map", 2D) = "bump" {}
-        //[KeywordEnum(OFF, ON)] NORMAL_MAPS("Normal Maps", Float) = 0 // TODO-PERFORMANCE: Wire up environment normal maps on/off option.
+        //[KeywordEnum(OFF, ON)] NORMAL_MAPS("Normal Maps", Float) = 0 // 
 
         [HDR]
         _emissive("Emission", Color) = (0, 0, 0, 0)

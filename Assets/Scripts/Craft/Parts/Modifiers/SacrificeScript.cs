@@ -109,20 +109,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                             _solidWasteSource?.AddFuel(Data.DrainRate * frameData.DeltaTimeWorld);
                             _waterSource?.AddFuel((Data.DrainRate*Data.WaterConsumptionScale) * frameData.DeltaTimeWorld);
 
-                            var craftSources = crew.PartScript.Modifiers;
-                            foreach (var source in craftSources)
-                            {
-                                if (source.GetData().Name.Contains("Tank"))
-                                {
-                                    source.GetData().InspectorEnabled = false;
-                                    FuelTankScript fts = source as FuelTankScript;
-                                    if (fts.FuelType.Id!="Jetpack")
-                                    {
-                                        fts.RemoveFuel(Data.DrainRate * frameData.DeltaTimeWorld);
-                                    }
-                                }
-                            }
-                            
+                            var data = crew.PartScript.GetModifier<SupportLifeScript>().Data;
+                            data.AddLifeSupportFuel("Oxygen", -frameData.DeltaTimeWorld*Data.DrainRate);
+                            data.AddLifeSupportFuel("Food", -(Data.DrainRate*Data.FoodGenerationScale) * frameData.DeltaTimeWorld);
+                            data.AddLifeSupportFuel("CO2", -frameData.DeltaTimeWorld*Data.DrainRate);
+                            data.AddLifeSupportFuel("WastedWater", -frameData.DeltaTimeWorld*Data.DrainRate);
+                            data.AddLifeSupportFuel("SolidWaste", -frameData.DeltaTimeWorld*Data.DrainRate);
+                            data.AddLifeSupportFuel("Water", -frameData.DeltaTimeWorld*Data.DrainRate*Data.WaterConsumptionScale);
+
                         } 
                     }
                 }

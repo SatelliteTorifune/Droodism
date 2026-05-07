@@ -2,15 +2,13 @@
 # 重构
 
 ## 关于SupportLife.cs
-> 完善一下RemoveFuelAmonutInstantly和AddWastedAmountInstantly
+> 
 ### Bug相关
 
 > UI显示
 > 适配重构后的SupportLifeScript.cs中的数据
 >
 
-# 小蓝人有机物分类回收装置
->适配重构后的SupportLifeScript.cs中的数据
 # ISRU
 
 ## 大矿机
