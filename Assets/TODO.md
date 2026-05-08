@@ -1,13 +1,7 @@
 # 待办事项
-# 重构
 
-## 关于SupportLife.cs
-> 
-### Bug相关
-
-> UI显示
-> 适配重构后的SupportLifeScript.cs中的数据
->
+# 你最爱的小蓝人有机物分类回收装置
+>这玩意有个bug,修了
 
 # ISRU
 

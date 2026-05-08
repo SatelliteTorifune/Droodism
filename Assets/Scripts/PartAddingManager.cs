@@ -52,7 +52,7 @@ namespace Assets.Scripts
             }
 
             // Process Command Pods
-            foreach (var part in craftScript.Data.Assembly.Parts.Where(part => part.PartType.IsCommandPod && !part.PartType.Name.Contains(EvaPartName)).ToList())
+            foreach (var part in craftScript.Data.Assembly.Parts.Where(part => part.PartType.IsCommandPod&&!part.PartType.Name.Contains(Cockpit) && !part.PartType.Name.Contains(EvaPartName)).ToList())
             {
                 PatchCommandPod(part);
                 if (part.GetModifier<CrewCompartmentData>() != null)
@@ -63,7 +63,7 @@ namespace Assets.Scripts
             }
             
             // Process Crew Compartments
-            foreach (var part in craftScript.Data.Assembly.Parts.Where(part => part.GetModifier<CrewCompartmentData>() != null&&!part.PartType.Name.Contains(ChairPartName) && !part.PartType.Name.Contains(EvaPartName)).ToList())
+            foreach (var part in craftScript.Data.Assembly.Parts.Where(part => part.GetModifier<CrewCompartmentData>() != null&&!part.PartType.Name.Contains(ChairPartName)&&!part.PartType.Name.Contains(Cockpit) && !part.PartType.Name.Contains(EvaPartName)).ToList())
             {
                 AddCrewCompartmentPatch(part);
             }
@@ -105,7 +105,7 @@ namespace Assets.Scripts
             {
                 AddLifeSupportGeneratorModifiers(part);
             }
-            else if (part.PartType.IsCommandPod && !part.PartType.Name.Contains(EvaPartName))
+            else if (part.PartType.IsCommandPod && !part.PartType.Name.Contains(EvaPartName)&&!part.PartType.Name.Contains(ChairPartName)&&!part.PartType.Name.Contains(Cockpit))
             {
                 PatchCommandPod(part);
                 if (part.GetModifier<CrewCompartmentData>() != null)
@@ -113,7 +113,7 @@ namespace Assets.Scripts
                     AddCrewCompartmentPatch(part);
                 }
             }
-            else if (part.GetModifier<CrewCompartmentData>() != null && !part.PartType.Name.Contains(EvaPartName)&&!part.PartType.Name.Contains(ChairPartName))
+            else if (part.GetModifier<CrewCompartmentData>() != null && !part.PartType.Name.Contains(EvaPartName)&&!part.PartType.Name.Contains(ChairPartName)&&!part.PartType.Name.Contains(Cockpit)&&!part.PartType.Name.Contains(ChairPartName))
             {
                 AddCrewCompartmentPatch(part);
             }

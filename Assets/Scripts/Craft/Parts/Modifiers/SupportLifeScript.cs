@@ -11,6 +11,7 @@ using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using Assets.Scripts.Droodism;
 using Assets.Scripts.Droodism.Crew;
 using Droodism.RadiationBelt;
+using ModApi.Craft.Program.Instructions;
 using ModApi.Flight.Events;
 using ModApi.Flight.GameView;
 using UnityEngine;
@@ -840,7 +841,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// Determines if internal oxygen is being used based on atmospheric conditions and planet.
         /// </summary>
         /// <returns>如果使用内部氧气则返回true，否则返回false。True if using internal oxygen, false otherwise.</returns>
-        private bool UsingInternalOxygen()
+        public bool UsingInternalOxygen()
         {
             float airDensity = PartScript.CraftScript.AtmosphereSample.AirDensity;
             if (airDensity == 0)
@@ -1148,9 +1149,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             lifeSupportGroupModel.Add<TextModel>(new TextModel("CO2 Level", (Func<string>) (() =>
             {
-                float Percentage = (float)(Data._co2AmountBuffer / Data.DesireCO2Capacity);
-                string color = Percentage > 0.85 ? "red" : Percentage >= 0.6 ? "yellow" : "green";
-                return $"<color={color}>{Units.GetPercentageString(Percentage)}</color>";
+                if (UsingInternalOxygen())
+                {
+                    float Percentage = (float)(Data._co2AmountBuffer / Data.DesireCO2Capacity);
+                    string color = Percentage > 0.85 ? "red" : Percentage >= 0.6 ? "yellow" : "green";
+                    return $"<color={color}>{Units.GetPercentageString(Percentage)}</color>";
+                }
+                else
+                {
+                    return "<color=green>Using External Oxygen</color>";
+                }
+                
             })));
             lifeSupportGroupModel.Add<TextModel>(new TextModel("Wasted Water Level", (Func<string>) (() =>
             {

@@ -149,25 +149,7 @@ namespace Assets.Scripts
                 fs.Rebuild(ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript);
             }); 
             
-            DevConsoleApi.RegisterCommand("TestRefresh", () =>
-            {
-                try
-                {
-
-                
-                    foreach (var pd in ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.Data.Assembly.Parts)
-                    {
-                        if (pd.GetModifier<SupportLifeData>()!=null)
-                        {
-                            pd.GetModifier<SupportLifeData>().Script.Refresh();
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    Log("Error Invoking"+e);
-                }
-            });
+           
         }
 
         private void OnCraftChanged(ICraftNode craft) => PatchCraft(CurrentCraft());
