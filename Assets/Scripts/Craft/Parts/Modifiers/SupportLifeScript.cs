@@ -140,25 +140,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         public override void OnInitialLaunch()
         {
-            base.OnInitialLaunch();
             Data.MissionStartTime = (long)Game.Instance.FlightScene.FlightState.Time;
-            Mod.Log("OnInitialLaunch");
-            base.OnInitialLaunch();
             Data._foodAmountBuffer=this.Data.DesireFoodCapacity;
             Data._oxygenAmountBuffer=this.Data.DesireOxygenCapacity;
             Data._waterAmountBuffer=this.Data.DesireWaterCapacity;
             Data._co2AmountBuffer=0;
             Data._wastedWaterAmountBuffer=0;
             Data._solidWasteAmountBuffer=0;
-            try
-            {
-                Refresh();
-                Mod.Log("OnInitialLaunch调用RefreshFuelSource");
-            }
-            catch (Exception e)
-            {
-                Mod.Log("OnInitialLaunch调用RefreshFuelSource出问题了{0}", e);
-            }
+            Refresh();
             Data.LastLoadTime = (long)FlightSceneScript.Instance.FlightState.Time;
             
         }
@@ -180,11 +169,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             evaScript = this.PartScript.GetModifier<EvaScript>();
             UpdateCurrentPlanet();
-            Mod.Log("FlightStart调用LoadFuelTanks");
             this.RadiationBeltConfig = RadiationBeltConfig.LoadFromFile(currentPlanetName);
             LoadRadiationData();
-            
-        }
+
+           }
 
         
         /// <summary>
@@ -564,20 +552,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// Called when the craft is loaded, triggers craft structure change handling.
         /// </summary>
         public override void OnCraftLoaded(ICraftScript craftScript, bool movedToNewCraft)
-        {
-            _isCraftLoading = true;
-            try
-            {
-                base.OnCraftLoaded(craftScript, movedToNewCraft);
-                if(!Game.InFlightScene)
-                    return;
-                Refresh();
-                Mod.Log("OnCraftLoaded 调用RefreshFuelSource");
-            }
-            finally
-            {
-                _isCraftLoading = false;
-            }
+        {   
+            base.OnCraftLoaded(craftScript, movedToNewCraft);
+            if(!Game.InFlightScene)
+                return;
+            Refresh();
         }
         
         
@@ -1080,6 +1059,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public override void OnGenerateInspectorModel(PartInspectorModel model)
         {
             base.OnGenerateInspectorModel(model);
+            model.Add(new ToggleModel("<color=yellow>TEST",()=>animateEnabled,b=>
+            {
+                animateEnabled=b;
+            },"TEST"));
             //单独看任务时间的
             if (!this.isTourist)
             {
@@ -1633,13 +1616,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         #endregion
 
         #region 杂项
-        
-        private bool _isCraftLoading;
-        public bool UsesMachNumber { get; }
-        
+
+        public bool animateEnabled;
+
         #endregion
-        
-       
+
+
     }
    
 }
