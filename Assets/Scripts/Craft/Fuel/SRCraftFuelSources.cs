@@ -140,6 +140,7 @@ namespace Assets.Scripts.Craft.Fuel
            
             try
             {
+
             foreach (FuelTankData item in list)
             {
                 var patch = item?.Part.PartScript?.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
@@ -184,7 +185,7 @@ namespace Assets.Scripts.Craft.Fuel
                         craftFuelSource=patch?.CO2FuelSource as CraftFuelSource;
                     }
                 }
-
+                
                 if (craftFuelSource != null)
                 {
                     craftFuelSource?.AddFuelTank(item.Script);
@@ -195,25 +196,25 @@ namespace Assets.Scripts.Craft.Fuel
                 }
             }
 
+            //这里
             (int, FuelType)[] array = dictionary.Keys.ToArray();
             (int, FuelType)[] array2 = array;
-            foreach ((int, FuelType) key in array2)
-            {
-                FuelTankScript fuelTankScript = dictionary[key];
-                if (fuelTankScript != null)
+              foreach ((int, FuelType) key in array2)
                 {
-                    FuelTankScript fuelTankScript2 = fuelTankScript;
-                    CraftFuelSource craftFuelSource2 = CreateFuelSource(fuelTankScript2.Data.FuelType);
-                    FindConnectedTanks(fuelTankScript2.PartScript.Data, fuelTankScript2, craftFuelSource2, dictionary);
-                    fuelSources?.Add(craftFuelSource2);
+                    FuelTankScript fuelTankScript = dictionary[key];
+                    if (fuelTankScript != null)
+                    {
+                        FuelTankScript fuelTankScript2 = fuelTankScript;
+                        CraftFuelSource craftFuelSource2 = CreateFuelSource(fuelTankScript2.Data.FuelType);
+                        FindConnectedTanks(fuelTankScript2.PartScript.Data, fuelTankScript2, craftFuelSource2, dictionary);
+                        fuelSources?.Add(craftFuelSource2);
+                    }
                 }
-            }
-
-            SetupCrossFeeds(removeDisconnectedCrossFeeds);
+                SetupCrossFeeds(removeDisconnectedCrossFeeds);
             }
             catch (Exception e)
             {
-                Mod.LogError("CreateFuelSourceForConnectedParts歇逼了: {0}",e.StackTrace);
+               // Mod.LogError("CreateFuelSourceForConnectedParts歇逼了: {0}",e.StackTrace);
             }
             
             //Mod.LOG("Modded CreateFuelSourceForConnectedParts called");

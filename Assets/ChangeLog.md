@@ -1,3 +1,6 @@
+# 2026 5 9
+>修复了SacrificeScript中数值不对应的bug
+
 # 2026 5 8
 >修复了DroodismUIManager中Craft结构更新时容量未更新的bug
 

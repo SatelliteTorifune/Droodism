@@ -222,12 +222,12 @@ namespace Assets.Scripts.Droodism.UserInterface
 
         private void OnActiveCommandPodChanged(ICraftScript source, ICommandPod oldPod, ICommandPod newPod)
         {
-            Mod.Instance.那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花();
             OnCraftStructureChanged();
         }
 
         private void OnCraftChanged(ICraftNode craftNode)
         {
+            
             craftNode.CraftNodeMerged += OnCraftMerged;
             craftNode.CraftScript.RootPart.MovedToNewCraft += MovedToNewCraft;
             UpdateInfo();
@@ -243,14 +243,10 @@ namespace Assets.Scripts.Droodism.UserInterface
         {
             UpdateInfo();
             var craftScript = Game.Instance.FlightScene.CraftNode.CraftScript;
-            CraftFuelSources craftFuelSource = craftScript.FuelSources as CraftFuelSources;
-            craftFuelSource?.Rebuild(craftScript);
+            CraftFuelSources craftFuelSource = craftScript.FuelSources as CraftFuelSources; craftFuelSource?.Rebuild(craftScript);
             foreach (var pd in craftScript.Data.Assembly.Parts)
             {
-                if (pd.GetModifier<SupportLifeData>() != null)
-                {
-                    pd.GetModifier<SupportLifeData>().Script.Refresh();
-                }
+                pd.GetModifier<SupportLifeData>()?.Script.Refresh();
             }
         }
 
@@ -262,7 +258,6 @@ namespace Assets.Scripts.Droodism.UserInterface
         private void OnCraftMerged(ICraftNode craftNodeA, ICraftNode craftNodeB)
         {
             UpdateInfo();
-            Mod.Log("OnCraftMerged");
         }
 
         #endregion
