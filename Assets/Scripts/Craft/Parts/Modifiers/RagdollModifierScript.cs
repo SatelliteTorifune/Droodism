@@ -20,7 +20,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         private bool _isRagdollActive = false;
         private float _ragdollBlendWeight = 0f;
-        private bool _isTransitioning = false;
         
         private IKSavedWeights _savedWeights = new();
 
@@ -46,12 +45,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 _crewCompartment.CrewExit += OnCrewExit;
             }
         }
-
-        public override void OnCraftStructureChanged(ICraftScript craftScript)
-        {
-            base.OnCraftStructureChanged(craftScript);
-            RefreshPilotReferences();
-        }
+        
 
         private void OnCrewEnter(EvaScript crew)
         {
@@ -62,15 +56,32 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             ClearPilotReferences();
         }
-
+        
+        // Also subscribe to crew list changes
+        public override void OnCraftStructureChanged(ICraftScript craftScript)
+        {
+            base.OnCraftStructureChanged(craftScript);
+            
+            // Re-subscribe to crew enter/exit events
+            if (_crewCompartment != null)
+            {
+                _crewCompartment.CrewEnter -= OnCrewEnter;
+                _crewCompartment.CrewExit -= OnCrewExit;
+                _crewCompartment.CrewEnter += OnCrewEnter;
+                _crewCompartment.CrewExit += OnCrewExit;
+            }
+            RefreshPilotReferences();
+        }
+        
         private void RefreshPilotReferences()
         {
             if (_crewCompartment == null) return;
-            foreach (var crew in  _crewCompartment.Crew)
+            
+            // Refresh for all crew members
+            foreach (var crew in _crewCompartment.Crew)
             {
                 RefreshPilotReferencesFromCrew(crew);
             }
-         
         }
 
         private void RefreshPilotReferencesFromCrew(EvaScript crew)
