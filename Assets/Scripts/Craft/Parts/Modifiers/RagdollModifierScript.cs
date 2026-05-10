@@ -25,6 +25,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private float _ragdollBlendWeight = 0f;
         
         private IKSavedWeights _savedWeights = new();
+        private Transform? _ragdollRoot;
+        private SkinnedMeshRenderer? _originalSkinnedMeshRenderer;
         
         // Store original collision modes for restore
         private class RigidbodyState
@@ -170,12 +172,27 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             if (_evaScript == null)
             {
-                Mod.Log("ApplyRagdollPhysics: _evaScript is null, returning");
+                Mod.LogWarning("ApplyRagdollPhysics: _evaScript is null, returning");
                 return;
             }
             
             var transform = _evaScript.transform;
             Mod.Log($"ApplyRagdollPhysics: _evaScript transform path = {GetTransformPath(transform)}");
+            
+            // Check if ragdoll already exists - prevent duplicate creation
+            var existingRBs = _evaScript.GetComponentsInChildren<Rigidbody>();
+            if (existingRBs.Length > 0)
+            {
+                Mod.Log($"ApplyRagdollPhysics: Ragdoll already exists ({existingRBs.Length} Rigidbodies found), skipping creation");
+                
+                // Just ensure they are non-kinematic
+                foreach (var rb in existingRBs)
+                {
+                    rb.isKinematic = false;
+                    rb.useGravity = true;
+                }
+                return;
+            }
             
             // Log the ENTIRE bone hierarchy
             Mod.Log("=== BONE HIERARCHY ===");
@@ -304,6 +321,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             Mod.Log($"CreateRagdollDynamically: boneRoot = {boneRoot.name}");
             
+            // Get reference to SkinnedMeshRenderer for later hiding
+            var skinnedMeshRenderer = boneRoot.GetComponentInChildren<SkinnedMeshRenderer>();
+            if (skinnedMeshRenderer != null)
+            {
+                Mod.Log($"CreateRagdollDynamically: Found SkinnedMeshRenderer on {skinnedMeshRenderer.gameObject.name}");
+            }
+            
             // Navigate to Hips: <boneRoot>/Hips
             Transform hips = boneRoot.Find("Hips");
             if (hips == null) hips = boneRoot.Find("../Hips");
@@ -355,137 +379,150 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             Transform rightToes = rightAnkle?.Find("RightToes");
             Mod.Log($"CreateRagdollDynamically: rightHip={rightHip?.name}, rightKnee={rightKnee?.name}, rightAnkle={rightAnkle?.name}, rightToes={rightToes?.name}");
             
+            // Store reference for later
+            _ragdollRoot = boneRoot;
+            _originalSkinnedMeshRenderer = skinnedMeshRenderer;
+            
             // Now add Rigidbody + CharacterJoint
             // The Hips is the root of the ragdoll - no parent joint needed
             if (hips != null)
             {
                 var rb = hips.gameObject.AddComponent<Rigidbody>();
-                rb.mass = 20f;
+                rb.mass = 25f; // Heavier root for stability
                 rb.isKinematic = false;
                 rb.useGravity = true;
                 rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
+                rb.interpolation = RigidbodyInterpolation.Interpolate;
                 Mod.Log($"CreateRagdollDynamically: Added Rigidbody to {hips.name}, mass={rb.mass}");
             }
             
-            // Spine -> Hips
+            // Spine -> Hips - very restricted
             if (spine != null && hips != null)
             {
                 AddRigidbodyAndJoint(spine.gameObject, hips.gameObject, 15f, 
-                    swingLimit: 10f, twistLow: -20f, twistHigh: 20f);
+                    swingLimit: 3f, twistLow: -5f, twistHigh: 5f, limbLength: 0.3f);
             }
             
-            // Chest -> Spine
+            // Chest -> Spine - restricted
             if (chest != null && spine != null)
             {
                 AddRigidbodyAndJoint(chest.gameObject, spine.gameObject, 10f,
-                    swingLimit: 15f, twistLow: -30f, twistHigh: 30f);
+                    swingLimit: 5f, twistLow: -10f, twistHigh: 10f, limbLength: 0.25f);
             }
             
-            // UpperChest -> Chest (more mobile)
+            // UpperChest -> Chest
             if (upperChest != null && chest != null)
             {
                 AddRigidbodyAndJoint(upperChest.gameObject, chest.gameObject, 8f,
-                    swingLimit: 20f, twistLow: -40f, twistHigh: 40f);
+                    swingLimit: 8f, twistLow: -15f, twistHigh: 15f, limbLength: 0.2f);
             }
             
-            // Head -> Neck (UpperChest)
+            // Head -> Neck - tighter limit
             if (head != null && neck != null)
             {
                 AddRigidbodyAndJoint(head.gameObject, neck.gameObject, 5f,
-                    swingLimit: 30f, twistLow: -50f, twistHigh: 50f);
+                    swingLimit: 15f, twistLow: -20f, twistHigh: 20f, limbLength: 0.15f);
             }
             else if (head != null && upperChest != null)
             {
                 AddRigidbodyAndJoint(head.gameObject, upperChest.gameObject, 5f,
-                    swingLimit: 30f, twistLow: -50f, twistHigh: 50f);
+                    swingLimit: 15f, twistLow: -20f, twistHigh: 20f, limbLength: 0.15f);
             }
             
-            // Left arm: Clavicle -> UpperChest, Shoulder -> Clavicle, Elbow -> Shoulder, Hand -> Elbow
+            // Neck -> UpperChest - very tight
+            if (neck != null && upperChest != null)
+            {
+                AddRigidbodyAndJoint(neck.gameObject, upperChest.gameObject, 2f,
+                    swingLimit: 3f, twistLow: -5f, twistHigh: 5f, limbLength: 0.1f);
+            }
+            
+            // Left arm
             if (leftClavicle != null && upperChest != null)
             {
                 AddRigidbodyAndJoint(leftClavicle.gameObject, upperChest.gameObject, 3f,
-                    swingLimit: 45f, twistLow: -45f, twistHigh: 45f);
+                    swingLimit: 10f, twistLow: -10f, twistHigh: 10f, limbLength: 0.1f);
             }
             if (leftShoulder != null && leftClavicle != null)
             {
                 AddRigidbodyAndJoint(leftShoulder.gameObject, leftClavicle.gameObject, 3f,
-                    swingLimit: 90f, twistLow: -90f, twistHigh: 90f);
+                    swingLimit: 30f, twistLow: -30f, twistHigh: 30f, limbLength: 0.25f);
             }
             if (leftElbow != null && leftShoulder != null)
             {
                 AddRigidbodyAndJoint(leftElbow.gameObject, leftShoulder.gameObject, 2f,
-                    swingLimit: 0f, twistLow: 0f, twistHigh: 120f); // hinge joint
+                    swingLimit: 0f, twistLow: 0f, twistHigh: 90f, limbLength: 0.25f, isHinge: true);
             }
             if (leftHand != null && leftElbow != null)
             {
-                AddRigidbodyAndJoint(leftHand.gameObject, leftElbow.gameObject, 1f,
-                    swingLimit: 0f, twistLow: -30f, twistHigh: 30f);
+                AddRigidbodyAndJoint(leftHand.gameObject, leftElbow.gameObject, 0.5f,
+                    swingLimit: 0f, twistLow: -10f, twistHigh: 10f, limbLength: 0.08f);
             }
             
             // Right arm
             if (rightClavicle != null && upperChest != null)
             {
                 AddRigidbodyAndJoint(rightClavicle.gameObject, upperChest.gameObject, 3f,
-                    swingLimit: 45f, twistLow: -45f, twistHigh: 45f);
+                    swingLimit: 10f, twistLow: -10f, twistHigh: 10f, limbLength: 0.1f);
             }
             if (rightShoulder != null && rightClavicle != null)
             {
                 AddRigidbodyAndJoint(rightShoulder.gameObject, rightClavicle.gameObject, 3f,
-                    swingLimit: 90f, twistLow: -90f, twistHigh: 90f);
+                    swingLimit: 30f, twistLow: -30f, twistHigh: 30f, limbLength: 0.25f);
             }
             if (rightElbow != null && rightShoulder != null)
             {
                 AddRigidbodyAndJoint(rightElbow.gameObject, rightShoulder.gameObject, 2f,
-                    swingLimit: 0f, twistLow: 0f, twistHigh: 120f);
+                    swingLimit: 0f, twistLow: 0f, twistHigh: 90f, limbLength: 0.25f, isHinge: true);
             }
             if (rightHand != null && rightElbow != null)
             {
-                AddRigidbodyAndJoint(rightHand.gameObject, rightElbow.gameObject, 1f,
-                    swingLimit: 0f, twistLow: -30f, twistHigh: 30f);
+                AddRigidbodyAndJoint(rightHand.gameObject, rightElbow.gameObject, 0.5f,
+                    swingLimit: 0f, twistLow: -10f, twistHigh: 10f, limbLength: 0.08f);
             }
             
-            // Left leg: Hip -> Hips, Knee -> Hip, Ankle -> Knee, Toes -> Ankle
+            // Left leg - CRITICAL: legs need strict limits to prevent crossing
             if (leftHip != null && hips != null)
             {
                 AddRigidbodyAndJoint(leftHip.gameObject, hips.gameObject, 5f,
-                    swingLimit: 30f, twistLow: -20f, twistHigh: 20f);
+                    swingLimit: 10f, twistLow: -5f, twistHigh: 5f, limbLength: 0.12f);
             }
             if (leftKnee != null && leftHip != null)
             {
+                // Knee should only bend backward (hinge)
                 AddRigidbodyAndJoint(leftKnee.gameObject, leftHip.gameObject, 3f,
-                    swingLimit: 0f, twistLow: -90f, twistHigh: 0f); // hinge
+                    swingLimit: 0f, twistLow: 0f, twistHigh: 5f, limbLength: 0.35f, isHinge: true);
             }
             if (leftAnkle != null && leftKnee != null)
             {
                 AddRigidbodyAndJoint(leftAnkle.gameObject, leftKnee.gameObject, 2f,
-                    swingLimit: 20f, twistLow: -30f, twistHigh: 30f);
+                    swingLimit: 5f, twistLow: -10f, twistHigh: 10f, limbLength: 0.25f);
             }
             if (leftToes != null && leftAnkle != null)
             {
-                AddRigidbodyAndJoint(leftToes.gameObject, leftAnkle.gameObject, 0.5f,
-                    swingLimit: 0f, twistLow: 0f, twistHigh: 0f);
+                AddRigidbodyAndJoint(leftToes.gameObject, leftAnkle.gameObject, 0.2f,
+                    swingLimit: 0f, twistLow: 0f, twistHigh: 0f, limbLength: 0.04f);
             }
             
-            // Right leg
+            // Right leg - symmetric and strict
             if (rightHip != null && hips != null)
             {
                 AddRigidbodyAndJoint(rightHip.gameObject, hips.gameObject, 5f,
-                    swingLimit: 30f, twistLow: -20f, twistHigh: 20f);
+                    swingLimit: 10f, twistLow: -5f, twistHigh: 5f, limbLength: 0.12f);
             }
             if (rightKnee != null && rightHip != null)
             {
                 AddRigidbodyAndJoint(rightKnee.gameObject, rightHip.gameObject, 3f,
-                    swingLimit: 0f, twistLow: -90f, twistHigh: 0f);
+                    swingLimit: 0f, twistLow: 0f, twistHigh: 5f, limbLength: 0.35f, isHinge: true);
             }
             if (rightAnkle != null && rightKnee != null)
             {
                 AddRigidbodyAndJoint(rightAnkle.gameObject, rightKnee.gameObject, 2f,
-                    swingLimit: 20f, twistLow: -30f, twistHigh: 30f);
+                    swingLimit: 5f, twistLow: -10f, twistHigh: 10f, limbLength: 0.25f);
             }
             if (rightToes != null && rightAnkle != null)
             {
-                AddRigidbodyAndJoint(rightToes.gameObject, rightAnkle.gameObject, 0.5f,
-                    swingLimit: 0f, twistLow: 0f, twistHigh: 0f);
+                AddRigidbodyAndJoint(rightToes.gameObject, rightAnkle.gameObject, 0.2f,
+                    swingLimit: 0f, twistLow: 0f, twistHigh: 0f, limbLength: 0.04f);
             }
             
             // Verify
@@ -493,12 +530,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             Mod.Log($"CreateRagdollDynamically: Created {allRigidbodies.Length} Rigidbody components");
             foreach (var rb in allRigidbodies)
             {
-                Mod.Log($"  - {rb.gameObject.name} has Rigidbody, mass={rb.mass}");
+                var joint = rb.GetComponent<CharacterJoint>();
+                Mod.Log($"  - {rb.gameObject.name} has Rigidbody, mass={rb.mass}, connectedTo={joint?.connectedBody?.gameObject?.name ?? "NONE (root)"}");
             }
         }
 
         private void AddRigidbodyAndJoint(GameObject bone, GameObject parentBone, float mass,
-            float swingLimit = 45f, float twistLow = -50f, float twistHigh = 50f)
+            float swingLimit = 45f, float twistLow = -50f, float twistHigh = 50f,
+            float limbLength = 0.2f, bool isHinge = false)
         {
             if (bone == null || parentBone == null) return;
             
@@ -507,46 +546,67 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             rb.isKinematic = false;
             rb.useGravity = true;
             rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
+            rb.interpolation = RigidbodyInterpolation.Interpolate;
             
-            // Add collider - radius based on mass
-            AddBoneCollider(bone, parentBone, mass);
+            // Add collider - capsule with proper size
+            AddBoneCollider(bone, parentBone, limbLength);
             
             var joint = bone.AddComponent<CharacterJoint>();
             joint.connectedBody = parentBone.GetComponent<Rigidbody>();
             
-            var swing1 = new SoftJointLimit { limit = swingLimit, bounciness = 0f };
-            var swing2 = new SoftJointLimit { limit = swingLimit, bounciness = 0f };
-            var twist = new SoftJointLimit { limit = (twistHigh - twistLow) * 0.5f, bounciness = 0f };
-            var lowTwist = new SoftJointLimit { limit = twistLow, bounciness = 0f };
-            var highTwist = new SoftJointLimit { limit = twistHigh, bounciness = 0f };
+            // Configure joint limits based on joint type
+            float actualSwingLimit = isHinge ? 0f : swingLimit;
+            float actualTwistLow = twistLow;
+            float actualTwistHigh = twistHigh;
+            
+            var swing1 = new SoftJointLimit { limit = actualSwingLimit, bounciness = 0f };
+            var swing2 = new SoftJointLimit { limit = actualSwingLimit, bounciness = 0f };
+            var twist = new SoftJointLimit { limit = (actualTwistHigh - actualTwistLow) * 0.5f, bounciness = 0f };
+            var lowTwist = new SoftJointLimit { limit = actualTwistLow, bounciness = 0f };
+            var highTwist = new SoftJointLimit { limit = actualTwistHigh, bounciness = 0f };
             joint.swing1Limit = swing1;
             joint.swing2Limit = swing2;
             joint.lowTwistLimit = lowTwist;
             joint.highTwistLimit = highTwist;
             
-            Mod.Log($"AddRigidbodyAndJoint: {bone.name} -> {parentBone.name}, mass={mass}, swing={swingLimit}");
+            // Joint stability settings
+            joint.enablePreprocessing = true;
+            joint.breakForce = Mathf.Infinity;
+            joint.breakTorque = Mathf.Infinity;
+            
+            Mod.Log($"AddRigidbodyAndJoint: {bone.name} -> {parentBone.name}, mass={mass}, swing={actualSwingLimit}");
         }
         
-        private void AddBoneCollider(GameObject bone, GameObject parentBone, float mass)
+        private void AddBoneCollider(GameObject bone, GameObject parentBone, float limbLength)
         {
             if (bone == null) return;
             
+            // Remove any existing colliders on this bone
+            var existingCollider = bone.GetComponent<Collider>();
+            if (existingCollider != null)
+            {
+                GameObject.Destroy(existingCollider);
+            }
+            
             var col = bone.AddComponent<CapsuleCollider>();
             
-            // Radius scales with mass - thicker bones get bigger colliders
-            col.radius = Mathf.Max(0.03f, mass * 0.015f);
+            // Use the provided limb length for proper sizing
+            // Add some padding for better collision
+            float height = limbLength * 2.2f;
+            float radius = limbLength * 0.25f;
             
-            // Determine capsule direction from bone to parent
-            // For humanoid rigs, limbs usually run along the Y axis
-            // Try to get a direction, fallback to up
-            Vector3 dir = Vector3.up;
-            float height = 0.1f;
+            // Minimum sizes for stability
+            radius = Mathf.Max(0.04f, radius);
+            height = Mathf.Max(0.08f, height);
             
+            col.radius = radius;
+            col.height = height;
+            
+            // Determine capsule direction based on bone direction to parent
             if (parentBone != null)
             {
                 Vector3 dirToParent = (parentBone.transform.position - bone.transform.position).normalized;
                 
-                // Determine which axis the bone is primarily aligned with
                 float yAlign = Mathf.Abs(Vector3.Dot(dirToParent, Vector3.up));
                 float xAlign = Mathf.Abs(Vector3.Dot(dirToParent, Vector3.right));
                 float zAlign = Mathf.Abs(Vector3.Dot(dirToParent, Vector3.forward));
@@ -554,32 +614,23 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 if (yAlign > xAlign && yAlign > zAlign)
                 {
                     col.direction = 1; // Y axis
-                    height = Mathf.Max(0.1f, (parentBone.transform.position - bone.transform.position).magnitude);
                 }
                 else if (xAlign > zAlign)
                 {
                     col.direction = 0; // X axis
-                    height = Mathf.Max(0.1f, (parentBone.transform.position - bone.transform.position).magnitude);
                 }
                 else
                 {
                     col.direction = 2; // Z axis
-                    height = Mathf.Max(0.1f, (parentBone.transform.position - bone.transform.position).magnitude);
                 }
             }
-            
-            col.height = height + col.radius * 2f;
-            
-            // Center the capsule on the bone, biased toward the child end
-            // This gives better collision for limb segments
-            Vector3 localOffset = Vector3.zero;
-            switch (col.direction)
+            else
             {
-                case 0: localOffset = new Vector3(col.radius * 0.3f, 0f, 0f); break;
-                case 1: localOffset = new Vector3(0f, col.radius * 0.3f, 0f); break;
-                case 2: localOffset = new Vector3(0f, 0f, col.radius * 0.3f); break;
+                col.direction = 1; // Default to Y axis
             }
-            col.center = localOffset;
+            
+            // Center the capsule
+            col.center = Vector3.zero;
         }
 
         private void RestoreEvaScriptIK()
@@ -639,7 +690,44 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             };
         }
 
-       
+        void IFlightUpdate.FlightUpdate(in FlightFrameData frame)
+        {
+            // Auto-enable ragdoll when in flight scene and ragdoll is enabled in data
+            if (Game.InFlightScene && Data.EnableRagdoll && !_isRagdollActive)
+            {
+                Mod.Log("IFlightUpdate: Auto-enabling ragdoll");
+                EnableRagdollMode();
+                return;
+            }
+            
+            if (!_isRagdollActive || _evaScript == null) return;
+            
+            // Keep Animator disabled - check every frame in case something re-enables it
+            var animator = _evaScript.GetComponent<Animator>();
+            if (animator != null && animator.enabled)
+            {
+                Mod.Log("FlightUpdate: Animator was re-enabled, disabling again");
+                animator.enabled = false;
+            }
+            
+            // Check for IK re-enable
+            if (_pilotIK != null && _pilotIK.enabled)
+            {
+                Mod.Log("FlightUpdate: _pilotIK was re-enabled, disabling again");
+                _pilotIK.enabled = false;
+            }
+            
+            // Also disable any child Animators
+            var childAnimators = _evaScript.GetComponentsInChildren<Animator>();
+            foreach (var anim in childAnimators)
+            {
+                if (anim.enabled)
+                {
+                    anim.enabled = false;
+                }
+            }
+        }
+
         /// <summary>
         /// Enable ragdoll mode - called externally or from FlightUpdate
         /// </summary>
@@ -649,7 +737,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             Mod.Log("EnableRagdollMode called");
             
-            // Only find crew if not already set
             if (_evaScript == null || _pilotIK == null)
             {
                 Mod.Log("EnableRagdollMode: Searching for crew...");
@@ -672,7 +759,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             else
             {
-                Mod.Log("EnableRagdollMode: _evaScript or _pilotIK is null, ragdoll physics not applied");
+                Mod.LogWarning("EnableRagdollMode: _evaScript or _pilotIK is null, ragdoll physics not applied");
             }
         }
 
@@ -686,7 +773,46 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             Mod.Log("DisableRagdollMode called");
             _isRagdollActive = false;
             Data.EnableRagdoll = false;
+            
+            // Clean up dynamically created ragdoll components
+            CleanupDynamicRagdoll();
+            
             RestoreEvaScriptIK();
+        }
+        
+        private void CleanupDynamicRagdoll()
+        {
+            if (_evaScript == null) return;
+            
+            // Remove dynamically added components
+            var rigidbodies = _evaScript.GetComponentsInChildren<Rigidbody>();
+            foreach (var rb in rigidbodies)
+            {
+                // Only remove if it was added by us (check mass values we use)
+                if (rb.mass > 0 && rb.mass < 25f) // Our mass range
+                {
+                    // Remove the joint first
+                    var joint = rb.GetComponent<CharacterJoint>();
+                    if (joint != null)
+                    {
+                        GameObject.Destroy(joint);
+                    }
+                    
+                    // Remove the collider if it's a capsule we added
+                    var capsule = rb.GetComponent<CapsuleCollider>();
+                    if (capsule != null)
+                    {
+                        GameObject.Destroy(capsule);
+                    }
+                    
+                    // Remove the rigidbody itself
+                    GameObject.Destroy(rb);
+                    Mod.Log($"CleanupDynamicRagdoll: Removed Rigidbody from {rb.gameObject.name}");
+                }
+            }
+            
+            _ragdollRoot = null;
+            _originalSkinnedMeshRenderer = null;
         }
 
         private void FindCrew()
@@ -720,7 +846,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return;
             }
             
-            Mod.Log($"FindCrew: Could not find crew for part {PartScript.Data.Name}");
+            Mod.LogWarning($"FindCrew: Could not find crew for part {PartScript.Data.Name}");
         }
 
         private void SetCrew(EvaScript crew)
@@ -757,40 +883,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 rb.isKinematic = false;
                 rb.useGravity = true;
                 rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
-            }
-        }
-        
-        void IFlightUpdate.FlightUpdate(in FlightFrameData frame)
-        {
-            if (!_isRagdollActive || _evaScript == null) return;
-            if (Game.InFlightScene && Data.EnableRagdoll && !_isRagdollActive)
-            {
-                Mod.Log("IFlightUpdate: Auto-enabling ragdoll");
-                EnableRagdollMode();
-            }
-            // Keep Animator disabled - check every frame in case something re-enables it
-            var animator = _evaScript.GetComponent<Animator>();
-            if (animator != null && animator.enabled)
-            {
-                Mod.Log("FlightUpdate: Animator was re-enabled, disabling again");
-                animator.enabled = false;
-            }
-            
-            // Check for IK re-enable
-            if (_pilotIK != null && _pilotIK.enabled)
-            {
-                Mod.Log("FlightUpdate: _pilotIK was re-enabled, disabling again");
-                _pilotIK.enabled = false;
-            }
-            
-            // Also disable any child Animators
-            var childAnimators = _evaScript.GetComponentsInChildren<Animator>();
-            foreach (var anim in childAnimators)
-            {
-                if (anim.enabled)
-                {
-                    anim.enabled = false;
-                }
             }
         }
 

@@ -110,6 +110,14 @@ namespace Assets.Scripts
             }
         }
 
+        public static void LogWarning(string format, params object[] args)
+        {
+            if (ModSettings.Instance.DebugMode)
+            {
+                Debug.unityLogger.LogFormat(LogType.Log, format, args);
+            }
+        }
+
         public static void LogError(string format, params object[] args)
         {
             if (ModSettings.Instance.DebugMode)
