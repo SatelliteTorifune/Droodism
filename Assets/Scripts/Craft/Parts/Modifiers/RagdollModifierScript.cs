@@ -1,9 +1,11 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using ModApi;
 using ModApi.Craft;
 using ModApi.Craft.Parts;
 using ModApi.GameLoop;
+using ModApi.Ui.Inspector;
 using RootMotion.FinalIK;
 using System.Linq;
 using ModApi.GameLoop.Interfaces;
@@ -12,7 +14,8 @@ using UnityEngine;
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
     public class RagdollModifierScript : PartModifierScript<RagdollModifierData>, 
-        IFlightUpdate
+        IFlightUpdate,
+        IFlightFixedUpdate
     {
         private CrewCompartmentScript? _crewCompartment;
         private FullBodyBipedIK? _pilotIK;
@@ -22,6 +25,48 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private float _ragdollBlendWeight = 0f;
         
         private IKSavedWeights _savedWeights = new();
+        
+        // Store original collision modes for restore
+        private class RigidbodyState
+        {
+            public Rigidbody rb;
+            public bool isKinematic;
+            public bool useGravity;
+            public CollisionDetectionMode collisionDetectionMode;
+        }
+        private List<RigidbodyState> _originalRigidbodyStates = new();
+
+        public override void OnGenerateInspectorModel(PartInspectorModel model)
+        {
+            base.OnGenerateInspectorModel(model);
+            
+            GroupModel groupModel = new GroupModel("Ragdoll");
+            model.AddGroup(groupModel);
+            
+            groupModel.Add<TextModel>(new TextModel("Status", () => _isRagdollActive ? "Active" : "Inactive"));
+            
+            // Debug button to toggle ragdoll
+            TextButtonModel ragdollButton = new TextButtonModel(
+                _isRagdollActive ? "Disable Ragdoll" : "Enable Ragdoll",
+                b => 
+                {
+                    Mod.Log($"Inspector button clicked: current={_isRagdollActive}");
+                    SetRagdollMode(!_isRagdollActive);
+                }
+            );
+            groupModel.Add<TextButtonModel>(ragdollButton);
+            
+            ToggleModel toggleModel = new ToggleModel(
+                "Enable Ragdoll (Data)",
+                () => Data.EnableRagdoll,
+                x => 
+                {
+                    Data.EnableRagdoll = x;
+                    Mod.Log($"Data.EnableRagdoll set to: {x}");
+                }
+            );
+            groupModel.Add<ToggleModel>(toggleModel);
+        }
 
         public bool IsRagdollActive => _isRagdollActive;
 
@@ -37,15 +82,27 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             base.OnModifiersCreated();
             
             _crewCompartment = PartScript.GetModifier<CrewCompartmentScript>();
-           
-            
             if (_crewCompartment != null)
             {
                 _crewCompartment.CrewEnter += OnCrewEnter;
                 _crewCompartment.CrewExit += OnCrewExit;
             }
         }
-        
+
+        public override void OnCraftStructureChanged(ICraftScript craftScript)
+        {
+            base.OnCraftStructureChanged(craftScript);
+            
+            if (_crewCompartment != null)
+            {
+                _crewCompartment.CrewEnter -= OnCrewEnter;
+                _crewCompartment.CrewExit -= OnCrewExit;
+                _crewCompartment.CrewEnter += OnCrewEnter;
+                _crewCompartment.CrewExit += OnCrewExit;
+            }
+            
+            RefreshPilotReferences();
+        }
 
         private void OnCrewEnter(EvaScript crew)
         {
@@ -56,28 +113,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             ClearPilotReferences();
         }
-        
-        // Also subscribe to crew list changes
-        public override void OnCraftStructureChanged(ICraftScript craftScript)
-        {
-            base.OnCraftStructureChanged(craftScript);
-            
-            // Re-subscribe to crew enter/exit events
-            if (_crewCompartment != null)
-            {
-                _crewCompartment.CrewEnter -= OnCrewEnter;
-                _crewCompartment.CrewExit -= OnCrewExit;
-                _crewCompartment.CrewEnter += OnCrewEnter;
-                _crewCompartment.CrewExit += OnCrewExit;
-            }
-            RefreshPilotReferences();
-        }
-        
+
         private void RefreshPilotReferences()
         {
             if (_crewCompartment == null) return;
             
-            // Refresh for all crew members
             foreach (var crew in _crewCompartment.Crew)
             {
                 RefreshPilotReferencesFromCrew(crew);
@@ -105,10 +145,18 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public void SetRagdollMode(bool enable)
         {
-            if (_isRagdollActive == enable) return;
+            Mod.Log($"SetRagdollMode called: enable={enable}, current={_isRagdollActive}");
+            
+            if (_isRagdollActive == enable) 
+            {
+                Mod.Log("SetRagdollMode: early exit (same state)");
+                return;
+            }
             
             _isRagdollActive = enable;
             Data.EnableRagdoll = enable;
+            
+            Mod.Log($"SetRagdollMode: _pilotIK={_pilotIK != null}, _evaScript={_evaScript != null}");
             
             if (enable)
             {
@@ -148,11 +196,25 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     animator.enabled = false;
                 }
                 
+                // Store original states and configure for ragdoll
+                _originalRigidbodyStates.Clear();
+                
                 var evaRigidbodies = _evaScript.GetComponentsInChildren<Rigidbody>();
                 foreach (var rb in evaRigidbodies)
                 {
+                    // Store original state
+                    _originalRigidbodyStates.Add(new RigidbodyState
+                    {
+                        rb = rb,
+                        isKinematic = rb.isKinematic,
+                        useGravity = rb.useGravity,
+                        collisionDetectionMode = rb.collisionDetectionMode
+                    });
+                    
+                    // Configure for ragdoll physics
                     rb.isKinematic = false;
                     rb.useGravity = true;
+                    rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
                 }
             }
         }
@@ -182,12 +244,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     animator.enabled = true;
                 }
                 
-                var evaRigidbodies = _evaScript.GetComponentsInChildren<Rigidbody>();
-                foreach (var rb in evaRigidbodies)
+                // Restore original states
+                foreach (var state in _originalRigidbodyStates)
                 {
-                    rb.isKinematic = true;
-                    rb.useGravity = false;
+                    if (state.rb != null)
+                    {
+                        state.rb.isKinematic = state.isKinematic;
+                        state.rb.useGravity = state.useGravity;
+                        state.rb.collisionDetectionMode = state.collisionDetectionMode;
+                    }
                 }
+                _originalRigidbodyStates.Clear();
             }
         }
 
@@ -209,10 +276,22 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             };
         }
 
-        void IFlightUpdate.FlightUpdate(in FlightFrameData frame)
+       public void FlightUpdate(in FlightFrameData frame)
         {
-            if (_pilotIK == null) return;
-            
+            // Auto-enable ragdoll when in flight scene and ragdoll is enabled in data
+            // but not yet active
+            if (Game.InFlightScene && Data.EnableRagdoll && !_isRagdollActive)
+            {
+                Mod.Log("Auto-enabling ragdoll from FlightUpdate");
+                SetRagdollMode(true);
+            }
+        }
+        
+
+        public void FlightFixedUpdate(in FlightFrameData frame)
+        {
+            // Maintain ragdoll physics state during fixed update
+            // Only needed if EvaScript's patch didn't work
             if (_isRagdollActive && _evaScript != null)
             {
                 var evaRigidbodies = _evaScript.GetComponentsInChildren<Rigidbody>();

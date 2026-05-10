@@ -1,42 +1,44 @@
+using System.Numerics;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using HarmonyLib;
 using ModApi;
-using System;
+using ModApi.GameLoop;
 using System.Reflection;
 using Assets.Scripts.Craft.Parts.Modifiers;
 
 namespace Assets.Scripts.HarmonyPatches
 {
     /// <summary>
-    /// Patches for EvaScript's flight loop methods to skip when ragdoll is active.
+    /// Patches for EvaScript to disable animation/movement when ragdoll is active.
+    /// We patch internal private methods that would interfere with ragdoll physics,
+    /// while keeping collision tracking and state management intact.
     /// </summary>
     public class EvaScriptPatch
     {
+        // Helper method to check if ragdoll is active
+        private static bool IsRagdollActive(EvaScript eva)
+        {
+            if (!Game.InFlightScene) return false;
+            return eva?.PartScript?.GetModifier<RagdollModifierScript>()?.IsRagdollActive ?? false;
+        }
+
         /// <summary>
-        /// Patches EvaScript.FlightUpdate to skip when ragdoll is active.
+        /// Skip movement calculations when ragdoll is active.
         /// </summary>
         [HarmonyPatch]
-        public class FlightUpdate_Patch
+        public class UpdateMovement_Patch
         {
             static MethodBase TargetMethod()
             {
-                // Try to find the explicit interface implementation method
-                foreach (var m in typeof(EvaScript).GetMethods(BindingFlags.Instance | BindingFlags.NonPublic))
-                {
-                    if (m.Name.Contains("FlightUpdate") && m.GetParameters().Length == 1)
-                    {
-                        return m;
-                    }
-                }
-                return null;
+                return AccessTools.Method(typeof(EvaScript), "UpdateMovement");
             }
 
-            public static bool Prefix(EvaScript __instance)
+            public static bool Prefix(EvaScript __instance, out Vector3 totalForce, out Vector3 totalForceJetpack)
             {
-                if (!Game.InFlightScene) return true;
+                totalForce = Vector3.Zero;
+                totalForceJetpack = Vector3.Zero;
                 
-                var ragdoll = __instance?.PartScript?.GetModifier<RagdollModifierScript>();
-                if (ragdoll != null && ragdoll.IsRagdollActive)
+                if (IsRagdollActive(__instance))
                 {
                     return false;
                 }
@@ -46,29 +48,19 @@ namespace Assets.Scripts.HarmonyPatches
         }
 
         /// <summary>
-        /// Patches EvaScript.FlightFixedUpdate to skip when ragdoll is active.
+        /// Skip animation controller updates when ragdoll is active.
         /// </summary>
         [HarmonyPatch]
-        public class FlightFixedUpdate_Patch
+        public class UpdateAnimationController_Patch
         {
             static MethodBase TargetMethod()
             {
-                foreach (var m in typeof(EvaScript).GetMethods(BindingFlags.Instance | BindingFlags.NonPublic))
-                {
-                    if (m.Name.Contains("FlightFixedUpdate") && m.GetParameters().Length == 1)
-                    {
-                        return m;
-                    }
-                }
-                return null;
+                return AccessTools.Method(typeof(EvaScript), "UpdateAnimationController");
             }
 
             public static bool Prefix(EvaScript __instance)
             {
-                if (!Game.InFlightScene) return true;
-                
-                var ragdoll = __instance?.PartScript?.GetModifier<RagdollModifierScript>();
-                if (ragdoll != null && ragdoll.IsRagdollActive)
+                if (IsRagdollActive(__instance))
                 {
                     return false;
                 }
@@ -76,31 +68,131 @@ namespace Assets.Scripts.HarmonyPatches
                 return true;
             }
         }
-        
+
         /// <summary>
-        /// Patches EvaScript.FlightLateUpdate to skip when ragdoll is active.
+        /// Skip kinematic turning when ragdoll is active.
         /// </summary>
         [HarmonyPatch]
-        public class FlightLateUpdate_Patch
+        public class UpdateKinematicTurning_Patch
         {
             static MethodBase TargetMethod()
             {
-                foreach (var m in typeof(EvaScript).GetMethods(BindingFlags.Instance | BindingFlags.NonPublic))
-                {
-                    if (m.Name.Contains("FlightLateUpdate") && m.GetParameters().Length == 1)
-                    {
-                        return m;
-                    }
-                }
-                return null;
+                return AccessTools.Method(typeof(EvaScript), "UpdateKinematicTurning");
             }
 
             public static bool Prefix(EvaScript __instance)
             {
-                if (!Game.InFlightScene) return true;
+                if (IsRagdollActive(__instance))
+                {
+                    return false;
+                }
                 
-                var ragdoll = __instance?.PartScript?.GetModifier<RagdollModifierScript>();
-                if (ragdoll != null && ragdoll.IsRagdollActive)
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Skip upright character when ragdoll is active.
+        /// </summary>
+        [HarmonyPatch]
+        public class UprightCharacter_Patch
+        {
+            static MethodBase TargetMethod()
+            {
+                return AccessTools.Method(typeof(EvaScript), "UprightCharacter");
+            }
+
+            public static bool Prefix(EvaScript __instance)
+            {
+                if (IsRagdollActive(__instance))
+                {
+                    return false;
+                }
+                
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Skip jump state updates when ragdoll is active.
+        /// </summary>
+        [HarmonyPatch]
+        public class UpdateJumpState_Patch
+        {
+            static MethodBase TargetMethod()
+            {
+                return AccessTools.Method(typeof(EvaScript), "UpdateJumpState");
+            }
+
+            public static bool Prefix(EvaScript __instance)
+            {
+                if (IsRagdollActive(__instance))
+                {
+                    return false;
+                }
+                
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Skip grappling hook updates when ragdoll is active.
+        /// </summary>
+        [HarmonyPatch]
+        public class UpdateGrapplingHook_Patch
+        {
+            static MethodBase TargetMethod()
+            {
+                return AccessTools.Method(typeof(EvaScript), "UpdateGrapplingHook");
+            }
+
+            public static bool Prefix(EvaScript __instance)
+            {
+                if (IsRagdollActive(__instance))
+                {
+                    return false;
+                }
+                
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Skip nozzle updates when ragdoll is active.
+        /// </summary>
+        [HarmonyPatch]
+        public class UpdateNozzles_Patch
+        {
+            static MethodBase TargetMethod()
+            {
+                return AccessTools.Method(typeof(EvaScript), "UpdateNozzles");
+            }
+
+            public static bool Prefix(EvaScript __instance)
+            {
+                if (IsRagdollActive(__instance))
+                {
+                    return false;
+                }
+                
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Skip achievement checks when ragdoll is active.
+        /// </summary>
+        [HarmonyPatch]
+        public class CheckAchievements_Patch
+        {
+            static MethodBase TargetMethod()
+            {
+                return AccessTools.Method(typeof(EvaScript), "CheckAchievements");
+            }
+
+            public static bool Prefix(EvaScript __instance)
+            {
+                if (IsRagdollActive(__instance))
                 {
                     return false;
                 }

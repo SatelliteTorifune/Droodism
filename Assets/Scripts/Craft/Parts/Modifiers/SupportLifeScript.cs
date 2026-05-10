@@ -644,7 +644,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private void OnCraftUnloaded()
         {
             
-            Mod.Log("{0} 调用OnCraftUnloaded",PartScript.CraftScript.CraftNode.NodeId);
             try
             {
                 Data.LastLoadTime = (long)FlightSceneScript.Instance.FlightState.Time;
@@ -653,7 +652,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             catch (Exception e)
             {
-                Mod.Log("RemoveExtraTanks调用RemoveFuelTankXML出问题了{0}", e);
             }
             
 
