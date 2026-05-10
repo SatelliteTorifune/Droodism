@@ -508,6 +508,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             rb.useGravity = true;
             rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
             
+            // Add collider - radius based on mass
+            AddBoneCollider(bone, parentBone, mass);
+            
             var joint = bone.AddComponent<CharacterJoint>();
             joint.connectedBody = parentBone.GetComponent<Rigidbody>();
             
@@ -518,11 +521,65 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             var highTwist = new SoftJointLimit { limit = twistHigh, bounciness = 0f };
             joint.swing1Limit = swing1;
             joint.swing2Limit = swing2;
-          
             joint.lowTwistLimit = lowTwist;
             joint.highTwistLimit = highTwist;
             
             Mod.Log($"AddRigidbodyAndJoint: {bone.name} -> {parentBone.name}, mass={mass}, swing={swingLimit}");
+        }
+        
+        private void AddBoneCollider(GameObject bone, GameObject parentBone, float mass)
+        {
+            if (bone == null) return;
+            
+            var col = bone.AddComponent<CapsuleCollider>();
+            
+            // Radius scales with mass - thicker bones get bigger colliders
+            col.radius = Mathf.Max(0.03f, mass * 0.015f);
+            
+            // Determine capsule direction from bone to parent
+            // For humanoid rigs, limbs usually run along the Y axis
+            // Try to get a direction, fallback to up
+            Vector3 dir = Vector3.up;
+            float height = 0.1f;
+            
+            if (parentBone != null)
+            {
+                Vector3 dirToParent = (parentBone.transform.position - bone.transform.position).normalized;
+                
+                // Determine which axis the bone is primarily aligned with
+                float yAlign = Mathf.Abs(Vector3.Dot(dirToParent, Vector3.up));
+                float xAlign = Mathf.Abs(Vector3.Dot(dirToParent, Vector3.right));
+                float zAlign = Mathf.Abs(Vector3.Dot(dirToParent, Vector3.forward));
+                
+                if (yAlign > xAlign && yAlign > zAlign)
+                {
+                    col.direction = 1; // Y axis
+                    height = Mathf.Max(0.1f, (parentBone.transform.position - bone.transform.position).magnitude);
+                }
+                else if (xAlign > zAlign)
+                {
+                    col.direction = 0; // X axis
+                    height = Mathf.Max(0.1f, (parentBone.transform.position - bone.transform.position).magnitude);
+                }
+                else
+                {
+                    col.direction = 2; // Z axis
+                    height = Mathf.Max(0.1f, (parentBone.transform.position - bone.transform.position).magnitude);
+                }
+            }
+            
+            col.height = height + col.radius * 2f;
+            
+            // Center the capsule on the bone, biased toward the child end
+            // This gives better collision for limb segments
+            Vector3 localOffset = Vector3.zero;
+            switch (col.direction)
+            {
+                case 0: localOffset = new Vector3(col.radius * 0.3f, 0f, 0f); break;
+                case 1: localOffset = new Vector3(0f, col.radius * 0.3f, 0f); break;
+                case 2: localOffset = new Vector3(0f, 0f, col.radius * 0.3f); break;
+            }
+            col.center = localOffset;
         }
 
         private void RestoreEvaScriptIK()
@@ -582,7 +639,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             };
         }
 
-        
+       
         /// <summary>
         /// Enable ragdoll mode - called externally or from FlightUpdate
         /// </summary>
@@ -706,7 +763,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         void IFlightUpdate.FlightUpdate(in FlightFrameData frame)
         {
             if (!_isRagdollActive || _evaScript == null) return;
-            
             if (Game.InFlightScene && Data.EnableRagdoll && !_isRagdollActive)
             {
                 Mod.Log("IFlightUpdate: Auto-enabling ragdoll");
