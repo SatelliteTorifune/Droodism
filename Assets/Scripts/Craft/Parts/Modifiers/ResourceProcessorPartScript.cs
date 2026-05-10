@@ -10,7 +10,7 @@ using UnityEngine;
 public abstract class ResourceProcessorPartScript<T> : PartModifierScript<T>, IFlightStart, IAnalyzePerformance, IFlightUpdate, IDesignerStart,IFlightFixedUpdate
     where T : PartModifierData
 {
-    protected IFuelSource BatterySource { get; private set; }
+    protected IFuelSource BatterySource { get; set; }
   
 
     public virtual void FlightStart(in FlightFrameData frame)

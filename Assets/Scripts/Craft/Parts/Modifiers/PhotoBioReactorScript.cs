@@ -36,6 +36,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             _rechargePointingEfficiency = 0f;
             this._rechargeRate = 0f;
             ReFreshSources();
+            if (Data.stayDeployed)
+            {
+                Data.CurrentEnabledPercent = 1;
+                DeployAnimate(1f);
+            }
         }
 
         //private float current = 0;
@@ -51,10 +56,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (Data.Part.Activated&&Data.CurrentEnabledPercent>=0.99f)
             {
                 WorkingLogic(frame);
+                Data.stayDeployed = true;
             }
             else
             {
                 deviceStatus = "<color=yellow>Device is Offline</color>";
+                Data.stayDeployed = false;
             }
             
         }

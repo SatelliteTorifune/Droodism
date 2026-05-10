@@ -97,34 +97,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     PlayParticle(bloodParticleSystemG);
                     PlayParticle(bloodParticleSystemH);
                     PlayParticle(bloodParticleSystemI);
-                    foreach (var crew in _compartment.Crew)
-                    {
-                        if (true)
-                        {
-                            crew.PartScript.TakeDamage(Game.Instance.Settings.Game.Flight.ImpactDamageScale*0.1f,PartDamageType.Basic);
-                            _oxygenSource?.AddFuel(Data.DrainRate * frameData.DeltaTimeWorld);
-                            _foodSource?.AddFuel((Data.DrainRate*Data.FoodGenerationScale) * frameData.DeltaTimeWorld);
-                            _co2Source?.AddFuel(Data.DrainRate * frameData.DeltaTimeWorld);
-                            _wastedWaterSource?.AddFuel(Data.DrainRate * frameData.DeltaTimeWorld);
-                            _solidWasteSource?.AddFuel(Data.DrainRate * frameData.DeltaTimeWorld);
-                            _waterSource?.AddFuel((Data.DrainRate*Data.WaterConsumptionScale) * frameData.DeltaTimeWorld);
-
-                            var craftSources = crew.PartScript.Modifiers;
-                            foreach (var source in craftSources)
-                            {
-                                if (source.GetData().Name.Contains("Tank"))
-                                {
-                                    source.GetData().InspectorEnabled = false;
-                                    FuelTankScript fts = source as FuelTankScript;
-                                    if (fts.FuelType.Id!="Jetpack")
-                                    {
-                                        fts.RemoveFuel(Data.DrainRate * frameData.DeltaTimeWorld);
-                                    }
-                                }
-                            }
-                            
-                        } 
-                    }
+                    DrainingLogic(frameData);
                 }
                 else
                 {
@@ -167,6 +140,56 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
         }
 
+        private void DrainingLogic(in FlightFrameData frameData)
+        {
+            foreach (var crew in _compartment.Crew)
+            {
+                crew.PartScript.TakeDamage(Game.Instance.Settings.Game.Flight.ImpactDamageScale*0.05f,PartDamageType.Basic);
+                var amount = Data.DrainRate * frameData.DeltaTimeWorld;
+                _waterSource?.AddFuel(amount*Data.WaterConsumptionScale*5);
+                _foodSource?.AddFuel(amount*Data.FoodGenerationScale*7);
+               
+                var data = crew.PartScript.GetModifier<SupportLifeScript>().Data;
+                if (data._oxygenAmountBuffer>0)
+                {
+                    data.AddLifeSupportFuel("Oxygen", -amount*5);
+                    _oxygenSource?.AddFuel(amount*1.1);
+                }
+
+                if (data._waterAmountBuffer>0)
+                {
+                    data.AddLifeSupportFuel("H2O", -amount*Data.WaterConsumptionScale*0.04);
+                    _waterSource?.AddFuel(amount*Data.WaterConsumptionScale*1.1*Data.WaterConsumptionScale);
+                }
+
+                if (data._foodAmountBuffer>0)
+                {
+                    data.AddLifeSupportFuel("Food", -amount*Data.FoodGenerationScale*0.01);
+                    _foodSource?.AddFuel(amount*Data.FoodGenerationScale*Data.FoodGenerationScale);
+                }
+
+                if (data._co2AmountBuffer>0)
+                {
+                    data.AddLifeSupportFuel("CO2", -amount);
+                    _co2Source?.AddFuel(amount*1.1);
+                }
+
+                if (data._solidWasteAmountBuffer>0)
+                {
+                    data.AddLifeSupportFuel("Solid Waste", -amount);
+                    _solidWasteSource?.AddFuel(amount*1.1);
+                }
+
+                if (data._wastedWaterAmountBuffer>0)
+                {
+                    data.AddLifeSupportFuel("Wasted Water", -amount);
+                    _wastedWaterSource?.AddFuel(amount*1.1);
+                }
+               
+               
+            } 
+        }        
+
         
         private void UpdateComponents()
         {
@@ -200,15 +223,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 rightHandTransform=rightElbowTransform.Find("RightHand");
             
             }
-
-
-            
-            
-            /*this._sound =Game.Instance.FlightScene.SingleSoundManager.GetSingleSound("Assets/Content/Craft/Parts/Sacrifice.wav");
-            if (_sound==null)
-            {
-                Debug.Log("Sacrifice sound not found");
-            }*/
 
         }
         private void OnPilotEnter(EvaScript crew) => this.SetPilot(crew);

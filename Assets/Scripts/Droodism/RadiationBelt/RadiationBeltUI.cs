@@ -13,6 +13,10 @@ namespace Assets.Scripts
     {
         private void OnBuildMapViewInspectorPanel(BuildInspectorPanelRequest request)
         {
+            if (!Game.InFlightScene)
+            {
+                return;
+            }
             GroupModel groupModel = new("<color=yellow>Radiation Belt</color>");
             request.Model.AddGroup(groupModel);
             groupModel.Collapsed = true;

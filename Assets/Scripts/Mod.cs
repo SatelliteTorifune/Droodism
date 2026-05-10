@@ -17,6 +17,7 @@ using Assembly = System.Reflection.Assembly;
 using Droodism.RadiationBelt;
 using ModApi.Ui.Inspector;
 using System.Xml.Serialization;
+using Assets.Scripts.Craft.Fuel;
 using Assets.Scripts.Droodism.Crew;
 using UnityEngine.UI;
 
@@ -117,14 +118,23 @@ namespace Assets.Scripts
             CrewManagerSyncPatches.Apply(harmony);
             Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
             Game.Instance.SceneManager.SceneTransitionCompleted+=OnSceneTransitionCompleted;
-            //注册一下指令
+            RegisterCommands();
+           
+            
+        }
+
+        /// <summary>
+        /// 注册Droodism的自定义指令
+        /// </summary>
+        private void RegisterCommands()
+        {
             DevConsoleApi.RegisterCommand("RefreshFuelSource",那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花);
             DevConsoleApi.RegisterCommand("ManualRefreshInstance",ManualRefreshInstance);
             DevConsoleApi.RegisterCommand("RBUI", () =>
             {
                 if (!Game.InFlightScene)
                 {
-                  return;   
+                    return;   
                 }
                 if (!Game.Instance.FlightScene.ViewManager.MapViewManager.MapView.Visible)
                 {
@@ -132,8 +142,14 @@ namespace Assets.Scripts
                 }
                 RadiationBeltDebugUI.Instance.OnToggleInspectorPanelState();
             });
-           
             
+            DevConsoleApi.RegisterCommand("RebuildFuelSource",()=>
+            {
+                var fs = ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.FuelSources as CraftFuelSources;
+                fs.Rebuild(ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript);
+            }); 
+            
+           
         }
 
         private void OnCraftChanged(ICraftNode craft) => PatchCraft(CurrentCraft());

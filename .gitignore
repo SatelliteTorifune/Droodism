@@ -128,3 +128,5 @@ ModAssetBundles/StandaloneOSX/StandaloneOSX.manifest
 /dataSources.local.xml
 /ModAssetBundles
 *.meta
+Assets/Droodism.asmdef
+*.meta

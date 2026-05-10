@@ -14639,6 +14639,15 @@
             This function is called when the MonoBehaviour will be destroyed.
             </summary>
         </member>
+        <member name="M:Assets.Scripts.Craft.CraftScript.RepositionParticles(UnityEngine.ParticleSystem.Particle*,System.Int32,UnityEngine.Vector3*,UnityEngine.Vector3*)">
+            <summary>
+            Repositions the specified particles with Burst.
+            </summary>
+            <param name="particles">The particles.</param>
+            <param name="particleCount">The particle count.</param>
+            <param name="positionDelta">The position delta.</param>
+            <param name="velocityDelta">The velocity delta.</param>
+        </member>
         <member name="M:Assets.Scripts.Craft.CraftScript.CalculateInertiaTensor">
             <summary>
             Calculates the total inertia tensor for the craft.
@@ -14760,11 +14769,6 @@
         <member name="M:Assets.Scripts.Craft.CraftScript.UpdateInContactWithPlanetStatus">
             <summary>
             Checks if the craft is currently in contact with the planet (on the terrain/water surface, under water, etc.).
-            </summary>
-        </member>
-        <member name="T:Assets.Scripts.Craft.CraftScript.RepositionParticleJob">
-            <summary>
-            Burst job to reposition the particles.
             </summary>
         </member>
         <member name="T:Assets.Scripts.Craft.DragCalculatorScript">
@@ -78346,30 +78350,9 @@
             The cancel button
             </summary>
         </member>
-        <member name="F:Assets.Scripts.Ui.AccountDialogScript._changingDialogMode">
-            <summary>
-            Flag set while the dialog is changing modes so the event won't be processed again
-            while it's being processed.
-            </summary>
-        </member>
-        <member name="F:Assets.Scripts.Ui.AccountDialogScript._confirmPasswordInput">
-            <summary>
-            The confirm password input
-            </summary>
-        </member>
-        <member name="F:Assets.Scripts.Ui.AccountDialogScript._emailInput">
-            <summary>
-            The email input
-            </summary>
-        </member>
         <member name="F:Assets.Scripts.Ui.AccountDialogScript._form">
             <summary>
             The form
-            </summary>
-        </member>
-        <member name="F:Assets.Scripts.Ui.AccountDialogScript._headerText">
-            <summary>
-            The header text
             </summary>
         </member>
         <member name="F:Assets.Scripts.Ui.AccountDialogScript._logoutButton">
@@ -78380,11 +78363,6 @@
         <member name="F:Assets.Scripts.Ui.AccountDialogScript._lostPassword">
             <summary>
             The lost password
-            </summary>
-        </member>
-        <member name="F:Assets.Scripts.Ui.AccountDialogScript._mode">
-            <summary>
-            The dialog's current mode.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Ui.AccountDialogScript._okayButton">
@@ -78422,26 +78400,6 @@
             The profile username
             </summary>
         </member>
-        <member name="F:Assets.Scripts.Ui.AccountDialogScript._termsSection">
-            <summary>
-            The terms section
-            </summary>
-        </member>
-        <member name="F:Assets.Scripts.Ui.AccountDialogScript._termsToggle">
-            <summary>
-            The terms toggle
-            </summary>
-        </member>
-        <member name="F:Assets.Scripts.Ui.AccountDialogScript._toggleLogin">
-            <summary>
-            The toggle login
-            </summary>
-        </member>
-        <member name="F:Assets.Scripts.Ui.AccountDialogScript._toggleRegister">
-            <summary>
-            The mode toggle
-            </summary>
-        </member>
         <member name="F:Assets.Scripts.Ui.AccountDialogScript._usernameInput">
             <summary>
             The username field
@@ -78451,34 +78409,6 @@
             <summary>
             The web request
             </summary>
-        </member>
-        <member name="T:Assets.Scripts.Ui.AccountDialogScript.DialogMode">
-            <summary>
-            The available dialog modes.
-            </summary>
-        </member>
-        <member name="F:Assets.Scripts.Ui.AccountDialogScript.DialogMode.Register">
-            <summary>
-            The register mode.
-            </summary>
-        </member>
-        <member name="F:Assets.Scripts.Ui.AccountDialogScript.DialogMode.Login">
-            <summary>
-            The login mode
-            </summary>
-        </member>
-        <member name="F:Assets.Scripts.Ui.AccountDialogScript.DialogMode.LoginOnly">
-            <summary>
-            The login-only mode. Registration is not available.
-            </summary>
-        </member>
-        <member name="P:Assets.Scripts.Ui.AccountDialogScript.Mode">
-            <summary>
-            Gets or sets the mode.
-            </summary>
-            <value>
-            The mode.
-            </value>
         </member>
         <member name="M:Assets.Scripts.Ui.AccountDialogScript.Create(UnityEngine.Transform)">
             <summary>
@@ -78532,12 +78462,11 @@
               <c>true</c> if valid; otherwise, <c>false</c>.
             </returns>
         </member>
-        <member name="M:Assets.Scripts.Ui.AccountDialogScript.IsValidUsername(System.String,System.Boolean)">
+        <member name="M:Assets.Scripts.Ui.AccountDialogScript.IsValidUsername(System.String)">
             <summary>
             Determines whether the username is valid.
             </summary>
             <param name="username">The username.</param>
-            <param name="registering">if set to <c>true</c> then the user is registering.</param>
             <returns>
               <c>true</c> if valid; otherwise, <c>false</c>.
             </returns>
@@ -78565,12 +78494,6 @@
             Called when the delete profile link is clicked.
             </summary>
         </member>
-        <member name="M:Assets.Scripts.Ui.AccountDialogScript.OnDialogModeChanged(System.Boolean)">
-            <summary>
-            Called when the dialog mode has changed.
-            </summary>
-            <param name="register">if set to <c>true</c> [register].</param>
-        </member>
         <member name="M:Assets.Scripts.Ui.AccountDialogScript.OnLayoutRebuilt(UI.Xml.XmlLayout)">
             <summary>
             Called when the layout is rebuilt.
@@ -78585,6 +78508,11 @@
         <member name="M:Assets.Scripts.Ui.AccountDialogScript.OnOkayClicked">
             <summary>
             Called when the okay button was clicked.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Ui.AccountDialogScript.OnRegisterHereClicked">
+            <summary>
+            Called when the register here is clicked.
             </summary>
         </member>
         <member name="M:Assets.Scripts.Ui.AccountDialogScript.OnTermsOfUseClicked">
@@ -146398,7 +146326,7 @@
         </member>
         <member name="F:Assets.Scripts.PlanetStudio.Flyouts.Noise.AddNoiseViewModel._recentlyUsed">
             <summary>
-            The recently uesd
+            The recently used
             </summary>
         </member>
         <member name="F:Assets.Scripts.PlanetStudio.Flyouts.Noise.AddNoiseViewModel._details">
@@ -153967,12 +153895,6 @@
             The current scene transition state.
             </summary>
         </member>
-        <member name="F:Assets.Scripts.Scenes.SceneManager._weakRefsToLeakCheck">
-            <summary>
-            A collection of weak references to objects that should be cleaned up upon scene transition.
-            These are used to detect potential memory leaks.
-            </summary>
-        </member>
         <member name="E:Assets.Scripts.Scenes.SceneManager.SceneLoaded">
             <summary>
             Occurs when a scene is loaded.
@@ -154160,13 +154082,6 @@
             <summary>
             Reloads the current scene.
             </summary>
-        </member>
-        <member name="M:Assets.Scripts.Scenes.SceneManager.TrackForMemoryLeak(System.Object)">
-            <summary>
-            Tracks the specified object for a memory leak.
-            Tracked objects will log an error if they are still alive after a scene transition.
-            </summary>
-            <param name="obj">The object to track.</param>
         </member>
         <member name="M:Assets.Scripts.Scenes.SceneManager.Awake">
             <summary>
@@ -168875,6 +168790,83 @@
             Sets the automatic stabilize.
             </summary>
             <param name="enable">if set to <c>true</c> [enable].</param>
+        </member>
+        <member name="T:Assets.Scripts.Tools.MemoryLeakUtility">
+            <summary>
+            A utility for tracking objects for potential memory leaks.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Tools.MemoryLeakUtility.MaxAge">
+            <summary>
+            The maximum age (in scene unloads) at which leaks will be assumed to be permanent and will no longer be tracked and reported.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Tools.MemoryLeakUtility.MinAge">
+            <summary>
+            The minimum age (in scene unloads) at which objects will start to be reported as leaks.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Tools.MemoryLeakUtility._refs">
+            <summary>
+            The list of tracked objects
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Tools.MemoryLeakUtility.OnSceneUnloaded">
+            <summary>
+            Called when a scene has been unloaded. Ideally, this should be called after garbage collection has occurred as well.
+            This will check all tracked objects for potential memory leaks and report, via the debug log, any potential leaks that were found.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Tools.MemoryLeakUtility.Track(System.Object,System.String)">
+            <summary>
+            Tracks the specified object for a potential memory leak.
+            This will assume the object's lifespan will be no longer than the current scene.
+            During scene unloads, tracked objects will be checked for potential leaks and reported via the debug log if leaks are found.
+            </summary>
+            <param name="obj">The object to be tracked.</param>
+            <param name="metadata">The metadata associated with the object (if any). This will be used in the debug log to further identify the object if a leak is detected.</param>
+        </member>
+        <member name="T:Assets.Scripts.Tools.MemoryLeakUtility.TrackedRef">
+            <summary>
+            An object representing an object being tracked for potential memory leaks.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Tools.MemoryLeakUtility.TrackedRef._typeName">
+            <summary>
+            The type name of the tracked object.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Tools.MemoryLeakUtility.TrackedRef.#ctor(System.Object,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Assets.Scripts.Tools.MemoryLeakUtility.TrackedRef"/> class.
+            </summary>
+            <param name="obj">The object being tracked.</param>
+            <param name="metadata">The metadata associated with the object (if any). This will be used in the debug log to further identify the object if a leak is detected.</param>
+        </member>
+        <member name="P:Assets.Scripts.Tools.MemoryLeakUtility.TrackedRef.Age">
+            <summary>
+            Gets or sets the age of the tracked object.
+            Age is defined by number of scene unloads since tracking of the object began.
+            </summary>
+            <value>The age of the tracked object as defined by number of scene unloads since tracking of the object began.</value>
+        </member>
+        <member name="P:Assets.Scripts.Tools.MemoryLeakUtility.TrackedRef.Metadata">
+            <summary>
+            Gets the metadata associated with the object (if any). This will be used in the debug log to further identify the object if a leak is detected.
+            </summary>
+            <value>The metadata associated with the object (if any). This will be used in the debug log to further identify the object if a leak is detected.</value>
+        </member>
+        <member name="P:Assets.Scripts.Tools.MemoryLeakUtility.TrackedRef.TypeName">
+            <summary>
+            Gets the type name of the tracked object.
+            </summary>
+            <value>The type name of the tracked object.</value>
+        </member>
+        <member name="P:Assets.Scripts.Tools.MemoryLeakUtility.TrackedRef.WeakRef">
+            <summary>
+            Gets the weak reference to the actual tracked object.
+            </summary>
+            <value>The weak reference to the actual tracked object.</value>
         </member>
         <member name="T:Assets.Scripts.Tools.MoveObjectScript">
             <summary>

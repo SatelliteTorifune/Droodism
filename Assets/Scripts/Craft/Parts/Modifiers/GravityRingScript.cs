@@ -1,5 +1,8 @@
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
+using Assets.Scripts.Vizzy.UI.Elements;
 using ModApi;
+using ModApi.Craft.Parts.Attributes;
+using ModApi.Flight.Events;
 using ModApi.GameLoop;
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
@@ -20,29 +23,44 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private Transform _sideC,_struc1C, _struc2C, _struc3C,_struc4C, _ringC;
         private Transform _sideD, _struc1D, _struc2D, _struc3D,_struc4D, _ringD;
         private Transform _offset;
-        private Vector3 _offsetPositionInverse;
 
         private IFuelSource hPN2Source;
         
-        private string partState;
-        
-        public bool isDeployed=false;
 
+
+        public override void FlightStart(in FlightFrameData frame)
+        {
+            base.FlightStart(in frame);
+            if (Data.StayDeployed)
+            {
+                ExtentPart(-1.4f);
+                RotateCompartments(0);
+                this.Data.IsDeployed = true;
+                this.Data.CurrentRotation = 0;
+                this.Data.CurrentExtentPercent = -1.4f;
+            }
+        }
+
+       
         
+
         public override void FlightUpdate(in FlightFrameData frame)
         {
-            bool active = isDeployed && PartScript.Data.Activated && !BatterySource.IsEmpty;
+            bool active = Data.IsDeployed && PartScript.Data.Activated && !BatterySource.IsEmpty;
+            
             RotatingBase(active);
             if (active)
             {
                 this.BatterySource.RemoveFuel(this.Data.DeployRotationSpeed* frame.DeltaTimeWorld * 20f);
+                
                
             }
-            
+
+            Data.StayDeployed = Data.IsDeployed && PartScript.Data.Activated;
             if (PartScript.Data.Activated&&!hPN2Source.IsEmpty && !BatterySource.IsEmpty)
             {
                 Deploy(frame);
-                if (!isDeployed)
+                if (!Data.IsDeployed)
                 {
                     ConsumeHPN2(frame);
                 }
@@ -64,12 +82,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 float targetRotation = 0;
                 if (Data.CurrentExtentPercent == targetExtent&&Data.CurrentRotation == targetRotation)
                 {
-                    isDeployed = true;
+                    Data.IsDeployed = true;
                     return;
                 }
                 else
                 {
-                    isDeployed = false;
+                    Data.IsDeployed = false;
 
 
                     if (Data.CurrentExtentPercent != targetExtent)
@@ -95,12 +113,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 float targetRotation = 90;
                 if (Data.CurrentExtentPercent == targetExtent&&Data.CurrentRotation == targetRotation)
                 {
-                    isDeployed = false;
+                    Data.IsDeployed = false;
                     return;
                 }
                 else
                 {
-                    isDeployed = true;
+                    Data.IsDeployed = true;
                 }
 
                 if (Data.CurrentRotation == targetRotation)
@@ -230,7 +248,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             this._offset = new GameObject("SubPartRotatorOffset").transform;
             this._offset.SetParent(this._rotateBase.parent, false);
             this._offset.position = this._rotateBase.TransformPoint(Data.PositionOffset1);
-            this._offsetPositionInverse = this._offset.InverseTransformPoint(this._rotateBase.position);
         }
 
         #endregion

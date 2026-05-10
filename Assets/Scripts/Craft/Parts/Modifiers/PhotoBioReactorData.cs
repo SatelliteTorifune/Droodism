@@ -43,6 +43,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private float _wastedWaterGenerationRate = 1f;
         [SerializeField] [PartModifierProperty(true, false)]
         private float _boosteScale = 2.5f;
+        [SerializeField] [PartModifierProperty(true, false)]
+        internal bool stayDeployed;
         
         private Vector3 _positionOffset1 = new Vector3(0f, 0f, 0.65f);
         public SubPartRotatorData.AngleLerpType AngleLerp => SubPartRotatorData.AngleLerpType.Euler;
