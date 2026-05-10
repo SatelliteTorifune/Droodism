@@ -518,6 +518,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             var highTwist = new SoftJointLimit { limit = twistHigh, bounciness = 0f };
             joint.swing1Limit = swing1;
             joint.swing2Limit = swing2;
+          
             joint.lowTwistLimit = lowTwist;
             joint.highTwistLimit = highTwist;
             
@@ -581,17 +582,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             };
         }
 
-        void IFlightUpdate.FlightUpdate(in FlightFrameData frame)
-        {
-            // Auto-enable ragdoll when in flight scene and ragdoll is enabled in data
-            // but not yet active
-            if (Game.InFlightScene && Data.EnableRagdoll && !_isRagdollActive)
-            {
-                Mod.Log("IFlightUpdate: Auto-enabling ragdoll");
-                EnableRagdollMode();
-            }
-        }
-
+        
         /// <summary>
         /// Enable ragdoll mode - called externally or from FlightUpdate
         /// </summary>
@@ -700,15 +691,49 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         void IFlightFixedUpdate.FlightFixedUpdate(in FlightFrameData frame)
         {
-            // Maintain ragdoll physics state during fixed update
-            // Only needed if EvaScript's patch didn't work
-            if (_isRagdollActive && _evaScript != null)
+            if (!_isRagdollActive || _evaScript == null) return;
+            
+            // Force all bone rigidbodies to ragdoll state every physics step
+            var evaRigidbodies = _evaScript.GetComponentsInChildren<Rigidbody>();
+            foreach (var rb in evaRigidbodies)
             {
-                var evaRigidbodies = _evaScript.GetComponentsInChildren<Rigidbody>();
-                foreach (var rb in evaRigidbodies)
+                rb.isKinematic = false;
+                rb.useGravity = true;
+                rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
+            }
+        }
+        
+        void IFlightUpdate.FlightUpdate(in FlightFrameData frame)
+        {
+            if (!_isRagdollActive || _evaScript == null) return;
+            
+            if (Game.InFlightScene && Data.EnableRagdoll && !_isRagdollActive)
+            {
+                Mod.Log("IFlightUpdate: Auto-enabling ragdoll");
+                EnableRagdollMode();
+            }
+            // Keep Animator disabled - check every frame in case something re-enables it
+            var animator = _evaScript.GetComponent<Animator>();
+            if (animator != null && animator.enabled)
+            {
+                Mod.Log("FlightUpdate: Animator was re-enabled, disabling again");
+                animator.enabled = false;
+            }
+            
+            // Check for IK re-enable
+            if (_pilotIK != null && _pilotIK.enabled)
+            {
+                Mod.Log("FlightUpdate: _pilotIK was re-enabled, disabling again");
+                _pilotIK.enabled = false;
+            }
+            
+            // Also disable any child Animators
+            var childAnimators = _evaScript.GetComponentsInChildren<Animator>();
+            foreach (var anim in childAnimators)
+            {
+                if (anim.enabled)
                 {
-                    rb.isKinematic = false;
-                    rb.useGravity = true;
+                    anim.enabled = false;
                 }
             }
         }
