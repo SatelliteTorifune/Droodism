@@ -15,7 +15,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 {
     public class RagdollModifierScript : PartModifierScript<RagdollModifierData>, 
         IFlightUpdate,
-        IFlightFixedUpdate
+        IFlightFixedUpdate,
+        IFlightUpdatePaused
     {
         private CrewCompartmentScript? _crewCompartment;
         private FullBodyBipedIK? _pilotIK;
@@ -23,11 +24,20 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         private bool _isRagdollActive = false;
         private bool _ragdollPhysicsCreated = false; // Track if ragdoll physics has been fully created
-        private float _ragdollBlendWeight = 0f;
+        private bool _wasPaused = false; // Track previous pause state
+        private bool _justUnpaused = false; // Flag to detect unpause transition
+        
+        // Store bone transforms to restore after unpause
+        private class BoneTransformState
+        {
+            public Transform bone;
+            public Vector3 position;
+            public Quaternion rotation;
+        }
+        private List<BoneTransformState> _savedBoneStates = new();
         
         private IKSavedWeights _savedWeights = new();
         private Transform? _ragdollRoot;
-        private SkinnedMeshRenderer? _originalSkinnedMeshRenderer;
         private HashSet<string> _skipBones = new(StringComparer.OrdinalIgnoreCase);
         
         // Store original collision modes for restore
@@ -88,7 +98,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         protected override void OnInitialized()
         {
             base.OnInitialized();
-            _ragdollBlendWeight = Data.EnableRagdoll ? 1f : 0f;
             _isRagdollActive = Data.EnableRagdoll;
         }
 
@@ -362,13 +371,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             Mod.Log($"CreateRagdollDynamically: boneRoot = {boneRoot.name}");
             
-            // Get reference to SkinnedMeshRenderer for later hiding
-            var skinnedMeshRenderer = boneRoot.GetComponentInChildren<SkinnedMeshRenderer>();
-            if (skinnedMeshRenderer != null)
-            {
-                Mod.Log($"CreateRagdollDynamically: Found SkinnedMeshRenderer on {skinnedMeshRenderer.gameObject.name}");
-                _originalSkinnedMeshRenderer = skinnedMeshRenderer;
-            }
+          
             
             // Navigate to Hips: <boneRoot>/Hips
             Transform hips = boneRoot.Find("Hips");
@@ -423,7 +426,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             // Store reference for later
             _ragdollRoot = boneRoot;
-            _originalSkinnedMeshRenderer = skinnedMeshRenderer;
             
             // Now add Rigidbody + CharacterJoint
             // The Hips is the root of the ragdoll - no parent joint needed
@@ -797,11 +799,23 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             if (!_isRagdollActive || _evaScript == null) return;
             
-            // Check if game is paused
-            if (Game.Instance.FlightScene.TimeManager.Paused)
+            // Detect pause state changes
+            bool isPaused = Game.Instance.FlightScene.TimeManager.Paused;
+            if (_wasPaused && !isPaused)
             {
-                Mod.Log("IFlightUpdate: Game is paused, skipping ragdoll updates");
-                return;
+                // Just unpaused - set flag and log
+                _justUnpaused = true;
+                Mod.Log("IFlightUpdate: Game just unpaused, will reinforce ragdoll");
+            }
+            _wasPaused = isPaused;
+            
+            // When unpaused, immediately reinforce ragdoll state
+            if (_justUnpaused)
+            {
+                Mod.Log("IFlightUpdate: Restoring bone states and reinforcing ragdoll after unpause");
+                RestoreBoneStates();
+                ReinforceRagdollState();
+                _justUnpaused = false;
             }
             
             // Keep Animator disabled - check every frame in case something re-enables it
@@ -826,6 +840,82 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 if (anim.enabled)
                 {
                     anim.enabled = false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Reinforce ragdoll state - call this after unpause to ensure physics is working correctly
+        /// </summary>
+        private void ReinforceRagdollState()
+        {
+            if (_evaScript == null) return;
+            
+            Mod.Log("ReinforceRagdollState: Starting");
+            
+            // First, restore bone transforms to where they should be
+            RestoreBoneStates();
+            
+            // Ensure all rigidbodies are non-kinematic and have gravity
+            var rigidbodies = _evaScript.GetComponentsInChildren<Rigidbody>();
+            foreach (var rb in rigidbodies)
+            {
+                rb.isKinematic = false;
+                rb.useGravity = true;
+                rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
+                rb.WakeUp();
+                Mod.Log($"ReinforceRagdollState: Woke up {rb.gameObject.name}");
+            }
+            
+            // Ensure Animator is disabled
+            var animator = _evaScript.GetComponent<Animator>();
+            if (animator != null && animator.enabled)
+            {
+                animator.enabled = false;
+            }
+            
+            // Ensure IK is disabled
+            if (_pilotIK != null)
+            {
+                _pilotIK.enabled = false;
+            }
+        }
+        
+        /// <summary>
+        /// Save current bone transforms before pause
+        /// </summary>
+        private void SaveBoneStates()
+        {
+            if (_evaScript == null) return;
+            
+            _savedBoneStates.Clear();
+            var rigidbodies = _evaScript.GetComponentsInChildren<Rigidbody>();
+            foreach (var rb in rigidbodies)
+            {
+                _savedBoneStates.Add(new BoneTransformState
+                {
+                    bone = rb.transform,
+                    position = rb.transform.localPosition,
+                    rotation = rb.transform.localRotation
+                });
+            }
+            Mod.Log($"SaveBoneStates: Saved {_savedBoneStates.Count} bone states");
+        }
+        
+        /// <summary>
+        /// Restore bone transforms after unpause
+        /// </summary>
+        private void RestoreBoneStates()
+        {
+            if (_evaScript == null || _savedBoneStates.Count == 0) return;
+            
+            Mod.Log($"RestoreBoneStates: Restoring {_savedBoneStates.Count} bone states");
+            foreach (var state in _savedBoneStates)
+            {
+                if (state.bone != null)
+                {
+                    state.bone.localPosition = state.position;
+                    state.bone.localRotation = state.rotation;
                 }
             }
         }
@@ -887,13 +977,19 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             if (_evaScript == null) return;
             
+            Mod.Log("CleanupDynamicRagdoll: Starting cleanup");
+            
             // Remove dynamically added components
             var rigidbodies = _evaScript.GetComponentsInChildren<Rigidbody>();
+            int removedCount = 0;
             foreach (var rb in rigidbodies)
             {
                 // Only remove if it was added by us (check mass values we use)
-                if (rb.mass > 0 && rb.mass < 25f) // Our mass range
+                // Include 25f for Hips root bone
+                if (rb.mass > 0 && rb.mass <= 25f)
                 {
+                    Mod.Log($"CleanupDynamicRagdoll: Removing components from {rb.gameObject.name}, mass={rb.mass}");
+                    
                     // Remove the joint first
                     var joint = rb.GetComponent<CharacterJoint>();
                     if (joint != null)
@@ -910,12 +1006,19 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     
                     // Remove the rigidbody itself
                     GameObject.Destroy(rb);
-                    Mod.Log($"CleanupDynamicRagdoll: Removed Rigidbody from {rb.gameObject.name}");
+                    removedCount++;
+                }
+                else
+                {
+                    Mod.Log($"CleanupDynamicRagdoll: SKIPPING {rb.gameObject.name}, mass={rb.mass} (not our component)");
                 }
             }
+            Mod.Log($"CleanupDynamicRagdoll: Removed {removedCount} rigidbody components");
+            
+            // Clear saved bone states since ragdoll is being destroyed
+            _savedBoneStates.Clear();
             
             _ragdollRoot = null;
-            _originalSkinnedMeshRenderer = null;
         }
 
         private void FindCrew()
@@ -999,6 +1102,24 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             public float RightFootRotationWeight;
             public float LeftFootPositionWeight;
             public float LeftFootRotationWeight;
+        }
+
+        /// <summary>
+        /// Called every frame while the game is paused in flight scene.
+        /// Use this to monitor pause state changes.
+        /// </summary>
+        void IFlightUpdatePaused.FlightUpdatePaused(in FlightFrameData frame)
+        {
+            if (!_isRagdollActive || _evaScript == null) return;
+            
+            // Detect transition to pause
+            if (!_wasPaused)
+            {
+                Mod.Log("IFlightUpdatePaused: Game just paused, saving bone states");
+                SaveBoneStates();
+            }
+            
+            _wasPaused = true;
         }
     }
 }
