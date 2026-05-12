@@ -22,11 +22,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private EvaScript? _evaScript;
         
         private bool _isRagdollActive = false;
+        private bool _ragdollPhysicsCreated = false; // Track if ragdoll physics has been fully created
         private float _ragdollBlendWeight = 0f;
         
         private IKSavedWeights _savedWeights = new();
         private Transform? _ragdollRoot;
         private SkinnedMeshRenderer? _originalSkinnedMeshRenderer;
+        private HashSet<string> _skipBones = new(StringComparer.OrdinalIgnoreCase);
         
         // Store original collision modes for restore
         private class RigidbodyState
@@ -106,6 +108,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             base.OnCraftStructureChanged(craftScript);
             
+            Mod.Log($"OnCraftStructureChanged: Called, _isRagdollActive={_isRagdollActive}");
+            
             if (_crewCompartment != null)
             {
                 _crewCompartment.CrewEnter -= OnCrewEnter;
@@ -114,17 +118,36 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 _crewCompartment.CrewExit += OnCrewExit;
             }
             
-            RefreshPilotReferences();
+            // Only refresh pilot references if ragdoll is not active
+            // Otherwise, we might accidentally recreate the ragdoll
+            if (!_isRagdollActive)
+            {
+                RefreshPilotReferences();
+            }
+            else
+            {
+                Mod.Log("OnCraftStructureChanged: Skipping RefreshPilotReferences because ragdoll is active");
+            }
         }
 
         private void OnCrewEnter(EvaScript crew)
         {
+            Mod.Log($"OnCrewEnter: crew={crew?.gameObject?.name}, _isRagdollActive={_isRagdollActive}");
             RefreshPilotReferencesFromCrew(crew);
         }
 
         private void OnCrewExit(EvaScript crew)
         {
-            ClearPilotReferences();
+            Mod.Log($"OnCrewExit: crew={crew?.gameObject?.name}, _isRagdollActive={_isRagdollActive}");
+            // Don't clear pilot references if ragdoll is active - we still need them
+            if (!_isRagdollActive)
+            {
+                ClearPilotReferences();
+            }
+            else
+            {
+                Mod.Log("OnCrewExit: Keeping pilot references because ragdoll is active");
+            }
         }
 
         private void RefreshPilotReferences()
@@ -139,13 +162,20 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private void RefreshPilotReferencesFromCrew(EvaScript crew)
         {
+            Mod.Log($"RefreshPilotReferencesFromCrew: crew={crew?.gameObject?.name}, _isRagdollActive={_isRagdollActive}");
+            
             _evaScript = crew;
             _pilotIK = crew.GetComponentInChildren<FullBodyBipedIK>();
             
-            if (_pilotIK == null) return;
+            if (_pilotIK == null)
+            {
+                Mod.Log("RefreshPilotReferencesFromCrew: _pilotIK is null, returning");
+                return;
+            }
 
             if (_isRagdollActive)
             {
+                Mod.Log("RefreshPilotReferencesFromCrew: Calling ApplyRagdollPhysics");
                 ApplyRagdollPhysics();
             }
         }
@@ -313,6 +343,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private void CreateRagdollDynamically(Transform root)
         {
             Mod.Log($"CreateRagdollDynamically: Starting from {root.name}");
+
+            // Bones to skip - these are decorative meshes, not physics bones
+            _skipBones.Clear();
+            _skipBones.Add("EVAChestPlate");
+            _skipBones.Add("EVAChestPlateVariant");
+            _skipBones.Add("JetPackNozzleBottomLeft");
+            _skipBones.Add("JetPackNozzleBottomRight");
+            _skipBones.Add("JetPackNozzleTopLeft");
+            _skipBones.Add("JetPackNozzleTopRight");
+            _skipBones.Add("ParticleSystem");
+            _skipBones.Add("ClickyCollider");
             
             // The actual bone root is likely Root/Offset under the EvaScript
             Transform boneRoot = root.Find("Root/Offset");
@@ -326,6 +367,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (skinnedMeshRenderer != null)
             {
                 Mod.Log($"CreateRagdollDynamically: Found SkinnedMeshRenderer on {skinnedMeshRenderer.gameObject.name}");
+                _originalSkinnedMeshRenderer = skinnedMeshRenderer;
             }
             
             // Navigate to Hips: <boneRoot>/Hips
@@ -417,23 +459,33 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     swingLimit: 8f, twistLow: -15f, twistHigh: 15f, limbLength: 0.2f);
             }
             
-            // Head -> Neck - tighter limit
+            // Neck -> UpperChest - very tight (MUST be before Head -> Neck!)
+            Mod.Log($"CreateRagdollDynamically: Neck setup - neck={neck?.name ?? "NULL"}, upperChest={upperChest?.name ?? "NULL"}");
+            if (neck != null && upperChest != null)
+            {
+                Mod.Log($"CreateRagdollDynamically: Calling AddRigidbodyAndJoint for Neck");
+                AddRigidbodyAndJoint(neck.gameObject, upperChest.gameObject, 2f,
+                    swingLimit: 3f, twistLow: -5f, twistHigh: 5f, limbLength: 0.1f);
+            }
+
+            // Head -> Neck - tighter limit (MUST be after Neck -> UpperChest!)
+            Mod.Log($"CreateRagdollDynamically: Head setup - head={head?.name ?? "NULL"}, neck={neck?.name ?? "NULL"}");
             if (head != null && neck != null)
             {
+                Mod.Log($"CreateRagdollDynamically: Calling AddRigidbodyAndJoint for Head");
                 AddRigidbodyAndJoint(head.gameObject, neck.gameObject, 5f,
                     swingLimit: 15f, twistLow: -20f, twistHigh: 20f, limbLength: 0.15f);
+                Mod.Log($"CreateRagdollDynamically: After AddRigidbodyAndJoint for Head");
             }
             else if (head != null && upperChest != null)
             {
+                Mod.Log($"CreateRagdollDynamically: Falling back to Head -> UpperChest");
                 AddRigidbodyAndJoint(head.gameObject, upperChest.gameObject, 5f,
                     swingLimit: 15f, twistLow: -20f, twistHigh: 20f, limbLength: 0.15f);
             }
-            
-            // Neck -> UpperChest - very tight
-            if (neck != null && upperChest != null)
+            else
             {
-                AddRigidbodyAndJoint(neck.gameObject, upperChest.gameObject, 2f,
-                    swingLimit: 3f, twistLow: -5f, twistHigh: 5f, limbLength: 0.1f);
+                Mod.Log($"CreateRagdollDynamically: Head NOT connected - head={head?.name ?? "NULL"}, neck={neck?.name ?? "NULL"}, upperChest={upperChest?.name ?? "NULL"}");
             }
             
             // Left arm
@@ -533,13 +585,48 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 var joint = rb.GetComponent<CharacterJoint>();
                 Mod.Log($"  - {rb.gameObject.name} has Rigidbody, mass={rb.mass}, connectedTo={joint?.connectedBody?.gameObject?.name ?? "NONE (root)"}");
             }
+            
+            // Disable collisions between ragdoll bones themselves to prevent jittering
+            DisableRagdollSelfCollisions();
+            
+            // Mark ragdoll as fully created
+            _ragdollPhysicsCreated = true;
+            Mod.Log("CreateRagdollDynamically: Ragdoll physics fully created and initialized");
+        }
+        
+        private void DisableRagdollSelfCollisions()
+        {
+            if (_evaScript == null) return;
+            
+            var allColliders = _evaScript.GetComponentsInChildren<Collider>();
+            int ignoredPairs = 0;
+            
+            // Ignore all collisions between ragdoll bones (they should only collide with external objects)
+            for (int i = 0; i < allColliders.Length; i++)
+            {
+                for (int j = i + 1; j < allColliders.Length; j++)
+                {
+                    if (allColliders[i] != null && allColliders[j] != null)
+                    {
+                        Physics.IgnoreCollision(allColliders[i], allColliders[j], true);
+                        ignoredPairs++;
+                    }
+                }
+            }
+            
+            Mod.Log($"DisableRagdollSelfCollisions: Ignored {ignoredPairs} collision pairs between {allColliders.Length} ragdoll colliders");
         }
 
         private void AddRigidbodyAndJoint(GameObject bone, GameObject parentBone, float mass,
             float swingLimit = 45f, float twistLow = -50f, float twistHigh = 50f,
             float limbLength = 0.2f, bool isHinge = false)
         {
-            if (bone == null || parentBone == null) return;
+            Mod.Log($"AddRigidbodyAndJoint ENTER: bone={bone?.name ?? "NULL"}, parentBone={parentBone?.name ?? "NULL"}, mass={mass}");
+            if (bone == null || parentBone == null)
+            {
+                Mod.LogWarning("AddRigidbodyAndJoint: bone or parentBone is null, returning early");
+                return;
+            }
             
             var rb = bone.AddComponent<Rigidbody>();
             rb.mass = mass;
@@ -575,11 +662,19 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             joint.breakTorque = Mathf.Infinity;
             
             Mod.Log($"AddRigidbodyAndJoint: {bone.name} -> {parentBone.name}, mass={mass}, swing={actualSwingLimit}");
+            Mod.Log($"AddRigidbodyAndJoint EXIT: {bone.name} completed successfully");
         }
         
         private void AddBoneCollider(GameObject bone, GameObject parentBone, float limbLength)
         {
             if (bone == null) return;
+            
+            // Skip decorative bones that should not have physics
+            if (_skipBones.Contains(bone.name))
+            {
+                Mod.Log($"AddBoneCollider: Skipping decorative bone {bone.name}");
+                return;
+            }
             
             // Remove any existing colliders on this bone
             var existingCollider = bone.GetComponent<Collider>();
@@ -702,6 +797,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             if (!_isRagdollActive || _evaScript == null) return;
             
+            // Check if game is paused
+            if (Game.Instance.FlightScene.TimeManager.Paused)
+            {
+                Mod.Log("IFlightUpdate: Game is paused, skipping ragdoll updates");
+                return;
+            }
+            
             // Keep Animator disabled - check every frame in case something re-enables it
             var animator = _evaScript.GetComponent<Animator>();
             if (animator != null && animator.enabled)
@@ -772,6 +874,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             Mod.Log("DisableRagdollMode called");
             _isRagdollActive = false;
+            _ragdollPhysicsCreated = false;
             Data.EnableRagdoll = false;
             
             // Clean up dynamically created ragdoll components
