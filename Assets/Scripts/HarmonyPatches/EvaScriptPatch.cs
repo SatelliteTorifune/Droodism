@@ -108,7 +108,70 @@ namespace Assets.Scripts.HarmonyPatches
                 {
                     return false;
                 }
-                
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Skip SlowDownCharacter when ragdoll is active.
+        /// </summary>
+        [HarmonyPatch]
+        public class SlowDownCharacter_Patch
+        {
+            static MethodBase TargetMethod()
+            {
+                return AccessTools.Method(typeof(EvaScript), "SlowDownCharacter");
+            }
+
+            public static bool Prefix(EvaScript __instance)
+            {
+                if (IsRagdollActive(__instance))
+                {
+                    return false;
+                }
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Skip UpdateControllerColiderParent when ragdoll is active.
+        /// </summary>
+        [HarmonyPatch]
+        public class UpdateControllerColiderParent_Patch
+        {
+            static MethodBase TargetMethod()
+            {
+                return AccessTools.Method(typeof(EvaScript), "UpdateControllerColiderParent");
+            }
+
+            public static bool Prefix(EvaScript __instance)
+            {
+                if (IsRagdollActive(__instance))
+                {
+                    return false;
+                }
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Skip ProcessCompletedPhysicsCycle when ragdoll is active.
+        /// This coroutine calls UprightCharacter after FixedUpdate.
+        /// </summary>
+        [HarmonyPatch]
+        public class ProcessCompletedPhysicsCycle_Patch
+        {
+            static MethodBase TargetMethod()
+            {
+                return AccessTools.Method(typeof(EvaScript), "ProcessCompletedPhysicsCycle");
+            }
+
+            public static bool Prefix(EvaScript __instance)
+            {
+                if (IsRagdollActive(__instance))
+                {
+                    return false;
+                }
                 return true;
             }
         }
@@ -200,5 +263,6 @@ namespace Assets.Scripts.HarmonyPatches
                 return true;
             }
         }
+
     }
 }

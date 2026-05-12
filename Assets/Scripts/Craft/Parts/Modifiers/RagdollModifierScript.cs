@@ -823,8 +823,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             if (!_isRagdollActive || _evaScript == null) return;
             
-            bool isPaused = Game.Instance.FlightScene.TimeManager.Paused;
-          
             
             var animator = _evaScript.GetComponent<Animator>();
             if (animator != null && animator.enabled)
