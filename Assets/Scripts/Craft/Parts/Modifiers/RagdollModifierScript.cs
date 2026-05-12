@@ -818,6 +818,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 _justUnpaused = false;
             }
             
+            // Check if pause state changed to PAUSED
+            if (!_wasPaused && isPaused)
+            {
+                Mod.Log("IFlightUpdate: Game just paused, freezing ragdoll");
+                FreezeRagdollForPause();
+            }
+            
             // Keep Animator disabled - check every frame in case something re-enables it
             var animator = _evaScript.GetComponent<Animator>();
             if (animator != null && animator.enabled)
@@ -917,6 +924,26 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     state.bone.localPosition = state.position;
                     state.bone.localRotation = state.rotation;
                 }
+            }
+        }
+        
+        /// <summary>
+        /// Freeze ragdoll during pause - set all rigidbodies to kinematic to prevent position drift
+        /// </summary>
+        private void FreezeRagdollForPause()
+        {
+            if (_evaScript == null) return;
+            
+            Mod.Log("FreezeRagdollForPause: Freezing all ragdoll rigidbodies");
+            
+            // Save current transform states first
+            SaveBoneStates();
+            
+            var rigidbodies = _evaScript.GetComponentsInChildren<Rigidbody>();
+            foreach (var rb in rigidbodies)
+            {
+                rb.isKinematic = true;
+                Mod.Log($"FreezeRagdollForPause: Set {rb.gameObject.name} to kinematic");
             }
         }
 

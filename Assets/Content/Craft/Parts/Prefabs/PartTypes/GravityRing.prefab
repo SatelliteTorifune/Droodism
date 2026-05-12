@@ -186,6 +186,8 @@ MonoBehaviour:
     CurrentRotation: 90
     ExtendSpeed: 0.2
     deployRotationSpeed: 5
+    isDeployed: 0
+    stayDeployed: 0
     RotationSpeed: 0
 --- !u!114 &6081676036464901381
 MonoBehaviour:

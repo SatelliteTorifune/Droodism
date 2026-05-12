@@ -198,4 +198,5 @@ MonoBehaviour:
     _solidWasteConsumptionRate: 1
     _wastedWaterGenerationRate: 1
     _boosteScale: 3
+    stayDeployed: 0
     SubPartPath: DeviceBase/MainPipe
