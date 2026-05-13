@@ -20,9 +20,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     {
         #region Fields
 
-        private CrewCompartmentScript? _crewCompartment;
-        private FullBodyBipedIK? _pilotIK;
-        private EvaScript? _evaScript;
+        private CrewCompartmentScript _crewCompartment;
+        private FullBodyBipedIK _pilotIK;
+        private EvaScript _evaScript;
         
         private bool _isRagdollActive = false;
         private bool _ragdollPhysicsCreated = false;
@@ -46,6 +46,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             public bool useGravity;
             public CollisionDetectionMode collisionDetectionMode;
         }
+        
 
         private struct IKSavedWeights
         {
@@ -61,6 +62,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         #endregion
 
+        private bool animationEnabled;
+        private bool animationEnabled2;
+        private bool ikEnabled;
         #region Unity Inspector
 
         public override void OnGenerateInspectorModel(PartInspectorModel model)
@@ -69,6 +73,31 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             GroupModel groupModel = new GroupModel("Ragdoll");
             model.AddGroup(groupModel);
+            
+            groupModel.Add<ToggleModel>(new ToggleModel(
+                "动画",
+                () => animationEnabled,
+                x => 
+                {
+                    animationEnabled = x;
+                }
+            ));
+            groupModel.Add<ToggleModel>(new ToggleModel(
+                "动画2",
+                () => animationEnabled2,
+                x => 
+                {
+                    animationEnabled2 = x;
+                }
+            ));
+            groupModel.Add<ToggleModel>(new ToggleModel(
+                "IK",
+                () => ikEnabled,
+                x => 
+                {
+                    ikEnabled = x;
+                }
+            ));
             
             groupModel.Add<TextModel>(new TextModel("Status", () => _isRagdollActive ? "Active" : "Inactive"));
             
@@ -194,11 +223,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             _evaScript = crew;
             _pilotIK = crew.GetComponentInChildren<FullBodyBipedIK>();
             
-            if (_pilotIK == null)
-            {
-                //Mod.Log("RefreshPilotReferencesFromCrew: _pilotIK is null, returning");
-                return;
-            }
 
             if (_isRagdollActive)
             {
@@ -758,6 +782,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private void RestoreEvaScriptIK()
         {
+           
             if (_pilotIK == null) return;
 
             _pilotIK.enabled = true;
@@ -818,53 +843,35 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         void IFlightUpdate.FlightUpdate(in FlightFrameData frame)
         {
-            if (!_wasPaused)
-            { 
-                LogRagdollBonePositions();
-                
-            }
-          
-            if (_wasPaused && _isRagdollActive)
-            {
-                OnUnpaused();
-            }
-
-            if (Game.InFlightScene && Data.EnableRagdoll && !_isRagdollActive)
-            {
-                EnableRagdollMode();
-                return;
-            }
-            
-            if (!_isRagdollActive || _evaScript == null) return;
-            
-            
+           
             var animator = _evaScript.GetComponent<Animator>();
+            /*
+            animator.enabled = animationEnabled;
+            _pilotIK.enabled = ikEnabled;*/
+            
             if (animator != null && animator.enabled)
             {
-//Mod.Log("FlightUpdate: Animator was re-enabled, disabling again");
                 animator.enabled = false;
             }
             
             if (_pilotIK != null && _pilotIK.enabled)
             {
-               // Mod.Log("FlightUpdate: _pilotIK was re-enabled, disabling again");
+                // Mod.Log("FlightUpdate: _pilotIK was re-enabled, disabling again");
                 _pilotIK.enabled = false;
             }
             
             var childAnimators = _evaScript.GetComponentsInChildren<Animator>();
             foreach (var anim in childAnimators)
-            {
-                if (anim.enabled)
-                {
-                    anim.enabled = false;
-                }
-            }
+            { 
+                anim.enabled = animationEnabled2;
 
+            }
             
         }
         private void LogRagdollBonePositions()
         {
             if (_evaScript == null) return;
+
             var rigidbodies = _evaScript.GetComponentsInChildren<Rigidbody>();
             Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"{rigidbodies[0].transform.position}");
             foreach (var rb in rigidbodies)
@@ -874,10 +881,25 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
         }
 
+       
+
+       
+
 
         void IFlightFixedUpdate.FlightFixedUpdate(in FlightFrameData frame)
         {
+            if (_evaScript == null) return;
+            LogRagdollBonePositions();
+           
+            if (_wasPaused && _isRagdollActive)
+            {
+                OnUnpaused();
+            }
+            
             if (!_isRagdollActive || _evaScript == null) return;
+            
+            
+            
             
             /*
             var evaRigidbodies = _evaScript.GetComponentsInChildren<Rigidbody>();
@@ -892,7 +914,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         void IFlightUpdatePaused.FlightUpdatePaused(in FlightFrameData frame)
         {
             if (!_isRagdollActive || _evaScript == null) return;
-
             OnPaused();
         }
 
@@ -906,12 +927,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 Mod.Log("RagdollModifierScript: Game PAUSED");
                 _wasPaused = true;
+               
             }
         }
 
         private void OnUnpaused()
         {
             if (_wasPaused)
+                
             {
                 Mod.Log("RagdollModifierScript: Game UNPAUSED");
                 _wasPaused = false;
@@ -920,17 +943,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         #endregion
         
-        List<RigidbodyData> dataList=new List<RigidbodyData>();
-
-        #region  Struction
-
-        struct  RigidbodyData
-        {
-         public Vector3 position;
-         public Quaternion rotation;
-         
-        }
-
-        #endregion
+        
     }
 }
