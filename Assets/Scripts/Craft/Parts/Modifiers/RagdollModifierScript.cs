@@ -34,6 +34,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private HashSet<string> _skipBones = new(StringComparer.OrdinalIgnoreCase);
         
         private List<RigidbodyState> _originalRigidbodyStates = new();
+        private List<BoneTransform> _pausedBoneStates = new();
 
         #endregion
 
@@ -58,6 +59,20 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             public float RightFootRotationWeight;
             public float LeftFootPositionWeight;
             public float LeftFootRotationWeight;
+        }
+
+        private class BoneTransform
+        {
+            public string Name;
+            public Vector3 Position;
+            public Quaternion Rotation;
+
+            public BoneTransform(string name, Vector3 position, Quaternion rotation)
+            {
+                Name = name;
+                Position = position;
+                Rotation = rotation;
+            }
         }
 
         #endregion
@@ -898,8 +913,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             if (!_isRagdollActive || _evaScript == null) return;
             
-            
-            
+            EnsureRagdollPhysicsActive();
             
             /*
             var evaRigidbodies = _evaScript.GetComponentsInChildren<Rigidbody>();
@@ -927,18 +941,113 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 Mod.Log("RagdollModifierScript: Game PAUSED");
                 _wasPaused = true;
-               
+                
+                SaveCurrentBonePositions();
             }
         }
 
         private void OnUnpaused()
         {
             if (_wasPaused)
-                
             {
                 Mod.Log("RagdollModifierScript: Game UNPAUSED");
                 _wasPaused = false;
+                
+                ForceDisableAnimatorAndIK();
+                RestoreBonePositions();
             }
+        }
+
+        #endregion
+
+        #region Bone State Management
+
+        private void SaveCurrentBonePositions()
+        {
+            if (_evaScript == null) return;
+            
+            _pausedBoneStates.Clear();
+            var rigidbodies = _evaScript.GetComponentsInChildren<Rigidbody>();
+            foreach (var rb in rigidbodies)
+            {
+                _pausedBoneStates.Add(new BoneTransform(
+                    rb.transform.name,
+                    rb.transform.localPosition,
+                    rb.transform.localRotation
+                ));
+            }
+            
+            Mod.Log($"SaveCurrentBonePositions: Saved {_pausedBoneStates.Count} bone states");
+        }
+
+        private void RestoreBonePositions()
+        {
+            if (_evaScript == null || _pausedBoneStates.Count == 0) return;
+            
+            var rigidbodies = _evaScript.GetComponentsInChildren<Rigidbody>();
+            int restored = 0;
+            
+            foreach (var rb in rigidbodies)
+            {
+                var savedState = _pausedBoneStates.FirstOrDefault(s => s.Name == rb.transform.name);
+                if (savedState != null)
+                {
+                    rb.transform.localPosition = savedState.Position;
+                    rb.transform.localRotation = savedState.Rotation;
+                    
+                    rb.position = rb.transform.position;
+                    rb.rotation = rb.transform.rotation;
+                    rb.velocity = Vector3.zero;
+                    rb.angularVelocity = Vector3.zero;
+                    
+                    restored++;
+                }
+            }
+            
+            Mod.Log($"RestoreBonePositions: Restored {restored} bone states");
+        }
+
+        private void ForceDisableAnimatorAndIK()
+        {
+            if (_evaScript == null) return;
+            
+            var animator = _evaScript.GetComponent<Animator>();
+            if (animator != null && animator.enabled)
+            {
+                animator.enabled = false;
+                Mod.Log("ForceDisableAnimatorAndIK: Disabled Animator");
+            }
+            
+            var childAnimators = _evaScript.GetComponentsInChildren<Animator>();
+            foreach (var anim in childAnimators)
+            {
+                if (anim.enabled)
+                {
+                    anim.enabled = false;
+                }
+            }
+            
+            if (_pilotIK != null && _pilotIK.enabled)
+            {
+                _pilotIK.enabled = false;
+                Mod.Log("ForceDisableAnimatorAndIK: Disabled _pilotIK");
+            }
+        }
+
+        private void EnsureRagdollPhysicsActive()
+        {
+            if (_evaScript == null || !_isRagdollActive) return;
+            
+            var rigidbodies = _evaScript.GetComponentsInChildren<Rigidbody>();
+            foreach (var rb in rigidbodies)
+            {
+                if (rb.isKinematic)
+                {
+                    rb.isKinematic = false;
+                }
+            }
+            
+            ForceDisableAnimatorAndIK();
         }
 
         #endregion
