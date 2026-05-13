@@ -26,6 +26,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         private bool _isRagdollActive = false;
         private bool _ragdollPhysicsCreated = false;
+        private bool _wasPaused = false;
     
         
         private IKSavedWeights _savedWeights = new();
@@ -267,6 +268,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (_isRagdollActive) return;
             
            // Mod.Log("EnableRagdollMode called");
+            _wasPaused = false;
             
             if (_evaScript == null || _pilotIK == null)
             {
@@ -299,6 +301,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             Mod.Log("DisableRagdollMode called");
             _isRagdollActive = false;
             _ragdollPhysicsCreated = false;
+            _wasPaused = false;
             Data.EnableRagdoll = false;
             
             RestoreEvaScriptIK();
@@ -815,6 +818,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         void IFlightUpdate.FlightUpdate(in FlightFrameData frame)
         {
+            if (!_wasPaused)
+            { 
+                LogRagdollBonePositions();
+                
+            }
+          
+            if (_wasPaused && _isRagdollActive)
+            {
+                OnUnpaused();
+            }
+
             if (Game.InFlightScene && Data.EnableRagdoll && !_isRagdollActive)
             {
                 EnableRagdollMode();
@@ -845,59 +859,76 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     anim.enabled = false;
                 }
             }
+
+            
         }
+        private void LogRagdollBonePositions()
+        {
+            if (_evaScript == null) return;
+            var rigidbodies = _evaScript.GetComponentsInChildren<Rigidbody>();
+            Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"{rigidbodies[0].transform.position}");
+            foreach (var rb in rigidbodies)
+            {
+                Mod.Log($"{rigidbodies[0].transform.position}");
+                //Mod.Log($"[RagdollBone] {rb.transform.name}: pos={rb.position}, rot={rb.rotation.eulerAngles}");
+            }
+        }
+
 
         void IFlightFixedUpdate.FlightFixedUpdate(in FlightFrameData frame)
         {
             if (!_isRagdollActive || _evaScript == null) return;
             
+            /*
             var evaRigidbodies = _evaScript.GetComponentsInChildren<Rigidbody>();
             foreach (var rb in evaRigidbodies)
             {
                 rb.isKinematic = false;
                 rb.useGravity = true;
                 rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
-            }
+            }*/
         }
 
         void IFlightUpdatePaused.FlightUpdatePaused(in FlightFrameData frame)
         {
             if (!_isRagdollActive || _evaScript == null) return;
-            
+
+            OnPaused();
         }
 
         #endregion
 
         #region Pause Management
-        
 
-        #endregion
-
-        #region Utility
-
-        private string GetTransformPath(Transform t)
+        private void OnPaused()
         {
-            string path = t.name;
-            while (t.parent != null)
+            if (!_wasPaused)
             {
-                t = t.parent;
-                path = t.name + "/" + path;
+                Mod.Log("RagdollModifierScript: Game PAUSED");
+                _wasPaused = true;
             }
-            return path;
         }
 
-        private void LogBoneHierarchy(Transform t, int depth)
+        private void OnUnpaused()
         {
-            string indent = new string(' ', depth * 2);
-            string path = GetTransformPath(t);
-            var rb = t.GetComponent<Rigidbody>();
-            var collider = t.GetComponent<Collider>();
-            Mod.Log($"{indent}{t.name} (path={path}) hasRigidbody={rb != null}, hasCollider={collider != null}");
-            
-            for (int i = 0; i < t.childCount; i++)
+            if (_wasPaused)
             {
-                LogBoneHierarchy(t.GetChild(i), depth + 1);
+                Mod.Log("RagdollModifierScript: Game UNPAUSED");
+                _wasPaused = false;
             }
+        }
+
+        #endregion
+        
+        List<RigidbodyData> dataList=new List<RigidbodyData>();
+
+        #region  Struction
+
+        struct  RigidbodyData
+        {
+         public Vector3 position;
+         public Quaternion rotation;
+         
         }
 
         #endregion
