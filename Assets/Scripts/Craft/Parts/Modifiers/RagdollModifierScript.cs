@@ -337,7 +337,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             if (!_isRagdollActive) return;
             
-            Mod.Log("DisableRagdollMode called");
             _isRagdollActive = false;
             _ragdollPhysicsCreated = false;
             _wasPaused = false;
@@ -697,7 +696,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             //Mod.Log($"AddRigidbodyAndJoint ENTER: bone={bone?.name ?? "NULL"}, parentBone={parentBone?.name ?? "NULL"}, mass={mass}");
             if (bone == null || parentBone == null)
             {
-                Mod.LogWarning("AddRigidbodyAndJoint: bone or parentBone is null, returning early");
                 return;
             }
             
@@ -883,28 +881,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             
         }
-        private void LogRagdollBonePositions()
-        {
-            if (_evaScript == null) return;
-
-            var rigidbodies = _evaScript.GetComponentsInChildren<Rigidbody>();
-            Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"{rigidbodies[0].transform.position}");
-            foreach (var rb in rigidbodies)
-            {
-                Mod.Log($"{rigidbodies[0].transform.position}");
-                //Mod.Log($"[RagdollBone] {rb.transform.name}: pos={rb.position}, rot={rb.rotation.eulerAngles}");
-            }
-        }
-
-       
-
+        
        
 
 
         void IFlightFixedUpdate.FlightFixedUpdate(in FlightFrameData frame)
         {
             if (_evaScript == null) return;
-            LogRagdollBonePositions();
            
             if (_wasPaused && _isRagdollActive)
             {
@@ -939,10 +922,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             if (!_wasPaused)
             {
-                Mod.Log("RagdollModifierScript: Game PAUSED");
-                _wasPaused = true;
+               
                 
+                ForceDisableAnimatorAndIK();
                 SaveCurrentBonePositions();
+                
+                _wasPaused = true;
             }
         }
 
@@ -950,11 +935,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             if (_wasPaused)
             {
-                Mod.Log("RagdollModifierScript: Game UNPAUSED");
-                _wasPaused = false;
                 
                 ForceDisableAnimatorAndIK();
                 RestoreBonePositions();
+                
+                _wasPaused = false;
             }
         }
 
@@ -977,7 +962,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 ));
             }
             
-            Mod.Log($"SaveCurrentBonePositions: Saved {_pausedBoneStates.Count} bone states");
         }
 
         private void RestoreBonePositions()
@@ -1004,7 +988,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
             }
             
-            Mod.Log($"RestoreBonePositions: Restored {restored} bone states");
         }
 
         private void ForceDisableAnimatorAndIK()
@@ -1015,7 +998,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (animator != null && animator.enabled)
             {
                 animator.enabled = false;
-                Mod.Log("ForceDisableAnimatorAndIK: Disabled Animator");
             }
             
             var childAnimators = _evaScript.GetComponentsInChildren<Animator>();
@@ -1030,7 +1012,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (_pilotIK != null && _pilotIK.enabled)
             {
                 _pilotIK.enabled = false;
-                Mod.Log("ForceDisableAnimatorAndIK: Disabled _pilotIK");
             }
         }
 
