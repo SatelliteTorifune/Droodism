@@ -229,49 +229,16 @@ namespace Assets.Scripts.Craft.Fuel
         //     The craft script.
         public void Rebuild(ICraftScript craftScript)
         {
+            //Mod.LOG("Patched Rebuild firing");
             _fuelSources.Clear();
             _crossFeeds.Clear();
             foreach (ICommandPod commandPod in craftScript.CommandPods)
             {
                 CommandPodScript commandPodScript = commandPod as CommandPodScript;
                 STCommandPodPatchScript patchScript = commandPod.Part.PartScript?.GetModifier<STCommandPodPatchScript>();
-                
-                // 复用现有的 FuelSource 而不是创建新的，避免破坏外部引用
-                CraftFuelSource existingBatterySource = commandPodScript.BatteryFuelSource;
-                if (existingBatterySource == null || existingBatterySource.FuelType != FuelType.Battery)
-                {
-                    commandPodScript.BatteryFuelSource = CreateFuelSource(FuelType.Battery);
-                }
-                else
-                {
-                    existingBatterySource.Reset();
-                    _fuelSources.Add(existingBatterySource);
-                }
-                
-                CraftFuelSource existingJetSource = commandPodScript.JetFuelSource;
-                if (existingJetSource == null || existingJetSource.FuelType != FuelType.Jet)
-                {
-                    commandPodScript.JetFuelSource = CreateFuelSource(FuelType.Jet, true);
-                }
-                else
-                {
-                    existingJetSource.Reset();
-                    existingJetSource.ReverseSubPriority = true;
-                    _fuelSources.Add(existingJetSource);
-                }
-                
-                CraftFuelSource existingMonoSource = commandPodScript.MonoFuelSource;
-                if (existingMonoSource == null || existingMonoSource.FuelType != FuelType.Monopropellant)
-                {
-                    commandPodScript.MonoFuelSource = CreateFuelSource(FuelType.Monopropellant, true);
-                }
-                else
-                {
-                    existingMonoSource.Reset();
-                    existingMonoSource.ReverseSubPriority = true;
-                    _fuelSources.Add(existingMonoSource);
-                }
-                
+                commandPodScript.BatteryFuelSource = CreateFuelSource(FuelType.Battery);
+                 commandPodScript.JetFuelSource = CreateFuelSource(FuelType.Jet, true);
+                commandPodScript.MonoFuelSource = CreateFuelSource(FuelType.Monopropellant, true);
                 if (patchScript != null)
                 {
                     try
