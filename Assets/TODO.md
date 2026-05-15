@@ -1,6 +1,12 @@
 # 待办事项
 
+# UI
+>rebuild又在发癫了,我操
 
+# RagDoll
+>ragDoll本体和Eva本体位置不一样
+
+>重新进入FlightScene后ragDoll状态发癫
 # ISRU
 
 ## 大矿机

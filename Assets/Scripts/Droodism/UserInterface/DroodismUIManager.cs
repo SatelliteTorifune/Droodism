@@ -222,7 +222,7 @@ namespace Assets.Scripts.Droodism.UserInterface
 
         private void OnActiveCommandPodChanged(ICraftScript source, ICommandPod oldPod, ICommandPod newPod)
         {
-            OnCraftStructureChanged();
+           OnCraftStructureChanged();
         }
 
         private void OnCraftChanged(ICraftNode craftNode)
@@ -246,7 +246,11 @@ namespace Assets.Scripts.Droodism.UserInterface
             CraftFuelSources craftFuelSource = craftScript.FuelSources as CraftFuelSources; craftFuelSource?.Rebuild(craftScript);
             foreach (var pd in craftScript.Data.Assembly.Parts)
             {
-                pd.GetModifier<SupportLifeData>()?.Script.Refresh();
+                if (pd.GetModifier<SupportLifeData>()!=null)
+                {
+                    pd.GetModifier<SupportLifeData>()?.Script.Refresh();
+                }
+               
             }
         }
 

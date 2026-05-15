@@ -1,3 +1,5 @@
+#2026 5 14
+#增加了RagDollScript,用来测试小蓝人死亡时的ragDoll效果
 # 2026 5 9
 >修复了SacrificeScript中数值不对应的bug
 

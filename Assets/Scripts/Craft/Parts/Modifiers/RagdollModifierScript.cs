@@ -177,6 +177,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public override void OnCraftStructureChanged(ICraftScript craftScript)
         {
             base.OnCraftStructureChanged(craftScript);
+            if (!Game.InFlightScene)
+            {
+                return;
+            }
             
             Mod.Log($"OnCraftStructureChanged: Called, _isRagdollActive={_isRagdollActive}");
             
