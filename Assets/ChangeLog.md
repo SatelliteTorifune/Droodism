@@ -1,5 +1,10 @@
-#2026 5 14
-#增加了RagDollScript,用来测试小蓝人死亡时的ragDoll效果
+# 2026 5 16
+> 增加了滑翔伞的和降落伞的升力,下调了滑翔伞前进的动力
+
+> 修复了降落伞和滑翔伞UnloadCrew时位置错误的bug
+> >吗的这些破鸡巴玩意真的不能放在FlightFixedUpdate里面,只能丢FlightUpdate里
+# 2026 5 14
+> 增加了RagDollScript,用来测试小蓝人死亡时的ragDoll效果
 # 2026 5 9
 >修复了SacrificeScript中数值不对应的bug
 

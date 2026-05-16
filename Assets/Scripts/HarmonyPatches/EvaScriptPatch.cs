@@ -241,28 +241,5 @@ namespace Assets.Scripts.HarmonyPatches
                 return true;
             }
         }
-
-        /// <summary>
-        /// Skip achievement checks when ragdoll is active.
-        /// </summary>
-        [HarmonyPatch]
-        public class CheckAchievements_Patch
-        {
-            static MethodBase TargetMethod()
-            {
-                return AccessTools.Method(typeof(EvaScript), "CheckAchievements");
-            }
-
-            public static bool Prefix(EvaScript __instance)
-            {
-                if (IsRagdollActive(__instance))
-                {
-                    return false;
-                }
-                
-                return true;
-            }
-        }
-
     }
 }
