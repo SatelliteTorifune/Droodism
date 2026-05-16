@@ -243,7 +243,8 @@ namespace Assets.Scripts.Droodism.UserInterface
         {
             UpdateInfo();
             var craftScript = Game.Instance.FlightScene.CraftNode.CraftScript;
-            CraftFuelSources craftFuelSource = craftScript.FuelSources as CraftFuelSources; craftFuelSource?.Rebuild(craftScript);
+            //CraftFuelSources craftFuelSource = craftScript.FuelSources as CraftFuelSources;
+            //craftFuelSource?.Rebuild(craftScript);
             foreach (var pd in craftScript.Data.Assembly.Parts)
             {
                 if (pd.GetModifier<SupportLifeData>()!=null)

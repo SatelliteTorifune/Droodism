@@ -1,7 +1,11 @@
 # 待办事项
-
+# GliderScipts
+> Unload时发癫在,位置对不上,搜索原因
+> >和ragDoll有关?
+> > > 我操
 # UI
 >rebuild又在发癫了,我操
+> >鱼和熊掌不可兼得
 
 # RagDoll
 >ragDoll本体和Eva本体位置不一样

@@ -44,7 +44,7 @@ namespace Assets.Scripts
             foreach (var part in GetPartsWithEvaModifier(craftScript, withoutLifeSupport: true))
             {
                 AddLifeSupportModifier(part);
-                AddRagdollModifier(part);
+                //AddRagdollModifier(part);
             }
 
             // Process Generator parts
@@ -102,7 +102,7 @@ namespace Assets.Scripts
             if (part.Name == EvaPartName || part.Name == EvaTouristPartName)
             {
                 AddLifeSupportModifier(part);
-                AddRagdollModifier(part);
+                //AddRagdollModifier(part);
             }
             else if (part.Name == GeneratorPartName)
             {

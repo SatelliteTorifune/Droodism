@@ -30,7 +30,7 @@ namespace Assets.Scripts
                 ____crossFeeds = sources.CrossFeeds;
                 ____equalizeCrossFeeds = sources.EqualizeCrossFeeds;
                 ____fuelSources = sources.FuelSources;
-                return true;
+                return false;
             }
         }
     }
