@@ -18,7 +18,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     [Serializable]
     [DesignerPartModifier("ChemicalReactor")]
     [PartModifierTypeId("ChemicalReactor")]
-    public class ChemicalReactorData : PartModifierData<ChemicalReactorScript>
+        public class ChemicalReactorData : PartModifierData<ChemicalReactorScript>
     {
         [SerializeField]  
         [DesignerPropertySpinner(Label = "Reaction Type", Order = 0, Tooltip = "The type of Chemical Reactor of This Part Applies")]

@@ -242,9 +242,15 @@ namespace Assets.Scripts.Droodism.UserInterface
         private void OnCraftStructureChanged()
         {
             UpdateInfo();
+           
             var craftScript = Game.Instance.FlightScene.CraftNode.CraftScript;
+            if (craftScript==null)
+            {
+                return;
+            }
             //CraftFuelSources craftFuelSource = craftScript.FuelSources as CraftFuelSources;
             //craftFuelSource?.Rebuild(craftScript);
+            
             foreach (var pd in craftScript.Data.Assembly.Parts)
             {
                 if (pd.GetModifier<SupportLifeData>()!=null)
@@ -586,7 +592,7 @@ namespace Assets.Scripts.Droodism.UserInterface
 
         #endregion
 
-        //TODO implement with refactored script
+     
         public IFuelSource GetIFuelSourceByID(string fuelTypeId)
         {
             try

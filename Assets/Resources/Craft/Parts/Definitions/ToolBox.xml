@@ -6,7 +6,7 @@
       <ToolBox toolPoint="500" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
     </Modifiers>
     <AttachPoints>
-      <AttachPoint name="AttachPoint1" displayName="Connect" position="0,-0.232,0" rotation="90,0,0" positionOffset="0,0,0" rotationOffset="0,0,0" allowRotation="true" allowInvertedConnection="false" canReceive="true" canSeek="true" ignoreSurfaces="false" radius="1" />
+      <AttachPoint name="AttachPoint1" displayName="Connect" position="-0.0307,0.067,0" rotation="0,270,0" positionOffset="0,0,0" rotationOffset="0,0,0" allowRotation="true" allowInvertedConnection="false" canReceive="false" canSeek="true" ignoreSurfaces="false" radius="1" />
     </AttachPoints>
     <SubpartTypes>
       <SubpartType index="0" xmlName="" displayName="Part" />
