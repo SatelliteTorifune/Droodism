@@ -15,7 +15,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
    
     public class ChemicalReactorScript : ResourceProcessorPartScript<ChemicalReactorData>
     {
-        private IFuelSource LqdOxygenSource,co2Source,HPco2Source,lH2Source,hydroloxSource,monoSource,methaneloxSource,HPNitrogenSource,waterSource;
+        private IFuelSource LqdOxygenSource,HPco2Source,lH2Source,hydroloxSource,monoSource,methaneloxSource,HPNitrogenSource,waterSource;
         private Transform _particleSystemTransform;
         private ParticleSystem _particleSystem;
         

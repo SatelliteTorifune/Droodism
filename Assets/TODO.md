@@ -1,6 +1,28 @@
-# 待办事项
+# 1.4更新
+> 分体燃料支持
+> >液氧
+> > >把使用LqdOxygen ID的fuelType迁移到原版
+> > >
+> > >移除Propulsion.xml中的把使用LqdOxygen
+> >
+> 二氧化碳
+> > >迁移到原版,如果ID不变.移除Propulsion.xml中的CO2就行
+> 
+> ChemicalReactorScript
+> >修改这个部件中Sabatier_reaction的条件和逻辑
+> >
+> >添加合成液氧煤油与"甲烷和"液氧"合成液氧甲烷的逻辑
 
+# UI
+>rebuild又在发癫了,我操
+> >鱼和熊掌不可兼得
+> 
+> 这真没办法修吧
 
+# RagDoll
+>ragDoll本体和Eva本体位置不一样
+
+>重新进入FlightScene后ragDoll状态发癫
 # ISRU
 
 ## 大矿机

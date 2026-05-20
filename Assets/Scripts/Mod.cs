@@ -58,7 +58,20 @@ namespace Assets.Scripts
 
         public override void OnModLoaded()
         {
-            base.OnModLoaded();
+          
+            try
+            {
+                base.OnModLoaded();
+                var harmony = new Harmony("com.SatelliteTorifune.Droodism");
+                CrewManagerSyncPatches.Apply(harmony);
+                harmony.PatchAll(Assembly.GetExecutingAssembly());
+            }
+            catch (Exception)
+            {
+                string s = $"Mod {Mod.ModInfo.Name} failed to Initialize. Verify all depencencies installed and enabled.<br><color=red><size=200%>你他妈加Juno Harmony了吗?";
+                Game.Instance.UserInterface.CreateMessageDialog(s);
+                throw new FileNotFoundException(s);
+            }
             GameObject DroodismGO=new GameObject("DroodismUI");
             DroodismGO.AddComponent<DroodismUIManager>();
             DroodismGO.AddComponent<RadiationBeltManager>();
@@ -110,12 +123,12 @@ namespace Assets.Scripts
         {
             GetDroodCountInDesigner();
         }
+
         protected override void OnModInitialized()
         {
             base.OnModInitialized();
-            var harmony = new Harmony("com.SatelliteTorifune.Droodism");
-            harmony.PatchAll(Assembly.GetExecutingAssembly());
-            CrewManagerSyncPatches.Apply(harmony);
+            
+
             Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
             Game.Instance.SceneManager.SceneTransitionCompleted+=OnSceneTransitionCompleted;
             RegisterCommands();

@@ -563,7 +563,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         private void OnFlightEnded(object sender, FlightEndedEventArgs e)
         {
-           Mod.Log("OnFlightEnded");
             FlightEnd();
         }
         /// <summary>
@@ -574,7 +573,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         public void OnPhysicsEnabled(ICraftNode craftNode, PhysicsChangeReason reason)
         {
-            Mod.Log("OnPhysicsEnabled{0}",reason);
             if (reason == PhysicsChangeReason.Warp||reason == PhysicsChangeReason.LoadedIntoGameView)
             {
                 return;
@@ -594,7 +592,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return;
             }
             OnCraftUnloaded();
-            Mod.Log("OnPhysicsDisabled调用OnCraftUnloaded");
         }
         
         /// <summary>
@@ -652,6 +649,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             catch (Exception e)
             {
+                Mod.Log("RemoveExtraTanks调用RemoveFuelTankXML出问题了{0}", e);
             }
             
 
