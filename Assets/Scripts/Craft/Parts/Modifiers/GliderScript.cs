@@ -236,7 +236,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         #endregion
         private void UpdateForceForFullyDeployedGlider(in FlightFrameData frame)
         {
-            
             Rigidbody rb = PartScript.BodyScript.RigidBody;
              if (rb == null) return;
              Vector3 worldVel = this.PartScript.CraftScript.FlightData.SurfaceVelocity.ToVector3();

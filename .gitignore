@@ -130,3 +130,4 @@ ModAssetBundles/StandaloneOSX/StandaloneOSX.manifest
 *.meta
 Assets/Droodism.asmdef
 *.meta
+Assets/ModData.asset

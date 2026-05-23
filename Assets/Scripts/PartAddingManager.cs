@@ -161,8 +161,6 @@ namespace Assets.Scripts
         /// </summary>
         private static void AddRagdollModifier(PartData part)
         {
-            return;
-            //TODO 记得删return
             if (part == null) return;
 
             var ragdollData = part.GetModifier<RagdollModifierData>();

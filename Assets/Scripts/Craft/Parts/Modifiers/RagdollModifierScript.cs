@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using ModApi;
 using ModApi.Craft;
@@ -16,7 +17,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     public class RagdollModifierScript : PartModifierScript<RagdollModifierData>, 
         IFlightUpdate,
         IFlightFixedUpdate,
-        IFlightUpdatePaused
+        IFlightUpdatePaused,
+        IFlightStart
     {
         #region Fields
 
@@ -77,9 +79,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         #endregion
 
-        private bool animationEnabled;
-        private bool animationEnabled2;
-        private bool ikEnabled;
+        private bool animationEnabled=true;
         #region Unity Inspector
 
         public override void OnGenerateInspectorModel(PartInspectorModel model)
@@ -99,18 +99,18 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             ));
             groupModel.Add<ToggleModel>(new ToggleModel(
                 "动画2",
-                () => animationEnabled2,
+                () => Data.AnimateEnabled2,
                 x => 
                 {
-                    animationEnabled2 = x;
+                    Data.AnimateEnabled2 = x;
                 }
             ));
             groupModel.Add<ToggleModel>(new ToggleModel(
                 "IK",
-                () => ikEnabled,
+                () => Data.IKEnabled,
                 x => 
                 {
-                    ikEnabled = x;
+                    Data.IKEnabled = x;
                 }
             ));
             
@@ -322,7 +322,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             
             //Mod.Log($"After FindCrew: _evaScript={_evaScript != null}, _pilotIK={_pilotIK != null}");
-            
+
+            animationEnabled = false;
+            Data.AnimateEnabled2 = false;
+            Data.IKEnabled = false;
             _isRagdollActive = true;
             Data.EnableRagdoll = true;
             
@@ -858,6 +861,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         #region Flight Loop
 
+        void IFlightStart.FlightStart(in FlightFrameData frameData)
+        {
+            _evaScript = this.PartScript.GetModifier<EvaScript>();
+            _pilotIK = _evaScript.GetComponentInChildren<FullBodyBipedIK>();
+        }
+
         void IFlightUpdate.FlightUpdate(in FlightFrameData frame)
         {
            
@@ -868,19 +877,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             if (animator != null && animator.enabled)
             {
-                animator.enabled = false;
+                animator.enabled = animationEnabled;
             }
-            
-            if (_pilotIK != null && _pilotIK.enabled)
-            {
-                // Mod.Log("FlightUpdate: _pilotIK was re-enabled, disabling again");
-                _pilotIK.enabled = false;
-            }
+
+            _pilotIK.enabled = Data.IKEnabled;
             
             var childAnimators = _evaScript.GetComponentsInChildren<Animator>();
             foreach (var anim in childAnimators)
             { 
-                anim.enabled = animationEnabled2;
+                anim.enabled = Data.AnimateEnabled2;
 
             }
             
@@ -914,7 +919,21 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         void IFlightUpdatePaused.FlightUpdatePaused(in FlightFrameData frame)
         {
-            if (!_isRagdollActive || _evaScript == null) return;
+            Mod.Log($"FlightUpdatePaused: Called, _isRagdollActive={_isRagdollActive}, _evaScript={_evaScript?.gameObject?.name ?? "null"}");
+            
+            if (!_isRagdollActive)
+            {
+                Mod.Log("FlightUpdatePaused: _isRagdollActive is false, skipping");
+                return;
+            }
+            
+            if (_evaScript == null)
+            {
+                Mod.Log("FlightUpdatePaused: _evaScript is null, skipping");
+                return;
+            }
+            
+            Mod.Log("FlightUpdatePaused: Calling OnPaused");
             OnPaused();
         }
 
@@ -922,7 +941,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         #region Pause Management
 
-        private void OnPaused()
+       private void OnPaused()
         {
             if (!_wasPaused)
             {
