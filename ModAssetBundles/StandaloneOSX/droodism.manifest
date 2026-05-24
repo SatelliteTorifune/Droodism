@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 349200625
+CRC: 714008793
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: f66b42a7336b9d40fa34d5f5c37b52b5
+    Hash: 00c394e792c0b2fabc69e231fa03d095
   TypeTreeHash:
     serializedVersion: 2
     Hash: e1544aeebdcec12f30028bc5313cdfc6
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: f66b42a7336b9d40fa34d5f5c37b52b5
+    Hash: 00c394e792c0b2fabc69e231fa03d095
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -88,9 +88,9 @@ Assets:
 - Assets/Resources/Craft/Parts/Definitions/balloon.xml
 - Assets/Resources/DefaultRadiationBeltConfigs/Oord.xml
 - Assets/Content/Craft/Parts/Textures/Detail/Tool_box_Tool_box_polymer_BaseColor.png
-- Assets/Resources/Craft/Parts/Definitions/Flag.xml
-- Assets/Resources/Craft/Parts/Prefabs/Ladder.prefab
 - Assets/Resources/Craft/Parts/Definitions/FoodTank.xml
+- Assets/Resources/Craft/Parts/Prefabs/Ladder.prefab
+- Assets/Resources/Craft/Parts/Prefabs/ToolBox.prefab
 - Assets/Resources/Craft/Parts/Definitions/Glider.xml
 - Assets/Resources/DefaultRadiationBeltConfigs/Sergeaa.xml
 - Assets/Content/Craft/Parts/Categories/LifeSupport.asset
@@ -103,7 +103,6 @@ Assets:
 - Assets/Resources/Craft/Parts/Prefabs/HibernatingChamber.prefab
 - Assets/Resources/DefaultRadiationBeltConfigs/Miros.xml
 - Assets/Content/Craft/Parts/Categories/In-Situ Resource Utilization.asset
-- Assets/Resources/Craft/Parts/Prefabs/ToolBox.prefab
 - Assets/Resources/Craft/Parts/Prefabs/MethaloxGenerator.prefab
 - Assets/Resources/Craft/Parts/Definitions/PhotoBioReactor.xml
 - Assets/Resources/Craft/Parts/Prefabs/GasDepressurizeDevice.prefab
@@ -116,28 +115,27 @@ Assets:
 - Assets/Resources/Craft/Parts/Prefabs/WaterTank.prefab
 - Assets/Resources/DefaultRadiationBeltConfigs/Vulco.xml
 - Assets/Resources/Craft/Parts/Definitions/HibernatingChamber.xml
+- Assets/Resources/Craft/Parts/Prefabs/First Add Kit.prefab
 - Assets/Content/Craft/Parts/GasDepressure.png
-- Assets/Resources/Craft/Parts/Prefabs/Flag.prefab
 - Assets/Resources/Craft/Parts/Definitions/CarbonDioxideFilter.xml
 - Assets/Resources/Craft/Parts/Prefabs/Glider.prefab
 - Assets/Resources/DefaultRadiationBeltConfigs/Urados.xml
 - Assets/Resources/Craft/Parts/Prefabs/FoodTank.prefab
-- Assets/Resources/Craft/Parts/Prefabs/FirstAidKit.prefab
-- Assets/Resources/DefaultRadiationBeltConfigs/Droo.xml
 - Assets/Resources/Craft/Parts/Definitions/Sodium Peroxide Container.xml
+- Assets/Resources/DefaultRadiationBeltConfigs/Droo.xml
 - Assets/Resources/Craft/Parts/Definitions/ChemicalReactor.xml
 - Assets/Resources/Craft/Parts/Prefabs/CarbonDioxideFilter.prefab
 - Assets/Resources/PlanetBelt.prefab
 - Assets/Content/Craft/Parts/FirstAidKit.png
 - Assets/Content/XML UI/Sprites/DroodsimUIIcon.png
 - Assets/Resources/Craft/Parts/Prefabs/SewageTreatDevice.prefab
-- Assets/Resources/Craft/Parts/Definitions/FirstAidKit.xml
-- Assets/Resources/Craft/Parts/Prefabs/Sodium Peroxide Container.prefab
 - Assets/Resources/Craft/Parts/Prefabs/MiningMachine.prefab
+- Assets/Resources/Craft/Parts/Prefabs/Sodium Peroxide Container.prefab
 - Assets/Resources/Craft/Parts/Definitions/ResourcesPack.xml
 - Assets/Content/Craft/Parts/Categories/Icons/ISRU.png
 - Assets/Content/Craft/Parts/Textures/Normal/Tool_box_Tool_box_polymer_Normal.png
 - Assets/Content/XML UI/UIResourceDatabase.asset
+- Assets/Resources/Craft/Parts/Definitions/First Add Kit.xml
 - Assets/Resources/Craft/Parts/Prefabs/GasPressurizeDevice.prefab
 - Assets/Content/Craft/Parts/Textures/Detail/first_aid_kit.jpeg
 - Assets/Resources/Craft/Parts/Definitions/WaterPump.xml

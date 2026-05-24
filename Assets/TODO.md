@@ -13,16 +13,19 @@
 > >
 > >添加合成液氧煤油与"甲烷和"液氧"合成液氧甲烷的逻辑
 
-# UI
->rebuild又在发癫了,我操
-> >鱼和熊掌不可兼得
-> 
-> 这真没办法修吧
 
 # RagDoll
 >ragDoll本体和Eva本体位置不一样
-
+>
+> ragDoll部分质量调整
+> 
 >重新进入FlightScene后ragDoll状态发癫
+> > 怎么发癫?
+> 
+# Resources Pack 
+>减小默认尺寸至50%
+> 
+> 增加尺寸调整滑条
 # ISRU
 
 ## 大矿机

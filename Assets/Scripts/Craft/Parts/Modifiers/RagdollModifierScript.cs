@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using ModApi;
 using ModApi.Craft;
@@ -16,7 +17,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     public class RagdollModifierScript : PartModifierScript<RagdollModifierData>, 
         IFlightUpdate,
         IFlightFixedUpdate,
-        IFlightUpdatePaused
+        IFlightUpdatePaused,
+        IFlightStart
     {
         #region Fields
 
@@ -76,41 +78,39 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
 
         #endregion
-
-        private bool animationEnabled;
-        private bool animationEnabled2;
-        private bool ikEnabled;
+        
         #region Unity Inspector
 
+        private bool forceSnyc;
         public override void OnGenerateInspectorModel(PartInspectorModel model)
         {
             base.OnGenerateInspectorModel(model);
             
             GroupModel groupModel = new GroupModel("Ragdoll");
             model.AddGroup(groupModel);
-            
             groupModel.Add<ToggleModel>(new ToggleModel(
-                "动画",
-                () => animationEnabled,
+                "同步",
+                () => forceSnyc,
                 x => 
                 {
-                    animationEnabled = x;
+                    forceSnyc = x;
                 }
             ));
+           
             groupModel.Add<ToggleModel>(new ToggleModel(
                 "动画2",
-                () => animationEnabled2,
+                () => Data.AnimateEnabled2,
                 x => 
                 {
-                    animationEnabled2 = x;
+                    Data.AnimateEnabled2 = x;
                 }
             ));
             groupModel.Add<ToggleModel>(new ToggleModel(
                 "IK",
-                () => ikEnabled,
+                () => Data.IKEnabled,
                 x => 
                 {
-                    ikEnabled = x;
+                    Data.IKEnabled = x;
                 }
             ));
             
@@ -323,6 +323,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             //Mod.Log($"After FindCrew: _evaScript={_evaScript != null}, _pilotIK={_pilotIK != null}");
             
+            Data.AnimateEnabled2 = false;
+            Data.IKEnabled = false;
             _isRagdollActive = true;
             Data.EnableRagdoll = true;
             
@@ -858,35 +860,56 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         #region Flight Loop
 
+        void IFlightStart.FlightStart(in FlightFrameData frameData)
+        {
+            _evaScript = this.PartScript.GetModifier<EvaScript>();
+            _pilotIK = _evaScript.GetComponentInChildren<FullBodyBipedIK>();
+        }
+
         void IFlightUpdate.FlightUpdate(in FlightFrameData frame)
         {
-           
-            var animator = _evaScript.GetComponent<Animator>();
-            /*
-            animator.enabled = animationEnabled;
-            _pilotIK.enabled = ikEnabled;*/
-            
-            if (animator != null && animator.enabled)
-            {
-                animator.enabled = false;
-            }
-            
-            if (_pilotIK != null && _pilotIK.enabled)
-            {
-                // Mod.Log("FlightUpdate: _pilotIK was re-enabled, disabling again");
-                _pilotIK.enabled = false;
-            }
+            _pilotIK.enabled = Data.IKEnabled;
             
             var childAnimators = _evaScript.GetComponentsInChildren<Animator>();
             foreach (var anim in childAnimators)
             { 
-                anim.enabled = animationEnabled2;
+                anim.enabled = Data.AnimateEnabled2;
 
             }
-            
+            ShowPos();
+            if (forceSnyc)
+            {
+                到底他妈有几个();
+                this.PartScript.GameObject.transform.position =rigHipPos;
+            }
         }
-        
-       
+
+        private Vector3 rigHipPos;
+
+        private void ShowPos()
+        {
+            if (_evaScript == null) return;
+            Mod.Log(PartScript.GameObject.transform.position);
+            var rigidbodies = _evaScript.GetComponentsInChildren<Rigidbody>();
+            foreach (var rb in rigidbodies)
+            {
+                if(rb.transform.name!="Hips")
+                    return;
+                rigHipPos=new Vector3(rb.transform.position.x,rb.transform.position.y,0);
+                Mod.Log($"{rb.transform.name}: pos={rb.position}, rot={rb.rotation.eulerAngles}");
+            }
+        }
+
+        void 到底他妈有几个()
+        {
+            Mod.Log("几把");
+            foreach (var animator in PartScript.GameObject.GetComponentsInChildren<Animator>())
+            {
+                Mod.Log(animator.transform.name);
+            }
+
+            Mod.Log("操");
+        }
 
 
         void IFlightFixedUpdate.FlightFixedUpdate(in FlightFrameData frame)
@@ -914,7 +937,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         void IFlightUpdatePaused.FlightUpdatePaused(in FlightFrameData frame)
         {
-            if (!_isRagdollActive || _evaScript == null) return;
+            if (_evaScript == null||!_isRagdollActive)
+            {
+                return;
+            }
+            
             OnPaused();
         }
 
@@ -922,7 +949,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         #region Pause Management
 
-        private void OnPaused()
+       private void OnPaused()
         {
             if (!_wasPaused)
             {
@@ -973,7 +1000,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (_evaScript == null || _pausedBoneStates.Count == 0) return;
             
             var rigidbodies = _evaScript.GetComponentsInChildren<Rigidbody>();
-            int restored = 0;
             
             foreach (var rb in rigidbodies)
             {
@@ -988,7 +1014,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     rb.velocity = Vector3.zero;
                     rb.angularVelocity = Vector3.zero;
                     
-                    restored++;
                 }
             }
             
