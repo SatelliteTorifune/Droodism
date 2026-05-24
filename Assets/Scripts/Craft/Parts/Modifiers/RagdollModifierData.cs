@@ -30,15 +30,7 @@ public class RagdollModifierData : PartModifierData<RagdollModifierScript>
     [SerializeField] [PartModifierProperty]
     private bool ikEnabled=true;
     public float IkBlendSpeed => _ikBlendSpeed;
-    protected override void OnDesignerInitialization(IDesignerPartPropertiesModifierInterface d)
-    {
-        base.OnDesignerInitialization(d);
-            
-        d.OnPropertyChanged<bool>(
-            () => _enableRagdoll,
-            (newVal, oldVal) => Script?.SetRagdollMode(newVal)
-        );
-    }
+    
     
     public bool AnimateEnabled2 { get; set; }
     public bool IKEnabled { get; set; }
