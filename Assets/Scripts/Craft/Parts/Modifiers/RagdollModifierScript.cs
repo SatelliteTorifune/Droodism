@@ -78,25 +78,25 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
 
         #endregion
-
-        private bool animationEnabled=true;
+        
         #region Unity Inspector
 
+        private bool forceSnyc;
         public override void OnGenerateInspectorModel(PartInspectorModel model)
         {
             base.OnGenerateInspectorModel(model);
             
             GroupModel groupModel = new GroupModel("Ragdoll");
             model.AddGroup(groupModel);
-            
             groupModel.Add<ToggleModel>(new ToggleModel(
-                "动画",
-                () => animationEnabled,
+                "同步",
+                () => forceSnyc,
                 x => 
                 {
-                    animationEnabled = x;
+                    forceSnyc = x;
                 }
             ));
+           
             groupModel.Add<ToggleModel>(new ToggleModel(
                 "动画2",
                 () => Data.AnimateEnabled2,
@@ -322,8 +322,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             
             //Mod.Log($"After FindCrew: _evaScript={_evaScript != null}, _pilotIK={_pilotIK != null}");
-
-            animationEnabled = false;
+            
             Data.AnimateEnabled2 = false;
             Data.IKEnabled = false;
             _isRagdollActive = true;
@@ -869,17 +868,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         void IFlightUpdate.FlightUpdate(in FlightFrameData frame)
         {
-           
-            var animator = _evaScript.GetComponent<Animator>();
-            /*
-            animator.enabled = animationEnabled;
-            _pilotIK.enabled = ikEnabled;*/
-            
-            if (animator != null && animator.enabled)
-            {
-                animator.enabled = animationEnabled;
-            }
-
             _pilotIK.enabled = Data.IKEnabled;
             
             var childAnimators = _evaScript.GetComponentsInChildren<Animator>();
@@ -888,10 +876,40 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 anim.enabled = Data.AnimateEnabled2;
 
             }
-            
+            ShowPos();
+            if (forceSnyc)
+            {
+                到底他妈有几个();
+                this.PartScript.GameObject.transform.position =rigHipPos;
+            }
         }
-        
-       
+
+        private Vector3 rigHipPos;
+
+        private void ShowPos()
+        {
+            if (_evaScript == null) return;
+            Mod.Log(PartScript.GameObject.transform.position);
+            var rigidbodies = _evaScript.GetComponentsInChildren<Rigidbody>();
+            foreach (var rb in rigidbodies)
+            {
+                if(rb.transform.name!="Hips")
+                    return;
+                rigHipPos=new Vector3(rb.transform.position.x,rb.transform.position.y,0);
+                Mod.Log($"{rb.transform.name}: pos={rb.position}, rot={rb.rotation.eulerAngles}");
+            }
+        }
+
+        void 到底他妈有几个()
+        {
+            Mod.Log("几把");
+            foreach (var animator in PartScript.GameObject.GetComponentsInChildren<Animator>())
+            {
+                Mod.Log(animator.transform.name);
+            }
+
+            Mod.Log("操");
+        }
 
 
         void IFlightFixedUpdate.FlightFixedUpdate(in FlightFrameData frame)
@@ -919,21 +937,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         void IFlightUpdatePaused.FlightUpdatePaused(in FlightFrameData frame)
         {
-            Mod.Log($"FlightUpdatePaused: Called, _isRagdollActive={_isRagdollActive}, _evaScript={_evaScript?.gameObject?.name ?? "null"}");
-            
-            if (!_isRagdollActive)
+            if (_evaScript == null||!_isRagdollActive)
             {
-                Mod.Log("FlightUpdatePaused: _isRagdollActive is false, skipping");
                 return;
             }
             
-            if (_evaScript == null)
-            {
-                Mod.Log("FlightUpdatePaused: _evaScript is null, skipping");
-                return;
-            }
-            
-            Mod.Log("FlightUpdatePaused: Calling OnPaused");
             OnPaused();
         }
 
@@ -992,7 +1000,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (_evaScript == null || _pausedBoneStates.Count == 0) return;
             
             var rigidbodies = _evaScript.GetComponentsInChildren<Rigidbody>();
-            int restored = 0;
             
             foreach (var rb in rigidbodies)
             {
@@ -1007,7 +1014,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     rb.velocity = Vector3.zero;
                     rb.angularVelocity = Vector3.zero;
                     
-                    restored++;
                 }
             }
             
