@@ -2,6 +2,24 @@
 #
 # Get latest from https://github.com/github/gitignore/blob/main/Unity.gitignore
 #
+
+# Ignore IDE files
+.idea/
+.vsconfig
+
+# Ignore JNO mod files
+ModAssetBundles
+
+# Ignore plugins
+/Assets/Plugins/**/*.dll
+/Assets/Plugins/**/*.pdb
+/Assets/Plugins/**/*.mdb
+/Assets/Plugins/**/*.meta
+/Assets/Plugins/**/*.xml
+
+# Ignore decompiled
+Decompiled
+
 .utmp/
 /[Ll]ibrary/
 /[Tt]emp/
@@ -33,7 +51,6 @@
 
 # Visual Studio cache directory
 .vs/
-.idea
 
 # Gradle cache directory
 .gradle/
@@ -55,11 +72,6 @@ ExportedObj/
 *.mdb
 *.opendb
 *.VC.db
-*.meta
-*.manifest
-*.ModAssetBundles/
-*.bytes
-*.manifest
 
 # Unity3D generated meta files
 *.pidb.meta
@@ -103,31 +115,4 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
-/ModAssetBundles
-ModAssetBundles/StandaloneWindows64/droodism
-ModAssetBundles/StandaloneOSX/droodism
-ModAssetBundles/StandaloneOSX/droodism
-ModAssetBundles/StandaloneOSX/droodism.manifest
-ModAssetBundles/StandaloneOSX/StandaloneOSX
-ModAssetBundles/StandaloneOSX/StandaloneOSX.manifest
-.idea/.idea.Droodism.dir/.idea/workspace.xml
-/.idea
-.idea/.idea.Droodism.dir/.idea/workspace.xml
-# 默认忽略的文件
-/shelf/
-/workspace.xml
-# Rider 忽略的文件
-/contentModel.xml
-/modules.xml
-/.idea.Droodism.iml
-/projectSettingsUpdater.xml
-# 基于编辑器的 HTTP 客户端请求
-/httpRequests/
-# Datasource local storage ignored files
-/dataSources/
-/dataSources.local.xml
-/ModAssetBundles
 *.meta
-Assets/Droodism.asmdef
-*.meta
-Assets/ModData.asset

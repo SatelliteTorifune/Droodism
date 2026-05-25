@@ -90,7 +90,7 @@ namespace Assets.Scripts.HarmonyPatches
                 return true;
             }
         }
-
+/*
         /// <summary>
         /// Skip upright character when ragdoll is active.
         /// </summary>
@@ -110,7 +110,7 @@ namespace Assets.Scripts.HarmonyPatches
                 }
                 return true;
             }
-        }
+        }*/
 
         /// <summary>
         /// Skip SlowDownCharacter when ragdoll is active.

@@ -3,7 +3,7 @@
 > >液氧
 > > >把使用LqdOxygen ID的fuelType迁移到原版
 > > >
-> > >移除Propulsion.xml中的把使用LqdOxygen
+> > >移除Propulsion.xml中的LqdOxygen FuelType
 > >
 > 二氧化碳
 > > >迁移到原版,如果ID不变.移除Propulsion.xml中的CO2就行
@@ -16,7 +16,8 @@
 
 # RagDoll
 >ragDoll本体和Eva本体位置不一样
->
+> >没思路
+> 
 > ragDoll部分质量调整
 > 
 >重新进入FlightScene后ragDoll状态发癫
@@ -26,6 +27,10 @@
 >减小默认尺寸至50%
 > 
 > 增加尺寸调整滑条
+
+## 插旗
+> 重置
+> 吗的这个b玩意transform不能动
 # ISRU
 
 ## 大矿机
@@ -43,6 +48,4 @@
 ## 小矿机
 > TODO
 
-## 插旗
-> 重置
-> 吗的这个b玩意transform不能动
+
