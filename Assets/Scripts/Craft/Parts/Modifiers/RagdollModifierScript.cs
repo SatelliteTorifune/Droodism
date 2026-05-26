@@ -28,6 +28,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private bool _isRagdollActive = false;
         private bool _wasPaused = false;
         private bool _ragdollPhysicsCreated = false;
+        private Vector3 _preservedVelocity = Vector3.zero;
 
         private IKSavedWeights _savedWeights = new();
         private Transform _ragdollRoot;
@@ -74,12 +75,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             public string Name;
             public Vector3 LocalPosition;
             public Quaternion LocalRotation;
+            public Vector3 Velocity;
+            public Vector3 AngularVelocity;
 
-            public BoneTransform(string name, Vector3 localPos, Quaternion localRot)
+            public BoneTransform(string name, Vector3 localPos, Quaternion localRot,
+                Vector3 velocity, Vector3 angularVelocity)
             {
                 Name = name;
                 LocalPosition = localPos;
                 LocalRotation = localRot;
+                Velocity = velocity;
+                AngularVelocity = angularVelocity;
             }
         }
 
@@ -231,11 +237,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (_evaScript == null || _pilotIK == null)
                 FindCrew();
 
+            if (_evaScript != null && _pilotIK != null)
+            {
+                CaptureCraftVelocity();
+                ApplyRagdollPhysics();
+            }
+
             _isRagdollActive = true;
             Data.EnableRagdoll = true;
-
-            if (_evaScript != null && _pilotIK != null)
-                ApplyRagdollPhysics();
         }
 
         public void DisableRagdollMode()
@@ -254,6 +263,24 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         #endregion
 
         #region Ragdoll Physics
+
+        private void CaptureCraftVelocity()
+        {
+            if (PartScript?.CraftScript?.FlightData != null)
+            {
+                _preservedVelocity = PartScript.CraftScript.FlightData.SurfaceVelocity.ToVector3();
+            }
+        }
+
+        private void ApplyPreservedVelocity()
+        {
+            if (_evaScript == null) return;
+            foreach (var rb in _evaScript.GetComponentsInChildren<Rigidbody>())
+            {
+                rb.velocity = _preservedVelocity;
+                rb.angularVelocity = Vector3.zero;
+            }
+        }
 
         private void ApplyRagdollPhysics()
         {
@@ -314,7 +341,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 CreateRagdollDynamically(_evaScript.transform);
             }
 
-            ZeroRagdollVelocities();
+            ApplyPreservedVelocity();
             DisableRagdollSelfCollisions();
             AttachCollisionLogger();
             _ragdollPhysicsCreated = true;
@@ -489,16 +516,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
         }
 
-        private void ZeroRagdollVelocities()
-        {
-            if (_evaScript == null) return;
-            foreach (var rb in _evaScript.GetComponentsInChildren<Rigidbody>())
-            {
-                rb.velocity = Vector3.zero;
-                rb.angularVelocity = Vector3.zero;
-            }
-        }
-
         private void AttachCollisionLogger()
         {
             if (_evaScript == null) return;
@@ -516,19 +533,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
 
         #endregion
-
-        #region Bone Sync
-
-        private void SyncBoneTransforms()
-        {
-            // Rigidbody and transform positions are always in sync in Unity.
-            // No manual sync needed - SkinnedMeshRenderer reads bone transform
-            // matrices directly. Force-setting positions per-frame can conflict
-            // with RigidbodyInterpolation and cause jitter.
-        }
-
-        #endregion
-
+        
         #region IK Management
 
         private void SaveIKWeights()
@@ -662,7 +667,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             var rbs = _evaScript.GetComponentsInChildren<Rigidbody>();
             foreach (var rb in rbs)
             {
-                _pausedBoneStates.Add(new BoneTransform(rb.transform.name, rb.transform.localPosition, rb.transform.localRotation));
+                _pausedBoneStates.Add(new BoneTransform(
+                    rb.transform.name, rb.transform.localPosition, rb.transform.localRotation,
+                    rb.velocity, rb.angularVelocity));
             }
         }
 
@@ -680,8 +687,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     rb.transform.localRotation = saved.LocalRotation;
                     rb.position = rb.transform.position;
                     rb.rotation = rb.transform.rotation;
-                    rb.velocity = Vector3.zero;
-                    rb.angularVelocity = Vector3.zero;
+                    rb.velocity = saved.Velocity;
+                    rb.angularVelocity = saved.AngularVelocity;
                 }
             }
         }
