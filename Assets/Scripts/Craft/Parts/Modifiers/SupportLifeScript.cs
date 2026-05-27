@@ -11,7 +11,6 @@ using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using Assets.Scripts.Droodism;
 using Assets.Scripts.Droodism.Crew;
 using Droodism.RadiationBelt;
-using ModApi.Craft.Program.Instructions;
 using ModApi.Flight.Events;
 using ModApi.Flight.GameView;
 using UnityEngine;
@@ -114,11 +113,16 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// 外辐射带保护值
         /// </summary>
         private float outerRadiationProtection;
-        
+
         /// <summary>
         /// 内辐射带保护值
         /// </summary>
         private float innerRadiationProtection;
+
+        private static BreathablePlanets _breathablePlanetsCache;
+        private static bool _breathablePlanetsCacheLoaded;
+
+        
         #endregion
 
         #region 逻辑循环啥的
@@ -793,6 +797,40 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
         }
         #endregion
+
+        #region 可呼吸星球判断
+        private static BreathablePlanets GetBreathablePlanets()
+        {
+            if (!_breathablePlanetsCacheLoaded)
+            {
+                _breathablePlanetsCacheLoaded = true;
+                try
+                {
+                    _breathablePlanetsCache = BreathablePlanets.LoadFromFile();
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"[SupportLifeScript] Failed to load BreathablePlanets: {ex}");
+                    _breathablePlanetsCache = new BreathablePlanets
+                    {
+                        BreathablePlanet = Array.Empty<string>()
+                    };
+                }
+            }
+            return _breathablePlanetsCache;
+        }
+
+        private static bool IsBreathablePlanet(string planetName)
+        {
+            var config = GetBreathablePlanets();
+            if (config?.BreathablePlanet == null)
+            {
+                return false;
+            }
+            return config.BreathablePlanet.Contains(planetName);
+        }
+        
+        #endregion
         
         #region SOI,结构变化相关函数
         /// <summary>
@@ -826,9 +864,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
             if (airDensity != 0)
             {
-                if (currentPlanetName==("Droo") || currentPlanetName==("Kerbin") ||
-                    currentPlanetName==("Earth") || currentPlanetName==("Nebra") ||
-                    currentPlanetName==("Laythe") || currentPlanetName==("Oord"))
+                if (IsBreathablePlanet(currentPlanetName))
                 {
                     if(evaScript.IsInWater && PartScript.CraftScript.FlightData.AltitudeAboveSeaLevel < 0.1)
                     {
@@ -836,7 +872,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     }
                     return false;
                 }
-                
+
             }
             return true;
         }
@@ -855,6 +891,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 currentPlanetName = this.PartScript.CraftScript.FlightData.Orbit.Parent.PlanetData
                     .Name;
+              
                 Mod.Log("currentPlanetName update"+currentPlanetName);
             }
             catch (Exception e)

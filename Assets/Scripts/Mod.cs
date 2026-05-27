@@ -80,8 +80,8 @@ namespace Assets.Scripts
             GameObject.DontDestroyOnLoad(DroodismGO);
             DroodismGO.SetActive(true);
             Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.MapView, OnBuildMapViewInspectorPanel);
-            CheckDefaultConfig();
-            
+            CheckDefaultPlanetRadiationBeltConfig();
+            CheckDefaultBreathablePlanetConfig();
             
         }
         
@@ -213,9 +213,9 @@ namespace Assets.Scripts
             Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Planted Flag at <color=green> {Game.Instance.FlightScene.CraftNode.Parent.Name} </color>'s surface,at {(ConvertPlanetPositionToLatLongAgl(position).x)}° , {(ConvertPlanetPositionToLatLongAgl(position).y)}° ",true,120f);
         }
 
-        private void CheckDefaultConfig()
+        private void  CheckDefaultPlanetRadiationBeltConfig()
         {
-            var folderPath = GetConfigFolderPath();
+            var folderPath = GetRadiationBeltConfigFolderPath();
             if (!Directory.Exists(folderPath))
             {
                 Directory.CreateDirectory(folderPath);
@@ -246,9 +246,47 @@ namespace Assets.Scripts
             }
             
         }
-        private  static string GetConfigFolderPath()
+
+        private void CheckDefaultBreathablePlanetConfig()
+        {
+            var folderPath = GetDefaultBreathablePlanetConfigFolderPath();
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+            var asset = Mod.ResourceLoader.LoadAsset<TextAsset>("Assets/Resources/BreathablePlanets.xml");
+            Debug.Log($"[Mod] CheckDefaultBreathablePlanetConfig: asset={asset != null}, folderPath={folderPath}");
+            if (asset != null)
+            {
+                var targetPath = Path.Combine(folderPath, "BreathablePlanets.xml");
+                if (!File.Exists(targetPath))
+                {
+                    File.WriteAllText(targetPath, asset.text, Encoding.UTF8);
+                    Debug.Log($"[Mod] Copied BreathablePlanets.xml to: {targetPath}");
+                }
+                else
+                {
+                    Debug.Log($"[Mod] BreathablePlanets.xml already exists at: {targetPath}");
+                }
+            }
+            else
+            {
+                Debug.LogError("[Mod] Failed to load BreathablePlanets.xml from Resources!");
+            }
+        }
+        private  static string GetRadiationBeltConfigFolderPath()
         {
             string folderPath = Application.persistentDataPath + RadiationBeltConfig.CONFIG_FOLDER;
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+            return folderPath;
+            
+        }
+        private  static string GetDefaultBreathablePlanetConfigFolderPath()
+        {
+            string folderPath = Application.persistentDataPath + BreathablePlanets.CONFIG_FOLDER;
             if (!Directory.Exists(folderPath))
             {
                 Directory.CreateDirectory(folderPath);
