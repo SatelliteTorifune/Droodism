@@ -810,7 +810,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError($"[SupportLifeScript] Failed to load BreathablePlanets: {ex}");
                     _breathablePlanetsCache = new BreathablePlanets
                     {
                         BreathablePlanet = Array.Empty<string>()

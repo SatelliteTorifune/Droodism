@@ -20,8 +20,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         IFlightStart
     {
         #region Fields
-
-        private CrewCompartmentScript _crewCompartment;
+        
         private FullBodyBipedIK _pilotIK;
         private EvaScript _evaScript;
 
@@ -120,105 +119,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             base.OnInitialized();
             _isRagdollActive = Data.EnableRagdoll;
         }
+        
 
-        public override void OnModifiersCreated()
-        {
-            base.OnModifiersCreated();
-
-            _crewCompartment = PartScript.GetModifier<CrewCompartmentScript>();
-            if (_crewCompartment != null)
-            {
-                _crewCompartment.CrewEnter += OnCrewEnter;
-                _crewCompartment.CrewExit += OnCrewExit;
-            }
-        }
-
-        public override void OnCraftStructureChanged(ICraftScript craftScript)
-        {
-            base.OnCraftStructureChanged(craftScript);
-
-            if (!Game.InFlightScene) return;
-
-            if (_crewCompartment != null)
-            {
-                _crewCompartment.CrewEnter -= OnCrewEnter;
-                _crewCompartment.CrewExit -= OnCrewExit;
-                _crewCompartment.CrewEnter += OnCrewEnter;
-                _crewCompartment.CrewExit += OnCrewExit;
-            }
-
-            if (!_isRagdollActive)
-                RefreshPilotReferences();
-        }
+       
 
         #endregion
 
-        #region Crew Management
-
-        private void OnCrewEnter(EvaScript crew)
-        {
-            RefreshPilotReferencesFromCrew(crew);
-        }
-
-        private void OnCrewExit(EvaScript crew)
-        {
-            if (!_isRagdollActive)
-                ClearPilotReferences();
-        }
-
-        private void RefreshPilotReferences()
-        {
-            if (_crewCompartment == null) return;
-            foreach (var crew in _crewCompartment.Crew)
-                RefreshPilotReferencesFromCrew(crew);
-        }
-
-        private void RefreshPilotReferencesFromCrew(EvaScript crew)
-        {
-            _evaScript = crew;
-            _pilotIK = crew.GetComponentInChildren<FullBodyBipedIK>();
-            _transformInfoScript = crew.GetComponent<TransformInfoScript>();
-
-            if (_isRagdollActive)
-                ApplyRagdollPhysics();
-        }
-
-        private void ClearPilotReferences()
-        {
-            _evaScript = null;
-            _pilotIK = null;
-            _transformInfoScript = null;
-        }
-
-        private void FindCrew()
-        {
-            if (_crewCompartment != null && _crewCompartment.Crew.Count > 0)
-            {
-                SetCrew(_crewCompartment.Crew[0]);
-                return;
-            }
-
-            var cc = PartScript.GetModifier<CrewCompartmentScript>();
-            if (cc != null && cc.Crew.Count > 0)
-            {
-                _crewCompartment = cc;
-                SetCrew(cc.Crew[0]);
-                return;
-            }
-
-            var eva = PartScript.GetModifier<EvaScript>();
-            if (eva != null)
-                SetCrew(eva);
-        }
-
-        private void SetCrew(EvaScript crew)
-        {
-            _evaScript = crew;
-            _pilotIK ??= crew.GetComponent<FullBodyBipedIK>() ?? crew.GetComponentInChildren<FullBodyBipedIK>();
-            _transformInfoScript ??= crew.GetComponent<TransformInfoScript>();
-        }
-
-        #endregion
+        
 
         #region Public API
 
@@ -233,10 +140,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (_isRagdollActive) return;
 
             _wasPaused = false;
-
-            if (_evaScript == null || _pilotIK == null)
-                FindCrew();
-
+            
             if (_evaScript != null && _pilotIK != null)
             {
                 CaptureCraftVelocity();

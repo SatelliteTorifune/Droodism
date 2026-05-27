@@ -24,14 +24,5 @@ public class RagdollModifierData : PartModifierData<RagdollModifierScript>
         get => _enableRagdoll;
         set => _enableRagdoll = value;
     }
-
-    [SerializeField] [PartModifierProperty]
-    private bool animateEnabled2=true;
-    [SerializeField] [PartModifierProperty]
-    private bool ikEnabled=true;
-    public float IkBlendSpeed => _ikBlendSpeed;
     
-    
-    public bool AnimateEnabled2 { get; set; }
-    public bool IKEnabled { get; set; }
 }
