@@ -1,42 +1,53 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
+using System.Linq;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using ModApi;
 using ModApi.Craft;
 using ModApi.Craft.Parts;
 using ModApi.GameLoop;
+using ModApi.GameLoop.Interfaces;
 using ModApi.Ui.Inspector;
 using RootMotion.FinalIK;
-using System.Linq;
-using ModApi.GameLoop.Interfaces;
 using UnityEngine;
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
-    public class RagdollModifierScript : PartModifierScript<RagdollModifierData>, 
+    public class RagdollModifierScript : PartModifierScript<RagdollModifierData>,
         IFlightUpdate,
         IFlightFixedUpdate,
         IFlightUpdatePaused,
         IFlightStart
     {
         #region Fields
-
-        private CrewCompartmentScript _crewCompartment;
+        
         private FullBodyBipedIK _pilotIK;
         private EvaScript _evaScript;
-        
+
         private bool _isRagdollActive = false;
-        private bool _ragdollPhysicsCreated = false;
         private bool _wasPaused = false;
-    
-        
+        private bool _ragdollPhysicsCreated = false;
+        private Vector3 _preservedVelocity = Vector3.zero;
+
         private IKSavedWeights _savedWeights = new();
-        private Transform? _ragdollRoot;
-        private HashSet<string> _skipBones = new(StringComparer.OrdinalIgnoreCase);
-        
-        private List<RigidbodyState> _originalRigidbodyStates = new();
-        private List<BoneTransform> _pausedBoneStates = new();
+        private Transform _ragdollRoot;
+        private TransformInfoScript _transformInfoScript;
+
+        private readonly HashSet<string> _skipBones = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "EVAChestPlate",
+            "EVAChestPlateVariant",
+            "JetPackNozzleBottomLeft",
+            "JetPackNozzleBottomRight",
+            "JetPackNozzleTopLeft",
+            "JetPackNozzleTopRight",
+            "ParticleSystem",
+            "ClickyCollider"
+        };
+
+        private readonly List<RigidbodyState> _originalRigidbodyStates = new();
+        private readonly List<BoneTransform> _pausedBoneStates = new();
+        private readonly HashSet<(string, string)> _loggedCollisions = new();
 
         #endregion
 
@@ -49,103 +60,53 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             public bool useGravity;
             public CollisionDetectionMode collisionDetectionMode;
         }
-        
 
         private struct IKSavedWeights
         {
-            public float RightHandPositionWeight;
-            public float RightHandRotationWeight;
-            public float LeftHandPositionWeight;
-            public float LeftHandRotationWeight;
-            public float RightFootPositionWeight;
-            public float RightFootRotationWeight;
-            public float LeftFootPositionWeight;
-            public float LeftFootRotationWeight;
+            public float RightHandPosWeight, RightHandRotWeight;
+            public float LeftHandPosWeight, LeftHandRotWeight;
+            public float RightFootPosWeight, RightFootRotWeight;
+            public float LeftFootPosWeight, LeftFootRotWeight;
         }
 
         private class BoneTransform
         {
             public string Name;
-            public Vector3 Position;
-            public Quaternion Rotation;
+            public Vector3 LocalPosition;
+            public Quaternion LocalRotation;
+            public Vector3 Velocity;
+            public Vector3 AngularVelocity;
 
-            public BoneTransform(string name, Vector3 position, Quaternion rotation)
+            public BoneTransform(string name, Vector3 localPos, Quaternion localRot,
+                Vector3 velocity, Vector3 angularVelocity)
             {
                 Name = name;
-                Position = position;
-                Rotation = rotation;
+                LocalPosition = localPos;
+                LocalRotation = localRot;
+                Velocity = velocity;
+                AngularVelocity = angularVelocity;
             }
         }
 
         #endregion
-        
-        #region Unity Inspector
 
-        private bool forceSnyc;
+        #region Inspector
+
         public override void OnGenerateInspectorModel(PartInspectorModel model)
         {
             base.OnGenerateInspectorModel(model);
+
+            var group = new GroupModel("Ragdoll");
+            model.AddGroup(group);
+
+            group.Add(new TextButtonModel("启用", b => EnableRagdollMode()));
+            group.Add(new TextButtonModel("禁用", b => DisableRagdollMode()));
+            group.Add(new TextModel("Status", () => _isRagdollActive ? "Active" : "Inactive"));
+            group.Add(new SliderModel("操你妈",()=>sm,(f)=>sm=f,-2,2f));
             
-            GroupModel groupModel = new GroupModel("Ragdoll");
-            model.AddGroup(groupModel);
-            groupModel.Add<ToggleModel>(new ToggleModel(
-                "同步",
-                () => forceSnyc,
-                x => 
-                {
-                    forceSnyc = x;
-                }
-            ));
-           
-            groupModel.Add<ToggleModel>(new ToggleModel(
-                "动画2",
-                () => Data.AnimateEnabled2,
-                x => 
-                {
-                    Data.AnimateEnabled2 = x;
-                }
-            ));
-            groupModel.Add<ToggleModel>(new ToggleModel(
-                "IK",
-                () => Data.IKEnabled,
-                x => 
-                {
-                    Data.IKEnabled = x;
-                }
-            ));
-            
-            groupModel.Add<TextModel>(new TextModel("Status", () => _isRagdollActive ? "Active" : "Inactive"));
-            
-            TextButtonModel enableButton = new TextButtonModel(
-                "Enable Ragdoll",
-                b => 
-                {
-                    EnableRagdollMode();
-                }
-            );
-            groupModel.Add<TextButtonModel>(enableButton);
-            
-            TextButtonModel disableButton = new TextButtonModel(
-                "Disable Ragdoll",
-                b => 
-                {
-                    DisableRagdollMode();
-                }
-            );
-            groupModel.Add<TextButtonModel>(disableButton);
-            
-            ToggleModel toggleModel = new ToggleModel(
-                "Enable Ragdoll (Data)",
-                () => Data.EnableRagdoll,
-                x => 
-                {
-                    Data.EnableRagdoll = x;
-                    Mod.Log($"Data.EnableRagdoll set to: {x}");
-                }
-            );
-            groupModel.Add<ToggleModel>(toggleModel);
         }
 
+        private float sm;
         #endregion
 
         #region Properties
@@ -161,193 +122,48 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             base.OnInitialized();
             _isRagdollActive = Data.EnableRagdoll;
         }
+        
 
-        public override void OnModifiersCreated()
-        {
-            base.OnModifiersCreated();
-            
-            _crewCompartment = PartScript.GetModifier<CrewCompartmentScript>();
-            if (_crewCompartment != null)
-            {
-                _crewCompartment.CrewEnter += OnCrewEnter;
-                _crewCompartment.CrewExit += OnCrewExit;
-            }
-        }
-
-        public override void OnCraftStructureChanged(ICraftScript craftScript)
-        {
-            base.OnCraftStructureChanged(craftScript);
-            if (!Game.InFlightScene)
-            {
-                return;
-            }
-            
-            Mod.Log($"OnCraftStructureChanged: Called, _isRagdollActive={_isRagdollActive}");
-            
-            if (_crewCompartment != null)
-            {
-                _crewCompartment.CrewEnter -= OnCrewEnter;
-                _crewCompartment.CrewExit -= OnCrewExit;
-                _crewCompartment.CrewEnter += OnCrewEnter;
-                _crewCompartment.CrewExit += OnCrewExit;
-            }
-            
-            if (!_isRagdollActive)
-            {
-                RefreshPilotReferences();
-            }
-            else
-            {
-                Mod.Log("OnCraftStructureChanged: Skipping RefreshPilotReferences because ragdoll is active");
-            }
-        }
+       
 
         #endregion
 
-        #region Crew Management
-
-        private void OnCrewEnter(EvaScript crew)
-        {
-            //Mod.Log($"OnCrewEnter: crew={crew?.gameObject?.name}, _isRagdollActive={_isRagdollActive}");
-            RefreshPilotReferencesFromCrew(crew);
-        }
-
-        private void OnCrewExit(EvaScript crew)
-        {
-            //Mod.Log($"OnCrewExit: crew={crew?.gameObject?.name}, _isRagdollActive={_isRagdollActive}");
-            if (!_isRagdollActive)
-            {
-                ClearPilotReferences();
-            }
-            else
-            {
-               // Mod.Log("OnCrewExit: Keeping pilot references because ragdoll is active");
-            }
-        }
-
-        private void RefreshPilotReferences()
-        {
-            if (_crewCompartment == null) return;
-            
-            foreach (var crew in _crewCompartment.Crew)
-            {
-                RefreshPilotReferencesFromCrew(crew);
-            }
-        }
-
-        private void RefreshPilotReferencesFromCrew(EvaScript crew)
-        {
-            //Mod.Log($"RefreshPilotReferencesFromCrew: crew={crew?.gameObject?.name}, _isRagdollActive={_isRagdollActive}");
-            
-            _evaScript = crew;
-            _pilotIK = crew.GetComponentInChildren<FullBodyBipedIK>();
-            
-
-            if (_isRagdollActive)
-            {
-               // Mod.Log("RefreshPilotReferencesFromCrew: Calling ApplyRagdollPhysics");
-                ApplyRagdollPhysics();
-            }
-        }
-
-        private void ClearPilotReferences()
-        {
-            _evaScript = null;
-            _pilotIK = null;
-        }
-
-        private void FindCrew()
-        {
-            if (_crewCompartment != null && _crewCompartment.Crew.Count > 0)
-            {
-                SetCrew(_crewCompartment.Crew[0]);
-                return;
-            }
-            
-            var crewCompartment = PartScript.GetModifier<CrewCompartmentScript>();
-            if (crewCompartment != null && crewCompartment.Crew.Count > 0)
-            {
-                _crewCompartment = crewCompartment;
-                SetCrew(crewCompartment.Crew[0]);
-                return;
-            }
-            
-            var eva = PartScript.GetModifier<EvaScript>();
-            if (eva != null)
-            {
-                SetCrew(eva);
-                return;
-            }
-        }
-
-        private void SetCrew(EvaScript crew)
-        {
-            _evaScript = crew;
-            
-            if (_pilotIK == null)
-            {
-                _pilotIK = crew.GetComponent<FullBodyBipedIK>();
-                if (_pilotIK == null)
-                {
-                    _pilotIK = crew.GetComponentInChildren<FullBodyBipedIK>();
-                }
-            }
-        }
-
-        #endregion
+        
 
         #region Public API
 
         public void SetRagdollMode(bool enable)
         {
-            if (enable)
-                EnableRagdollMode();
-            else
-                DisableRagdollMode();
+            if (enable) EnableRagdollMode();
+            else DisableRagdollMode();
         }
 
         public void EnableRagdollMode()
         {
             if (_isRagdollActive) return;
-            
-           // Mod.Log("EnableRagdollMode called");
+
             _wasPaused = false;
-            
-            if (_evaScript == null || _pilotIK == null)
-            {
-                FindCrew();
-            }
-            else
-            {
-            }
-            
-            //Mod.Log($"After FindCrew: _evaScript={_evaScript != null}, _pilotIK={_pilotIK != null}");
-            
-            Data.AnimateEnabled2 = false;
-            Data.IKEnabled = false;
-            _isRagdollActive = true;
-            Data.EnableRagdoll = true;
-            
+
             if (_evaScript != null && _pilotIK != null)
             {
-               // Mod.Log("EnableRagdollMode: Calling ApplyRagdollPhysics");
+                CaptureCraftVelocity();
                 ApplyRagdollPhysics();
             }
-            else
-            {
-                Mod.LogWarning("EnableRagdollMode: _evaScript or _pilotIK is null, ragdoll physics not applied");
-            }
+
+            _isRagdollActive = true;
+            Data.EnableRagdoll = true;
         }
 
         public void DisableRagdollMode()
         {
             if (!_isRagdollActive) return;
-            
+
             _isRagdollActive = false;
             _ragdollPhysicsCreated = false;
             _wasPaused = false;
-            Data.EnableRagdoll = false;
             
+            Data.EnableRagdoll = false;
+
             RestoreEvaScriptIK();
         }
 
@@ -355,45 +171,37 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         #region Ragdoll Physics
 
+        private void CaptureCraftVelocity()
+        {
+            if (PartScript?.CraftScript?.FlightData != null)
+            {
+                _preservedVelocity = PartScript.CraftScript.FlightData.SurfaceVelocity.ToVector3();
+            }
+        }
+
+        private void ApplyPreservedVelocity()
+        {
+            if (_evaScript == null) return;
+            foreach (var rb in _evaScript.GetComponentsInChildren<Rigidbody>())
+            {
+                rb.velocity = _preservedVelocity;
+                rb.angularVelocity = Vector3.zero;
+            }
+        }
+
         private void ApplyRagdollPhysics()
         {
-            
-            var transform = _evaScript.transform;
-           // Mod.Log($"ApplyRagdollPhysics: _evaScript transform path = {GetTransformPath(transform)}");
-            
-            var existingRBs = _evaScript.GetComponentsInChildren<Rigidbody>();
-            if (existingRBs.Length > 0)
-            {
-               // Mod.Log($"ApplyRagdollPhysics: Ragdoll already exists ({existingRBs.Length} Rigidbodies found), skipping creation");
-                
-                foreach (var rb in existingRBs)
-                {
-                    rb.isKinematic = false;
-                    rb.useGravity = true;
-                }
-                return;
-            }
-            
-          
-            
+            if (_evaScript == null) return;
+
             var animator = _evaScript.GetComponent<Animator>();
-            //Mod.Log($"ApplyRagdollPhysics: Animator = {animator}");
             if (animator != null)
-            {
                 animator.enabled = false;
-                //Mod.Log("ApplyRagdollPhysics: Disabled Animator");
-            }
-            else
-            {
-                //Mod.Log("ApplyRagdollPhysics: Animator is null - fine for ragdoll");
-            }
-            
+
             if (_pilotIK != null)
             {
-                //Mod.Log($"ApplyRagdollPhysics: Disabling _pilotIK on {_pilotIK.gameObject.name}");
                 SaveIKWeights();
                 _pilotIK.enabled = false;
-                
+
                 var solver = _pilotIK.solver;
                 solver.rightHandEffector.positionWeight = 0f;
                 solver.rightHandEffector.rotationWeight = 0f;
@@ -403,29 +211,19 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 solver.rightFootEffector.rotationWeight = 0f;
                 solver.leftFootEffector.positionWeight = 0f;
                 solver.leftFootEffector.rotationWeight = 0f;
-               // Mod.Log("ApplyRagdollPhysics: Set IK weights to 0");
             }
-            else
-            {
-               // Mod.Log("ApplyRagdollPhysics: _pilotIK is null - skipping IK disable");
-            }
-            
+
+            // Disable TransformInfoScript so it doesn't fight the ragdoll
+            if (_transformInfoScript != null)
+                _transformInfoScript.enabled = false;
+
             _originalRigidbodyStates.Clear();
-            
-            var evaRigidbodies = _evaScript.GetComponentsInChildren<Rigidbody>();
-            //.Log($"ApplyRagdollPhysics: Found {evaRigidbodies.Length} Rigidbody components");
-            
-            if (evaRigidbodies.Length == 0)
+
+            var existingRBs = _evaScript.GetComponentsInChildren<Rigidbody>();
+            if (existingRBs.Length > 0)
             {
-               // Mod.Log("ApplyRagdollPhysics: No Rigidbody found! Creating ragdoll dynamically...");
-                CreateRagdollDynamically(transform);
-            }
-            else
-            {
-                int i = 0;
-                foreach (var rb in evaRigidbodies)
+                foreach (var rb in existingRBs)
                 {
-                    //Mod.Log($"ApplyRagdollPhysics: Rigidbody[{i}] name={rb.gameObject.name}, isKinematic={rb.isKinematic}, mass={rb.mass}");
                     _originalRigidbodyStates.Add(new RigidbodyState
                     {
                         rb = rb,
@@ -436,90 +234,58 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     rb.isKinematic = false;
                     rb.useGravity = true;
                     rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
-                    i++;
+                    rb.interpolation = RigidbodyInterpolation.Interpolate;
+                    rb.velocity = Vector3.zero;
+                    rb.angularVelocity = Vector3.zero;
                 }
-                
+
                 var joints = _evaScript.GetComponentsInChildren<CharacterJoint>();
-                //Mod.Log($"ApplyRagdollPhysics: Found {joints.Length} CharacterJoint components");
-                foreach (var joint in joints)
-                {
-                    //Mod.Log($"  Joint: {joint.gameObject.name} -> {joint.connectedBody?.gameObject?.name ?? "null"}");
-                }
-                
-                if (joints.Length == 0 && evaRigidbodies.Length > 1)
-                {
-                   // Mod.Log("ApplyRagdollPhysics: No CharacterJoints found! Adding dynamically...");
-                    CreateRagdollDynamically(transform);
-                }
+                if (joints.Length == 0)
+                    CreateRagdollDynamically(_evaScript.transform);
             }
-            
-            //Mod.Log($"ApplyRagdollPhysics: Stored {_originalRigidbodyStates.Count} original rigidbody states");
-            //Mod.Log("=== ApplyRagdollPhysics END ===");
+            else
+            {
+                CreateRagdollDynamically(_evaScript.transform);
+            }
+
+            ApplyPreservedVelocity();
+            DisableRagdollSelfCollisions();
+            AttachCollisionLogger();
+            _ragdollPhysicsCreated = true;
         }
 
         private void CreateRagdollDynamically(Transform root)
         {
-            //Mod.Log($"CreateRagdollDynamically: Starting from {root.name}");
+            Transform boneRoot = root.Find("Root/Offset") ?? root.Find("Offset") ?? root;
+            _ragdollRoot = boneRoot;
 
-            _skipBones.Clear();
-            _skipBones.Add("EVAChestPlate");
-            _skipBones.Add("EVAChestPlateVariant");
-            _skipBones.Add("JetPackNozzleBottomLeft");
-            _skipBones.Add("JetPackNozzleBottomRight");
-            _skipBones.Add("JetPackNozzleTopLeft");
-            _skipBones.Add("JetPackNozzleTopRight");
-            _skipBones.Add("ParticleSystem");
-            _skipBones.Add("ClickyCollider");
-            
-            Transform boneRoot = root.Find("Root/Offset");
-            if (boneRoot == null) boneRoot = root.Find("Offset");
-            if (boneRoot == null) boneRoot = root;
-            
-            //Mod.Log($"CreateRagdollDynamically: boneRoot = {boneRoot.name}");
-            
             Transform hips = boneRoot.Find("Hips");
-            if (hips == null) hips = boneRoot.Find("../Hips");
-            //Mod.Log($"CreateRagdollDynamically: hips = {hips?.name}");
-            
             Transform spine = hips?.Find("Spine");
-           // Mod.Log($"CreateRagdollDynamically: spine = {spine?.name}");
-            
             Transform chest = spine?.Find("Chest");
-            //Mod.Log($"CreateRagdollDynamically: chest = {chest?.name}");
-            
             Transform upperChest = chest?.Find("UpperChest");
-           // Mod.Log($"CreateRagdollDynamically: upperChest = {upperChest?.name}");
-            
             Transform neck = upperChest?.Find("Neck");
             Transform head = neck?.Find("Head");
-            //Mod.Log($"CreateRagdollDynamically: neck = {neck?.name}, head = {head?.name}");
-            
-            Transform leftClavicle = upperChest?.Find("LeftClavicle");
-            Transform leftShoulder = leftClavicle?.Find("LeftShoulder");
-            Transform leftElbow = leftShoulder?.Find("LeftElbow");
-            Transform leftHand = leftElbow?.Find("LeftHand");
-           // Mod.Log($"CreateRagdollDynamically: leftClavicle={leftClavicle?.name}, leftShoulder={leftShoulder?.name}, leftElbow={leftElbow?.name}, leftHand={leftHand?.name}");
-            
-            Transform rightClavicle = upperChest?.Find("RightClavicle");
-            Transform rightShoulder = rightClavicle?.Find("RightShoulder");
-            Transform rightElbow = rightShoulder?.Find("RightElbow");
-            Transform rightHand = rightElbow?.Find("RightHand");
-            //Mod.Log($"CreateRagdollDynamically: rightClavicle={rightClavicle?.name}, rightShoulder={rightShoulder?.name}, rightElbow={rightElbow?.name}, rightHand={rightHand?.name}");
-            
-            Transform leftHip = hips?.Find("LeftHip");
-            Transform leftKnee = leftHip?.Find("LeftKnee");
-            Transform leftAnkle = leftKnee?.Find("LeftAnkle");
-            Transform leftToes = leftAnkle?.Find("LeftToes");
-            //Mod.Log($"CreateRagdollDynamically: leftHip={leftHip?.name}, leftKnee={leftKnee?.name}, leftAnkle={leftAnkle?.name}, leftToes={leftToes?.name}");
-            
-            Transform rightHip = hips?.Find("RightHip");
-            Transform rightKnee = rightHip?.Find("RightKnee");
-            Transform rightAnkle = rightKnee?.Find("RightAnkle");
-            Transform rightToes = rightAnkle?.Find("RightToes");
-           // Mod.Log($"CreateRagdollDynamically: rightHip={rightHip?.name}, rightKnee={rightKnee?.name}, rightAnkle={rightAnkle?.name}, rightToes={rightToes?.name}");
-            
-            _ragdollRoot = boneRoot;
-            
+
+            Transform lClav = upperChest?.Find("LeftClavicle");
+            Transform lShoulder = lClav?.Find("LeftShoulder");
+            Transform lElbow = lShoulder?.Find("LeftElbow");
+            Transform lHand = lElbow?.Find("LeftHand");
+
+            Transform rClav = upperChest?.Find("RightClavicle");
+            Transform rShoulder = rClav?.Find("RightShoulder");
+            Transform rElbow = rShoulder?.Find("RightElbow");
+            Transform rHand = rElbow?.Find("RightHand");
+
+            Transform lHip = hips?.Find("LeftHip");
+            Transform lKnee = lHip?.Find("LeftKnee");
+            Transform lAnkle = lKnee?.Find("LeftAnkle");
+            Transform lToes = lAnkle?.Find("LeftToes");
+
+            Transform rHip = hips?.Find("RightHip");
+            Transform rKnee = rHip?.Find("RightKnee");
+            Transform rAnkle = rKnee?.Find("RightAnkle");
+            Transform rToes = rAnkle?.Find("RightToes");
+
             if (hips != null)
             {
                 var rb = hips.gameObject.AddComponent<Rigidbody>();
@@ -528,303 +294,210 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 rb.useGravity = true;
                 rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
                 rb.interpolation = RigidbodyInterpolation.Interpolate;
-                //Mod.Log($"CreateRagdollDynamically: Added Rigidbody to {hips.name}, mass={rb.mass}");
-            }
-            
-            if (spine != null && hips != null)
-            {
-                AddRigidbodyAndJoint(spine.gameObject, hips.gameObject, 15f, 
-                    swingLimit: 3f, twistLow: -5f, twistHigh: 5f, limbLength: 0.3f);
-            }
-            
-            if (chest != null && spine != null)
-            {
-                AddRigidbodyAndJoint(chest.gameObject, spine.gameObject, 10f,
-                    swingLimit: 5f, twistLow: -10f, twistHigh: 10f, limbLength: 0.25f);
-            }
-            
-            if (upperChest != null && chest != null)
-            {
-                AddRigidbodyAndJoint(upperChest.gameObject, chest.gameObject, 8f,
-                    swingLimit: 8f, twistLow: -15f, twistHigh: 15f, limbLength: 0.2f);
-            }
-            
-            //Mod.Log($"CreateRagdollDynamically: Neck setup - neck={neck?.name ?? "NULL"}, upperChest={upperChest?.name ?? "NULL"}");
-            if (neck != null && upperChest != null)
-            {
-               // Mod.Log($"CreateRagdollDynamically: Calling AddRigidbodyAndJoint for Neck");
-                AddRigidbodyAndJoint(neck.gameObject, upperChest.gameObject, 2f,
-                    swingLimit: 3f, twistLow: -5f, twistHigh: 5f, limbLength: 0.1f);
             }
 
-           // Mod.Log($"CreateRagdollDynamically: Head setup - head={head?.name ?? "NULL"}, neck={neck?.name ?? "NULL"}");
-            if (head != null && neck != null)
+            void AddRBJoint(Transform child, Transform parent, float mass,
+                float swingLimit = 20f, float twistLow = -30f, float twistHigh = 30f,
+                float limbLen = 0.2f, bool isHinge = false)
             {
-               // Mod.Log($"CreateRagdollDynamically: Calling AddRigidbodyAndJoint for Head");
-                AddRigidbodyAndJoint(head.gameObject, neck.gameObject, 5f,
-                    swingLimit: 15f, twistLow: -20f, twistHigh: 20f, limbLength: 0.15f);
-               // Mod.Log($"CreateRagdollDynamically: After AddRigidbodyAndJoint for Head");
+                if (child == null || parent == null) return;
+
+                var rb = child.gameObject.AddComponent<Rigidbody>();
+                rb.mass = mass;
+                rb.isKinematic = false;
+                rb.useGravity = true;
+                rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
+                rb.interpolation = RigidbodyInterpolation.Interpolate;
+
+                AddBoneCollider(child.gameObject, parent.gameObject, limbLen);
+
+                var joint = child.gameObject.AddComponent<CharacterJoint>();
+                joint.connectedBody = parent.GetComponent<Rigidbody>();
+
+                float sw = isHinge ? 0f : swingLimit;
+                joint.swing1Limit = new SoftJointLimit { limit = sw };
+                joint.swing2Limit = new SoftJointLimit { limit = sw };
+                joint.lowTwistLimit = new SoftJointLimit { limit = twistLow };
+                joint.highTwistLimit = new SoftJointLimit { limit = twistHigh };
+                joint.breakForce = Mathf.Infinity;
+                joint.breakTorque = Mathf.Infinity;
+                joint.enablePreprocessing = true;
+            }
+
+            // Spine chain
+            AddRBJoint(spine, hips, 15f, 10f, -10f, 10f, 0.3f);
+            AddRBJoint(chest, spine, 10f, 10f, -15f, 15f, 0.25f);
+            AddRBJoint(upperChest, chest, 8f, 15f, -20f, 20f, 0.2f);
+
+            // Neck and head
+            if (neck != null)
+            {
+                AddRBJoint(neck, upperChest, 2f, 5f, -10f, 10f, 0.1f);
+                if (head != null)
+                    AddRBJoint(head, neck, 5f, 20f, -30f, 30f, 0.15f);
             }
             else if (head != null && upperChest != null)
-            {
-              //  Mod.Log($"CreateRagdollDynamically: Falling back to Head -> UpperChest");
-                AddRigidbodyAndJoint(head.gameObject, upperChest.gameObject, 5f,
-                    swingLimit: 15f, twistLow: -20f, twistHigh: 20f, limbLength: 0.15f);
-            }
-            else
-            {
-                //Mod.Log($"CreateRagdollDynamically: Head NOT connected - head={head?.name ?? "NULL"}, neck={neck?.name ?? "NULL"}, upperChest={upperChest?.name ?? "NULL"}");
-            }
-            
-            if (leftClavicle != null && upperChest != null)
-            {
-                AddRigidbodyAndJoint(leftClavicle.gameObject, upperChest.gameObject, 3f,
-                    swingLimit: 10f, twistLow: -10f, twistHigh: 10f, limbLength: 0.1f);
-            }
-            if (leftShoulder != null && leftClavicle != null)
-            {
-                AddRigidbodyAndJoint(leftShoulder.gameObject, leftClavicle.gameObject, 3f,
-                    swingLimit: 30f, twistLow: -30f, twistHigh: 30f, limbLength: 0.25f);
-            }
-            if (leftElbow != null && leftShoulder != null)
-            {
-                AddRigidbodyAndJoint(leftElbow.gameObject, leftShoulder.gameObject, 2f,
-                    swingLimit: 0f, twistLow: 0f, twistHigh: 90f, limbLength: 0.25f, isHinge: true);
-            }
-            if (leftHand != null && leftElbow != null)
-            {
-                AddRigidbodyAndJoint(leftHand.gameObject, leftElbow.gameObject, 0.5f,
-                    swingLimit: 0f, twistLow: -10f, twistHigh: 10f, limbLength: 0.08f);
-            }
-            
-            if (rightClavicle != null && upperChest != null)
-            {
-                AddRigidbodyAndJoint(rightClavicle.gameObject, upperChest.gameObject, 3f,
-                    swingLimit: 10f, twistLow: -10f, twistHigh: 10f, limbLength: 0.1f);
-            }
-            if (rightShoulder != null && rightClavicle != null)
-            {
-                AddRigidbodyAndJoint(rightShoulder.gameObject, rightClavicle.gameObject, 3f,
-                    swingLimit: 30f, twistLow: -30f, twistHigh: 30f, limbLength: 0.25f);
-            }
-            if (rightElbow != null && rightShoulder != null)
-            {
-                AddRigidbodyAndJoint(rightElbow.gameObject, rightShoulder.gameObject, 2f,
-                    swingLimit: 0f, twistLow: 0f, twistHigh: 90f, limbLength: 0.25f, isHinge: true);
-            }
-            if (rightHand != null && rightElbow != null)
-            {
-                AddRigidbodyAndJoint(rightHand.gameObject, rightElbow.gameObject, 0.5f,
-                    swingLimit: 0f, twistLow: -10f, twistHigh: 10f, limbLength: 0.08f);
-            }
-            
-            if (leftHip != null && hips != null)
-            {
-                AddRigidbodyAndJoint(leftHip.gameObject, hips.gameObject, 5f,
-                    swingLimit: 10f, twistLow: -5f, twistHigh: 5f, limbLength: 0.12f);
-            }
-            if (leftKnee != null && leftHip != null)
-            {
-                AddRigidbodyAndJoint(leftKnee.gameObject, leftHip.gameObject, 3f,
-                    swingLimit: 0f, twistLow: 0f, twistHigh: 5f, limbLength: 0.35f, isHinge: true);
-            }
-            if (leftAnkle != null && leftKnee != null)
-            {
-                AddRigidbodyAndJoint(leftAnkle.gameObject, leftKnee.gameObject, 2f,
-                    swingLimit: 5f, twistLow: -10f, twistHigh: 10f, limbLength: 0.25f);
-            }
-            if (leftToes != null && leftAnkle != null)
-            {
-                AddRigidbodyAndJoint(leftToes.gameObject, leftAnkle.gameObject, 0.2f,
-                    swingLimit: 0f, twistLow: 0f, twistHigh: 0f, limbLength: 0.04f);
-            }
-            
-            if (rightHip != null && hips != null)
-            {
-                AddRigidbodyAndJoint(rightHip.gameObject, hips.gameObject, 5f,
-                    swingLimit: 10f, twistLow: -5f, twistHigh: 5f, limbLength: 0.12f);
-            }
-            if (rightKnee != null && rightHip != null)
-            {
-                AddRigidbodyAndJoint(rightKnee.gameObject, rightHip.gameObject, 3f,
-                    swingLimit: 0f, twistLow: 0f, twistHigh: 5f, limbLength: 0.35f, isHinge: true);
-            }
-            if (rightAnkle != null && rightKnee != null)
-            {
-                AddRigidbodyAndJoint(rightAnkle.gameObject, rightKnee.gameObject, 2f,
-                    swingLimit: 5f, twistLow: -10f, twistHigh: 10f, limbLength: 0.25f);
-            }
-            if (rightToes != null && rightAnkle != null)
-            {
-                AddRigidbodyAndJoint(rightToes.gameObject, rightAnkle.gameObject, 0.2f,
-                    swingLimit: 0f, twistLow: 0f, twistHigh: 0f, limbLength: 0.04f);
-            }
-            
-            var allRigidbodies = _evaScript.GetComponentsInChildren<Rigidbody>();
-            //Mod.Log($"CreateRagdollDynamically: Created {allRigidbodies.Length} Rigidbody components");
-            foreach (var rb in allRigidbodies)
-            {
-                var joint = rb.GetComponent<CharacterJoint>();
-                //Mod.Log($"  - {rb.gameObject.name} has Rigidbody, mass={rb.mass}, connectedTo={joint?.connectedBody?.gameObject?.name ?? "NONE (root)"}");
-            }
-            
-            DisableRagdollSelfCollisions();
-            
-            _ragdollPhysicsCreated = true;
-        }
-        
-        private void DisableRagdollSelfCollisions()
-        {
-            if (_evaScript == null) return;
-            
-            var allColliders = _evaScript.GetComponentsInChildren<Collider>();
-            int ignoredPairs = 0;
-            
-            for (int i = 0; i < allColliders.Length; i++)
-            {
-                for (int j = i + 1; j < allColliders.Length; j++)
-                {
-                    if (allColliders[i] != null && allColliders[j] != null)
-                    {
-                        Physics.IgnoreCollision(allColliders[i], allColliders[j], true);
-                        ignoredPairs++;
-                    }
-                }
-            }
-            
-            //Mod.Log($"DisableRagdollSelfCollisions: Ignored {ignoredPairs} collision pairs between {allColliders.Length} ragdoll colliders");
+                AddRBJoint(head, upperChest, 5f, 20f, -30f, 30f, 0.15f);
+
+            // Left arm
+            AddRBJoint(lClav, upperChest, 3f, 15f, -15f, 15f, 0.1f);
+            AddRBJoint(lShoulder, lClav, 3f, 40f, -40f, 40f, 0.25f);
+            AddRBJoint(lElbow, lShoulder, 2f, 0f, 0f, 90f, 0.25f, isHinge: true);
+            AddRBJoint(lHand, lElbow, 0.5f, 0f, -10f, 10f, 0.08f);
+
+            // Right arm
+            AddRBJoint(rClav, upperChest, 3f, 15f, -15f, 15f, 0.1f);
+            AddRBJoint(rShoulder, rClav, 3f, 40f, -40f, 40f, 0.25f);
+            AddRBJoint(rElbow, rShoulder, 2f, 0f, 0f, 90f, 0.25f, isHinge: true);
+            AddRBJoint(rHand, rElbow, 0.5f, 0f, -10f, 10f, 0.08f);
+
+            // Left leg
+            AddRBJoint(lHip, hips, 5f, 15f, -10f, 10f, 0.12f);
+            AddRBJoint(lKnee, lHip, 3f, 0f, 0f, 5f, 0.35f, isHinge: true);
+            AddRBJoint(lAnkle, lKnee, 2f, 10f, -15f, 15f, 0.25f);
+            AddRBJoint(lToes, lAnkle, 0.2f, 0f, 0f, 0f, 0.04f);
+
+            // Right leg
+            AddRBJoint(rHip, hips, 5f, 15f, -10f, 10f, 0.12f);
+            AddRBJoint(rKnee, rHip, 3f, 0f, 0f, 5f, 0.35f, isHinge: true);
+            AddRBJoint(rAnkle, rKnee, 2f, 10f, -15f, 15f, 0.25f);
+            AddRBJoint(rToes, rAnkle, 0.2f, 0f, 0f, 0f, 0.04f);
         }
 
-        private void AddRigidbodyAndJoint(GameObject bone, GameObject parentBone, float mass,
-            float swingLimit = 45f, float twistLow = -50f, float twistHigh = 50f,
-            float limbLength = 0.2f, bool isHinge = false)
-        {
-            //Mod.Log($"AddRigidbodyAndJoint ENTER: bone={bone?.name ?? "NULL"}, parentBone={parentBone?.name ?? "NULL"}, mass={mass}");
-            if (bone == null || parentBone == null)
-            {
-                return;
-            }
-            
-            var rb = bone.AddComponent<Rigidbody>();
-            rb.mass = mass;
-            rb.isKinematic = false;
-            rb.useGravity = true;
-            rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
-            rb.interpolation = RigidbodyInterpolation.Interpolate;
-            
-            AddBoneCollider(bone, parentBone, limbLength);
-            
-            var joint = bone.AddComponent<CharacterJoint>();
-            joint.connectedBody = parentBone.GetComponent<Rigidbody>();
-            
-            float actualSwingLimit = isHinge ? 0f : swingLimit;
-            float actualTwistLow = twistLow;
-            float actualTwistHigh = twistHigh;
-            
-            var swing1 = new SoftJointLimit { limit = actualSwingLimit, bounciness = 0f };
-            var swing2 = new SoftJointLimit { limit = actualSwingLimit, bounciness = 0f };
-            var twist = new SoftJointLimit { limit = (actualTwistHigh - actualTwistLow) * 0.5f, bounciness = 0f };
-            var lowTwist = new SoftJointLimit { limit = actualTwistLow, bounciness = 0f };
-            var highTwist = new SoftJointLimit { limit = actualTwistHigh, bounciness = 0f };
-            joint.swing1Limit = swing1;
-            joint.swing2Limit = swing2;
-            joint.lowTwistLimit = lowTwist;
-            joint.highTwistLimit = highTwist;
-            
-            joint.enablePreprocessing = true;
-            joint.breakForce = Mathf.Infinity;
-            joint.breakTorque = Mathf.Infinity;
-            
-           // Mod.Log($"AddRigidbodyAndJoint: {bone.name} -> {parentBone.name}, mass={mass}, swing={actualSwingLimit}");
-           // Mod.Log($"AddRigidbodyAndJoint EXIT: {bone.name} completed successfully");
-        }
-        
         private void AddBoneCollider(GameObject bone, GameObject parentBone, float limbLength)
         {
-            if (bone == null) return;
-            
-            if (_skipBones.Contains(bone.name))
-            {
-                //Mod.Log($"AddBoneCollider: Skipping decorative bone {bone.name}");
-                return;
-            }
-            
-            var existingCollider = bone.GetComponent<Collider>();
-            if (existingCollider != null)
-            {
-                GameObject.Destroy(existingCollider);
-            }
-            
+            if (bone == null || _skipBones.Contains(bone.name)) return;
+
+            var existing = bone.GetComponent<Collider>();
+            if (existing != null) UnityEngine.Object.Destroy(existing);
+
             var col = bone.AddComponent<CapsuleCollider>();
-            
-            float height = limbLength * 2.2f;
-            float radius = limbLength * 0.25f;
-            
-            radius = Mathf.Max(0.04f, radius);
-            height = Mathf.Max(0.08f, height);
-            
-            col.radius = radius;
-            col.height = height;
-            
+            col.radius = Mathf.Max(0.04f, limbLength * 0.25f);
+            col.height = Mathf.Max(0.08f, limbLength * 2.2f);
+            col.center = Vector3.zero;
+
             if (parentBone != null)
             {
-                Vector3 dirToParent = (parentBone.transform.position - bone.transform.position).normalized;
-                
-                float yAlign = Mathf.Abs(Vector3.Dot(dirToParent, Vector3.up));
-                float xAlign = Mathf.Abs(Vector3.Dot(dirToParent, Vector3.right));
-                float zAlign = Mathf.Abs(Vector3.Dot(dirToParent, Vector3.forward));
-                
-                if (yAlign > xAlign && yAlign > zAlign)
-                {
-                    col.direction = 1;
-                }
-                else if (xAlign > zAlign)
-                {
-                    col.direction = 0;
-                }
-                else
-                {
-                    col.direction = 2;
-                }
+                Vector3 dir = (parentBone.transform.position - bone.transform.position).normalized;
+                float yA = Mathf.Abs(Vector3.Dot(dir, Vector3.up));
+                float xA = Mathf.Abs(Vector3.Dot(dir, Vector3.right));
+                col.direction = (yA > xA && yA > Mathf.Abs(Vector3.Dot(dir, Vector3.forward))) ? 1 : 0;
             }
             else
             {
                 col.direction = 1;
             }
-            
-            col.center = Vector3.zero;
+        }
+
+        private void DisableRagdollSelfCollisions()
+        {
+          
+            if (_evaScript == null) return;
+
+            var ragdollCols = _evaScript.GetComponentsInChildren<Collider>();
+
+            // Ignore self-collisions among ragdoll bones
+            for (int i = 0; i < ragdollCols.Length; i++)
+            {
+                for (int j = i + 1; j < ragdollCols.Length; j++)
+                {
+                    if (ragdollCols[i] != null && ragdollCols[j] != null)
+                        Physics.IgnoreCollision(ragdollCols[i], ragdollCols[j], true);
+                }
+            }
+
+            // Keep CharacterCollider enabled (so craft doesn't fall through ground),
+            // but make it ignore all ragdoll CapsuleColliders
+            var characterCollider = _evaScript.transform.Find("CharacterCollider");
+            if (characterCollider != null)
+            {
+                var ccCols = characterCollider.GetComponentsInChildren<Collider>();
+                foreach (var cc in ccCols)
+                {
+                    if (cc == null) continue;
+                    foreach (var rc in ragdollCols)
+                    {
+                        if (rc != null)
+                            Physics.IgnoreCollision(cc, rc, true);
+                    }
+                }
+            }
+        }
+
+        private void AttachCollisionLogger()
+        {
+            if (_evaScript == null) return;
+            _loggedCollisions.Clear();
+
+            var ragdollColliders = _evaScript.GetComponentsInChildren<Collider>();
+            foreach (var col in ragdollColliders)
+            {
+                var go = col.gameObject;
+                if (go.GetComponent<RagdollCollisionLogger>() != null) continue;
+
+                var logger = go.AddComponent<RagdollCollisionLogger>();
+                logger.Initialize(_loggedCollisions, _isRagdollActive);
+            }
+        }
+        
+
+        private void SyncCharacterColliderToHips()
+        {
+            if (_evaScript == null) return;
+
+            var characterCollider = _evaScript.transform.Find("CharacterCollider");
+            var hips = _evaScript.transform.Find("Root").Find("Offset").Find("Hips");
+            if (characterCollider == null || hips == null) return;
+
+            //TODO 修好这里关于位置限定的bug
+            //hips.localPosition = new Vector3(characterCollider.localPosition.x, hips.localPosition.y, characterCollider.localPosition.z);
+            hips.localPosition = new Vector3(characterCollider.localPosition.x, characterCollider.localPosition.y+sm, characterCollider.localPosition.z);
         }
 
         #endregion
-
+        
         #region IK Management
+
+        private void SaveIKWeights()
+        {
+            if (_pilotIK == null) return;
+
+            var s = _pilotIK.solver;
+            _savedWeights = new IKSavedWeights
+            {
+                RightHandPosWeight = s.rightHandEffector.positionWeight,
+                RightHandRotWeight = s.rightHandEffector.rotationWeight,
+                LeftHandPosWeight = s.leftHandEffector.positionWeight,
+                LeftHandRotWeight = s.leftHandEffector.rotationWeight,
+                RightFootPosWeight = s.rightFootEffector.positionWeight,
+                RightFootRotWeight = s.rightFootEffector.rotationWeight,
+                LeftFootPosWeight = s.leftFootEffector.positionWeight,
+                LeftFootRotWeight = s.leftFootEffector.rotationWeight
+            };
+        }
+        
 
         private void RestoreEvaScriptIK()
         {
-           
             if (_pilotIK == null) return;
 
             _pilotIK.enabled = true;
-            
-            var solver = _pilotIK.solver;
-            
-            solver.rightHandEffector.positionWeight = _savedWeights.RightHandPositionWeight;
-            solver.rightHandEffector.rotationWeight = _savedWeights.RightHandRotationWeight;
-            solver.leftHandEffector.positionWeight = _savedWeights.LeftHandPositionWeight;
-            solver.leftHandEffector.rotationWeight = _savedWeights.LeftHandRotationWeight;
-            solver.rightFootEffector.positionWeight = _savedWeights.RightFootPositionWeight;
-            solver.rightFootEffector.rotationWeight = _savedWeights.RightFootRotationWeight;
-            solver.leftFootEffector.positionWeight = _savedWeights.LeftFootPositionWeight;
-            solver.leftFootEffector.rotationWeight = _savedWeights.LeftFootRotationWeight;
-            
+
+            var s = _pilotIK.solver;
+            s.rightHandEffector.positionWeight = _savedWeights.RightHandPosWeight;
+            s.rightHandEffector.rotationWeight = _savedWeights.RightHandRotWeight;
+            s.leftHandEffector.positionWeight = _savedWeights.LeftHandPosWeight;
+            s.leftHandEffector.rotationWeight = _savedWeights.LeftHandRotWeight;
+            s.rightFootEffector.positionWeight = _savedWeights.RightFootPosWeight;
+            s.rightFootEffector.rotationWeight = _savedWeights.RightFootRotWeight;
+            s.leftFootEffector.positionWeight = _savedWeights.LeftFootPosWeight;
+            s.leftFootEffector.rotationWeight = _savedWeights.LeftFootRotWeight;
+
             if (_evaScript != null)
             {
                 var animator = _evaScript.GetComponent<Animator>();
-                if (animator != null)
-                {
-                    animator.enabled = true;
-                }
-                
+                if (animator != null) animator.enabled = true;
+
                 foreach (var state in _originalRigidbodyStates)
                 {
                     if (state.rb != null)
@@ -836,112 +509,48 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
                 _originalRigidbodyStates.Clear();
             }
-        }
-
-        private void SaveIKWeights()
-        {
-            if (_pilotIK == null) return;
-
-            var solver = _pilotIK.solver;
-            _savedWeights = new IKSavedWeights
-            {
-                RightHandPositionWeight = solver.rightHandEffector.positionWeight,
-                RightHandRotationWeight = solver.rightHandEffector.rotationWeight,
-                LeftHandPositionWeight = solver.leftHandEffector.positionWeight,
-                LeftHandRotationWeight = solver.leftHandEffector.rotationWeight,
-                RightFootPositionWeight = solver.rightFootEffector.positionWeight,
-                RightFootRotationWeight = solver.rightFootEffector.rotationWeight,
-                LeftFootPositionWeight = solver.leftFootEffector.positionWeight,
-                LeftFootRotationWeight = solver.leftFootEffector.rotationWeight
-            };
+            
+            // Restore TransformInfoScript
+            if (_transformInfoScript != null)
+                _transformInfoScript.enabled = true;
         }
 
         #endregion
 
         #region Flight Loop
 
-        void IFlightStart.FlightStart(in FlightFrameData frameData)
+        void IFlightStart.FlightStart(in FlightFrameData frame)
         {
-            _evaScript = this.PartScript.GetModifier<EvaScript>();
-            _pilotIK = _evaScript.GetComponentInChildren<FullBodyBipedIK>();
+            _evaScript = PartScript.GetModifier<EvaScript>();
+            _pilotIK = _evaScript?.GetComponentInChildren<FullBodyBipedIK>();
+            _transformInfoScript = _evaScript?.GetComponent<TransformInfoScript>();
         }
 
         void IFlightUpdate.FlightUpdate(in FlightFrameData frame)
         {
-            _pilotIK.enabled = Data.IKEnabled;
-            
-            var childAnimators = _evaScript.GetComponentsInChildren<Animator>();
-            foreach (var anim in childAnimators)
-            { 
-                anim.enabled = Data.AnimateEnabled2;
-
-            }
-            ShowPos();
-            if (forceSnyc)
-            {
-                到底他妈有几个();
-                this.PartScript.GameObject.transform.position =rigHipPos;
-            }
+            SyncCharacterColliderToHips();
         }
-
-        private Vector3 rigHipPos;
-
-        private void ShowPos()
-        {
-            if (_evaScript == null) return;
-            Mod.Log(PartScript.GameObject.transform.position);
-            var rigidbodies = _evaScript.GetComponentsInChildren<Rigidbody>();
-            foreach (var rb in rigidbodies)
-            {
-                if(rb.transform.name!="Hips")
-                    return;
-                rigHipPos=new Vector3(rb.transform.position.x,rb.transform.position.y,0);
-                Mod.Log($"{rb.transform.name}: pos={rb.position}, rot={rb.rotation.eulerAngles}");
-            }
-        }
-
-        void 到底他妈有几个()
-        {
-            Mod.Log("几把");
-            foreach (var animator in PartScript.GameObject.GetComponentsInChildren<Animator>())
-            {
-                Mod.Log(animator.transform.name);
-            }
-
-            Mod.Log("操");
-        }
-
 
         void IFlightFixedUpdate.FlightFixedUpdate(in FlightFrameData frame)
         {
-            if (_evaScript == null) return;
-           
+            if (_evaScript == null||!_isRagdollActive) return;
             if (_wasPaused && _isRagdollActive)
-            {
                 OnUnpaused();
-            }
             
-            if (!_isRagdollActive || _evaScript == null) return;
-            
-            EnsureRagdollPhysicsActive();
-            
-            /*
-            var evaRigidbodies = _evaScript.GetComponentsInChildren<Rigidbody>();
-            foreach (var rb in evaRigidbodies)
+            // Keep ragdoll physics active
+            var rbs = _evaScript.GetComponentsInChildren<Rigidbody>();
+            foreach (var rb in rbs)
             {
-                rb.isKinematic = false;
-                rb.useGravity = true;
-                rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
-            }*/
+                if (rb.isKinematic)
+                    rb.isKinematic = false;
+            }
+
+            ForceDisableAnimatorAndIK();
         }
 
         void IFlightUpdatePaused.FlightUpdatePaused(in FlightFrameData frame)
         {
-            if (_evaScript == null||!_isRagdollActive)
-            {
-                return;
-            }
-            
+            if (_evaScript == null || !_isRagdollActive) return;
             OnPaused();
         }
 
@@ -949,119 +558,72 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         #region Pause Management
 
-       private void OnPaused()
+        private void OnPaused()
         {
-            if (!_wasPaused)
-            {
-               
-                
-                ForceDisableAnimatorAndIK();
-                SaveCurrentBonePositions();
-                
-                _wasPaused = true;
-            }
+            if (_wasPaused) return;
+
+            ForceDisableAnimatorAndIK();
+            SaveCurrentBonePositions();
+            _wasPaused = true;
         }
 
         private void OnUnpaused()
         {
-            if (_wasPaused)
-            {
-                
-                ForceDisableAnimatorAndIK();
-                RestoreBonePositions();
-                
-                _wasPaused = false;
-            }
+            if (!_wasPaused) return;
+
+            ForceDisableAnimatorAndIK();
+            RestoreBonePositions();
+            _wasPaused = false;
         }
-
-        #endregion
-
-        #region Bone State Management
 
         private void SaveCurrentBonePositions()
         {
             if (_evaScript == null) return;
-            
+
             _pausedBoneStates.Clear();
-            var rigidbodies = _evaScript.GetComponentsInChildren<Rigidbody>();
-            foreach (var rb in rigidbodies)
+            var rbs = _evaScript.GetComponentsInChildren<Rigidbody>();
+            foreach (var rb in rbs)
             {
                 _pausedBoneStates.Add(new BoneTransform(
-                    rb.transform.name,
-                    rb.transform.localPosition,
-                    rb.transform.localRotation
-                ));
+                    rb.transform.name, rb.transform.localPosition, rb.transform.localRotation,
+                    rb.velocity, rb.angularVelocity));
             }
-            
         }
 
         private void RestoreBonePositions()
         {
             if (_evaScript == null || _pausedBoneStates.Count == 0) return;
-            
-            var rigidbodies = _evaScript.GetComponentsInChildren<Rigidbody>();
-            
-            foreach (var rb in rigidbodies)
+
+            var rbs = _evaScript.GetComponentsInChildren<Rigidbody>();
+            foreach (var rb in rbs)
             {
-                var savedState = _pausedBoneStates.FirstOrDefault(s => s.Name == rb.transform.name);
-                if (savedState != null)
+                var saved = _pausedBoneStates.FirstOrDefault(s => s.Name == rb.transform.name);
+                if (saved != null)
                 {
-                    rb.transform.localPosition = savedState.Position;
-                    rb.transform.localRotation = savedState.Rotation;
-                    
+                    rb.transform.localPosition = saved.LocalPosition;
+                    rb.transform.localRotation = saved.LocalRotation;
                     rb.position = rb.transform.position;
                     rb.rotation = rb.transform.rotation;
-                    rb.velocity = Vector3.zero;
-                    rb.angularVelocity = Vector3.zero;
-                    
+                    rb.velocity = saved.Velocity;
+                    rb.angularVelocity = saved.AngularVelocity;
                 }
             }
-            
         }
 
         private void ForceDisableAnimatorAndIK()
         {
             if (_evaScript == null) return;
-            
-            var animator = _evaScript.GetComponent<Animator>();
-            if (animator != null && animator.enabled)
-            {
-                animator.enabled = false;
-            }
-            
-            var childAnimators = _evaScript.GetComponentsInChildren<Animator>();
-            foreach (var anim in childAnimators)
-            {
-                if (anim.enabled)
-                {
-                    anim.enabled = false;
-                }
-            }
-            
-            if (_pilotIK != null && _pilotIK.enabled)
-            {
-                _pilotIK.enabled = false;
-            }
-        }
 
-        private void EnsureRagdollPhysicsActive()
-        {
-            if (_evaScript == null || !_isRagdollActive) return;
-            
-            var rigidbodies = _evaScript.GetComponentsInChildren<Rigidbody>();
-            foreach (var rb in rigidbodies)
-            {
-                if (rb.isKinematic)
-                {
-                    rb.isKinematic = false;
-                }
-            }
-            
-            ForceDisableAnimatorAndIK();
+            var animator = _evaScript.GetComponent<Animator>();
+            if (animator != null) animator.enabled = false;
+
+            foreach (var a in _evaScript.GetComponentsInChildren<Animator>())
+                if (a.enabled) a.enabled = false;
+
+            if (_pilotIK != null && _pilotIK.enabled)
+                _pilotIK.enabled = false;
         }
 
         #endregion
-        
-        
     }
 }

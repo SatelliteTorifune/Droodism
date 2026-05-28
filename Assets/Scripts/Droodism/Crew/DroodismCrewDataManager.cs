@@ -21,8 +21,7 @@ namespace Assets.Scripts.Droodism.Crew
         private bool _loaded;
         private Dictionary<int, string> _gameCrewNameById = new Dictionary<int, string>();
         private object _lastKnownGameStateInstance;
-
-        public IEnumerable<DroodismCrewData> Members => _members;
+        
 
         private void Awake()
         {
