@@ -102,8 +102,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             group.Add(new TextButtonModel("启用", b => EnableRagdollMode()));
             group.Add(new TextButtonModel("禁用", b => DisableRagdollMode()));
             group.Add(new TextModel("Status", () => _isRagdollActive ? "Active" : "Inactive"));
+            group.Add(new SliderModel("操你妈",()=>sm,(f)=>sm=f,-2,2f));
+            
         }
 
+        private float sm;
         #endregion
 
         #region Properties
@@ -140,7 +143,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (_isRagdollActive) return;
 
             _wasPaused = false;
-            
+
             if (_evaScript != null && _pilotIK != null)
             {
                 CaptureCraftVelocity();
@@ -388,6 +391,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private void DisableRagdollSelfCollisions()
         {
+          
             if (_evaScript == null) return;
 
             var ragdollCols = _evaScript.GetComponentsInChildren<Collider>();
@@ -435,6 +439,20 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 logger.Initialize(_loggedCollisions, _isRagdollActive);
             }
         }
+        
+
+        private void SyncCharacterColliderToHips()
+        {
+            if (_evaScript == null) return;
+
+            var characterCollider = _evaScript.transform.Find("CharacterCollider");
+            var hips = _evaScript.transform.Find("Root").Find("Offset").Find("Hips");
+            if (characterCollider == null || hips == null) return;
+
+            //TODO 修好这里关于位置限定的bug
+            //hips.localPosition = new Vector3(characterCollider.localPosition.x, hips.localPosition.y, characterCollider.localPosition.z);
+            hips.localPosition = new Vector3(characterCollider.localPosition.x, characterCollider.localPosition.y+sm, characterCollider.localPosition.z);
+        }
 
         #endregion
         
@@ -457,6 +475,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 LeftFootRotWeight = s.leftFootEffector.rotationWeight
             };
         }
+        
 
         private void RestoreEvaScriptIK()
         {
@@ -490,7 +509,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
                 _originalRigidbodyStates.Clear();
             }
-
+            
             // Restore TransformInfoScript
             if (_transformInfoScript != null)
                 _transformInfoScript.enabled = true;
@@ -509,21 +528,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         void IFlightUpdate.FlightUpdate(in FlightFrameData frame)
         {
-            // Ragdoll bones are children of the craft in local space.
-            // Physics runs in world space; bones move with craft automatically.
-            // Do NOT move the craft to follow ragdoll - it creates a feedback loop
-            // where craft teleportation fights rigidbody velocity.
+            SyncCharacterColliderToHips();
         }
 
         void IFlightFixedUpdate.FlightFixedUpdate(in FlightFrameData frame)
         {
-            if (_evaScript == null) return;
-
+            if (_evaScript == null||!_isRagdollActive) return;
             if (_wasPaused && _isRagdollActive)
                 OnUnpaused();
-
-            if (!_isRagdollActive) return;
-
+            
             // Keep ragdoll physics active
             var rbs = _evaScript.GetComponentsInChildren<Rigidbody>();
             foreach (var rb in rbs)

@@ -1,10 +1,11 @@
-using System.Numerics;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using HarmonyLib;
 using ModApi;
 using ModApi.GameLoop;
 using System.Reflection;
 using Assets.Scripts.Craft.Parts.Modifiers;
+using UnityEngine;
+using Vector3 = System.Numerics.Vector3;
 
 namespace Assets.Scripts.HarmonyPatches
 {
@@ -221,7 +222,7 @@ namespace Assets.Scripts.HarmonyPatches
         }
 
         /// <summary>
-        /// Skip nozzle updates when ragdoll is active.
+        /// Skip nozzle updates when ragdoll is active and stop any playing particles.
         /// </summary>
         [HarmonyPatch]
         public class UpdateNozzles_Patch
@@ -235,9 +236,14 @@ namespace Assets.Scripts.HarmonyPatches
             {
                 if (IsRagdollActive(__instance))
                 {
+                    foreach (var ps in __instance.GetComponentsInChildren<ParticleSystem>())
+                    {
+                        if (ps.isPlaying)
+                            ps.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+                    }
                     return false;
                 }
-                
+
                 return true;
             }
         }
