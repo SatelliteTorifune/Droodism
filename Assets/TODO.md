@@ -30,6 +30,15 @@
 > 
 > 增加尺寸调整滑条
 
+<<<<<<< Updated upstream
+=======
+# User Manual
+> 重置或者更新一下用户手册
+>
+# Warp时预警功能
+> 没有思路
+
+>>>>>>> Stashed changes
 ## 插旗
 > 重置
 > 吗的这个b玩意transform不能动

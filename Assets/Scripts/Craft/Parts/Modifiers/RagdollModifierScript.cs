@@ -49,6 +49,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private readonly List<BoneTransform> _pausedBoneStates = new();
         private readonly HashSet<(string, string)> _loggedCollisions = new();
 
+<<<<<<< Updated upstream
+=======
+        private readonly List<GameObject> _dynamicallyAddedBones = new();
+        private readonly Dictionary<GameObject, Collider> _replacedColliders = new();
+
+>>>>>>> Stashed changes
         #endregion
 
         #region Nested Types
@@ -101,12 +107,20 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
             group.Add(new TextButtonModel("启用", b => EnableRagdollMode()));
             group.Add(new TextButtonModel("禁用", b => DisableRagdollMode()));
+<<<<<<< Updated upstream
             group.Add(new TextModel("Status", () => _isRagdollActive ? "Active" : "Inactive"));
+=======
+            group.Add(new TextModel("Status", () => Data.EnableRagdoll ? "Active" : "Inactive"));
+>>>>>>> Stashed changes
             group.Add(new SliderModel("操你妈",()=>sm,(f)=>sm=f,-2,2f));
             
         }
 
+<<<<<<< Updated upstream
         private float sm;
+=======
+        private float sm = 4;
+>>>>>>> Stashed changes
         #endregion
 
         #region Properties
@@ -114,6 +128,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public bool IsRagdollActive => _isRagdollActive;
 
         #endregion
+        
+
+        
 
         #region Part Modifier Events
 
@@ -131,6 +148,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
 
         #region Public API
+<<<<<<< Updated upstream
 
         public void SetRagdollMode(bool enable)
         {
@@ -138,6 +156,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             else DisableRagdollMode();
         }
 
+=======
+        
+>>>>>>> Stashed changes
         public void EnableRagdollMode()
         {
             if (_isRagdollActive) return;
@@ -165,6 +186,42 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             Data.EnableRagdoll = false;
 
             RestoreEvaScriptIK();
+<<<<<<< Updated upstream
+=======
+            DestroyRagdollPhysics();
+            _originalRigidbodyStates.Clear();
+        }
+
+        private void DestroyRagdollPhysics()
+        {
+            foreach (var go in _dynamicallyAddedBones)
+            {
+                if (go == null) continue;
+
+                foreach (var joint in go.GetComponents<CharacterJoint>())
+                  Destroy(joint);
+
+                foreach (var col in go.GetComponents<CapsuleCollider>())
+                  Destroy(col);
+                foreach (var col in go.GetComponents<SphereCollider>())
+                  Destroy(col);
+                foreach (var col in go.GetComponents<BoxCollider>())
+                  Destroy(col);
+
+                foreach (var rb in go.GetComponents<Rigidbody>())
+                  Destroy(rb);
+            }
+
+            foreach (var kvp in _replacedColliders)
+            {
+                if (kvp.Key == null || kvp.Value == null) continue;
+              Destroy(kvp.Value);
+                var newCol = kvp.Key.GetComponent<Collider>();
+                if (newCol != null) UnityEngine.Object.Destroy(newCol);
+            }
+            _replacedColliders.Clear();
+            _dynamicallyAddedBones.Clear();
+>>>>>>> Stashed changes
         }
 
         #endregion
@@ -256,7 +313,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private void CreateRagdollDynamically(Transform root)
         {
+<<<<<<< Updated upstream
             Transform boneRoot = root.Find("Root/Offset") ?? root.Find("Offset") ?? root;
+=======
+            _dynamicallyAddedBones.Clear();
+            var boneRoot = root.Find("Root/Offset") ?? root.Find("Offset") ?? root;
+>>>>>>> Stashed changes
             _ragdollRoot = boneRoot;
 
             Transform hips = boneRoot.Find("Hips");
@@ -294,6 +356,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 rb.useGravity = true;
                 rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
                 rb.interpolation = RigidbodyInterpolation.Interpolate;
+<<<<<<< Updated upstream
+=======
+                _dynamicallyAddedBones.Add(hips.gameObject);
+>>>>>>> Stashed changes
             }
 
             void AddRBJoint(Transform child, Transform parent, float mass,
@@ -308,6 +374,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 rb.useGravity = true;
                 rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
                 rb.interpolation = RigidbodyInterpolation.Interpolate;
+<<<<<<< Updated upstream
+=======
+                _dynamicallyAddedBones.Add(child.gameObject);
+>>>>>>> Stashed changes
 
                 AddBoneCollider(child.gameObject, parent.gameObject, limbLen);
 
@@ -369,7 +439,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (bone == null || _skipBones.Contains(bone.name)) return;
 
             var existing = bone.GetComponent<Collider>();
+<<<<<<< Updated upstream
             if (existing != null) UnityEngine.Object.Destroy(existing);
+=======
+            if (existing != null)
+            {
+                _replacedColliders[bone] = existing;
+              Destroy(existing);
+            }
+>>>>>>> Stashed changes
 
             var col = bone.AddComponent<CapsuleCollider>();
             col.radius = Mathf.Max(0.04f, limbLength * 0.25f);
@@ -423,6 +501,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
             }
         }
+        
+        
 
         private void AttachCollisionLogger()
         {
@@ -448,10 +528,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             var characterCollider = _evaScript.transform.Find("CharacterCollider");
             var hips = _evaScript.transform.Find("Root").Find("Offset").Find("Hips");
             if (characterCollider == null || hips == null) return;
+<<<<<<< Updated upstream
 
             //TODO 修好这里关于位置限定的bug
             //hips.localPosition = new Vector3(characterCollider.localPosition.x, hips.localPosition.y, characterCollider.localPosition.z);
             hips.localPosition = new Vector3(characterCollider.localPosition.x, characterCollider.localPosition.y+sm, characterCollider.localPosition.z);
+=======
+            
+            hips.localPosition = new Vector3(characterCollider.localPosition.x, Math.Clamp(hips.localPosition.y,0f,sm), characterCollider.localPosition.z);
+>>>>>>> Stashed changes
         }
 
         #endregion
@@ -524,6 +609,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             _evaScript = PartScript.GetModifier<EvaScript>();
             _pilotIK = _evaScript?.GetComponentInChildren<FullBodyBipedIK>();
             _transformInfoScript = _evaScript?.GetComponent<TransformInfoScript>();
+<<<<<<< Updated upstream
+=======
+            if (Data.EnableRagdoll)
+            {
+                EnableRagdollMode();
+            }
+>>>>>>> Stashed changes
         }
 
         void IFlightUpdate.FlightUpdate(in FlightFrameData frame)
