@@ -110,13 +110,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             group.Add(new TextButtonModel("启用", b => EnableRagdollMode()));
             group.Add(new TextButtonModel("禁用", b => DisableRagdollMode()));
             group.Add(new TextModel("Status", () => Data.EnableRagdoll ? "Active" : "Inactive"));
-
+            group.Add(new ToggleModel("操",()=>cnm,(b)=>cnm=b));
             group.Add(new SliderModel("操你妈",()=>sm,(f)=>sm=f,-2,2f));
             
         }
 
-
-
+        private bool cnm;
         private float sm = 4;
 
         #endregion
@@ -150,6 +149,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (_isRagdollActive) return;
 
             _wasPaused = false;
+            var characterCollider = _evaScript.transform.Find("CharacterCollider");
+            var hips = _evaScript.transform.Find("Root").Find("Offset").Find("Hips");
+            if (characterCollider == null || hips == null) return;
+            hips.localPosition = characterCollider.localPosition;
 
             if (_evaScript != null && _pilotIK != null)
             {
@@ -159,10 +162,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
             _isRagdollActive = true;
             Data.EnableRagdoll = true;
-            var characterCollider = _evaScript.transform.Find("CharacterCollider");
-            var hips = _evaScript.transform.Find("Root").Find("Offset").Find("Hips");
-            if (characterCollider == null || hips == null) return;
-            hips.localPosition = characterCollider.localPosition;
+           
         }
 
         public void DisableRagdollMode()
@@ -173,6 +173,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             var hips = _evaScript.transform.Find("Root").Find("Offset").Find("Hips");
             if (characterCollider == null || hips == null) return;
             hips.localPosition = characterCollider.localPosition;
+
+            var capsule = characterCollider.GetComponent<CapsuleCollider>();
+            if (capsule != null) capsule.enabled = true;
+
             _isRagdollActive = false;
             _ragdollPhysicsCreated = false;
             _wasPaused = false;
@@ -505,16 +509,19 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private void SyncCharacterColliderToHips()
         {
             if (_evaScript == null) return;
-            if (_evaScript.IsSwimmingEnabled)
-            {
-                return;   
-            }
-            
+
             var characterCollider = _evaScript.transform.Find("CharacterCollider");
             var hips = _evaScript.transform.Find("Root").Find("Offset").Find("Hips");
             if (characterCollider == null || hips == null) return;
-            hips.localPosition = new Vector3(characterCollider.localPosition.x, Math.Clamp(hips.localPosition.y,0f,sm), characterCollider.localPosition.z);
-
+            Mod.Log("操你妈");
+            var capsule = characterCollider.GetComponent<CapsuleCollider>();
+            //TODO 搞清楚这个玩意到底是啥逻辑
+            if (capsule != null)
+            {
+                capsule.enabled = cnm;
+            }
+            hips.localPosition = new Vector3(characterCollider.localPosition.x,cnm?hips.localPosition.y:Math.Clamp(hips.localPosition.y,0f,sm), characterCollider.localPosition.z);
+            //hips.localPosition = new Vector3(characterCollider.localPosition.x, this.PartScript.CraftScript.FlightData.InWater?hips.localPosition.y:Math.Clamp(hips.localPosition.y,0f,sm), characterCollider.localPosition.z);
         }
 
         #endregion
