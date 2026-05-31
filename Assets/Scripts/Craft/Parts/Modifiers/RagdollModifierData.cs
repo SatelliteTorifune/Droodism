@@ -19,17 +19,9 @@ public class RagdollModifierData : PartModifierData<RagdollModifierScript>
     [DesignerPropertySlider(0f, 1f, 21, Label = "IK Blend Speed", Order = 1, 
         Tooltip = "How quickly IK control blends when entering ragdoll.")]
     private float _ikBlendSpeed = 0.1f;
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
     public bool EnableRagdoll
     {
         get => _enableRagdoll;
         set => _enableRagdoll = value;
     }
-<<<<<<< Updated upstream
-    
-=======
->>>>>>> Stashed changes
 }
