@@ -17,28 +17,18 @@
 
 
 # RagDoll
->ragDoll本体和Eva本体位置不一样
-> >没思路
-> 
-> ragDoll部分质量调整
-> 
->重新进入FlightScene后ragDoll状态发癫
-> > 怎么发癫?
-> 
+> 水物理调整
 # Resources Pack 
 >减小默认尺寸至50%
 > 
 > 增加尺寸调整滑条
 
-<<<<<<< Updated upstream
-=======
 # User Manual
 > 重置或者更新一下用户手册
 >
 # Warp时预警功能
 > 没有思路
 
->>>>>>> Stashed changes
 ## 插旗
 > 重置
 > 吗的这个b玩意transform不能动

@@ -14,11 +14,6 @@ public class RagdollModifierData : PartModifierData<RagdollModifierScript>
     [PartModifierProperty]
     [DesignerPropertyToggleButton(Label = "Enable Ragdoll", Order = 0, Tooltip = "Whether to enable ragdoll physics on this part.")]
     private bool _enableRagdoll = false;
-    [SerializeField]
-    [PartModifierProperty]
-    [DesignerPropertySlider(0f, 1f, 21, Label = "IK Blend Speed", Order = 1, 
-        Tooltip = "How quickly IK control blends when entering ragdoll.")]
-    private float _ikBlendSpeed = 0.1f;
     public bool EnableRagdoll
     {
         get => _enableRagdoll;

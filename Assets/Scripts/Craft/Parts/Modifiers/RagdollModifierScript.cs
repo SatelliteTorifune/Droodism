@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
+using Assets.Scripts.Flight;
 using ModApi;
 using ModApi.Craft;
 using ModApi.Craft.Parts;
 using ModApi.GameLoop;
 using ModApi.GameLoop.Interfaces;
+using ModApi.Scenes.Events;
 using ModApi.Ui.Inspector;
 using RootMotion.FinalIK;
 using UnityEngine;
@@ -107,9 +109,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
             group.Add(new TextButtonModel("启用", b => EnableRagdollMode()));
             group.Add(new TextButtonModel("禁用", b => DisableRagdollMode()));
-
-            group.Add(new TextModel("Status", () => _isRagdollActive ? "Active" : "Inactive"));
-
             group.Add(new TextModel("Status", () => Data.EnableRagdoll ? "Active" : "Inactive"));
 
             group.Add(new SliderModel("操你妈",()=>sm,(f)=>sm=f,-2,2f));
@@ -139,25 +138,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             _isRagdollActive = Data.EnableRagdoll;
         }
         
-
-       
-
         #endregion
 
         
 
         #region Public API
 
-
-        public void SetRagdollMode(bool enable)
-        {
-            if (enable) EnableRagdollMode();
-            else DisableRagdollMode();
-        }
-
-
         
-
         public void EnableRagdollMode()
         {
             if (_isRagdollActive) return;
@@ -172,12 +159,20 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
             _isRagdollActive = true;
             Data.EnableRagdoll = true;
+            var characterCollider = _evaScript.transform.Find("CharacterCollider");
+            var hips = _evaScript.transform.Find("Root").Find("Offset").Find("Hips");
+            if (characterCollider == null || hips == null) return;
+            hips.localPosition = characterCollider.localPosition;
         }
 
         public void DisableRagdollMode()
         {
             if (!_isRagdollActive) return;
 
+            var characterCollider = _evaScript.transform.Find("CharacterCollider");
+            var hips = _evaScript.transform.Find("Root").Find("Offset").Find("Hips");
+            if (characterCollider == null || hips == null) return;
+            hips.localPosition = characterCollider.localPosition;
             _isRagdollActive = false;
             _ragdollPhysicsCreated = false;
             _wasPaused = false;
@@ -185,10 +180,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             Data.EnableRagdoll = false;
 
             RestoreEvaScriptIK();
-
-
             DestroyRagdollPhysics();
             _originalRigidbodyStates.Clear();
+            var tm = Game.Instance.FlightScene.TimeManager;
+            tm.RequestPauseChange(true, false);
+            tm.RequestPauseChange(false, false);
         }
 
         private void DestroyRagdollPhysics()
@@ -238,6 +234,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private void ApplyPreservedVelocity()
         {
             if (_evaScript == null) return;
+            if(Game.Instance.FlightScene.ViewManager.GameView.ReferenceFrame.IsSurfaceLocked&&PartScript.CraftScript.CraftNode.Parent.PlanetData.SurfaceGravity > 4.0)
+            {
+                return;
+            }
             foreach (var rb in _evaScript.GetComponentsInChildren<Rigidbody>())
             {
                 rb.velocity = _preservedVelocity;
@@ -303,10 +303,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 CreateRagdollDynamically(_evaScript.transform);
             }
-
             ApplyPreservedVelocity();
             DisableRagdollSelfCollisions();
-            AttachCollisionLogger();
             _ragdollPhysicsCreated = true;
         }
 
@@ -502,37 +500,19 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         
 
-        private void AttachCollisionLogger()
-        {
-            if (_evaScript == null) return;
-            _loggedCollisions.Clear();
-
-            var ragdollColliders = _evaScript.GetComponentsInChildren<Collider>();
-            foreach (var col in ragdollColliders)
-            {
-                var go = col.gameObject;
-                if (go.GetComponent<RagdollCollisionLogger>() != null) continue;
-
-                var logger = go.AddComponent<RagdollCollisionLogger>();
-                logger.Initialize(_loggedCollisions, _isRagdollActive);
-            }
-        }
-        
+       
 
         private void SyncCharacterColliderToHips()
         {
             if (_evaScript == null) return;
-
+            if (_evaScript.IsSwimmingEnabled)
+            {
+                return;   
+            }
+            
             var characterCollider = _evaScript.transform.Find("CharacterCollider");
             var hips = _evaScript.transform.Find("Root").Find("Offset").Find("Hips");
             if (characterCollider == null || hips == null) return;
-
-
-            //TODO 修好这里关于位置限定的bug
-            //hips.localPosition = new Vector3(characterCollider.localPosition.x, hips.localPosition.y, characterCollider.localPosition.z);
-            hips.localPosition = new Vector3(characterCollider.localPosition.x, characterCollider.localPosition.y+sm, characterCollider.localPosition.z);
-
-            
             hips.localPosition = new Vector3(characterCollider.localPosition.x, Math.Clamp(hips.localPosition.y,0f,sm), characterCollider.localPosition.z);
 
         }
@@ -602,22 +582,39 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         #region Flight Loop
 
+        void Awake()
+        {
+            Game.Instance.SceneManager.SceneTransitionCompleted += OnSceneTransitionCompleted;
+        }
+
+        void OnSceneTransitionCompleted(object sender, SceneTransitionEventArgs e)
+        {
+            if (e.TransitionToScene!="Flight")
+            {
+                return;
+            }
+            
+            if (Data.EnableRagdoll)
+            {
+                Mod.Log("OnSceneTransitionCompleted call Enabled");
+                DisableRagdollMode();
+                EnableRagdollMode();
+            }
+        }
         void IFlightStart.FlightStart(in FlightFrameData frame)
         {
             _evaScript = PartScript.GetModifier<EvaScript>();
             _pilotIK = _evaScript?.GetComponentInChildren<FullBodyBipedIK>();
             _transformInfoScript = _evaScript?.GetComponent<TransformInfoScript>();
-
-
-            if (Data.EnableRagdoll)
-            {
-                EnableRagdollMode();
-            }
-
+            
         }
 
         void IFlightUpdate.FlightUpdate(in FlightFrameData frame)
         {
+            if (!Data.EnableRagdoll)
+            {
+                return;
+            }
             SyncCharacterColliderToHips();
         }
 
@@ -627,7 +624,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (_wasPaused && _isRagdollActive)
                 OnUnpaused();
             
-            // Keep ragdoll physics active
             var rbs = _evaScript.GetComponentsInChildren<Rigidbody>();
             foreach (var rb in rbs)
             {
