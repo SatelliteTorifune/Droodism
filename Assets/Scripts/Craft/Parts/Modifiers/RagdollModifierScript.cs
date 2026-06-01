@@ -110,37 +110,18 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             group.Add(new TextButtonModel("启用", b => EnableRagdollMode()));
             group.Add(new TextButtonModel("禁用", b => DisableRagdollMode()));
             group.Add(new TextModel("Status", () => Data.EnableRagdoll ? "Active" : "Inactive"));
-            group.Add(new ToggleModel("操",()=>cnm,(b)=>cnm=b));
+            //group.Add(new ToggleModel("操",()=>cnm,(b)=>cnm=b));
             group.Add(new SliderModel("操你妈",()=>sm,(f)=>sm=f,-2,2f));
             
         }
 
-        private bool cnm;
+     
         private float sm = 4;
 
         #endregion
 
-        #region Properties
-
-        public bool IsRagdollActive => _isRagdollActive;
-
-        #endregion
+       
         
-
-        
-
-        #region Part Modifier Events
-
-        protected override void OnInitialized()
-        {
-            base.OnInitialized();
-            _isRagdollActive = Data.EnableRagdoll;
-        }
-        
-        #endregion
-
-        
-
         #region Public API
 
         
@@ -513,15 +494,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             var characterCollider = _evaScript.transform.Find("CharacterCollider");
             var hips = _evaScript.transform.Find("Root").Find("Offset").Find("Hips");
             if (characterCollider == null || hips == null) return;
-            Mod.Log("操你妈");
-            var capsule = characterCollider.GetComponent<CapsuleCollider>();
-            //TODO 搞清楚这个玩意到底是啥逻辑
-            if (capsule != null)
-            {
-                capsule.enabled = cnm;
-            }
-            hips.localPosition = new Vector3(characterCollider.localPosition.x,cnm?hips.localPosition.y:Math.Clamp(hips.localPosition.y,0f,sm), characterCollider.localPosition.z);
-            //hips.localPosition = new Vector3(characterCollider.localPosition.x, this.PartScript.CraftScript.FlightData.InWater?hips.localPosition.y:Math.Clamp(hips.localPosition.y,0f,sm), characterCollider.localPosition.z);
+            hips.localPosition = new Vector3(characterCollider.localPosition.x, this.PartScript.CraftScript.FlightData.InWater?hips.localPosition.y:Math.Clamp(hips.localPosition.y,0f,sm), characterCollider.localPosition.z);
         }
 
         #endregion
@@ -613,6 +586,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             _evaScript = PartScript.GetModifier<EvaScript>();
             _pilotIK = _evaScript?.GetComponentInChildren<FullBodyBipedIK>();
             _transformInfoScript = _evaScript?.GetComponent<TransformInfoScript>();
+            _isRagdollActive = Data.EnableRagdoll;
             
         }
 

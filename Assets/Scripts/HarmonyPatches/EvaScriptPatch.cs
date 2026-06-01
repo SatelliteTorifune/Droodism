@@ -20,7 +20,7 @@ namespace Assets.Scripts.HarmonyPatches
         private static bool IsRagdollActive(EvaScript eva)
         {
             if (!Game.InFlightScene) return false;
-            return eva?.PartScript?.GetModifier<RagdollModifierScript>()?.IsRagdollActive ?? false;
+            return eva?.PartScript?.GetModifier<RagdollModifierScript>().Data.EnableRagdoll ?? false;
         }
 
         /// <summary>

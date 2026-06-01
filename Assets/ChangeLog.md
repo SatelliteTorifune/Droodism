@@ -1,3 +1,7 @@
+# 2026 5 29
+> 增加了重新进入FlightScene后ragDoll状态的保持
+
+
 # 2026  5 28
 > 修复了进入ragDoll状态时jetPack仍在动画播放的bug
 

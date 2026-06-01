@@ -17,9 +17,7 @@
 
 
 # RagDoll
-> 水物理调整
-> 
-> 修复RCS不工作的bug
+
 # Resources Pack 
 >减小默认尺寸至50%
 > 
