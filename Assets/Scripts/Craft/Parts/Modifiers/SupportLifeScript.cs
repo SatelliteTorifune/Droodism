@@ -6,6 +6,7 @@ using ModApi.GameLoop.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
 using System.Xml.Linq;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using Assets.Scripts.Droodism;
@@ -191,6 +192,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             CheckRadiationState(frame);
             DamageRadiation(frame);
             UpdateHealingStatus();
+            
             if (!IsHibernating)
             {
                 if (!UsingInternalOxygen())   
@@ -198,6 +200,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     AutoRefillLogic(frame);
                 }
                 ConsumptionLogic(frame);
+                PilotDamageReduction(frame);
             }
             if (ModSettings.Instance.ActiveUpdateRadiationBeltConfig)
             {
@@ -1011,9 +1014,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     false, 2f);
             }
         }
-
         
-
         private void DamageRadiation(in FlightFrameData  frame)
         {
             if (evaScript == null || PartScript == null)
@@ -1081,6 +1082,24 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
         }
         
+        private void PilotDamageReduction(in FlightFrameData frame)
+        {
+            //TODO 1.4更新再移除
+            //return;
+            if (this.Data.DroodismCrewData.CrewRole != DroodType.Pilot)
+            {
+                return;
+            }
+
+            if (evaScript.Data.GTolerance > 0.0 && evaScript.Data.GDamageScale > 0.0 &&
+                (float)(Setting<float>)Game.Instance.Settings.Game.Flight.ImpactDamageScale > 0.0)
+            {
+                
+                this.PartScript.TakeDamage((Mathf.Max(0.0f, this.evaScript.Gs - this.evaScript.Data.GTolerance) * frame.DeltaTime * this.evaScript.Data.GDamageScale * (float) (Setting<float>) Game.Instance.Settings.Game.Flight.ImpactDamageScale)*-0.4f, PartDamageType.GForce);
+            }
+             
+            
+        }
         #endregion
 
         #region UI
