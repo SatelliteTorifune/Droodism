@@ -103,18 +103,19 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 isHealing = false;
                 return;
             }
-            if (part.Data.Damage <= 0)
-            {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Selected Crew {part.GetModifier<EvaScript>().Data.CrewName} is pretty healthy.", false, 3f);
-                isHealing = false;
-                return;
-            }
             if (!part.GetModifier<SupportLifeScript>().CanHeal)
             {
                 Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Selected Crew {part.GetModifier<EvaScript>().Data.CrewName} is taking damage" , false, 4f);
                 isHealing = false;
                 return;
             }
+            if (part.Data.Damage <= 0)
+            {
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Selected Crew {part.GetModifier<EvaScript>().Data.CrewName} is pretty healthy.", false, 3f);
+                isHealing = false;
+                return;
+            }
+            
 
             if (part.Data.PartType.Name==("Eva")||part.Data.PartType.Name==("Eva-Tourist"))
             {
