@@ -13,7 +13,7 @@
     </SubpartTypes>
   </PartType>
   <DesignerParts>
-    <DesignerPart name="GasPressurizeDevice" category="LifeSupport" description="Used to compress the low density gas to hight pressure gas" order="0" showInDesigner="true" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
+    <DesignerPart name="GasPressurizeDevice" category="LifeSupport" description="Used to compress the low density gas to high pressure gas or Liquid Gas" order="0" showInDesigner="true" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
       <Assembly>
         <Parts>
           <Part id="1" partType="GasPressurizeDevice" position="0,0,0" rotation="0,0,0">

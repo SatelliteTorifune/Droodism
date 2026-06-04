@@ -161,21 +161,30 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             batterySource = PartScript.BatteryFuelSource;
             var patchScript = PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
-            switch (this.Data.GasType)
+            try
             {
-                case "O2" :
-                    highPressureGasSource = GetCraftFuelSource("HPOxygen") == null?GetCraftFuelSource("LqdOxygen"):GetCraftFuelSource("HPOxygen");
-                    lowPressureGasSource=patchScript.OxygenFuelSource;
-                    break;
-                case "CO2" :
-                    highPressureGasSource = GetCraftFuelSource("HPCO2");
-                    lowPressureGasSource =  patchScript.CO2FuelSource;
-                    break;
-                case "N2" :
-                    highPressureGasSource = GetCraftFuelSource("HPN2");
-                    lowPressureGasSource =  GetCraftFuelSource("N2");
-                    break;
+                switch (this.Data.GasType)
+                {
+                    case "O2" :
+                        highPressureGasSource = GetCraftFuelSource("LqdOxygen");
+                        //highPressureGasSource = GetCraftFuelSource("LOX");
+                        lowPressureGasSource=patchScript.OxygenFuelSource;
+                        break;
+                    case "CO2" :
+                        highPressureGasSource = GetCraftFuelSource("HPCO2");
+                        lowPressureGasSource =  patchScript.CO2FuelSource;
+                        break;
+                    case "N2" :
+                        highPressureGasSource = GetCraftFuelSource("HPN2");
+                        lowPressureGasSource =  GetCraftFuelSource("N2");
+                        break;
+                }
             }
+            catch (Exception e)
+            {
+                Mod.Log("Error while refreshing fuel sources for GasDealer: " + e.StackTrace);
+            }
+           
             
         }
         public override void OnCraftStructureChanged(ICraftScript craftScript)

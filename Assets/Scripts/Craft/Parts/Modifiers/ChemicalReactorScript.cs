@@ -142,6 +142,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 case "LH2+LOX=Hydrolox":
                     lH2Source = GetRegularCraftFuelSource("LH2");
                     LqdOxygenSource=GetRegularCraftFuelSource("LqdOxygen");
+                    //LqdOxygenSource = GetRegularCraftFuelSource("LOX");
                     hydroloxSource=GetRegularCraftFuelSource("LOX/LH2");
                     break;
                     

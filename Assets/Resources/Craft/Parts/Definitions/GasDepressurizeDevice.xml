@@ -13,7 +13,7 @@
     </SubpartTypes>
   </PartType>
   <DesignerParts>
-    <DesignerPart name="Gas Depressurize Device" category="LifeSupport" description="Used to Depressurize high pressure gas to low pressure gas.&#xA;" order="0" showInDesigner="true" iconType="Resource" iconPath="Assets/Content/Craft/Parts/GasDepressure.png" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
+    <DesignerPart name="Gas Depressurize Device" category="LifeSupport" description="Used to Depressurize high pressure gas or liquid gas to low pressure gas.&#xA;" order="0" showInDesigner="true" iconType="Resource" iconPath="Assets/Content/Craft/Parts/GasDepressure.png" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
       <Assembly>
         <Parts>
           <Part id="1" partType="GasDepressurizeDevice" position="0,0,0" rotation="0,0,0">
