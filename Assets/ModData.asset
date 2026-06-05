@@ -37,6 +37,7 @@ MonoBehaviour:
   _loadPriority: 400
   _name: Droodism
   _otherAssets:
+  - {fileID: 4900000, guid: aaadefc8a80d7744bbeb05c1fcecb05e, type: 3}
   - {fileID: 2800000, guid: c2eb3f6167157324abe651f43f816a7e, type: 3}
   - {fileID: 4900000, guid: 08586af5191de4444a892135f447c8d0, type: 3}
   - {fileID: 102900000, guid: 4d8bd615a0d7a3940bb55e30d2f4842c, type: 3}
@@ -71,7 +72,7 @@ MonoBehaviour:
   _steamTitle: 
   _steamVisibility: 0
   _versionMajor: 0
-  _versionMinor: 8
+  _versionMinor: 79
   _partCategories:
   - {fileID: 11400000, guid: 2d849a06cee127543a64b34a37e37bc1, type: 2}
   - {fileID: 11400000, guid: 7d2b6f557b8767544a162f30e61d22b6, type: 2}
@@ -84,7 +85,6 @@ MonoBehaviour:
   - {fileID: 4900000, guid: bffe8a233f4f6674dbffdbbe2614c3a5, type: 3}
   - {fileID: 4900000, guid: 14776ff5d3403f64eba601b94451442d, type: 3}
   - {fileID: 4900000, guid: be17da59269c7994eb4cfd6e6f452cf1, type: 3}
-  - {fileID: 4900000, guid: 31bdb4675c5d4904e8628016319b03c5, type: 3}
   - {fileID: 4900000, guid: 21a224a5845f95b48a100381457d8adc, type: 3}
   - {fileID: 4900000, guid: 0f5263b52e7ba02499432df7cc10aff6, type: 3}
   - {fileID: 4900000, guid: 507b6b60379cb1542a872044c2021a37, type: 3}
@@ -99,10 +99,10 @@ MonoBehaviour:
   - {fileID: 4900000, guid: 69fd3de320f79e14db97198de0f602fc, type: 3}
   - {fileID: 4900000, guid: 94d3c8abb77d8b54291b1cf067f7ddbf, type: 3}
   - {fileID: 4900000, guid: 11a692886d113e149937457d57601c68, type: 3}
-  - {fileID: 4900000, guid: 41e0fb3bcd7ec464799738eddf6b3180, type: 3}
   - {fileID: 4900000, guid: 62fc707502e4fdf46846d1bc5c46426e, type: 3}
   - {fileID: 4900000, guid: 3187f51072da32145ad84924d186c061, type: 3}
-  - {fileID: 4900000, guid: 178622a42cb310a498033473c58292f0, type: 3}
+  - {fileID: 4900000, guid: 4319f9cea87a1e2489e53e195271b626, type: 3}
+  - {fileID: 4900000, guid: ba467d2740a3cc64bbffaa09ba7b4213, type: 3}
   _partStyleExtensions: []
   _partTextureStyles: []
   _persistentObjects: []

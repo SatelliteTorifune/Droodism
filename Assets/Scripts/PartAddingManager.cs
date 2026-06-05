@@ -24,6 +24,7 @@ namespace Assets.Scripts
         private static readonly string ChairPartName = "Chair";
         private static readonly string Cockpit = "Cockpit1";
         private static readonly string SupportLifeDataModifierName = "SupportLifeData";
+        private static readonly string RagdollModifierName = "RagdollModifier";
 
         
 
@@ -43,6 +44,7 @@ namespace Assets.Scripts
             foreach (var part in GetPartsWithEvaModifier(craftScript, withoutLifeSupport: true))
             {
                 AddLifeSupportModifier(part);
+                AddRagdollModifier(part);
             }
 
             // Process Generator parts
@@ -100,6 +102,7 @@ namespace Assets.Scripts
             if (part.Name == EvaPartName || part.Name == EvaTouristPartName)
             {
                 AddLifeSupportModifier(part);
+                AddRagdollModifier(part);
             }
             else if (part.Name == GeneratorPartName)
             {
@@ -150,6 +153,22 @@ namespace Assets.Scripts
                 supportLifeData = PartModifierData.CreateFromDefaultXml<SupportLifeData>(part);
                 supportLifeData.PartPropertiesEnabled = true;
                 supportLifeData.InspectorEnabled = true;
+            }
+        }
+
+        /// <summary>
+        /// Adds a Ragdoll modifier to the specified part if it doesn't already exist.
+        /// </summary>
+        private static void AddRagdollModifier(PartData part)
+        {
+            if (part == null) return;
+
+            var ragdollData = part.GetModifier<RagdollModifierData>();
+            if (ragdollData == null)
+            {
+                ragdollData = PartModifierData.CreateFromDefaultXml<RagdollModifierData>(part);
+                ragdollData.PartPropertiesEnabled = true;
+                ragdollData.InspectorEnabled = true;
             }
         }
 

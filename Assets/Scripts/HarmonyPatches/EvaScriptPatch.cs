@@ -1,61 +1,250 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using HarmonyLib;
+using ModApi;
+using ModApi.GameLoop;
+using System.Reflection;
+using Assets.Scripts.Craft.Parts.Modifiers;
 using UnityEngine;
+using Vector3 = System.Numerics.Vector3;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.HarmonyPatches
 {
-    public partial class Mod : ModApi.Mods.GameMod
+    /// <summary>
+    /// Patches for EvaScript to disable animation/movement when ragdoll is active.
+    /// We patch internal private methods that would interfere with ragdoll physics,
+    /// while keeping collision tracking and state management intact.
+    /// </summary>
+    public class EvaScriptPatch
     {
-        [HarmonyPatch(typeof(EvaScript), nameof(EvaScript.OnModifiersCreated))]
-        public static class EvaScriptPatch
+        // Helper method to check if ragdoll is active
+        private static bool IsRagdollActive(EvaScript eva)
         {
-            /// <summary>
-            /// 在 OnModifiersCreated 方法执行后运行的后置补丁。
-            /// Postfix patch to run after the OnModifiersCreated method.
-            /// 老实说我不知道这玩意也没有啥用,因为我反编译看到的Eva Script好像自己定义好了东西
-            /// </summary>
-            /// <param name="__instance">EvaScript 实例。The EvaScript instance.</param>
-            public static void Postfix(EvaScript __instance)
+            if (!Game.InFlightScene) return false;
+            return eva?.PartScript?.GetModifier<RagdollModifierScript>().Data.EnableRagdoll ?? false;
+        }
+
+        /// <summary>
+        /// Skip movement calculations when ragdoll is active.
+        /// </summary>
+        [HarmonyPatch]
+        public class UpdateMovement_Patch
+        {
+            static MethodBase TargetMethod()
             {
+                return AccessTools.Method(typeof(EvaScript), "UpdateMovement");
+            }
 
-                // Only execute the patch in the flight scene
-                if (!Game.InFlightScene)
+            public static bool Prefix(EvaScript __instance, out Vector3 totalForce, out Vector3 totalForceJetpack)
+            {
+                totalForce = Vector3.Zero;
+                totalForceJetpack = Vector3.Zero;
+                
+                if (IsRagdollActive(__instance))
                 {
-                    return;
+                    return false;
                 }
+                
+                return true;
+            }
+        }
 
-                try
+        /// <summary>
+        /// Skip animation controller updates when ragdoll is active.
+        /// </summary>
+        [HarmonyPatch]
+        public class UpdateAnimationController_Patch
+        {
+            static MethodBase TargetMethod()
+            {
+                return AccessTools.Method(typeof(EvaScript), "UpdateAnimationController");
+            }
+
+            public static bool Prefix(EvaScript __instance)
+            {
+                if (IsRagdollActive(__instance))
                 {
-                    var fuelTanks = ((Component)__instance).GetComponents<FuelTankScript>();
-                    var jetPackFuelTank = Enumerable.FirstOrDefault(fuelTanks, tank => tank.FuelType?.Id == "Jetpack");
+                    return false;
+                }
+                
+                return true;
+            }
+        }
 
+        /// <summary>
+        /// Skip kinematic turning when ragdoll is active.
+        /// </summary>
+        [HarmonyPatch]
+        public class UpdateKinematicTurning_Patch
+        {
+            static MethodBase TargetMethod()
+            {
+                return AccessTools.Method(typeof(EvaScript), "UpdateKinematicTurning");
+            }
 
-                    var fuelTankField = AccessTools.Field(typeof(EvaScript), "_fuelTank");
-                    if (fuelTankField != null)
+            public static bool Prefix(EvaScript __instance)
+            {
+                if (IsRagdollActive(__instance))
+                {
+                    return false;
+                }
+                
+                return true;
+            }
+        }
+/*
+        /// <summary>
+        /// Skip upright character when ragdoll is active.
+        /// </summary>
+        [HarmonyPatch]
+        public class UprightCharacter_Patch
+        {
+            static MethodBase TargetMethod()
+            {
+                return AccessTools.Method(typeof(EvaScript), "UprightCharacter");
+            }
+
+            public static bool Prefix(EvaScript __instance)
+            {
+                if (IsRagdollActive(__instance))
+                {
+                    return false;
+                }
+                return true;
+            }
+        }*/
+
+        /// <summary>
+        /// Skip SlowDownCharacter when ragdoll is active.
+        /// </summary>
+        [HarmonyPatch]
+        public class SlowDownCharacter_Patch
+        {
+            static MethodBase TargetMethod()
+            {
+                return AccessTools.Method(typeof(EvaScript), "SlowDownCharacter");
+            }
+
+            public static bool Prefix(EvaScript __instance)
+            {
+                if (IsRagdollActive(__instance))
+                {
+                    return false;
+                }
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Skip UpdateControllerColiderParent when ragdoll is active.
+        /// </summary>
+        [HarmonyPatch]
+        public class UpdateControllerColiderParent_Patch
+        {
+            static MethodBase TargetMethod()
+            {
+                return AccessTools.Method(typeof(EvaScript), "UpdateControllerColiderParent");
+            }
+
+            public static bool Prefix(EvaScript __instance)
+            {
+                if (IsRagdollActive(__instance))
+                {
+                    return false;
+                }
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Skip ProcessCompletedPhysicsCycle when ragdoll is active.
+        /// This coroutine calls UprightCharacter after FixedUpdate.
+        /// </summary>
+        [HarmonyPatch]
+        public class ProcessCompletedPhysicsCycle_Patch
+        {
+            static MethodBase TargetMethod()
+            {
+                return AccessTools.Method(typeof(EvaScript), "ProcessCompletedPhysicsCycle");
+            }
+
+            public static bool Prefix(EvaScript __instance)
+            {
+                if (IsRagdollActive(__instance))
+                {
+                    return false;
+                }
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Skip jump state updates when ragdoll is active.
+        /// </summary>
+        [HarmonyPatch]
+        public class UpdateJumpState_Patch
+        {
+            static MethodBase TargetMethod()
+            {
+                return AccessTools.Method(typeof(EvaScript), "UpdateJumpState");
+            }
+
+            public static bool Prefix(EvaScript __instance)
+            {
+                if (IsRagdollActive(__instance))
+                {
+                    return false;
+                }
+                
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Skip grappling hook updates when ragdoll is active.
+        /// </summary>
+        [HarmonyPatch]
+        public class UpdateGrapplingHook_Patch
+        {
+            static MethodBase TargetMethod()
+            {
+                return AccessTools.Method(typeof(EvaScript), "UpdateGrapplingHook");
+            }
+
+            public static bool Prefix(EvaScript __instance)
+            {
+                if (IsRagdollActive(__instance))
+                {
+                    return false;
+                }
+                
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Skip nozzle updates when ragdoll is active and stop any playing particles.
+        /// </summary>
+        [HarmonyPatch]
+        public class UpdateNozzles_Patch
+        {
+            static MethodBase TargetMethod()
+            {
+                return AccessTools.Method(typeof(EvaScript), "UpdateNozzles");
+            }
+
+            public static bool Prefix(EvaScript __instance)
+            {
+                if (IsRagdollActive(__instance))
+                {
+                    foreach (var ps in __instance.GetComponentsInChildren<ParticleSystem>())
                     {
-                        fuelTankField.SetValue(__instance, jetPackFuelTank);
-                        if (jetPackFuelTank == null)
-                        {
-                            //Debug.LogWarning("[EvaScriptPatch] No FuelTankScript with fuel type 'JetPack' found. Setting _fuelTank to null.");
-                        }
-                        else
-                        {
-                            //Debug.Log($"[EvaScriptPatch] Successfully set _fuelTank to JetPack fuel tank.");
-                        }
+                        if (ps.isPlaying)
+                            ps.Stop(true, ParticleSystemStopBehavior.StopEmitting);
                     }
-                    else
-                    {
-                        LogError("[EvaScriptPatch] Failed to find _fuelTank field via reflection.");
-                    }
+                    return false;
                 }
-                catch (System.Exception e)
-                {
-                    LogError($"[EvaScriptPatch] Error in Postfix patch: {e.Message}");
-                }
+
+                return true;
             }
         }
     }

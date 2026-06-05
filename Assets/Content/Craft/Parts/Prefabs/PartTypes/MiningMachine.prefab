@@ -88,7 +88,7 @@ MonoBehaviour:
     _partTypeOverrides: []
     _position: {x: 0, y: 0, z: 0}
     _rotation: {x: 0, y: 0, z: 0}
-    _showInDesigner: 1
+    _showInDesigner: 0
     _snapshotDistanceScaler: 1
     _snapshotPartOffset: {x: 0, y: 0, z: 0}
     _snapshotPartRotation: {x: 0, y: 0, z: 0}
@@ -181,7 +181,6 @@ MonoBehaviour:
     _version: 1
     _versionLast: 1
     _versionsAllowed: 
-    positionOffset1: {x: 0, y: 0, z: 0}
     deploySpeed: 1
     currentEnabledPercent1: 0
     _currentEnabledPercent2: 0

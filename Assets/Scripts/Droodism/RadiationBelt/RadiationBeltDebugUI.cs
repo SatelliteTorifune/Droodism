@@ -2,6 +2,7 @@ using System;
 using System.Windows.Forms;
 using Assets.Scripts;
 using ModApi.GameLoop;
+using ModApi.Scenes;
 using ModApi.Scenes.Events;
 using ModApi.Ui.Inspector;
 using UnityEngine;
@@ -33,6 +34,7 @@ namespace Droodism.RadiationBelt
 
         private void OnSceneLoaded(object sender, SceneEventArgs e)
         {
+            
             if (e.Scene != "Flight")
             {
                 return;

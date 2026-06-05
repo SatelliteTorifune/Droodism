@@ -6,12 +6,12 @@ using ModApi.GameLoop.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
 using System.Xml.Linq;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using Assets.Scripts.Droodism;
 using Assets.Scripts.Droodism.Crew;
 using Droodism.RadiationBelt;
-using ModApi.Craft.Program.Instructions;
 using ModApi.Flight.Events;
 using ModApi.Flight.GameView;
 using UnityEngine;
@@ -114,11 +114,16 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// 外辐射带保护值
         /// </summary>
         private float outerRadiationProtection;
-        
+
         /// <summary>
         /// 内辐射带保护值
         /// </summary>
         private float innerRadiationProtection;
+
+        private static BreathablePlanets _breathablePlanetsCache;
+        private static bool _breathablePlanetsCacheLoaded;
+
+        
         #endregion
 
         #region 逻辑循环啥的
@@ -187,6 +192,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             CheckRadiationState(frame);
             DamageRadiation(frame);
             UpdateHealingStatus();
+            
             if (!IsHibernating)
             {
                 if (!UsingInternalOxygen())   
@@ -194,6 +200,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     AutoRefillLogic(frame);
                 }
                 ConsumptionLogic(frame);
+                PilotDamageReduction(frame);
             }
             if (ModSettings.Instance.ActiveUpdateRadiationBeltConfig)
             {
@@ -563,7 +570,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         private void OnFlightEnded(object sender, FlightEndedEventArgs e)
         {
-           Mod.Log("OnFlightEnded");
             FlightEnd();
         }
         /// <summary>
@@ -574,7 +580,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         public void OnPhysicsEnabled(ICraftNode craftNode, PhysicsChangeReason reason)
         {
-            Mod.Log("OnPhysicsEnabled{0}",reason);
             if (reason == PhysicsChangeReason.Warp||reason == PhysicsChangeReason.LoadedIntoGameView)
             {
                 return;
@@ -594,7 +599,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return;
             }
             OnCraftUnloaded();
-            Mod.Log("OnPhysicsDisabled调用OnCraftUnloaded");
         }
         
         /// <summary>
@@ -644,7 +648,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private void OnCraftUnloaded()
         {
             
-            Mod.Log("{0} 调用OnCraftUnloaded",PartScript.CraftScript.CraftNode.NodeId);
             try
             {
                 Data.LastLoadTime = (long)FlightSceneScript.Instance.FlightState.Time;
@@ -797,6 +800,39 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
         }
         #endregion
+
+        #region 可呼吸星球判断
+        private static BreathablePlanets GetBreathablePlanets()
+        {
+            if (!_breathablePlanetsCacheLoaded)
+            {
+                _breathablePlanetsCacheLoaded = true;
+                try
+                {
+                    _breathablePlanetsCache = BreathablePlanets.LoadFromFile();
+                }
+                catch (Exception ex)
+                {
+                    _breathablePlanetsCache = new BreathablePlanets
+                    {
+                        BreathablePlanet = Array.Empty<string>()
+                    };
+                }
+            }
+            return _breathablePlanetsCache;
+        }
+
+        private static bool IsBreathablePlanet(string planetName)
+        {
+            var config = GetBreathablePlanets();
+            if (config?.BreathablePlanet == null)
+            {
+                return false;
+            }
+            return config.BreathablePlanet.Contains(planetName);
+        }
+        
+        #endregion
         
         #region SOI,结构变化相关函数
         /// <summary>
@@ -830,9 +866,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
             if (airDensity != 0)
             {
-                if (currentPlanetName==("Droo") || currentPlanetName==("Kerbin") ||
-                    currentPlanetName==("Earth") || currentPlanetName==("Nebra") ||
-                    currentPlanetName==("Laythe") || currentPlanetName==("Oord"))
+                if (IsBreathablePlanet(currentPlanetName))
                 {
                     if(evaScript.IsInWater && PartScript.CraftScript.FlightData.AltitudeAboveSeaLevel < 0.1)
                     {
@@ -840,7 +874,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     }
                     return false;
                 }
-                
+
             }
             return true;
         }
@@ -859,6 +893,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 currentPlanetName = this.PartScript.CraftScript.FlightData.Orbit.Parent.PlanetData
                     .Name;
+              
                 Mod.Log("currentPlanetName update"+currentPlanetName);
             }
             catch (Exception e)
@@ -979,9 +1014,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     false, 2f);
             }
         }
-
         
-
         private void DamageRadiation(in FlightFrameData  frame)
         {
             if (evaScript == null || PartScript == null)
@@ -1049,6 +1082,24 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
         }
         
+        private void PilotDamageReduction(in FlightFrameData frame)
+        {
+            //TODO 1.4更新再移除
+            return;
+            if (this.Data.DroodismCrewData.CrewRole != DroodType.Pilot)
+            {
+                return;
+            }
+
+            if (evaScript.Data.GTolerance > 0.0 && evaScript.Data.GDamageScale > 0.0 &&
+                (float)(Setting<float>)Game.Instance.Settings.Game.Flight.ImpactDamageScale > 0.0)
+            {
+                
+                this.PartScript.TakeDamage((Mathf.Max(0.0f, this.evaScript.Gs - this.evaScript.Data.GTolerance) * frame.DeltaTime * this.evaScript.Data.GDamageScale * (float) (Setting<float>) Game.Instance.Settings.Game.Flight.ImpactDamageScale)*-0.4f, PartDamageType.GForce);
+            }
+             
+            
+        }
         #endregion
 
         #region UI

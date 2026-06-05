@@ -90,11 +90,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             _batterySource = this.PartScript.BatteryFuelSource;
             _crewCompartment = PartScript.GetModifier<CrewCompartmentScript>();
-        }
-         private void OnPilotEnter(EvaScript crew) => this.SetPilot(crew);
-
-        /// <summary>Called when [pilot exit].</summary>
-        /// <param name="crew">The crew.</param>
+        } 
+        private void OnPilotEnter(EvaScript crew) => this.SetPilot(crew);
+        
         private void OnPilotExit(EvaScript crew)
         {
             if (!((UnityEngine.Object) crew == (UnityEngine.Object) this._pilot))
@@ -117,58 +115,59 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
         }
     
-        private void SetIKEnabled(bool enabled) {
-      if (!((UnityEngine.Object) this._pilotIK != (UnityEngine.Object) null))
-        return;
-      if (enabled)
-      {
+        private void SetIKEnabled(bool enabled) 
+        {
+            if (!((UnityEngine.Object) this._pilotIK != (UnityEngine.Object) null))
+                return;
+            if (enabled)
+            {
           
-          this._pilotIK.solver.bodyEffector.positionWeight = 1f;
-          this._pilotIK.solver.bodyEffector.rotationWeight = 1f;
-          this._pilotIK.solver.bodyEffector.target = BaseLKTransform;
-          this._pilotIK.solver.bodyEffector.positionWeight = 1f;
-          this._pilotIK.solver.bodyEffector.rotationWeight = 1f;
-        this._pilotIK.solver.rightHandEffector.target = this.RightHandTransform;
-        this._pilotIK.solver.rightHandEffector.positionWeight = 1f;
-        this._pilotIK.solver.rightHandEffector.rotationWeight = 1f;
-        this._pilotIK.solver.leftHandEffector.target = this.LeftHandTransform;
-        this._pilotIK.solver.leftHandEffector.positionWeight = 1f;
-        this._pilotIK.solver.leftHandEffector.rotationWeight = 1f;
-        this._pilotIK.solver.leftArmChain.bendConstraint.bendGoal = this.LeftElbowTransform;
-        this._pilotIK.solver.leftArmChain.bendConstraint.weight = 1f;
-        this._pilotIK.solver.rightArmChain.bendConstraint.bendGoal = this.RightElbowTransform;
-        this._pilotIK.solver.rightArmChain.bendConstraint.weight = 1f;
-        this._pilotIK.solver.rightFootEffector.target = (Transform) null;
-        this._pilotIK.solver.rightFootEffector.positionWeight = 0.0f;
-        this._pilotIK.solver.rightFootEffector.rotationWeight = 0.0f;
-        this._pilotIK.solver.leftFootEffector.target = (Transform) null;
-        this._pilotIK.solver.leftFootEffector.positionWeight = 0.0f;
-        this._pilotIK.solver.leftFootEffector.rotationWeight = 0.0f;
+                this._pilotIK.solver.bodyEffector.positionWeight = 1f;
+                this._pilotIK.solver.bodyEffector.rotationWeight = 1f;
+                this._pilotIK.solver.bodyEffector.target = BaseLKTransform;
+                this._pilotIK.solver.bodyEffector.positionWeight = 1f;
+                this._pilotIK.solver.bodyEffector.rotationWeight = 1f;
+                this._pilotIK.solver.rightHandEffector.target = this.RightHandTransform;
+                this._pilotIK.solver.rightHandEffector.positionWeight = 1f;
+                this._pilotIK.solver.rightHandEffector.rotationWeight = 1f;
+                this._pilotIK.solver.leftHandEffector.target = this.LeftHandTransform;
+                this._pilotIK.solver.leftHandEffector.positionWeight = 1f;
+                this._pilotIK.solver.leftHandEffector.rotationWeight = 1f;
+                this._pilotIK.solver.leftArmChain.bendConstraint.bendGoal = this.LeftElbowTransform;
+                this._pilotIK.solver.leftArmChain.bendConstraint.weight = 1f;
+                this._pilotIK.solver.rightArmChain.bendConstraint.bendGoal = this.RightElbowTransform;
+                this._pilotIK.solver.rightArmChain.bendConstraint.weight = 1f;
+                this._pilotIK.solver.rightFootEffector.target = (Transform) null;
+                this._pilotIK.solver.rightFootEffector.positionWeight = 0.0f;
+                this._pilotIK.solver.rightFootEffector.rotationWeight = 0.0f;
+                this._pilotIK.solver.leftFootEffector.target = (Transform) null;
+                this._pilotIK.solver.leftFootEffector.positionWeight = 0.0f;
+                this._pilotIK.solver.leftFootEffector.rotationWeight = 0.0f;
         
-      }
-      else
-      {
-        this._pilotIK.solver.rightHandEffector.target = (Transform) null;
-        this._pilotIK.solver.rightHandEffector.positionWeight = 0.0f;
-        this._pilotIK.solver.rightHandEffector.rotationWeight = 0.0f;
-        this._pilotIK.solver.leftHandEffector.target = (Transform) null;
-        this._pilotIK.solver.leftHandEffector.positionWeight = 0.0f;
-        this._pilotIK.solver.leftHandEffector.rotationWeight = 0.0f;
-        this._pilotIK.solver.leftArmChain.bendConstraint.bendGoal = (Transform) null;
-        this._pilotIK.solver.leftArmChain.bendConstraint.weight = 0.0f;
-        this._pilotIK.solver.rightArmChain.bendConstraint.bendGoal = (Transform) null;
-        this._pilotIK.solver.rightArmChain.bendConstraint.weight = 0.0f;
-        this._pilotIK.solver.rightFootEffector.target = (Transform) null;
-        this._pilotIK.solver.rightFootEffector.positionWeight = 0.0f;
-        this._pilotIK.solver.rightFootEffector.rotationWeight = 0.0f;
-        this._pilotIK.solver.leftFootEffector.target = (Transform) null;
-        this._pilotIK.solver.leftFootEffector.positionWeight = 0.0f;
-        this._pilotIK.solver.leftFootEffector.rotationWeight = 0.0f;
-        this._pilotIK.solver.bodyEffector.target = (Transform) null;
-        this._pilotIK.solver.bodyEffector.positionWeight = 0.0f;
-        this._pilotIK.solver.bodyEffector.rotationWeight = 0.0f;
-        
-      }
+            }
+            else
+            {
+              this._pilotIK.solver.rightHandEffector.target = (Transform) null;
+              this._pilotIK.solver.rightHandEffector.positionWeight = 0.0f;
+              this._pilotIK.solver.rightHandEffector.rotationWeight = 0.0f;
+              this._pilotIK.solver.leftHandEffector.target = (Transform) null;
+              this._pilotIK.solver.leftHandEffector.positionWeight = 0.0f;
+              this._pilotIK.solver.leftHandEffector.rotationWeight = 0.0f;
+              this._pilotIK.solver.leftArmChain.bendConstraint.bendGoal = (Transform) null;
+              this._pilotIK.solver.leftArmChain.bendConstraint.weight = 0.0f;
+              this._pilotIK.solver.rightArmChain.bendConstraint.bendGoal = (Transform) null;
+              this._pilotIK.solver.rightArmChain.bendConstraint.weight = 0.0f;
+              this._pilotIK.solver.rightFootEffector.target = (Transform) null;
+              this._pilotIK.solver.rightFootEffector.positionWeight = 0.0f;
+              this._pilotIK.solver.rightFootEffector.rotationWeight = 0.0f;
+              this._pilotIK.solver.leftFootEffector.target = (Transform) null;
+              this._pilotIK.solver.leftFootEffector.positionWeight = 0.0f;
+              this._pilotIK.solver.leftFootEffector.rotationWeight = 0.0f;
+              this._pilotIK.solver.bodyEffector.target = (Transform) null;
+              this._pilotIK.solver.bodyEffector.positionWeight = 0.0f;
+              this._pilotIK.solver.bodyEffector.rotationWeight = 0.0f;
+              
+            }
         }
         public override void OnPartDestroyed()
         {

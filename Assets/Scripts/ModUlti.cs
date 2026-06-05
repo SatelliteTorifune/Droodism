@@ -13,7 +13,9 @@ namespace Assets.Scripts
         {
             if (double.IsNaN(position.x) || double.IsNaN(position.y) || double.IsNaN(position.z))
                 return Vector3d.zero;
-            IPlanetNode parent = Game.Instance.FlightScene.CraftNode.Parent;
+            IPlanetNode parent = Game.Instance.FlightScene?.CraftNode?.Parent;
+            if (parent == null)
+                return Vector3d.zero;
             Vector3d surfaceVector = parent.PlanetVectorToSurfaceVector(position);
             double latitude;
             double longitude;
@@ -103,6 +105,14 @@ namespace Assets.Scripts
         }
 
         public static void Log(string format, params object[] args)
+        {
+            if (ModSettings.Instance.DebugMode)
+            {
+                Debug.unityLogger.LogFormat(LogType.Log, format, args);
+            }
+        }
+
+        public static void LogWarning(string format, params object[] args)
         {
             if (ModSettings.Instance.DebugMode)
             {

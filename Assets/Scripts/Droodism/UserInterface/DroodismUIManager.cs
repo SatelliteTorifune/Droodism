@@ -222,7 +222,7 @@ namespace Assets.Scripts.Droodism.UserInterface
 
         private void OnActiveCommandPodChanged(ICraftScript source, ICommandPod oldPod, ICommandPod newPod)
         {
-            OnCraftStructureChanged();
+           OnCraftStructureChanged();
         }
 
         private void OnCraftChanged(ICraftNode craftNode)
@@ -242,11 +242,22 @@ namespace Assets.Scripts.Droodism.UserInterface
         private void OnCraftStructureChanged()
         {
             UpdateInfo();
+           
             var craftScript = Game.Instance.FlightScene.CraftNode.CraftScript;
-            CraftFuelSources craftFuelSource = craftScript.FuelSources as CraftFuelSources; craftFuelSource?.Rebuild(craftScript);
+            if (craftScript==null)
+            {
+                return;
+            }
+            //CraftFuelSources craftFuelSource = craftScript.FuelSources as CraftFuelSources;
+            //craftFuelSource?.Rebuild(craftScript);
+            
             foreach (var pd in craftScript.Data.Assembly.Parts)
             {
-                pd.GetModifier<SupportLifeData>()?.Script.Refresh();
+                if (pd.GetModifier<SupportLifeData>()!=null)
+                {
+                    pd.GetModifier<SupportLifeData>()?.Script.Refresh();
+                }
+               
             }
         }
 
@@ -581,7 +592,7 @@ namespace Assets.Scripts.Droodism.UserInterface
 
         #endregion
 
-        //TODO implement with refactored script
+     
         public IFuelSource GetIFuelSourceByID(string fuelTypeId)
         {
             try

@@ -22,7 +22,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
 
-    public class GliderScript : PartModifierScript<GliderData>,IFlightStart,IFlightFixedUpdate
+    public class GliderScript : PartModifierScript<GliderData>,IFlightStart,IFlightUpdate,IFlightFixedUpdate
     {
         private Transform 
             LeftHandTransform,
@@ -39,8 +39,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private CraftControls controls;
         public Vector3 _worldTorque;
         
-
-        private bool isKill;
+        
         private IFlightSceneUI ui;
 
         private float MinFullDeployHeight;
@@ -49,7 +48,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private ChuteState currentState = ChuteState.None;
         
-        public float OpenPercent { get; private set; } = 0.0f;
+        public float OpenPercent { get; private set; }
         public void FlightStart(in FlightFrameData frame)
         {
             ui = Game.Instance.FlightScene.FlightSceneUI;
@@ -67,20 +66,30 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private bool isGround()
         {
-            return this.PartScript.CraftScript.FlightData.AltitudeAboveGroundLevel<1.5||PartScript.CraftScript.FlightData.Grounded||(this.PartScript.CraftScript.FlightData.SurfaceVelocityMagnitude < 0.01&&PartScript.CraftScript.FlightData.AccelerationMagnitude < 0.01);
+            return this.PartScript.CraftScript.FlightData.AltitudeAboveGroundLevel<1.3||PartScript.CraftScript.FlightData.Grounded||(this.PartScript.CraftScript.FlightData.SurfaceVelocityMagnitude < 0.01&&PartScript.CraftScript.FlightData.AccelerationMagnitude < 0.01);
         }
-        public void FlightFixedUpdate(in FlightFrameData frame)
+
+        private int frameAcc;
+        private bool FuckOff;
+        private bool FuckOff2=true;
+        public void FlightUpdate(in FlightFrameData frame)
         {
             if (_pilot == null)
             {
                 return;
             }
-            if (_crewCompartment.Crew.Count==0)
-            {
-                this.PartScript.BodyScript.ExplodePart(this.PartScript, -1);
-            }
+            
             MinFullDeployHeight = this._pilot.PartScript.GetModifier<SupportLifeScript>().Data.MinDeployHeight;
             if (isGround())
+            {
+                frameAcc++;
+                if (frameAcc>10)
+                {
+                    FuckOff = true;
+                }
+            }
+
+            if (FuckOff&&FuckOff2)
             {
                 try
                 {
@@ -92,16 +101,20 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                         eva.PartScript.GetModifier<SupportLifeScript>().Data.AutoDeployEnabled = false;
                         ui.ShowMessage($"{eva.Data.CrewMember.Name} has landed on the ground");
                     }
+                    FuckOff2 = false;
                     return;
                 }
                 catch (Exception e)
                 {
-                  //这不是bug,这是特意的
+                    Mod.Log(e);
                 }
-               
             }
             
-
+            if (_crewCompartment.Crew.Count==0)
+            {
+                this.PartScript.BodyScript.ExplodePart(this.PartScript, -1);
+            }
+            
             OpenPercent = (parachuteMeshTransform.transform.localScale.x * parachuteMeshTransform.transform.localScale.y)/ 1e4f;
             
             if (PartScript.CraftScript.FlightData.AltitudeAboveGroundLevel > MinFullDeployHeight)
@@ -133,22 +146,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
                 
             }
-            if (currentState == ChuteState.HalfDeploy)
-            {
-                UpdateHalfDeployForces(frame); 
-            }
-            if (currentState==ChuteState.FullyDeployed||currentState==ChuteState.HalfDeploying)
-            {
-                if (Data.Part.PartType.Id == "Glider")
-                {
-                    UpdateParaGliderInput(frame);
-                    UpdateForceForFullyDeployedGlider(frame);
-                }
-                if (Data.Part.PartType.Id == "DroodParachute")
-                {
-                    UpdateForceForFullyDeployedParachute(frame);
-                }
-            }
+            
 
             void DeployGlider()
             {
@@ -176,6 +174,26 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
             }
         }
+
+        public void FlightFixedUpdate(in FlightFrameData frame)
+        {
+            if (currentState == ChuteState.HalfDeploy)
+            {
+                UpdateHalfDeployForces(frame); 
+            }
+            if (currentState==ChuteState.FullyDeployed||currentState==ChuteState.HalfDeploying)
+            {
+                if (Data.Part.PartType.Id == "Glider")
+                {
+                    UpdateParaGliderInput(frame);
+                    UpdateForceForFullyDeployedGlider(frame);
+                }
+                if (Data.Part.PartType.Id == "DroodParachute")
+                {
+                    UpdateForceForFullyDeployedParachute(frame);
+                }
+            }
+        }
         
 
         /// <summary>
@@ -193,7 +211,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             Rigidbody rb = PartScript.BodyScript.RigidBody;
             Vector3 worldVel = this.PartScript.CraftScript.FlightData.SurfaceVelocity.ToVector3();
-            Vector3 dragForce =OpenPercent* kDrag * worldVel * worldVel.magnitude*4f*-1;
+            Vector3 dragForce =OpenPercent* kDrag * worldVel * worldVel.magnitude*4f*-1*2f;
             rb.AddForceAtPosition(dragForce, PartScript.Transform.position,ForceMode.Force);
         }
         #region 滑翔伞
@@ -218,7 +236,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         #endregion
         private void UpdateForceForFullyDeployedGlider(in FlightFrameData frame)
         {
-            
             Rigidbody rb = PartScript.BodyScript.RigidBody;
              if (rb == null) return;
              Vector3 worldVel = this.PartScript.CraftScript.FlightData.SurfaceVelocity.ToVector3();
@@ -236,7 +253,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
              if (verticalSpeed < -0.1f)
              {
                  //把下沉的垂直分量转化为前进推力
-                 float forwardForceMag = kForward * -verticalSpeed;
+                 float forwardForceMag = kForward * -verticalSpeed*0.6f;
                  Vector3 forwardForce = OpenPercent*forwardForceMag * forwardDir;
                  rb.AddForceAtPosition(forwardForce,PartScript.CraftScript.CenterOfMass.position, ForceMode.Force);
              }
@@ -244,7 +261,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
              //基于 AOA 的升力
              float cl = liftCurve.Evaluate(Mathf.Abs(aoaDeg));
-             float liftForceMag = liftBaseCoeff * cl * Data.Area * speed * speed;
+             float liftForceMag = liftBaseCoeff * cl * Data.Area * speed * speed*2;
              liftForceMag = Mathf.Min(liftForceMag, maxLiftForce);
              Vector3 liftDir = Vector3.Cross(forwardDir, rightDir).normalized; 
              if (Vector3.Dot(liftDir, upDir) > 0)
@@ -470,4 +487,3 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         FullyDeployed
     }
 }
-
