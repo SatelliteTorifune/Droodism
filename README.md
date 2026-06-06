@@ -36,5 +36,5 @@ Droodism is a SimpleRockets mod that adds a **Life Support** system for Droods a
 ---
 
 ## Resources
-**[User Manual](https://drive.google.com/file/d/1zPcpjuDYL9fbhsv2g1zWnhUoeLa70Arx/view?usp=drive_link)**
+**[User Manual](https://github.com/SatelliteTorifune/Droodism/blob/DevFeature/DroodismManaul.pdf)**
 **[Demo Craft](https://www.simplerockets.com/c/vQ0M1s/Life-Support-Mod-Demo-Craft)**: Try a pre-built craft with the mod.
