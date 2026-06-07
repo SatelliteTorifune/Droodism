@@ -69,7 +69,7 @@ MonoBehaviour:
     _name: ResourcesPack
     _partCollisionHandling: 0
     _price: 10
-    _unscaledMass: 10
+    _unscaledMass: 5
     _usePreferredNodeName: 1
 --- !u!114 &6861317580931925426
 MonoBehaviour:
@@ -189,6 +189,7 @@ MonoBehaviour:
     _version: 1
     _versionLast: 1
     _versionsAllowed: 
+    _attachmentSize: 1
     _scale: 1
 --- !u!114 &5750632763180234568
 MonoBehaviour:

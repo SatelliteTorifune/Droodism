@@ -20,7 +20,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     public class ResourcePackData : PartModifierData<ResourcePackScript>
     {
         [SerializeField]
-        [DesignerPropertySlider(-2f, 2f, 5, Order = 1, Label = "Size", Tooltip = "The size of this ResourcePack.")]
+        [PartModifierProperty(true, false)]
+        private float _attachmentSize = 1f;
+        public float AttachmentSize => this._attachmentSize * this._scale;
+        [SerializeField]
+        [DesignerPropertySlider(0.5f, 2f, 4, Order = 1, Label = "Size", Tooltip = "The size of this ResourcePack.")]
         private float _scale = 1f;
 
         protected override void OnDesignerInitialization(IDesignerPartPropertiesModifierInterface d)
@@ -44,6 +48,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 this._scale = value;
                 this.Script.UpdateScale();
             }
+        }
+        public override long Price
+        {
+            get => (long) (1e3f * (double) Mathf.Pow(this._scale, 1.5f));
         }
         
     }

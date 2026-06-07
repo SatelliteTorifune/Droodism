@@ -1,3 +1,7 @@
+# 2026 6 7
+> 给Resources Pack 增加了尺寸调整功能
+> 缩小了Resources Pack的默认尺寸
+
 # 2026 6 3
 > 彻底移除了高压氧气的FuelType和相关支持
 > 
