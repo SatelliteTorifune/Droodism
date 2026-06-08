@@ -1,6 +1,13 @@
+# 2026 6 8
+> DroodismCrewData增加了飞行总时长属性
+
 # 2026 6 7
 > 给Resources Pack 增加了尺寸调整功能
+> 
 > 缩小了Resources Pack的默认尺寸
+> 
+> 增加了移除对接口上摄像机的设置
+> >慎用,慎用!
 
 # 2026 6 3
 > 彻底移除了高压氧气的FuelType和相关支持

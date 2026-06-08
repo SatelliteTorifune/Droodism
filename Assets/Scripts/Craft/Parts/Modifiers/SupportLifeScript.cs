@@ -1491,6 +1491,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             try
             {
                 DroodismCrewDataManager.Instance.SetLifetimeRadiation(evaScript.Data.CrewId, this.Data.CumulativeRad,saveImmediately);
+                DroodismCrewDataManager.Instance.AddMissionTime(evaScript.Data.CrewId, MissionDurationTime,saveImmediately);
+                
             }
             catch (Exception e)
             {

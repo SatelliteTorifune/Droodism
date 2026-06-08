@@ -16,6 +16,7 @@ namespace Assets.Scripts.Droodism.Crew
         public int CrewID;
         public DroodType CrewRole;
         public double RadiationRate;
+        public long MissionTime;
         #endregion
 
         public DroodismCrewData()
@@ -53,6 +54,11 @@ namespace Assets.Scripts.Droodism.Crew
             {
                 RadiationRate = radiationRate;
             }
+
+            if (double.TryParse(xml.Element(nameof(MissionTime))?.Value, out var missionTime))
+            {
+                MissionTime = (long)missionTime;
+            }
         }
 
         public XElement GenerateXml()
@@ -61,7 +67,8 @@ namespace Assets.Scripts.Droodism.Crew
                 new XElement(nameof(CrewName), CrewName ?? string.Empty),
                 new XElement(nameof(CrewID), CrewID),
                 new XElement(nameof(CrewRole), CrewRole.ToString()),
-                new XElement(nameof(RadiationRate), RadiationRate));
+                new XElement(nameof(RadiationRate), RadiationRate),
+                new XElement(nameof(MissionTime), MissionTime));
         }
         
     }

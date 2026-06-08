@@ -46,7 +46,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         [SerializeField] [DesignerPropertyLabel(Order=-2)]
         private string crewRoleName = "Unknow";
         [SerializeField] [DesignerPropertyLabel(Order=-1)]
-        private string crewRadiationDoes = "Unknow";
+        private string crewRadiationDoes = "Unknow"; 
+        [SerializeField] [DesignerPropertyLabel(Order=0)]
+        private string crewMissionTime = "Unknow";
         [SerializeField] 
         [DesignerPropertySlider(0.1f, 3f, 30, Label = "<color=green>Oxygen</color> Carry Amount(days)",Order = 4, Tooltip = "How much <color=green>Oxygen</color> Drood himself/herself will carry when Eva.")]
         private float desireOxygenCapacity = 0.2f;
@@ -243,6 +245,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }));
             d.OnVisibilityRequested<string>((Expression<Func<string>>) (() => this.crewRoleName), (Func<bool, bool>) (x => !this.Part.GetModifier<EvaData>().IsTourist));
             d.OnVisibilityRequested<string>((Expression<Func<string>>) (() => this.crewRadiationDoes), (Func<bool, bool>) (x => !this.Part.GetModifier<EvaData>().IsTourist));
+            d.OnVisibilityRequested<string>((Expression<Func<string>>) (() => this.crewMissionTime), (Func<bool, bool>) (x => !this.Part.GetModifier<EvaData>().IsTourist));
         }
 
 
@@ -273,6 +276,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     : DroodismCrewDataManager.Instance.GetCrewMember(evaData.CrewId);
             this.crewRoleName = DroodismCrewData == null ? "<color=yellow>Crew Role</color>: Unknow" : GetCrewRoleName();
             this.crewRadiationDoes=DroodismCrewData == null ? "<color=yellow>Radiation Dose: Unknow" : "<color=yellow>Radiation Dose:"+(DroodismCrewData.RadiationRate.ToString("f1")+" rad");
+            this.crewMissionTime = DroodismCrewData == null ? "<color=yellow>Total Mission Time</color>: Unknow" : "<color=yellow>Total Mission Time</color>: " + Scripts.Mod.GetStopwatchTimeString(DroodismCrewData.MissionTime);
         }
 
         /// <summary>维生罐最大容量（与旧 AddTank 逻辑一致，单位与 buffer 一致）。</summary>
@@ -331,9 +335,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private string GetCrewRoleName()
         {
-            string Description = DroodismCrewData.CrewRole == DroodType.Engineer ? "Enginner Could Fix Parts" :
-                DroodismCrewData.CrewRole == DroodType.Scientist ? "Scientist Could Increase more Science Experiment outcome(LMAO i didn't even implement this)" :
-                "Basic Drood which is good at taking control of the shit";
+            string Description = 
+                DroodismCrewData.CrewRole == DroodType.Engineer ? "Enginner Could Fix Parts" : DroodismCrewData.CrewRole == DroodType.Scientist ? "Scientist Could Increase more Science Experiment outcome(LMAO i didn't even implement this)" : 
+                    DroodismCrewData.CrewRole ==DroodType.Pilot ?
+                "Basic Drood which is good at taking control of the craft":
+                "Unknow Drood Type";
             string color = DroodismCrewData.CrewRole == DroodType.Engineer ? "#00DD9F" :
                 DroodismCrewData.CrewRole == DroodType.Scientist ? "#62BF05" : "#BF2605";
             return "<color=yellow>Crew Role</color>: "+"<color="+color+">"+DroodismCrewData.CrewRole+"</color><br>"+Description;

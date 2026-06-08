@@ -142,6 +142,7 @@ namespace Assets.Scripts.Droodism.Crew
                         old.CrewName = data.CrewName;
                         old.CrewRole = data.CrewRole;
                         old.RadiationRate = data.RadiationRate;
+                        old.MissionTime = data.MissionTime;
                     }
 
                     _nextCrewMemberId = Math.Max(_nextCrewMemberId, data.CrewID + 1);
@@ -165,7 +166,7 @@ namespace Assets.Scripts.Droodism.Crew
             }
         }
 
-        public DroodismCrewData CreateCrewMember(string crewName, DroodType crewRole, double lifetimeRadiation = 0)
+        public DroodismCrewData CreateCrewMember(string crewName, DroodType crewRole, double lifetimeRadiation = 0,long missionTime=0)
         {
             // 按你的要求：id/name 必须和游戏一致。
             // 由于我们无法在游戏里“创建 crew”，所以只有当该 crewName 在游戏中已存在时才允许创建条目。
@@ -179,6 +180,7 @@ namespace Assets.Scripts.Droodism.Crew
             {
                 // 只更新 radiation（避免 name/id 漂移）
                 existing.RadiationRate = lifetimeRadiation;
+                existing.MissionTime = missionTime;
                 Save();
                 return existing;
             }
@@ -188,7 +190,8 @@ namespace Assets.Scripts.Droodism.Crew
                 CrewID = crewId,
                 CrewName = _gameCrewNameById.TryGetValue(crewId, out var n) ? n : crewName,
                 CrewRole = crewRole,
-                RadiationRate = lifetimeRadiation
+                RadiationRate = lifetimeRadiation,
+                MissionTime = missionTime
             };
 
             _members.Add(member);
@@ -211,6 +214,20 @@ namespace Assets.Scripts.Droodism.Crew
             }
 
             member.RadiationRate = lifetimeRadiation;
+            if (saveImmediately)
+            {
+                Save();
+            }
+        }
+        public void AddMissionTime(int crewId, long additionalSeconds, bool saveImmediately = true)
+        {
+            var member = GetCrewMember(crewId);
+            if (member == null)
+            {
+                return;
+            }
+
+            member.MissionTime += additionalSeconds;
             if (saveImmediately)
             {
                 Save();
@@ -358,7 +375,8 @@ namespace Assets.Scripts.Droodism.Crew
                             CrewID = crewId,
                             CrewName = crewName,
                             CrewRole = GetRandomDroodPost(),
-                            RadiationRate = 0
+                            RadiationRate = 0,
+                            MissionTime = 0
                         });
                     }
                 }
@@ -402,7 +420,8 @@ namespace Assets.Scripts.Droodism.Crew
                         CrewID = crewId,
                         CrewName = crewName,
                         CrewRole = GetRandomDroodPost(),
-                        RadiationRate = 0
+                        RadiationRate = 0,
+                        MissionTime=0
                     };
                 }
 
