@@ -26,6 +26,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private IFuelSource WaterSource,LiquidHydrogenSouce;
 
+        private List<PartData> RTGParts = new List<PartData>();
+        private List<PartData> NTRParts = new List<PartData>();
+
         public override void FlightStart(in FlightFrameData frame)
         {
             this.PartScript.CraftScript.CraftNode.ChangedSoI += OnChangedSOI;
@@ -95,7 +98,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 return;
             }
-            Vector3 craftPCIPos = this.PartScript.CraftScript.FlightData.Position.ToVector3();
+            CheckInCraftRadiationSource();
+            var craftPCIPos = this.PartScript.CraftScript.FlightData.Position.ToVector3();
             
             RadiationBeltManager.Instance.TryGetDoseRateRadPerHour(this.RadiationBeltConfig,
                 currentPlanetName,
@@ -112,11 +116,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             // Compute protection factors by belt
             float innerProtection = Mathf.Clamp01(GetInnerRadiationProtection());
             float outerProtection = Mathf.Clamp01(GetOuterRadiationProtection());
+            float craftProtection = Mathf.Clamp01(GetCraftRadiationProtection());
 
             // Effective dose that consumes shield is reduced by protection
             float effectiveDoseRate =
                 Mathf.Max(0f, innerDoseRateRadPerHour) * (1f - innerProtection) +
-                Mathf.Max(0f, outerDoseRateRadPerHour) * (1f - outerProtection);
+                Mathf.Max(0f, outerDoseRateRadPerHour) * (1f - outerProtection) +
+                GetNTRRadiationDoseRate() * (1f - craftProtection) +
+                GetRTGRadiationDoseRate() * (1f - craftProtection);
 
             this.Data.RadiationShieldDuration -= effectiveDoseRate * deltaHours*0.1f; 
             
@@ -189,6 +196,94 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 default:
                     return 0f;
             }
+        }
+
+        public float GetCraftRadiationProtection()
+        {
+            var t = Data.RadiationShieldType ?? "None";
+            switch (t)
+            {
+                case "None":
+                    return 0f;
+                case "":
+                    return 0f;
+                case "Aluminium":
+                    return 0.4f;
+                case "PolyEthylene":
+                    return 0.8f;
+                case "Borated PolyEthylene":
+                    return 0.85f;
+                case "Water":
+                    return 0.35f;
+                case "Liquid Hydrogen":
+                    return 0.45f;
+                case "Boron Nitride Nanotubes":
+                    return 0.9f;
+                default:
+                    return 0f;
+            }
+        }
+
+        private void CheckInCraftRadiationSource()
+        {
+            if (!ModSettings.Instance.ReceiveCraftRadiation)
+            {
+                return;
+            }
+            RTGParts.Clear();
+            NTRParts.Clear();
+            foreach (var partData in PartScript.CraftScript.Data.Assembly.Parts)
+            {
+                if (partData.PartType.Name == "Generator2")
+                {
+                    RTGParts.Add(partData);
+                }
+                if (partData.PartType.Name == "Rocket Engine")
+                {
+                    var rocketEngineScript = partData.PartScript.GetModifier<RocketEngineScript>();
+                    if (rocketEngineScript != null)
+                    {
+                        if (rocketEngineScript.Data.EngineType.Name == "Nuclear Thermal")
+                        {
+                            NTRParts.Add(partData);
+                        }
+                    }
+                }
+            }
+        }
+
+        private float GetRTGRadiationDoseRate()
+        {
+            if (!ModSettings.Instance.ReceiveCraftRadiation || RTGParts.Count == 0)
+            {
+                return 0;
+            }
+
+            float finalResult = 0;
+            foreach (var partData in RTGParts)
+            {
+                float distance = Mathf.Clamp(Vector3.Distance(partData.PartScript.GameObject.transform.position, this.PartScript.GameObject.transform.position), 0.1f, 10f);
+                finalResult += (1f / (distance * distance)) * 0.2f;
+            }
+            return finalResult;
+        }
+
+        private float GetNTRRadiationDoseRate()
+        {
+            if (!ModSettings.Instance.ReceiveCraftRadiation || NTRParts.Count == 0)
+            {
+                return 0;
+            }
+            float finalResult = 0;
+            foreach (var partData in NTRParts)
+            {
+                if (partData.Activated)
+                {
+                    float distance = Mathf.Clamp(Vector3.Distance(partData.PartScript.GameObject.transform.position, this.PartScript.GameObject.transform.position), 0.1f, 10f);
+                    finalResult += (1f / (distance * distance)) * 0.2f;
+                }
+            }
+            return finalResult;
         }
 
         public override void OnGeneratePerformanceAnalysisModel(GroupModel groupModel)

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
+using Assets.Scripts.Craft.Parts.Modifiers.Input;
 using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
 using Assets.Scripts.Droodism;
 using Assets.Scripts.Droodism.Crew;
@@ -121,6 +122,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// 内辐射带保护值
         /// </summary>
         private float innerRadiationProtection;
+        
+        /// <summary>
+        /// 来自craft内部的辐射保护值
+        /// </summary>
+        private float craftRadiationProtection;
 
         private static BreathablePlanets _breathablePlanetsCache;
         private static bool _breathablePlanetsCacheLoaded;
@@ -1510,6 +1516,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private List<PartData> NTRParts = new List<PartData>();
         private void CheckInCraftRadiationSource()
         {
+            if (!ModSettings.Instance.ReceiveCraftRadiation)
+            {
+                return;
+            }
             RTGParts.Clear();
             NTRParts.Clear();
             foreach (var partData in PartScript.CraftScript.Data.Assembly.Parts)
@@ -1532,13 +1542,48 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
         }
 
+        private float GetRTGRadiationDoseRate()
+        {
+            if (!ModSettings.Instance.ReceiveCraftRadiation||RTGParts.Count==0)
+            {
+                return 0;
+            }
+
+            float finalResult = 0;
+            foreach (var partData in RTGParts)
+            {
+                float distance = Mathf.Clamp(Vector3.Distance(partData.PartScript.GameObject.transform.position, this.PartScript.GameObject.transform.position), 0.1f, 10f);
+                finalResult +=(1/ (distance*distance))*0.2f;
+            }
+            return finalResult;
+        }
+        private float GetNTRRadiationDoseRate()
+        {
+            if (!ModSettings.Instance.ReceiveCraftRadiation||NTRParts.Count==0)
+            {
+                return 0;
+            }
+            float finalResult = 0;
+            foreach (var partData in NTRParts)
+            {
+                if (partData.Activated)
+                {
+                    float distance = Mathf.Clamp(Vector3.Distance(partData.PartScript.GameObject.transform.position, this.PartScript.GameObject.transform.position), 0.1f, 10f);
+                    finalResult +=(1/ (distance*distance))*0.2f;
+                }
+                
+            }
+            return finalResult;
+            
+        }
+
         private void RefreshRadiationCompartment()
         {
             var eva = this.PartScript?.GetModifier<EvaScript>();
             
             if (eva.EvaActive||eva.ActiveWhileInCrewCompartment)
             {
-                innerRadiationProtection= outerRadiationProtection = 0;
+                innerRadiationProtection= outerRadiationProtection =craftRadiationProtection = 0;
                 return;
             }
           
@@ -1547,11 +1592,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 outerRadiationProtection =crewCabin.Data.RadiationShieldDuration>0? crewCabin.GetOuterRadiationProtection():0;
                 innerRadiationProtection=crewCabin.Data.RadiationShieldDuration>0? crewCabin.GetInnerRadiationProtection():0;
+                craftRadiationProtection = crewCabin.Data.RadiationShieldDuration > 0 ? crewCabin.GetCraftRadiationProtection() : 0;
             }
 
             if (crewCabin==null)
             {
-                innerRadiationProtection= outerRadiationProtection = 0;
+                innerRadiationProtection= outerRadiationProtection =craftRadiationProtection = 0;
             }
            
         }
@@ -1573,8 +1619,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 deltaHours = Mod.GetDeltaTimeHours();
             }
-
-            this.RadiationDoseRateRadPerHour = innerDoseRateRadPerHour*(1-innerRadiationProtection)+outerDoseRateRadPerHour*(1-outerRadiationProtection);
+            
+            this.RadiationDoseRateRadPerHour = innerDoseRateRadPerHour*(1-innerRadiationProtection)+outerDoseRateRadPerHour*(1-outerRadiationProtection)+GetNTRRadiationDoseRate()*(1-craftRadiationProtection)+GetRTGRadiationDoseRate()*(1-craftRadiationProtection);
             this.Data.CumulativeRad += RadiationDoseRateRadPerHour * deltaHours;
             CurrentCumulativeRadiationStats = GetAcuteBand((float)this.Data.CumulativeRad);
             CurrentRadiationRateStats = GetRadiationRateStats(RadiationDoseRateRadPerHour);
