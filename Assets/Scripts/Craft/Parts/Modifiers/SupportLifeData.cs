@@ -15,9 +15,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Xml.Linq;
     using ModApi.Craft.Parts;
     using ModApi.Craft.Parts.Attributes;
     using UnityEngine;
@@ -54,7 +51,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private float desireOxygenCapacity = 0.2f;
         [SerializeField] [DesignerPropertySlider(0.1f, 3f, 30, Label = "<color=yellow>Food</color> Carry Amount(days)",Order = 5, Tooltip = "How much <color=yellow>Food</color> Drood himself/herself will carry when Eva.")]
         private float desireFoodCapacity = 0.2f;
-        [SerializeField] [DesignerPropertySlider(0.1f, 3f, 30, Label = "<color=red>Water</color> Carry Amount(days)",Order = 6, Tooltip = "How much<color=red> Drink Water</color> Drood himself/herself will carry when Eva.")]
+        [SerializeField] [DesignerPropertySlider(0.1f, 3f, 30, Label = "<color=red>Water</color> Carry Amount(days)",Order = 6, Tooltip = "How much<color=red> Drinking Water</color> Drood himself/herself will carry when Eva.")]
         private float desireWaterCapacity = 0.2f;
         
         [SerializeField]
@@ -341,7 +338,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 "Basic Drood which is good at taking control of the craft":
                 "Unknow Drood Type";
             string color = DroodismCrewData.CrewRole == DroodType.Engineer ? "#00DD9F" :
-                DroodismCrewData.CrewRole == DroodType.Scientist ? "#62BF05" : "#BF2605";
+                DroodismCrewData.CrewRole == 
+                DroodType.Scientist ? "#62BF05" : DroodismCrewData.CrewRole == DroodType.Pilot?"#BF2605":"red";
             return "<color=yellow>Crew Role</color>: "+"<color="+color+">"+DroodismCrewData.CrewRole+"</color><br>"+Description;
         }
         
@@ -349,7 +347,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public override void OnPartRecovered()
         {
             base.OnPartRecovered();
-            
             this.Script.SaveDroodismCrewData();
         }
         #endregion

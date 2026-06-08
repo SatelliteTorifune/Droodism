@@ -41,6 +41,8 @@ namespace Assets.Scripts
         
         public BoolSetting AltNavBallColor { get; set; }
         public BoolSetting RemoveDockingPortCamera { get; set; }
+        
+        public BoolSetting ReceiveCraftRadiation { get; set; }
 
         /// <summary>
         /// Initializes the settings in the category.
@@ -58,6 +60,9 @@ namespace Assets.Scripts
                 .SetDefault(false);
             ActiveUpdateRadiationBeltConfig=CreateBool("Active Update Radiation Belt Config")
                 .SetDescription("Active Update Radiation Belt Config(Cause Performance loss,but better for debugging)")
+                .SetDefault(false);
+            ReceiveCraftRadiation=CreateBool("Receive Craft Radiation")
+                .SetDescription("Drood will Receive radiation from the RTG and NTR engines in current craft if on,maybe not so realistic,<color=red><size=150%>Enable only you like hardcore gameplay</size></color>")
                 .SetDefault(false);
             RemoveDockingPortCamera=CreateBool("Disable Docking Port Camera")
                 .SetDescription("Remove the camera from the docking port<br><color=red>Warning</color>: This will completely disabled <color=red><size=200%>ANY</size></color>camera modifier in<color=red><size=200%> ANY</size></color> docking ports (even if they're in flight already!), use it only if you really hate them")

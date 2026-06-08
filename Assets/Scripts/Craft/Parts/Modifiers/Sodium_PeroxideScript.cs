@@ -67,7 +67,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private void WorkingLogic(in FlightFrameData frame)
         {
-            
+            if (frame.DeltaTimeWorld==0)
+            {
+                return;
+            }
             if (oxygenGeneratedAmount>=Data.MaxOxygenGenerateAmount)
             {
                 isUsedUp = true;

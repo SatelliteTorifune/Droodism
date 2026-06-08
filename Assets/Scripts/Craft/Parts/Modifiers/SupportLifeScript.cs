@@ -9,9 +9,11 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
+using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
 using Assets.Scripts.Droodism;
 using Assets.Scripts.Droodism.Crew;
 using Droodism.RadiationBelt;
+using ModApi.Craft.Propulsion;
 using ModApi.Flight.Events;
 using ModApi.Flight.GameView;
 using UnityEngine;
@@ -176,8 +178,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             UpdateCurrentPlanet();
             this.RadiationBeltConfig = RadiationBeltConfig.LoadFromFile(currentPlanetName);
             LoadRadiationData();
-
-           }
+           
+        }
 
         
         /// <summary>
@@ -414,6 +416,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 try
                 {
                     RefreshFuelSource();
+                    CheckInCraftRadiationSource();
                     RefreshRadiationCompartment();
                 }
                 catch (Exception e)
@@ -1503,12 +1506,29 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// <summary>
         /// 计算来自craft内部的辐射源
         /// </summary>
+        private List<PartData> RTGParts=new List<PartData>();
+        private List<PartData> NTRParts = new List<PartData>();
         private void CheckInCraftRadiationSource()
         {
-            return;
-            foreach (var VARIABLE in PartScript.CraftScript.Data.Assembly.Parts)
+            RTGParts.Clear();
+            NTRParts.Clear();
+            foreach (var partData in PartScript.CraftScript.Data.Assembly.Parts)
             {
-                
+                if (partData.PartType.Name == "Generator2")
+                {
+                    RTGParts.Add(partData);
+                }
+                if (partData.PartType.Name == "Rocket Engine")
+                {
+                    var rocketEngineScript = partData.PartScript.GetModifier<RocketEngineScript>();
+                    if (rocketEngineScript!=null)
+                    {
+                        if ( rocketEngineScript.Data.EngineType.Name == "Nuclear Thermal")
+                        {
+                            NTRParts.Add(partData);
+                        }
+                    }
+                }
             }
         }
 

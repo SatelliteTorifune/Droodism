@@ -1,5 +1,7 @@
 # 2026 6 8
 > DroodismCrewData增加了飞行总时长属性
+> 
+> 加入了RTG和NTR部件列表,为Craft内辐射计算提供支持
 
 # 2026 6 7
 > 给Resources Pack 增加了尺寸调整功能
