@@ -1,3 +1,11 @@
+# 2026 6 10
+> 修复了UI中crew inspector更新问题
+> >增加了强制重构Inspector Panel的功能,当craft结构发生变化或者其他什么屁事发生时会强制重构Inspector Panel以更新显示
+> 
+> 增加了Crew Inspector Panel中让Drood Eva的按钮
+> 
+> 增加了Crew Inspector Panel中隐藏部分数据的功能
+
 # 2026 6 8
 > DroodismCrewData增加了飞行总时长属性
 > 

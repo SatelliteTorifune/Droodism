@@ -192,7 +192,6 @@ namespace Assets.Scripts.Droodism.UserInterface
             {
 
                 UpdateInfo();
-                CreateInspectorPanel();
                 inspectorPanel.Visible = false;
                 inspectorPanel.CloseButtonClicked += OnCloseButtonClicked;
                 ModApi.Common.Game.Instance.FlightScene.CraftChanged += OnCraftChanged;
@@ -241,13 +240,14 @@ namespace Assets.Scripts.Droodism.UserInterface
 
         private void OnCraftStructureChanged()
         {
-            UpdateInfo();
-           
+            
             var craftScript = Game.Instance.FlightScene.CraftNode.CraftScript;
             if (craftScript==null)
             {
                 return;
             }
+
+            UpdateInfo();
             //CraftFuelSources craftFuelSource = craftScript.FuelSources as CraftFuelSources;
             //craftFuelSource?.Rebuild(craftScript);
             
@@ -337,11 +337,9 @@ namespace Assets.Scripts.Droodism.UserInterface
                 if (supportLifeScript != null)
                 {
 
-                    CrewInspectorGroup.Add<TextModel>(new TextModel("Crew Name", () => eva.Data.CrewName));
-                    CrewInspectorGroup.Add(new TextModel("Crew Role",
-                        () => supportLifeScript.Data.DroodismCrewData == null
-                            ? "Unknow"
-                            : supportLifeScript.Data.DroodismCrewData.CrewRole.ToString()));
+                    CrewInspectorGroup.Add<TextModel>(new TextModel(supportLifeScript.Data.DroodismCrewData == null
+                        ? "Unknow Role"
+                        : supportLifeScript.Data.DroodismCrewData.CrewRole.ToString(), () => eva.Data.CrewName));
                     CrewInspectorGroup.Add<TextModel>(new TextModel("Mission Time",
                         (Func<string>)(() => Mod.GetStopwatchTimeString(supportLifeScript.MissionDurationTime)),
                         tooltip: eva.Data.CrewName + ";s mission time since launch."));
@@ -412,16 +410,19 @@ namespace Assets.Scripts.Droodism.UserInterface
                     })));
                     CrewInspectorGroup.Add<TextModel>(new TextModel("Radiation Dose",
                         (Func<string>)(() => $"{supportLifeScript.Data.CumulativeRad:F4} rad"),
-                        tooltip: eva.Data.CrewName + ";s Current Radiation Dose"));
+                        tooltip:  $"{eva.Data.CrewName} ;s Current Radiation Dose",determineVisibility:() => supportLifeScript.Data.CumulativeRad>0f));
                     CrewInspectorGroup.Add<TextModel>(new TextModel("Radiation Stats",
                         (Func<string>)(() => $"{supportLifeScript.CurrentCumulativeRadiationStats}"),
-                        tooltip: eva.Data.CrewName + ";s Current Radiation Cumulative Does Stats"));
+                        tooltip:  $"{eva.Data.CrewName} ;s Current Radiation Cumulative Does Stats",determineVisibility:() => supportLifeScript.Data.CumulativeRad >0f));
                     CrewInspectorGroup.Add<TextModel>(new TextModel("Radiation Rate",
                         (Func<string>)(() => $"{supportLifeScript.RadiationDoseRateRadPerHour:F2} rad/h"),
-                        tooltip: eva.Data.CrewName + ";s Current Radiation Increase Rate Per Hour"));
+                        tooltip:  $"{eva.Data.CrewName} ;s Current Radiation Increase Rate Per Hour",determineVisibility:() => supportLifeScript.RadiationDoseRateRadPerHour>0f));
                     CrewInspectorGroup.Add<TextModel>(new TextModel("Radiation Rate Stats",
                         (Func<string>)(() => $"{supportLifeScript.CurrentRadiationRateStats}"),
-                        tooltip: eva.Data.CrewName + ";s Current Radiation Rate Stats,if it's red, watch out!"));
+                        tooltip: $"{eva.Data.CrewName} ;s Current Radiation Rate Stats,if it's red, watch out!",determineVisibility:() => supportLifeScript.RadiationDoseRateRadPerHour>0f));
+                    TextButtonModel textButtonModel2 = new TextButtonModel("Crew Eva", (Action<TextButtonModel>) (b => eva.CrewCompartment.UnloadCrewMember(eva,true)), determineVisiblity:  (() =>  eva.CrewCompartment !=  null));
+                    textButtonModel2.Style = ButtonModel.ButtonStyle.Primary;
+                    CrewInspectorGroup.Add<TextButtonModel>(textButtonModel2);
 
                     //分割线!
                     CrewInspectorGroup.Add<TextModel>(new TextModel("", () => ""));
@@ -564,7 +565,7 @@ namespace Assets.Scripts.Droodism.UserInterface
             DroodScriptsList.Clear();
             DroodCountTotal = AstronautCount = TouristCount = 0;
             UpdateDroodCount();
-
+            ForceRebuildInspetorPanel();
             void UpdateDroodCount()
             {
                 foreach (var pd in ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.Data.Assembly.Parts)
@@ -585,8 +586,20 @@ namespace Assets.Scripts.Droodism.UserInterface
 
                 }
             }
-
-
+            
+            
+        }
+        private void ForceRebuildInspetorPanel()
+        {
+            bool vistem = false;
+            if (inspectorPanel != null)
+            {
+                vistem = inspectorPanel.Visible;
+                inspectorPanel.Visible = false;
+            }
+            inspectorPanel = null;
+            CreateInspectorPanel();
+            inspectorPanel.Visible = vistem;
         }
 
 
