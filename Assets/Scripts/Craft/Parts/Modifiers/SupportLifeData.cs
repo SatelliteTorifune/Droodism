@@ -40,6 +40,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         [SerializeField][PartModifierProperty]
         private float waterDamageScale=1f;
 
+        [SerializeField] [DesignerPropertyLabel(Order=-3)]
+        private string crewName = "Unknow";
         [SerializeField] [DesignerPropertyLabel(Order=-2)]
         private string crewRoleName = "Unknow";
         [SerializeField] [DesignerPropertyLabel(Order=-1)]
@@ -240,6 +242,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 this.minDeployHeight = Mathf.Min(this.autoDeployHeight, this.minDeployHeight);
                 d.Manager.RefreshUI();
             }));
+            
+            d.OnVisibilityRequested<float>((Expression<Func<float>>) (() => this.autoDeployHeight), (Func<bool, bool>) (x => this._parachuteType!="None"));
+            d.OnVisibilityRequested<bool>((Expression<Func<bool>>) (() => this.autoDeployEnabled), (Func<bool, bool>) (x => this._parachuteType!="None"));
+            d.OnVisibilityRequested<float>((Expression<Func<float>>) (() => this.minDeployHeight), (Func<bool, bool>) (x => this._parachuteType!="None"));
+            d.OnVisibilityRequested<string>((Expression<Func<string>>) (() => this.crewName), (Func<bool, bool>) (x => !this.Part.GetModifier<EvaData>().IsTourist));
             d.OnVisibilityRequested<string>((Expression<Func<string>>) (() => this.crewRoleName), (Func<bool, bool>) (x => !this.Part.GetModifier<EvaData>().IsTourist));
             d.OnVisibilityRequested<string>((Expression<Func<string>>) (() => this.crewRadiationDoes), (Func<bool, bool>) (x => !this.Part.GetModifier<EvaData>().IsTourist));
             d.OnVisibilityRequested<string>((Expression<Func<string>>) (() => this.crewMissionTime), (Func<bool, bool>) (x => !this.Part.GetModifier<EvaData>().IsTourist));
@@ -271,6 +278,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 evaData.CrewName == "Unassigned"
                     ? null
                     : DroodismCrewDataManager.Instance.GetCrewMember(evaData.CrewId);
+            this.crewName = DroodismCrewData == null
+                ? "<color=yellow>Crew Name</color>: Unknow"
+                : "<color=yellow>Crew Name</color>: " + evaData.CrewName;
             this.crewRoleName = DroodismCrewData == null ? "<color=yellow>Crew Role</color>: Unknow" : GetCrewRoleName();
             this.crewRadiationDoes=DroodismCrewData == null ? "<color=yellow>Radiation Dose: Unknow" : "<color=yellow>Radiation Dose:"+(DroodismCrewData.RadiationRate.ToString("f1")+" rad");
             this.crewMissionTime = DroodismCrewData == null ? "<color=yellow>Total Mission Time</color>: Unknow" : "<color=yellow>Total Mission Time</color>: " + Scripts.Mod.GetStopwatchTimeString(DroodismCrewData.MissionTime);
@@ -337,9 +347,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     DroodismCrewData.CrewRole ==DroodType.Pilot ?
                 "Basic Drood which is good at taking control of the craft":
                 "Unknow Drood Type";
-            string color = DroodismCrewData.CrewRole == DroodType.Engineer ? "#00DD9F" :
+            string color = DroodismCrewData.CrewRole == DroodType.Engineer ? "#0072FF" :
                 DroodismCrewData.CrewRole == 
-                DroodType.Scientist ? "#62BF05" : DroodismCrewData.CrewRole == DroodType.Pilot?"#BF2605":"red";
+                DroodType.Scientist ? "#62BF05" : DroodismCrewData.CrewRole == DroodType.Pilot?"#FF0003":"white";
             return "<color=yellow>Crew Role</color>: "+"<color="+color+">"+DroodismCrewData.CrewRole+"</color><br>"+Description;
         }
         

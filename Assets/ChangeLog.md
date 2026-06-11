@@ -1,3 +1,7 @@
+# 2026 6 11
+>增加了SupportLifeData.cs中根据降落伞类型调整参数可见性的功能
+> 
+> 修改了各个Drood乘组的职业的颜色,提高可读性
 # 2026 6 10
 > 修复了UI中crew inspector更新问题
 > >增加了强制重构Inspector Panel的功能,当craft结构发生变化或者其他什么屁事发生时会强制重构Inspector Panel以更新显示

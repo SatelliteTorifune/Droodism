@@ -1119,10 +1119,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public override void OnGenerateInspectorModel(PartInspectorModel model)
         {
             base.OnGenerateInspectorModel(model);
-            model.Add(new ToggleModel("<color=yellow>TEST",()=>animateEnabled,b=>
-            {
-                animateEnabled=b;
-            },"TEST"));
             //单独看任务时间的
             if (!this.isTourist)
             {
@@ -1221,10 +1217,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
             //辐射强度
             GroupModel RadiationInspector = new GroupModel("<color=yellow><size=115%>Radiation Inspector");
-            RadiationInspector.Add<TextModel>(new TextModel("Current Radiation Dose", (Func<string>) (() => $"{this.Data.CumulativeRad:F4} rad")));
-            RadiationInspector.Add<TextModel>(new TextModel("Current Radiation Dose Stats", (Func<string>) (() => CurrentCumulativeRadiationStats)));
-            RadiationInspector.Add<TextModel>(new TextModel("Current Radiation Dose Rate Per Hour", (Func<string>) (() => $"{this.RadiationDoseRateRadPerHour:F2} rad/h")));
-            RadiationInspector.Add<TextModel>(new TextModel("Current Radiation Level", (Func<string>) (() => $"{CurrentRadiationRateStats}")));
+            RadiationInspector.Add<TextModel>(new TextModel("Current Radiation Dose", (Func<string>) (() => $"{this.Data.CumulativeRad:F4} rad"),determineVisibility:() => this.Data.CumulativeRad >0));
+            RadiationInspector.Add<TextModel>(new TextModel("Current Radiation Dose Stats", (Func<string>) (() => CurrentCumulativeRadiationStats),determineVisibility:() => this.Data.CumulativeRad >0));
+            RadiationInspector.Add<TextModel>(new TextModel("Current Radiation Dose Rate Per Hour", (Func<string>) (() => $"{this.RadiationDoseRateRadPerHour:F2} rad/h"),determineVisibility:() => this.RadiationDoseRateRadPerHour >0));
+            RadiationInspector.Add<TextModel>(new TextModel("Current Radiation Level", (Func<string>) (() => $"{CurrentRadiationRateStats}"),determineVisibility:() => this.RadiationDoseRateRadPerHour >0));
             
             model.AddGroup(RadiationInspector);
 
@@ -1735,8 +1731,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         #endregion
 
         #region 杂项
-
-        public bool animateEnabled;
+        
 
         #endregion
 

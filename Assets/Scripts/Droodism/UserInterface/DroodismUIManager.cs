@@ -5,6 +5,7 @@ using System.Xml.Linq;
 using Assets.Scripts.Craft.Fuel;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
+using Assets.Scripts.Droodism.Crew;
 using ModApi.Ui;
 using ModApi.Craft;
 using ModApi.Craft.Parts;
@@ -337,9 +338,13 @@ namespace Assets.Scripts.Droodism.UserInterface
                 if (supportLifeScript != null)
                 {
 
-                    CrewInspectorGroup.Add<TextModel>(new TextModel(supportLifeScript.Data.DroodismCrewData == null
+                    var droodismCrewData = supportLifeScript.Data.DroodismCrewData;
+                    string color = droodismCrewData.CrewRole == DroodType.Engineer ? "#0072FF" :
+                        droodismCrewData.CrewRole == 
+                        DroodType.Scientist ? "#62BF05" : droodismCrewData.CrewRole == DroodType.Pilot?"#FF0003":"white";
+                    CrewInspectorGroup.Add<TextModel>(new TextModel(droodismCrewData == null
                         ? "Unknow Role"
-                        : supportLifeScript.Data.DroodismCrewData.CrewRole.ToString(), () => eva.Data.CrewName));
+                        : $"<color={color}>{droodismCrewData.CrewRole.ToString()}</color>", () => eva.Data.CrewName));
                     CrewInspectorGroup.Add<TextModel>(new TextModel("Mission Time",
                         (Func<string>)(() => Mod.GetStopwatchTimeString(supportLifeScript.MissionDurationTime)),
                         tooltip: eva.Data.CrewName + ";s mission time since launch."));
