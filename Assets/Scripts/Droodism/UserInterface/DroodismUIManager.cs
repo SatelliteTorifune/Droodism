@@ -99,7 +99,15 @@ namespace Assets.Scripts.Droodism.UserInterface
                 var source = GetIFuelSourceByID(id);
                 if (source != null)
                 {
-                    UpdateFuelTemplateItem(source);
+                    try
+                    {
+                        UpdateFuelTemplateItem(source);
+                    }
+                    catch (Exception e)
+                    {
+                        Mod.Log("DroodismUiManager:UpdateFuelTemplateItem"+e);
+                    }
+                    
                 }
             }
         }

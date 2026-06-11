@@ -255,23 +255,23 @@ namespace Assets.Scripts
                 Directory.CreateDirectory(folderPath);
             }
             var asset = Mod.ResourceLoader.LoadAsset<TextAsset>("Assets/Resources/BreathablePlanets.xml");
-            Debug.Log($"[Mod] CheckDefaultBreathablePlanetConfig: asset={asset != null}, folderPath={folderPath}");
+            Log($"[Mod] CheckDefaultBreathablePlanetConfig: asset={asset != null}, folderPath={folderPath}");
             if (asset != null)
             {
                 var targetPath = Path.Combine(folderPath, "BreathablePlanets.xml");
                 if (!File.Exists(targetPath))
                 {
                     File.WriteAllText(targetPath, asset.text, Encoding.UTF8);
-                    Debug.Log($"[Mod] Copied BreathablePlanets.xml to: {targetPath}");
+                     Log($"[Mod] Copied BreathablePlanets.xml to: {targetPath}");
                 }
                 else
                 {
-                    Debug.Log($"[Mod] BreathablePlanets.xml already exists at: {targetPath}");
+                     Log($"[Mod] BreathablePlanets.xml already exists at: {targetPath}");
                 }
             }
             else
             {
-                Debug.LogError("[Mod] Failed to load BreathablePlanets.xml from Resources!");
+                LogError("[Mod] Failed to load BreathablePlanets.xml from Resources!");
             }
         }
         private  static string GetRadiationBeltConfigFolderPath()

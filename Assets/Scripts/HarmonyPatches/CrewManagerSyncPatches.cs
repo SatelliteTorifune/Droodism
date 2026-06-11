@@ -16,14 +16,14 @@ namespace Assets.Scripts
                 var crewManagerType = AccessTools.TypeByName("Assets.Scripts.State.CrewManager");
                 if (crewManagerType == null)
                 {
-                    Debug.LogWarning("[Droodism] CrewManager type not found, skip crew sync patch.");
+                    Mod.Log("[Droodism] CrewManager type not found, skip crew sync patch.");
                     return;
                 }
 
                 var createMethod = crewManagerType.GetMethod("CreateCrewMember", BindingFlags.Instance | BindingFlags.Public);
                 if (createMethod == null)
                 {
-                    Debug.LogWarning("[Droodism] CrewManager.CreateCrewMember() not found, skip crew sync patch.");
+                    Mod.Log("[Droodism] CrewManager.CreateCrewMember() not found, skip crew sync patch.");
                     return;
                 }
 
@@ -32,7 +32,7 @@ namespace Assets.Scripts
                     BindingFlags.Static | BindingFlags.NonPublic);
                 if (postfix == null)
                 {
-                    Debug.LogWarning("[Droodism] CreateCrewMember_Postfix method not found.");
+                    Mod.Log("[Droodism] CreateCrewMember_Postfix method not found.");
                     return;
                 }
 
@@ -41,7 +41,7 @@ namespace Assets.Scripts
             }
             catch (Exception e)
             {
-                Debug.LogError($"[Droodism] Failed to apply CrewManager sync patch: {e}");
+                Mod.LogError($"[Droodism] Failed to apply CrewManager sync patch: {e}");
             }
         }
 
@@ -49,11 +49,13 @@ namespace Assets.Scripts
         {
             try
             {
-                DroodismCrewDataManager.Instance?.EnsureSyncedWithGameCrewManager(saveNow: true);
+                // Only save — do NOT call EnsureSyncedWithGameCrewManager here,
+                // as the full sync would overwrite CrewRole with GetRandomDroodPost().
+                DroodismCrewDataManager.Instance?.Save();
             }
             catch (Exception e)
             {
-                Debug.LogError($"[Droodism] CreateCrewMember_Postfix failed: {e}");
+                Mod.LogError($"[Droodism] CreateCrewMember_Postfix failed: {e}");
             }
         }
     }

@@ -65,7 +65,7 @@ namespace Assets.Scripts.Droodism.Crew
             }
             catch (Exception ex)
             {
-                Debug.LogError($"[Droodism] Crew sync on scene load failed: {ex}");
+                Mod.LogError($"[Droodism] Crew sync on scene load failed: {ex}");
             }
         }
 
@@ -166,19 +166,18 @@ namespace Assets.Scripts.Droodism.Crew
             }
         }
 
-        public DroodismCrewData CreateCrewMember(string crewName, DroodType crewRole, double lifetimeRadiation = 0,long missionTime=0)
+        private DroodismCrewData CreateCrewMember(string crewName, DroodType crewRole, double lifetimeRadiation = 0, long missionTime = 0, int? crewIdOverride = null)
         {
-            // 按你的要求：id/name 必须和游戏一致。
-            // 由于我们无法在游戏里“创建 crew”，所以只有当该 crewName 在游戏中已存在时才允许创建条目。
-            if (!TryGetGameCrewIdByName(crewName, out var crewId))
-            {
+            int crewId;
+            if (crewIdOverride.HasValue)
+                crewId = crewIdOverride.Value;
+            else if (!TryGetGameCrewIdByName(crewName, out crewId))
                 throw new InvalidOperationException($"Cannot create Droodism crew entry for '{crewName}': not found in game CrewManager.");
-            }
 
             var existing = GetCrewMember(crewId);
             if (existing != null)
             {
-                // 只更新 radiation（避免 name/id 漂移）
+              
                 existing.RadiationRate = lifetimeRadiation;
                 existing.MissionTime = missionTime;
                 Save();
@@ -234,11 +233,51 @@ namespace Assets.Scripts.Droodism.Crew
             }
         }
 
-        
+        //随机获取成员组,适用于读取无对应DroodismCrewData
         private DroodType GetRandomDroodPost()
         {
             int i = new System.Random().Next(0, 2);
             return (DroodType)i;
+        }
+
+        public void RecordCrewMemberRole(string crewName, DroodType role)
+        {
+            try
+            {
+                CreateCrewMember(crewName, role);
+            }
+            catch (InvalidOperationException)
+            {
+                if (TryGetGameCrewIdByName(crewName, out var crewId))
+                {
+                    var existing = GetCrewMember(crewId);
+                    if (existing != null)
+                    {
+                        existing.CrewRole = role;
+                        Save();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Records the crew role using a directly known crewId, bypassing the _gameCrewNameById lookup.
+        /// </summary>
+        public void RecordCrewMemberRoleById(int crewId, string crewName, DroodType role)
+        {
+            try
+            {
+                if (Instance == null)
+                {
+                    Mod.LogError("[Droodism] RecordCrewMemberRoleById called but Instance is null. Was Awake() called?");
+                    return;
+                }
+                CreateCrewMember(crewName, role, 0, 0, crewId);
+            }
+            catch (Exception ex)
+            {
+                Mod.LogError($"[Droodism] RecordCrewMemberRoleById failed for crewId={crewId}, name={crewName}: {ex}");
+            }
         }
 
         public void Save()
@@ -248,8 +287,17 @@ namespace Assets.Scripts.Droodism.Crew
                 _currentGameSaveName = GetCurrentGameSaveName();
             }
 
-            // 保存前保证 name/id 对齐（很轻量：只更新已有 entries 的 CrewName）
-            SyncWithGameCrewManager(updateNamesOnly: true);
+            // Only update CrewName in-place to keep name in sync with game.
+            // Do NOT call SyncWithGameCrewManager here — it can overwrite CrewRole with random values
+            // if called after CreateCrewMember / RecordCrewMemberRole.
+            foreach (var m in _members)
+            {
+                if (m == null) continue;
+                if (_gameCrewNameById.TryGetValue(m.CrewID, out var newName))
+                {
+                    m.CrewName = newName;
+                }
+            }
 
             string filePath = GetCrewMembersXmlPath(_currentGameSaveName);
             string directory = Path.GetDirectoryName(filePath);
@@ -342,9 +390,13 @@ namespace Assets.Scripts.Droodism.Crew
             }
         }
 
+       /// <summary>
+       /// 从原版游戏的存档中拉取 
+       /// </summary>
+       /// <param name="updateNamesOnly"></param>
         private void SyncWithGameCrewManager(bool updateNamesOnly = false)
         {
-            // 尝试从游戏的 CrewManager 拉取 id/name
+           
             if (!TryGetGameCrewIdNameLookup(out var lookup))
             {
                 return;

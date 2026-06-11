@@ -24,7 +24,7 @@ namespace Assets.Scripts
                 }
                 catch (Exception e)
                 {
-                    Debug.LogFormat("Error while adding click event to{0}", e);
+                    Log("Error while adding click event to{0}", e);
                 }
 
                 return true;
