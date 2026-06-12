@@ -282,20 +282,20 @@ namespace Assets.Scripts.Droodism.UserInterface
 
         #endregion
 
+        private bool _inspectorPanelRequestedVisible;
         public void OnToggleDroodismInspectorPanelState()
         {
-
-            UpdateInfo();
+            bool willBeVisible = !_inspectorPanelRequestedVisible;
             try
             {
-                inspectorPanel.Visible = !inspectorPanel.Visible;
+                inspectorPanel.Visible = willBeVisible;
             }
             catch (Exception)
             {
-
                 CreateInspectorPanel();
-                inspectorPanel.Visible = !inspectorPanel.Visible;
+                inspectorPanel.Visible = willBeVisible;
             }
+            _inspectorPanelRequestedVisible = willBeVisible;
         }
 
 

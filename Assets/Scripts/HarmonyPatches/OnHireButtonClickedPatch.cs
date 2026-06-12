@@ -41,7 +41,7 @@ namespace Assets.Scripts
                 else
                 {
                     var dialog = Game.Instance.UserInterface.CreateMessageDialog(MessageDialogType.ThreeButtons);
-                    dialog.MessageText = "Choose the role for your new astronaut:";
+                    dialog.MessageText = "<size=125%>Choose the what kind of Drood you want to hire:</size>";
                     dialog.OkayButtonText = "Pilot";
                     dialog.MiddleButtonText = "Engineer";
                     dialog.CancelButtonText = "Scientist";
@@ -58,12 +58,12 @@ namespace Assets.Scripts
                 dialog.Close();
                 CrewMember crewMember = Game.Instance.GameState.Crew.CreateCrewMember();
                 Game.Instance.GameState.Career?.SpendMoney(hireCost);
-
-                // 直接从刚创建的 CrewMember 对象拿 ID，避免依赖 _gameCrewNameById 缓存是否已同步
+                
+                
                 int crewId = ReadIntMember(crewMember, "Id", "CrewId", "CrewID", "NodeId");
                 if (crewId > 0)
                 {
-                    DroodismCrewDataManager.Instance.RecordCrewMemberRoleById(crewId, crewMember.Name, role);
+                    DroodismCrewDataManager.Instance.RecordCrewMemberRole(crewId, crewMember.Name, role);
                 }
                 else
                 {

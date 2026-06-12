@@ -263,7 +263,7 @@ namespace Assets.Scripts.Droodism.Crew
         /// <summary>
         /// Records the crew role using a directly known crewId, bypassing the _gameCrewNameById lookup.
         /// </summary>
-        public void RecordCrewMemberRoleById(int crewId, string crewName, DroodType role)
+        public void RecordCrewMemberRole(int crewId, string crewName, DroodType role)
         {
             try
             {
@@ -426,7 +426,7 @@ namespace Assets.Scripts.Droodism.Crew
                         {
                             CrewID = crewId,
                             CrewName = crewName,
-                            CrewRole = GetRandomDroodPost(),
+                            CrewRole =crewName=="Yuri G"||crewName=="Sally R"?DroodType.Pilot: GetRandomDroodPost(),
                             RadiationRate = 0,
                             MissionTime = 0
                         });
@@ -471,7 +471,7 @@ namespace Assets.Scripts.Droodism.Crew
                     {
                         CrewID = crewId,
                         CrewName = crewName,
-                        CrewRole = GetRandomDroodPost(),
+                        CrewRole =crewName=="Yuri G"||crewName=="Sally R"?DroodType.Pilot: GetRandomDroodPost(),
                         RadiationRate = 0,
                         MissionTime=0
                     };
