@@ -38,10 +38,13 @@ namespace Assets.Scripts
         public BoolSetting ConsumeResourceWhenUnloaded { get; set; }
         public BoolSetting DebugMode { get; set; }
         public BoolSetting ActiveUpdateRadiationBeltConfig { get; set; }
-        
+        public BoolSetting EnableResourceWarning { get; set; }
+        public NumericSetting<float> ResourceWarningThreshold { get; set; }
+        public NumericSetting<float> ResourceCriticalThreshold { get; set; }
+
         public BoolSetting AltNavBallColor { get; set; }
         public BoolSetting RemoveDockingPortCamera { get; set; }
-        
+
         public BoolSetting ReceiveCraftRadiation { get; set; }
 
         /// <summary>
@@ -67,6 +70,15 @@ namespace Assets.Scripts
             RemoveDockingPortCamera=CreateBool("Disable Docking Port Camera")
                 .SetDescription("Remove the camera from the docking port<br><color=red>Warning</color>: This will completely disabled <color=red><size=200%>ANY</size></color>camera modifier in<color=red><size=200%> ANY</size></color> docking ports (even if they're in flight already!), use it only if you really hate them")
                 .SetDefault(false);
+            EnableResourceWarning = CreateBool("Enable Resource Warning")
+                .SetDescription("During warp, automatically detect  when Drood resources fall below threshold and pause game then alert the player.")
+                .SetDefault(true);
+            ResourceWarningThreshold = CreateNumeric<float>("Warning Threshold",0.2f,0.5f,0.05f)
+                .SetDescription("Warning will trigger when resources fall below this percentage.")
+                .SetDefault(0.25f);
+            ResourceCriticalThreshold = CreateNumeric<float>("Critical Threshold",0.05f,0.2f,0.01f)
+                .SetDescription("Critical alert will trigger when resources fall below this percentage. Auto-slowdown is triggered at this level.")
+                .SetDefault(0.10f);
         }
     }
 }

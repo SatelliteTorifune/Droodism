@@ -19,6 +19,7 @@ using ModApi.Ui.Inspector;
 using System.Xml.Serialization;
 using Assets.Scripts.Craft.Fuel;
 using Assets.Scripts.Droodism.Crew;
+using Assets.Scripts.Droodism.ResourceWarning;
 using UnityEngine.UI;
 
 namespace Assets.Scripts
@@ -77,6 +78,7 @@ namespace Assets.Scripts
             DroodismGO.AddComponent<RadiationBeltManager>();
             DroodismGO.AddComponent<RadiationBeltDebugUI>();
             DroodismGO.AddComponent<DroodismCrewDataManager>();
+            DroodismGO.AddComponent<ResourceWarningScript>();
             GameObject.DontDestroyOnLoad(DroodismGO);
             DroodismGO.SetActive(true);
             Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.MapView, OnBuildMapViewInspectorPanel);

@@ -107,7 +107,6 @@ namespace Assets.Scripts.Droodism.UserInterface
                     {
                         Mod.Log("DroodismUiManager:UpdateFuelTemplateItem"+e);
                     }
-                    
                 }
             }
         }
@@ -655,6 +654,5 @@ namespace Assets.Scripts.Droodism.UserInterface
             return null;
 
         }
-
     }
 }
