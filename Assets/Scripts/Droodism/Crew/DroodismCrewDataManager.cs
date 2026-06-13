@@ -426,7 +426,7 @@ namespace Assets.Scripts.Droodism.Crew
                         {
                             CrewID = crewId,
                             CrewName = crewName,
-                            CrewRole =crewName=="Yuri G"||crewName=="Sally R"?DroodType.Pilot: GetRandomDroodPost(),
+                            CrewRole =crewName.Contains("Yuri G")||crewName.Contains("Sally R")?DroodType.Pilot: GetRandomDroodPost(),
                             RadiationRate = 0,
                             MissionTime = 0
                         });
@@ -471,7 +471,7 @@ namespace Assets.Scripts.Droodism.Crew
                     {
                         CrewID = crewId,
                         CrewName = crewName,
-                        CrewRole =crewName=="Yuri G"||crewName=="Sally R"?DroodType.Pilot: GetRandomDroodPost(),
+                        CrewRole =crewName.Contains("Yuri G")||crewName.Contains("Sally R")?DroodType.Pilot: GetRandomDroodPost(),
                         RadiationRate = 0,
                         MissionTime=0
                     };

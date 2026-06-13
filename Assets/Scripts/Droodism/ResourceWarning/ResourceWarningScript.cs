@@ -19,8 +19,8 @@ namespace Assets.Scripts.Droodism.ResourceWarning
         public static ResourceWarningScript Instance { get; private set; }
 
         private Dictionary<string, DroodResourceStatus> _statusMap = new Dictionary<string, DroodResourceStatus>();
-        private double _lastSlowdownTime = -999.0;
-        private bool _hasTriggeredPauseThisSession = false;
+        private bool _hasWarningSlowdownThisSession = false;
+        private bool _hasCriticalPauseThisSession = false;
 
         public enum WarningLevel { None, Warning, Critical }
 
@@ -30,7 +30,7 @@ namespace Assets.Scripts.Droodism.ResourceWarning
             public int DroodId;
             public WarningLevel Level;
             public double LastWarningGameTime;
-            public bool WasEverCritical;
+            public bool HasTriggeredWarning;
         }
         #region 循环注册
 
@@ -87,7 +87,6 @@ namespace Assets.Scripts.Droodism.ResourceWarning
                     TryRegisterWithFlightGameLoop();
                     Game.Instance.FlightScene.FlightEnded += OnFlightEnded;
                 }
-                _statusMap.Clear();
                 ResetSessionFlags();
             }
             else
@@ -100,15 +99,15 @@ namespace Assets.Scripts.Droodism.ResourceWarning
             }
         }
 
+        
+        private void OnFlightEnded(object sender, FlightEndedEventArgs e)
+        {
+            ResetSessionFlags();
+        }
         void IFlightStart.FlightStart(in FlightFrameData frame)
         {
         }
 
-        private void OnFlightEnded(object sender, FlightEndedEventArgs e)
-        {
-            _statusMap.Clear();
-            ResetSessionFlags();
-        }
 
         void IFlightUpdate.FlightUpdate(in FlightFrameData frame)
         {
@@ -118,16 +117,11 @@ namespace Assets.Scripts.Droodism.ResourceWarning
             if (frame.DeltaTimeWorld <= 0.0)
                 return;
 
-            var tm = Game.Instance.FlightScene.TimeManager;
-            if (tm.CurrentMode.TimeMultiplier <= 1.0f)
-            {
-                _lastSlowdownTime = -999.0;
-                _hasTriggeredPauseThisSession = false;
-                return;
-            }
-
             CheckAllDroodResources(frame);
-            HandleAutoSlowdown(frame);
+
+            var tm = Game.Instance.FlightScene.TimeManager;
+            if (tm.CurrentMode.TimeMultiplier > 1.0f)
+                HandleAutoSlowdown(frame);
         }
         #endregion
         #region 真干活的
@@ -193,7 +187,6 @@ namespace Assets.Scripts.Droodism.ResourceWarning
                     DroodId = droodId,
                     Level = WarningLevel.None,
                     LastWarningGameTime = -999.0,
-                    WasEverCritical = false
                 };
                 _statusMap[key] = status;
             }
@@ -201,14 +194,14 @@ namespace Assets.Scripts.Droodism.ResourceWarning
             if (!resourceRelevant)
             {
                 status.Level = WarningLevel.None;
-                status.WasEverCritical = false;
+                status.HasTriggeredWarning = false;
                 return;
             }
 
             if (capacity <= 0.0)
             {
                 status.Level = WarningLevel.None;
-                status.WasEverCritical = false;
+                status.HasTriggeredWarning = false;
                 return;
             }
 
@@ -232,11 +225,10 @@ namespace Assets.Scripts.Droodism.ResourceWarning
                     : WarningLevel.None;
             }
 
-            if (newLevel == WarningLevel.Critical)
-                status.WasEverCritical = true;
-
             if (newLevel != status.Level)
             {
+                if (newLevel < status.Level)
+                    status.HasTriggeredWarning = false;
                 status.Level = newLevel;
                 OnLevelChanged(status, resourceId, percentage, isWaste, gameTime);
             }
@@ -259,57 +251,63 @@ namespace Assets.Scripts.Droodism.ResourceWarning
 
             if (isWaste)
             {
-                float fillPercent = 1.0f - percentage;
                 ui.ShowMessage(
-                    $"<size=150%><color={color}>[{levelStr}] {status.DroodName}: {resourceId} at {Units.GetPercentageString(fillPercent)} capacity!",
+                    $"<size=120%><color={color}>[{levelStr}] {status.DroodName}: {resourceId} level at {Units.GetPercentageString(percentage)}!",
                     true, 5f);
             }
             else
             {
                 ui.ShowMessage(
-                    $"<size=150%><color={color}>[{levelStr}] {status.DroodName}: {resourceId} at {Units.GetPercentageString(percentage)} remaining!",
+                    $"<size=120%><color={color}>[{levelStr}] {status.DroodName}: {resourceId} at {Units.GetPercentageString(percentage)} remaining!",
                     true, 5f);
             }
-
-            if (status.Level == WarningLevel.Critical)
-                _hasTriggeredPauseThisSession = true;
         }
 
         private void HandleAutoSlowdown(in FlightFrameData frame)
         {
             var tm = Game.Instance.FlightScene.TimeManager;
-            double gameTime = Game.Instance.FlightScene.FlightState.Time;
-            double slowdownInterval = 10.0;
-
-            bool hasCritical = _statusMap.Values.Any(s => s.Level == WarningLevel.Critical);
-
-            if (!hasCritical)
-            {
-                _lastSlowdownTime = -999.0;
-                _hasTriggeredPauseThisSession = false;
-                return;
-            }
-
-            if (gameTime - _lastSlowdownTime < slowdownInterval)
-                return;
-
-            _lastSlowdownTime = gameTime;
-
             float currentMultiplier = (float)tm.CurrentMode.TimeMultiplier;
             float minMultiplier = (float)tm.Modes.First().TimeMultiplier;
 
-            
-            if (currentMultiplier > minMultiplier)
-            {
-                tm.DecreaseTimeMultiplier();
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
-                    "<size=150%><color=orange>Resource critical! Warp speed reduced.</color>", true, 3f);
+            bool hasCritical = _statusMap.Values.Any(s => s.Level == WarningLevel.Critical);
+            bool hasWarning = _statusMap.Values.Any(s => s.Level == WarningLevel.Warning);
 
-                if (tm.CurrentMode.TimeMultiplier <= minMultiplier * 1.5f)
+            if (!hasCritical && !hasWarning)
+            {
+                _hasWarningSlowdownThisSession = false;
+                _hasCriticalPauseThisSession = false;
+                return;
+            }
+
+            if (hasCritical && !_hasCriticalPauseThisSession)
+            {
+                _hasCriticalPauseThisSession = true;
+                tm.RequestPauseChange(true, false);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
+                    "<size=120%><color=red>Resource critical! Time paused.</color>", true, 5f);
+                return;
+            }
+
+            if (hasWarning && !_hasWarningSlowdownThisSession)
+            {
+                bool hasUnprocessedWarning = _statusMap.Values.Any(s =>
+                    s.Level == WarningLevel.Warning && !s.HasTriggeredWarning);
+
+                if (hasUnprocessedWarning)
                 {
-                    tm.RequestPauseChange(true, false);
-                    Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
-                        "<size=150%><color=red>Resource critical! Time paused.</color>", true, 5f);
+                    _hasWarningSlowdownThisSession = true;
+                    foreach (var status in _statusMap.Values)
+                    {
+                        if (status.Level == WarningLevel.Warning && !status.HasTriggeredWarning)
+                            status.HasTriggeredWarning = true;
+                    }
+
+                    if (currentMultiplier > minMultiplier)
+                    {
+                        tm.DecreaseTimeMultiplier();
+                        Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
+                            "<size=120%><color=orange>Resource warning! Warp speed reduced.</color>", true, 3f);
+                    }
                 }
             }
         }
@@ -330,8 +328,11 @@ namespace Assets.Scripts.Droodism.ResourceWarning
 
         public void ResetSessionFlags()
         {
-            _lastSlowdownTime = -999.0;
-            _hasTriggeredPauseThisSession = false;
+            _statusMap.Clear();
+            _hasWarningSlowdownThisSession = false;
+            _hasCriticalPauseThisSession = false;
+            foreach (var status in _statusMap.Values)
+                status.HasTriggeredWarning = false;
         }
         #endregion
     }

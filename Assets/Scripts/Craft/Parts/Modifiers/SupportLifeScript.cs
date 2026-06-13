@@ -13,6 +13,7 @@ using Assets.Scripts.Craft.Parts.Modifiers.Input;
 using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
 using Assets.Scripts.Droodism;
 using Assets.Scripts.Droodism.Crew;
+using Assets.Scripts.Droodism.ResourceWarning;
 using Droodism.RadiationBelt;
 using ModApi.Craft.Propulsion;
 using ModApi.Flight.Events;
@@ -452,6 +453,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             
             SyncCraftAndLocalFuelSources();
+            ResourceWarningScript.Instance.ResetSessionFlags();
             
 
             
@@ -607,6 +609,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 return;
             }
+
             OnCraftUnloaded();
         }
         
@@ -1597,6 +1600,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
            
         }
+        
         /// <summary>
         /// 对辐射剂量计算
         /// </summary>
