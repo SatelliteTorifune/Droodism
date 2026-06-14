@@ -283,6 +283,7 @@ namespace Assets.Scripts.Droodism.UserInterface
         
         public void OnToggleDroodismInspectorPanelState()
         {
+            UpdateInfo();
             try
             {
                 inspectorPanel.Visible =  !inspectorPanel.Visible;
@@ -511,8 +512,7 @@ namespace Assets.Scripts.Droodism.UserInterface
 
             void SetFuelTransferMode(FuelTransferMode fuelTransferMode, string fuelTypeId)
             {
-                if (ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Data.PartType.Name
-                    .Contains("Eva"))
+                if (ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Data.PartType.Name.Contains("Eva")&&ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.Data.Assembly.Parts.Count==1)
                 {
                     ModApi.Common.Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
                         "Cannot set fuel transfer mode to a single Drood.");

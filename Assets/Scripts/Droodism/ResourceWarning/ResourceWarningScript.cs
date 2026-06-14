@@ -309,7 +309,6 @@ namespace Assets.Scripts.Droodism.ResourceWarning
 
                     if (currentMultiplier > targetMultiplier)
                     {
-                        // 参考 EPManager:只要 currentMultiplier > targetMultiplier 就持续降档,直到降到实时档
                         int safetyLimit = 16;
                         while (currentMultiplier > targetMultiplier && safetyLimit-- > 0)
                         {
