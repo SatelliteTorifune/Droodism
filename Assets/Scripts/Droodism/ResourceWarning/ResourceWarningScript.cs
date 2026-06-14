@@ -113,15 +113,18 @@ namespace Assets.Scripts.Droodism.ResourceWarning
         {
             if (!ModSettings.Instance.EnableResourceWarning)
                 return;
-
+            //暂停 0 slowmo 1 正常 2 fastForward 3
+            
             if (frame.DeltaTimeWorld <= 0.0)
                 return;
 
+            
             CheckAllDroodResources(frame);
-
-            var tm = Game.Instance.FlightScene.TimeManager;
-            if (tm.CurrentMode.TimeMultiplier > 1.0f)
+            if (Game.Instance.FlightScene.TimeManager.ModeIndex > 3)
+            {
                 HandleAutoSlowdown(frame);
+            }
+             
         }
         #endregion
         #region 真干活的
@@ -253,21 +256,23 @@ namespace Assets.Scripts.Droodism.ResourceWarning
             {
                 ui.ShowMessage(
                     $"<size=120%><color={color}>[{levelStr}] {status.DroodName}: {resourceId} level at {Units.GetPercentageString(percentage)}!",
-                    true, 5f);
+                    false, 5f);
             }
             else
             {
                 ui.ShowMessage(
                     $"<size=120%><color={color}>[{levelStr}] {status.DroodName}: {resourceId} at {Units.GetPercentageString(percentage)} remaining!",
-                    true, 5f);
+                    false, 5f);
             }
         }
 
         private void HandleAutoSlowdown(in FlightFrameData frame)
         {
             var tm = Game.Instance.FlightScene.TimeManager;
+            // 0=暂停 1=慢放 2=快进 3+=warp;倍速序列大致为 0,0.2,1,5,10,25,100,500,1000...
+            // 目标是把 warp 降到实时档(1x),不是降到暂停档(0),暂停留给 Critical 分支处理
             float currentMultiplier = (float)tm.CurrentMode.TimeMultiplier;
-            float minMultiplier = (float)tm.Modes.First().TimeMultiplier;
+            float targetMultiplier = (float)tm.RealTime.TimeMultiplier;
 
             bool hasCritical = _statusMap.Values.Any(s => s.Level == WarningLevel.Critical);
             bool hasWarning = _statusMap.Values.Any(s => s.Level == WarningLevel.Warning);
@@ -284,7 +289,7 @@ namespace Assets.Scripts.Droodism.ResourceWarning
                 _hasCriticalPauseThisSession = true;
                 tm.RequestPauseChange(true, false);
                 Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
-                    "<size=120%><color=red>Resource critical! Time paused.</color>", true, 5f);
+                    "<size=120%><color=red>Resource critical! Time paused.</color>", false, 5f);
                 return;
             }
 
@@ -302,11 +307,17 @@ namespace Assets.Scripts.Droodism.ResourceWarning
                             status.HasTriggeredWarning = true;
                     }
 
-                    if (currentMultiplier > minMultiplier)
+                    if (currentMultiplier > targetMultiplier)
                     {
-                        tm.DecreaseTimeMultiplier();
+                        // 参考 EPManager:只要 currentMultiplier > targetMultiplier 就持续降档,直到降到实时档
+                        int safetyLimit = 16;
+                        while (currentMultiplier > targetMultiplier && safetyLimit-- > 0)
+                        {
+                            tm.DecreaseTimeMultiplier();
+                            currentMultiplier = (float)tm.CurrentMode.TimeMultiplier;
+                        }
                         Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
-                            "<size=120%><color=orange>Resource warning! Warp speed reduced.</color>", true, 3f);
+                            "<size=120%><color=orange>Resource warning! Warp speed reduced.</color>", false, 3f);
                     }
                 }
             }

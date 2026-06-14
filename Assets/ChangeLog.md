@@ -1,5 +1,8 @@
 ## 2026 6 14
 > 增加了重置资源预警flag的函数与应用
+> 
+> 回滚了OnToggleDroodismInspectorPanelState()函数
+> >吗的有点诡异
 
 ## 2026 6 13
 > 增加资源预警系统框架
