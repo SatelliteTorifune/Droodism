@@ -3228,7 +3228,7 @@ GameObject:
   - component: {fileID: 385607454257519991}
   - component: {fileID: 37582400079518772}
   m_Layer: 0
-  m_Name: GravityRing
+  m_Name: GravityRing 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

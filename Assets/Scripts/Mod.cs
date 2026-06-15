@@ -84,6 +84,7 @@ namespace Assets.Scripts
             Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.MapView, OnBuildMapViewInspectorPanel);
             CheckDefaultPlanetRadiationBeltConfig();
             CheckDefaultBreathablePlanetConfig();
+            CheckDefaultFlagImage();
             
         }
         
@@ -294,7 +295,15 @@ namespace Assets.Scripts
                 Directory.CreateDirectory(folderPath);
             }
             return folderPath;
-            
+        }
+
+        private void CheckDefaultFlagImage()
+        {
+            var folderPath = Application.persistentDataPath + "/UserData/DroodismConfig/FlagImage";
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
         }
         
         
