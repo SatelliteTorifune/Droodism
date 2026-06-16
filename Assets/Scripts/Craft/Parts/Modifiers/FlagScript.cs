@@ -44,12 +44,30 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             _hingeVel = 0f;
             _flagVel = 0f;
             SetFlagPhoto();
+            Data.StayDeployed = Data.IsDeployed && PartScript.Data.Activated;
             if (Data.StayDeployed)
             {
-                return;
-                this.Data.IsDeployed = true;
-                this.Data.CurrentRotationPercent = 0;
-                this.Data.CurrentExtentPercent = -1.4f;
+                // 目标值与 Deploy() 中保持一致
+                float targetExtent = 0.5f;
+                float targetRotationPercent = 1;
+                float targetFlagExtent = 2;
+                
+                this.Data.CurrentExtentPercent = targetExtent;
+                this.Data.CurrentRotationPercent = targetRotationPercent;
+                this.Data.CurrentExtentPercent2 = targetFlagExtent;
+
+                _rotateBase.transform.localPosition = new Vector3(
+                    _rotateBase.transform.localPosition.x, targetExtent, _rotateBase.transform.localPosition.z);
+                p2.transform.localPosition = new Vector3(
+                    p2.transform.localPosition.x, targetExtent, p2.transform.localPosition.z);
+                p3.transform.localPosition = new Vector3(
+                    p3.transform.localPosition.x, targetExtent, p3.transform.localPosition.z);
+                flagDown.localRotation = Quaternion.Euler(
+                    Vector3.Lerp(new Vector3(180, 0, 0), new Vector3(90, 0, 0), targetRotationPercent));
+                flagFace.transform.localScale = new Vector3(
+                   2,2,2);
+                
+
             }
         }
 
@@ -59,7 +77,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public override void FlightUpdate(in FlightFrameData frame)
         {
             Data.StayDeployed = Data.IsDeployed && PartScript.Data.Activated;
-            if (PartScript.Data.Activated)
+            if (PartScript.Data.Activated&&!Data.IsDeployed)
             {
                 Deploy(frame);
                
@@ -69,10 +87,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 float targetExtent = 0.5f;
                 float targetRotationPercent = 1;
                 float targetFlagExtent = 2;
-
-                // ---- 阶段一：旗杆伸长 ----
-                // 用软弹簧（spring）替代线性插值，带来加速启动 + 软着陆的顿挫感
-                // 旗杆刚启动时先克服静摩擦，然后惯性滑出，最后轻轻弹到目标位
+                
                 if (!Mathf.Approximately(Data.CurrentExtentPercent, targetExtent))
                 {
                     float err = targetExtent - Data.CurrentExtentPercent;
@@ -94,9 +109,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                         p3.transform.localPosition          = poleP3;
                     }
                 }
-
-                // ---- 阶段二：开角（竖起旗面） ----
-                // 关节有一定机械惯性，用带阻尼的弹簧让开角有弹性顿挫
                 if (Mathf.Approximately(Data.CurrentExtentPercent, targetExtent) &&
                     !Mathf.Approximately(Data.CurrentRotationPercent, targetRotationPercent))
                 {
@@ -121,9 +133,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                             Data.CurrentRotationPercent+1);
                     }
                 }
-
-                // ---- 阶段三：旗帜展开 ----
-                // 布料有惯性，先快速甩出，然后轻微回弹，最终稳住
                 if (Mathf.Approximately(Data.CurrentRotationPercent, targetRotationPercent) &&
                     !Mathf.Approximately(Data.CurrentExtentPercent2, targetFlagExtent))
                 {
@@ -143,6 +152,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                             Data.CurrentExtentPercent2,
                             flagFace.transform.localScale.z);
                     }
+                }
+
+                if (flagFace.transform.localScale==new Vector3(2,2,2))
+                {
+                    Data.IsDeployed = true;
                 }
             }
         }
