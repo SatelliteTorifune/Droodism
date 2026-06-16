@@ -35,7 +35,7 @@ namespace Assets.Scripts.Droodism.UserInterface
         private GroupModel CraftFuelSourceInspectorModel;
         
 
-        [FormerlySerializedAs("DroodScripts")] public List<EvaScript> DroodScriptsList = new List<EvaScript>();
+        public List<EvaScript> DroodScriptsList = new List<EvaScript>();
 
         private Dictionary<string, (double Current, double Previous)> FuelMap = new Dictionary<string, (double, double)>
         {
@@ -89,10 +89,11 @@ namespace Assets.Scripts.Droodism.UserInterface
                 return;
             }
 
-            if (CraftFuelSourceInspectorModel != null&&this.inspectorPanel.Visible)
+            /*
+            if (CraftFuelSourceInspectorModel != null&&this.inspectorPanel!=null&&this.inspectorPanel.Visible)
             {
                 CraftFuelSourceInspectorModel.Visible = Game.Instance.FlightScene.CraftNode.CraftScript.ActiveCommandPod.Part.GetModifier<EvaData>()==null&&Game.Instance.FlightScene.CraftNode.CraftScript.Data.Assembly.Parts.Count>1;
-            }
+            }*/
 
             foreach (var id in fuelTypeIDList)
             {
@@ -344,7 +345,7 @@ namespace Assets.Scripts.Droodism.UserInterface
                 {
 
                     var droodismCrewData = supportLifeScript.Data.DroodismCrewData;
-                    string color = droodismCrewData.CrewRole == DroodType.Engineer ? "#0072FF" :
+                    string color =droodismCrewData==null?"white": droodismCrewData.CrewRole == DroodType.Engineer ? "#0072FF" :
                         droodismCrewData.CrewRole == 
                         DroodType.Scientist ? "#62BF05" : droodismCrewData.CrewRole == DroodType.Pilot?"#FF0003":"white";
                     CrewInspectorGroup.Add<TextModel>(new TextModel(droodismCrewData == null
@@ -451,7 +452,6 @@ namespace Assets.Scripts.Droodism.UserInterface
             void addFuelTypeTemplateItem(string fuelTypeId)
             {
                 IFuelSource fuelSource = GetIFuelSourceByID(fuelTypeId);
-                bool isWasted = fuelTypeId.Contains("Wasted") || fuelTypeId == "CO2";
 
                 CraftFuelSourceInspectorModel.Add(new TextModel("", () => ""));
                 CraftFuelSourceInspectorModel.Add(new TextModel("", () => ""));

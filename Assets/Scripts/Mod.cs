@@ -258,23 +258,23 @@ namespace Assets.Scripts
                 Directory.CreateDirectory(folderPath);
             }
             var asset = Mod.ResourceLoader.LoadAsset<TextAsset>("Assets/Resources/BreathablePlanets.xml");
-            Log($"[Mod] CheckDefaultBreathablePlanetConfig: asset={asset != null}, folderPath={folderPath}");
+            Log($"[Droodism] CheckDefaultBreathablePlanetConfig: asset={asset != null}, folderPath={folderPath}");
             if (asset != null)
             {
                 var targetPath = Path.Combine(folderPath, "BreathablePlanets.xml");
                 if (!File.Exists(targetPath))
                 {
                     File.WriteAllText(targetPath, asset.text, Encoding.UTF8);
-                     Log($"[Mod] Copied BreathablePlanets.xml to: {targetPath}");
+                     Log($"[Droodism] Copied BreathablePlanets.xml to: {targetPath}");
                 }
                 else
                 {
-                     Log($"[Mod] BreathablePlanets.xml already exists at: {targetPath}");
+                     Log($"[Droodism] BreathablePlanets.xml already exists at: {targetPath}");
                 }
             }
             else
             {
-                LogError("[Mod] Failed to load BreathablePlanets.xml from Resources!");
+                LogError("[Droodism] Failed to load BreathablePlanets.xml from Resources!");
             }
         }
         private  static string GetRadiationBeltConfigFolderPath()
@@ -299,10 +299,40 @@ namespace Assets.Scripts
 
         private void CheckDefaultFlagImage()
         {
-            var folderPath = Application.persistentDataPath + "/UserData/DroodismConfig/FlagImage";
+            const string defaultImageResourcePath = "Assets/Resources/DefaultFlag1.bytes";
+            const string defaultImageFileName = "CustomImage.jpg";
+
+            var folderPath = Path.Combine(Application.persistentDataPath, "UserData", "DroodismConfig", "FlagImage");
             if (!Directory.Exists(folderPath))
             {
                 Directory.CreateDirectory(folderPath);
+            }
+
+            var targetPath = Path.Combine(folderPath, defaultImageFileName);
+            if (File.Exists(targetPath))
+            {
+                return;
+            }
+
+            TextAsset defaultImageAsset = null;
+            try
+            {
+                defaultImageAsset = Instance.ResourceLoader.LoadAsset<TextAsset>(defaultImageResourcePath);
+            }
+            catch (Exception e)
+            {
+                LogError($"[Droodism] Failed to load default flag image asset at '{defaultImageResourcePath}': {e}");
+            }
+            
+
+            try
+            {
+                File.WriteAllBytes(targetPath, defaultImageAsset.bytes);
+                Log($"[Droodism] Wrote default flag image to: {targetPath}");
+            }
+            catch (Exception e)
+            {
+                LogError($"[Droodism] Failed to write default flag image to '{targetPath}': {e}");
             }
         }
         
