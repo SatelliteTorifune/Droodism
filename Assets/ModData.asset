@@ -105,6 +105,7 @@ MonoBehaviour:
   - {fileID: 4900000, guid: 62fc707502e4fdf46846d1bc5c46426e, type: 3}
   - {fileID: 4900000, guid: 3187f51072da32145ad84924d186c061, type: 3}
   - {fileID: 0}
+  - {fileID: 4900000, guid: ba467d2740a3cc64bbffaa09ba7b4213, type: 3}
   _partStyleExtensions: []
   _partTextureStyles: []
   _persistentObjects: []
