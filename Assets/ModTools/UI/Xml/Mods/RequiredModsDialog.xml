@@ -9,7 +9,7 @@
   <Panel id="panel" showAnimation="FadeIn" hideAnimation="FadeOut" animationDuration="0.1" class="dialog-background">
     <Panel id="form" class="panel border" width="575" maxSize="575 640">
       <RectTransform>
-        <TextMeshPro id="header-title" class="text-header" text="Mods Required" rectAlignment="UpperCenter" height="60" />
+        <TextMeshPro id="header-title" class="text-header" text="{Mods.Required.Title}" rectAlignment="UpperCenter" height="60" />
         <Panel rectAlignment="UpperCenter" height="60" offsetXY="0 -50" padding="10">
           <TextMeshPro id="header-description" />
         </Panel>
@@ -19,7 +19,7 @@
               <ContentButton id="mod-template" class="btn list-item" active="false">
                 <Panel width="375" rectAlignment="MiddleLeft">
                   <TextMeshPro internalId="name" class="text-lg" color="ValueText" offsetMin="20 45" offsetMax="0 -5" alignment="Left" text="Mod Name" />
-                  <TextMeshPro internalId="author" offsetMin="20 25" offsetMax="0 -35" alignment="Left" text="Author: Jundroo" />
+                  <TextMeshPro internalId="author" offsetMin="20 25" offsetMax="0 -35" alignment="Left" text="{Mods.Required.AuthorFormat}" />
                   <TextMeshPro internalId="version" offsetMin="20 5" offsetMax="0 -55" alignment="Left" text="Version: 1.0 - 2019-05-30 16:35:35" />
                 </Panel>
                 <Panel width="125" rectAlignment="MiddleRight">
@@ -29,9 +29,9 @@
               <ContentButton id="mod-code-template" class="btn list-item" preferredHeight="100" active="false">
                 <Panel width="375" rectAlignment="MiddleLeft">
                   <TextMeshPro internalId="name" class="text-lg" color="ValueText" offsetMin="20 65" offsetMax="0 -5" alignment="Left" text="Mod Name" />
-                  <TextMeshPro internalId="author" offsetMin="20 45" offsetMax="0 -35" alignment="Left" text="Author: Jundroo" />
+                  <TextMeshPro internalId="author" offsetMin="20 45" offsetMax="0 -35" alignment="Left" text="{Mods.Required.AuthorFormat}" />
                   <TextMeshPro internalId="version" offsetMin="20 25" offsetMax="0 -55" alignment="Left" text="Version: 1.0 - 2019-05-30 16:35:35" />
-                  <TextMeshPro internalId="code-execution" class="mod-status-invalid" offsetMin="20 5" offsetMax="0 -75" alignment="Left" text="Requires Code Execution" />
+                  <TextMeshPro internalId="code-execution" class="mod-status-invalid" offsetMin="20 5" offsetMax="0 -75" alignment="Left" text="{Mods.Required.RequiresCodeExecution}" />
                 </Panel>
                 <Panel width="125" rectAlignment="MiddleRight">
                   <TextMeshPro internalId="status" offsetMin="0 0" offsetXY="0 0" alignment="center" text="Not Installed" />
@@ -43,10 +43,10 @@
         <Panel rectAlignment="LowerCenter" padding="10" offsetXY="0 5">
           <RectTransform>
             <Button id="cancel-button" class="btn audio-btn-back" rectAlignment="LowerLeft" width="150" onClick="OnCancelButtonClicked();">
-              <TextMeshPro text="CANCEL" />
+              <TextMeshPro text="{Dialog.Cancel}" />
             </Button>
             <Button id="okay-button" class="btn btn-primary audio-btn-big" rectAlignment="LowerRight" width="150" onClick="OnOkayButtonClicked();">
-              <TextMeshPro text="CONTINUE" />
+              <TextMeshPro text="{Dialog.Continue}" />
             </Button>
           </RectTransform>
         </Panel>

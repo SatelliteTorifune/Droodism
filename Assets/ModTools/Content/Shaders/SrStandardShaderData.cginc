@@ -43,6 +43,9 @@
     float _innerRadius;
     float _innerRadius2;
     float _atmosSizeScale;
+    float _invAtmosSizeScale;
+    float _scaleDepthLn;
+    float _miePhaseConst;
     float _seaLevelWorldRadius;
     float _worldPositionScale;
     float _krESun;

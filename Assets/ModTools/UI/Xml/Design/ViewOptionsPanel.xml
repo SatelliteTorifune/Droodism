@@ -12,54 +12,54 @@
   <VerticalLayout class="no-image" childForceExpandHeight="false" padding="20" spacing="10">
     <Panel class="header" preferredHeight="20">
       <Panel height="35" rectAlignment="LowerCenter">
-        <TextMeshPro text="CENTER INDICATORS" fontStyle="Bold,UpperCase" />
+        <TextMeshPro text="{Design.ViewOptions.CenterIndicators.Text}" fontStyle="Bold,UpperCase" />
       </Panel>
       <Image class="separator" />
     </Panel>
     <Panel class="no-image" preferredHeight="40">
-      <Button id="gizmo-com" name="ViewOptions.CoM" class="gizmo-toggle-button" iconColor="CenterOfMass" iconHoverColor="CenterOfMass" offsetXY="-60 0" tooltip="Toggle Center of Mass indicator" />
-      <Button id="gizmo-col" name="ViewOptions.CoL" class="gizmo-toggle-button" iconColor="CenterOfLift" iconHoverColor="CenterOfLift" offsetXY="0 0" tooltip="Toggle Center of Lift indicator" />
-      <Button id="gizmo-cot" name="ViewOptions.CoT" class="gizmo-toggle-button" iconColor="CenterOfThrust" iconHoverColor="CenterOfThrust" offsetXY="60 0" tooltip="Toggle Center of Thrust indicator. Engine thrust is calculated using the altitude currently set in the Design Info panel." />
+      <Button id="gizmo-com" name="ViewOptions.CoM" class="gizmo-toggle-button" iconColor="CenterOfMass" iconHoverColor="CenterOfMass" offsetXY="-60 0" tooltip="{Design.ViewOptions.CenterOfMass.Tooltip}" />
+      <Button id="gizmo-col" name="ViewOptions.CoL" class="gizmo-toggle-button" iconColor="CenterOfLift" iconHoverColor="CenterOfLift" offsetXY="0 0" tooltip="{Design.ViewOptions.CenterOfLift.Tooltip}" />
+      <Button id="gizmo-cot" name="ViewOptions.CoT" class="gizmo-toggle-button" iconColor="CenterOfThrust" iconHoverColor="CenterOfThrust" offsetXY="60 0" tooltip="{Design.ViewOptions.CenterOfThrust.Tooltip}" />
     </Panel>
     <Panel class="spinner row">
-      <TextMeshPro class="label tooltip" text="Stage" width="50%" tooltip="View Center indicators with respect to a specific stage" />
+      <TextMeshPro class="label tooltip" text="{Design.ViewOptions.Stage.Text}" width="50%" tooltip="{Design.ViewOptions.Stage.Tooltip}" />
       <Spinner id="stage-spinner" width="50%">
-        <TextMeshPro text="All" />
+        <TextMeshPro text="{Design.ViewOptions.Stage.All}" />
       </Spinner>
     </Panel>
     <Panel class="header" preferredHeight="40">
       <Panel class="no-image" height="35" rectAlignment="LowerCenter">
-        <TextMeshPro text="CAMERA OPTIONS" fontStyle="Bold,UpperCase" />
+        <TextMeshPro text="{Design.ViewOptions.CameraOptions.Text}" fontStyle="Bold,UpperCase" />
       </Panel>
       <Image class="separator" />
     </Panel>
     <Panel class="no-image" preferredHeight="40">
-      <Button name="ViewOptions.ViewFront" class="camera-focus-button" offsetXY="-60 0" icon="Ui/Sprites/Design/IconButtonViewFront" tooltip="View craft from front" onClick="OnCameraClicked(front);" />
-      <Button name="ViewOptions.ViewSide" class="camera-focus-button" offsetXY="0 0" icon="Ui/Sprites/Design/IconButtonViewSide" tooltip="View craft from the side" onClick="OnCameraClicked(side);" />
-      <Button name="ViewOptions.ViewTop" class="camera-focus-button" offsetXY="60 0" icon="Ui/Sprites/Design/IconButtonViewTop" tooltip="View craft from the top" onClick="OnCameraClicked(top);" />
+      <Button name="ViewOptions.ViewFront" class="camera-focus-button" offsetXY="-60 0" icon="Ui/Sprites/Design/IconButtonViewFront" tooltip="{Design.ViewOptions.CameraFront.Tooltip}" onClick="OnCameraClicked(front);" />
+      <Button name="ViewOptions.ViewSide" class="camera-focus-button" offsetXY="0 0" icon="Ui/Sprites/Design/IconButtonViewSide" tooltip="{Design.ViewOptions.CameraSide.Tooltip}" onClick="OnCameraClicked(side);" />
+      <Button name="ViewOptions.ViewTop" class="camera-focus-button" offsetXY="60 0" icon="Ui/Sprites/Design/IconButtonViewTop" tooltip="{Design.ViewOptions.CameraTop.Tooltip}" onClick="OnCameraClicked(top);" />
     </Panel>
     <Panel class="header" preferredHeight="40">
       <Panel class="no-image" height="35" rectAlignment="LowerCenter">
-        <TextMeshPro text="OTHER" fontStyle="Bold,UpperCase" />
+        <TextMeshPro text="{Design.ViewOptions.Other.Text}" fontStyle="Bold,UpperCase" />
       </Panel>
       <Image class="separator" />
     </Panel>
     <Panel class="no-image" preferredHeight="20" id="show-lift-panel">
-      <TextMeshPro class="label tooltip" text="Show Lift Vectors" rectAlignment="MiddleLeft" />
-      <Toggle internalId="show-lift-button" isOn="false" onValueChanged="OnShowLiftVectorChanged(this);" rectAlignment="MiddleRight" tooltip="Shows lift vectors for wings.  Useful to determine if a wing is considered inverted with respect to pilot seat orientation." />
+      <TextMeshPro class="label tooltip" text="{Design.ViewOptions.ShowLiftVectors.Text}" rectAlignment="MiddleLeft" />
+      <Toggle internalId="show-lift-button" isOn="false" onValueChanged="OnShowLiftVectorChanged(this);" rectAlignment="MiddleRight" tooltip="{Design.ViewOptions.ShowLiftVectors.Tooltip}" />
     </Panel>
     <Panel class="no-image" preferredHeight="20" id="show-pilot-panel">
-      <TextMeshPro class="label tooltip" text="Pilot" rectAlignment="MiddleLeft" />
-      <Toggle internalId="show-pilot-button" isOn="false" onValueChanged="OnShowPilotChanged(this);" rectAlignment="MiddleRight" tooltip="Shows the pilot associted with the selected part.  Adjust the pilot's orientation through the associated command pod's properties window.  Wings, gyros, RCS, and auto control surfaces are configured using the pilot's orientation." />
+      <TextMeshPro class="label tooltip" text="{Design.ViewOptions.Pilot.Text}" rectAlignment="MiddleLeft" />
+      <Toggle internalId="show-pilot-button" isOn="false" onValueChanged="OnShowPilotChanged(this);" rectAlignment="MiddleRight" tooltip="{Design.ViewOptions.Pilot.Tooltip}" />
     </Panel>
     <Panel class="no-image" preferredHeight="20" id="select-command-pod-panel" active="false">
-      <Button class="btn" onClick="OnSelectPartsAssociatedCommandPodClicked(this)" rectAlignment="MiddleRight" tooltip="Selects the command pod associated with the selected part.">
-        <TextMeshPro>Select Command Pod</TextMeshPro>
+      <Button class="btn" onClick="OnSelectPartsAssociatedCommandPodClicked(this)" rectAlignment="MiddleRight" tooltip="{Design.ViewOptions.SelectCommandPod.Tooltip}">
+        <TextMeshPro>{Design.ViewOptions.SelectCommandPod.Text}</TextMeshPro>
       </Button>
     </Panel>
     <Panel class="no-image" preferredHeight="20" id="select-background-color-panel">
-      <Button class="btn" onClick="OnBackgroundColorClicked();" tooltip="Change the color of the background.">
-        <TextMeshPro text="Background Color" />
+      <Button class="btn" onClick="OnBackgroundColorClicked();" tooltip="{Design.ViewOptions.BackgroundColor.Tooltip}">
+        <TextMeshPro text="{Design.ViewOptions.BackgroundColor.Text}" />
       </Button>
     </Panel>
   </VerticalLayout>

@@ -2,7 +2,7 @@
 <XmlLayout xmlns="http://www.w3schools.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\XmlLayout.xsd">
   <Include path="Ui/Xml/Flight/FlightStyles.xml" />
   <Defaults>
-    <TextMeshPro class="inspector-title" font="Ui/Fonts/Pirulen/pirulen rg SDF" color="LabelText" fontSize="12" preferredHeight="30" enableAutoSizing="true" fontSizeMax="14" fontSizeMin="8" alignment="Left" />
+    <TextMeshPro class="inspector-title" font="{Ui.HeaderFontPath}" fontStyle="{Ui.HeaderFontStyle}" color="LabelText" fontSize="12" preferredHeight="30" enableAutoSizing="true" fontSizeMax="14" fontSizeMin="8" alignment="Left" />
     <Image class="inspector-panel-pin" color="LabelText" opacity="0.5" />
     <Image class="inspector-panel-pin-selected" color="Primary" opacity="1.0" />
     <Image class="inspector-panel-pin-hover" color="PrimaryHover" opacity="0.75" />
@@ -15,7 +15,7 @@
   <VerticalLayout id="flight-log-panel" class="translucent-panel-dark border draggable inspector-panel" translucency="0.15" padding="0 0 0 5" contentSizeFitter="vertical" childAlignment="LowerCenter" pivot="1 1" width="600" height="100" childForceExpandHeight="false" anchoredPosition="-300 300" anchorMin="1 0" anchorMax="1 0">
     <!-- Header -->
     <Panel class="inspector-header" color="DarkPanel" translucency="0" preferredHeight="30" onClick="OnMainHeaderClicked(this);">
-      <TextMeshPro internalId="title-text" class="inspector-title" text="Flight Log" margin="5 0 50 0" alignment="Left" />
+      <TextMeshPro internalId="title-text" class="inspector-title" text="{Flight.FlightLog.Title}" margin="5 0 50 0" alignment="Left" />
       <Image internalId="pin-button" class="inspector-panel-pin" width="28" height="28" offsetXY="-20 0" sprite="Ui/Sprites/Panel-Pin" rectAlignment="MiddleRight" onClick="OnPinClicked(this);" hoverClass="inspector-panel-pin-hover" />
       <Image internalId="close-button" class="inspector-panel-pin" width="24" height="24" offsetXY="0 0" sprite="Ui/Sprites/Common/IconCloseFlyout" rectAlignment="MiddleRight" onClick="OnCloseClicked(this);" hoverClass="inspector-panel-pin-hover" />
     </Panel>

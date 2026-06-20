@@ -26,22 +26,12 @@
         <Component type="UnityEngine.MeshRenderer" />
         <Component type="ModApi.Craft.Parts.PartMeshScript" />
       </GameObject>
-      <GameObject name="NozzleEmission">
-        <Component type="UnityEngine.MeshFilter" />
-        <Component type="UnityEngine.MeshRenderer" />
-        <Component type="ModApi.Craft.Parts.PartMeshScript" />
-      </GameObject>
       <GameObject name="ExhaustCollider">
         <Component type="UnityEngine.CapsuleCollider" />
         <Component type="ModApi.Craft.Parts.PartColliderScript" />
         <Component type="Assets.Scripts.Craft.Parts.Modifiers.Propulsion.ExhaustDamageScript" />
         <Component type="UnityEngine.Rigidbody" />
       </GameObject>
-    </GameObject>
-    <GameObject name="SmokeParticleSystem">
-      <Component type="UnityEngine.ParticleSystem" />
-      <Component type="UnityEngine.ParticleSystemRenderer" />
-      <Component type="Assets.Scripts.Craft.Parts.Modifiers.SmokeTrailScript" />
     </GameObject>
   </GameObject>
 </GameObject>

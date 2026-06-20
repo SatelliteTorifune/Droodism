@@ -13,7 +13,7 @@
   <VerticalScrollView pivot="0.5 1" offsetMax="0 -40">
     <VerticalLayout id="vertical-layout" childForceExpandHeight="false" childForceExpandWidth="false" contentSizeFitter="vertical" pivot="0.5 1" rectAlignment="UpperCenter" childAlignment="UpperCenter" spacing="10" padding="1">
       <Panel class="thumbnail">
-        <TextMeshPro text="Required Thumbnail" color="ButtonHover" offsetXY="0 -37" />
+        <TextMeshPro text="{Sharing.Screenshot.Required}" color="ButtonHover" offsetXY="0 -37" />
         <Image sprite="Ui/Sprites/Common/IconButtonCamera" class="thumbnail-button thumbnail-new" onClick="OnTakeThumbnail()" />
         <Image sprite="Ui/Sprites/Common/IconButtonLoad" class="thumbnail-button thumbnail-load" onClick="OnLoadThumbnail()" />
         <RawImage id="primary-thumbnail" active="false" offsetMin="2 2" offsetMax="-2 -2" />
@@ -28,7 +28,7 @@
         </Image>
       </Panel>
       <Panel id="thumbnail-actions" class="thumbnail">
-        <TextMeshPro text="Optional Screenshot" color="ButtonHover" offsetXY="0 -37" />
+        <TextMeshPro text="{Sharing.Screenshot.Optional}" color="ButtonHover" offsetXY="0 -37" />
         <Image sprite="Ui/Sprites/Common/IconButtonCamera" class="thumbnail-button thumbnail-new" onClick="OnNewPhotoClicked()" />
         <Image sprite="Ui/Sprites/Common/IconButtonLoad" class="thumbnail-button thumbnail-load" onClick="OnLoadPhotoClicked()" />
       </Panel>

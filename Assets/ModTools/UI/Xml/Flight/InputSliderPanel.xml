@@ -10,10 +10,10 @@
     <Image color="DarkPanel" rectAlignment="UpperCenter" height="25" />
     <Panel class="no-image" rectAlignment="LowerRight" width="25">
       <Image color="Border" width="1" rectAlignment="MiddleLeft" />
-      <Image class="slider-button" rectAlignment="LowerCenter" onClick="OnShowAddSliderPanelClicked();" tooltip="Add Input Slider">
+      <Image class="slider-button" rectAlignment="LowerCenter" onClick="OnShowAddSliderPanelClicked();" tooltip="{Flight.InputSlider.AddTooltip}">
         <Image sprite="Ui/Sprites/Flight/IconAddInputSlider" width="20" height="20" color="Primary" />
       </Image>
-      <Image id="remove-slider-button" class="slider-button" offsetXY="0 -25" rectAlignment="UpperCenter" onClick="OnRemoveSliderClicked();" tooltip="Remove Input Slider">
+      <Image id="remove-slider-button" class="slider-button" offsetXY="0 -25" rectAlignment="UpperCenter" onClick="OnRemoveSliderClicked();" tooltip="{Flight.InputSlider.RemoveTooltip}">
         <Image sprite="Ui/Sprites/Flight/IconRemoveInputSlider" width="20" height="20" color="Warning" />
       </Image>
     </Panel>
@@ -40,7 +40,7 @@
     </HorizontalLayout>
     <Panel id="add-slider-panel" class="no-image" animationDuration="0.1" showAnimation="Grow_Horizontal" rectAlignment="LowerRight" pivot="0 0" width="120" offsetXY="-1 0">
       <VerticalLayout id="add-slider-parent" class="flight-panel" childForceExpandHeight="false" contentSizeFitter="vertical" pivot="0 0" padding="5" spacing="5" minHeight="210">
-        <TextMeshPro text="ADD SLIDER" />
+        <TextMeshPro text="{Flight.InputSlider.AddSlider}" />
         <Button id="add-slider-template" class="btn" preferredHeight="20" active="false">
           <TextMeshPro internalId="label" text="TEMPLATE" />
         </Button>

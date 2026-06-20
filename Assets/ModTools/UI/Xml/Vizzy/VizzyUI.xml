@@ -46,45 +46,45 @@
       </Panel>
       <Panel id="menu" class="panel flyout" height="100%" width="225" active="false">
         <Panel class="flyout-header">
-          <TextMeshPro text="MENU" />
+          <TextMeshPro text="{Menu.MenuTitle.Header}" />
           <Image class="flyout-close-button audio-btn-back" onClick="OnClosePanelClicked();" />
         </Panel>
         <VerticalLayout class="no-image" childForceExpandHeight="false" padding="20" spacing="10" offsetXY="0 -30" rectAlignment="UpperCenter">
-          <Button class="btn btn-primary" rectAlignment="LowerLeft" onClick="OnButtonApplyClicked();" tooltip="Save the changes to the craft's flight program.">
-            <TextMeshPro text="SAVE TO CRAFT" />
+          <Button class="btn btn-primary" rectAlignment="LowerLeft" onClick="OnButtonApplyClicked();" tooltip="{Vizzy.UI.SaveToCraft.Tooltip}">
+            <TextMeshPro text="{Vizzy.UI.SaveToCraft.Label}" />
           </Button>
-          <Button class="btn" onClick="OnButtonCancelClicked();" tooltip="Discard the changes you've made to the craft's flight program.">
-            <TextMeshPro text="DISCARD AND EXIT" />
-          </Button>
-          <Image class="separator" />
-          <Button class="btn" onClick="OnButtonNewClicked();" tooltip="Start over with a new program.">
-            <TextMeshPro text="NEW PROGRAM" />
-          </Button>
-          <Button class="btn" onClick="OnButtonSaveClicked();" tooltip="Save this program to your hard drive.">
-            <TextMeshPro text="SAVE PROGRAM" />
-          </Button>
-          <Button class="btn" onClick="OnButtonLoadClicked();" tooltip="Load an existing program from your hard drive.">
-            <TextMeshPro text="LOAD PROGRAM" />
+          <Button class="btn" onClick="OnButtonCancelClicked();" tooltip="{Vizzy.UI.DiscardAndExit.Tooltip}">
+            <TextMeshPro text="{Vizzy.UI.DiscardAndExit.Label}" />
           </Button>
           <Image class="separator" />
-          <Button class="btn" onClick="OnButtonImportClicked();" tooltip="Import an existing program into this program.">
-            <TextMeshPro text="IMPORT PROGRAM" />
+          <Button class="btn" onClick="OnButtonNewClicked();" tooltip="{Vizzy.UI.NewProgram.Tooltip}">
+            <TextMeshPro text="{Vizzy.UI.NewProgram.Label}" />
+          </Button>
+          <Button class="btn" onClick="OnButtonSaveClicked();" tooltip="{Vizzy.UI.SaveProgram.Tooltip}">
+            <TextMeshPro text="{Vizzy.UI.SaveProgram.Label}" />
+          </Button>
+          <Button class="btn" onClick="OnButtonLoadClicked();" tooltip="{Vizzy.UI.LoadProgram.Tooltip}">
+            <TextMeshPro text="{Vizzy.UI.LoadProgram.Label}" />
+          </Button>
+          <Image class="separator" />
+          <Button class="btn" onClick="OnButtonImportClicked();" tooltip="{Vizzy.UI.ImportProgram.Tooltip}">
+            <TextMeshPro text="{Vizzy.UI.ImportProgram.Label}" />
           </Button>
           <Panel class="row">
-            <Button id="undo-button" class="btn" rectAlignment="MiddleLeft" onClick="OnButtonUndoClicked();" tooltip="Undoes the last step." width="46%">
-              <TextMeshPro text="UNDO" />
+            <Button id="undo-button" class="btn" rectAlignment="MiddleLeft" onClick="OnButtonUndoClicked();" tooltip="{Vizzy.UI.Undo.Tooltip}" width="46%">
+              <TextMeshPro text="{Vizzy.UI.Undo.Label}" />
             </Button>
-            <Button id="redo-button" class="btn" rectAlignment="MiddleRight" onClick="OnButtonRedoClicked();" tooltip="Redoes the last step." width="46%">
-              <TextMeshPro text="REDO" />
+            <Button id="redo-button" class="btn" rectAlignment="MiddleRight" onClick="OnButtonRedoClicked();" tooltip="{Vizzy.UI.Redo.Tooltip}" width="46%">
+              <TextMeshPro text="{Vizzy.UI.Redo.Label}" />
             </Button>
           </Panel>
           <Image class="separator" />
-          <Button class="btn btn-primary" onClick="OnButtonHelpClicked();" tooltip="Start here to learn more about how to use Vizzy.">
-            <TextMeshPro text="MORE INFO" />
+          <Button class="btn btn-primary" onClick="OnButtonHelpClicked();" tooltip="{Vizzy.UI.MoreInfo.Tooltip}">
+            <TextMeshPro text="{Vizzy.UI.MoreInfo.Label}" />
           </Button>
           <Image class="separator" />
           <Panel class="no-image" preferredHeight="25">
-            <TextMeshPro class="label column-left" text="Grid" overflowMode="Overflow" enableWordWrapping="false" />
+            <TextMeshPro class="label column-left" text="{Vizzy.UI.Grid.Label}" overflowMode="Overflow" enableWordWrapping="false" />
             <Panel class="column-right">
               <Toggle id="grid-toggle" toggleBackgroundImage="" anchorMax="1, .5" anchorMin="1, .5" pivot="1, .5" colors="Button|ButtonHover|ButtonPressed|ButtonDisabled" navigation="None" onValueChanged="OnGridEnabledChanged(this);" />
             </Panel>
@@ -96,14 +96,14 @@
       <Panel id="trashcan-dropzone" class="move-part-dropzone no-image" rectAlignment="UpperRight">
         <Image sprite="Ui/Sprites/Design/DropZone" setNativeSize="true" raycastTarget="true" />
         <Image sprite="Ui/Sprites/Design/IconButtonTrash" setNativeSize="true" />
-        <TextMeshPro text="Drag to Delete" offsetXY="0 -75" />
+        <TextMeshPro text="{Design.Trash.Text}" offsetXY="0 -75" />
       </Panel>
     </RectTransform>
     <Panel id="drag-panel"></Panel>
     <HorizontalLayout id="upgrade-panel" active="false" pivot="0.5 0" rectAlignment="LowerCenter" contentSizeFitter="both" spacing="25" color="Black" border="Primary" padding="10">
       <TextMeshPro internalId="label" anchorMin="0 0.5" />
       <Button internalId="button" class="btn btn-primary" minWidth="150" onClick="OnUpgradeClicked();">
-        <TextMeshPro internalId="buttonLabel" text="Upgrade" />
+        <TextMeshPro internalId="buttonLabel" text="{Vizzy.UI.Upgrade.Label}" />
       </Button>
     </HorizontalLayout>
     <Panel id="message-background" color="TransparentPanel" active="false" />

@@ -60,8 +60,8 @@
         {
             cameraAngle = saturate(dot(direction, posNorm));
             lightAngle = dot(lightDir.xyz, posNorm);
-            cameraScale = ExpScale(cameraAngle, _scaleDepth, _atmosSizeScale);
-            lightScale = ExpScale(lightAngle, _scaleDepth, _atmosSizeScale);
+            cameraScale = ExpScale(cameraAngle, _scaleDepthLn, _invAtmosSizeScale);
+            lightScale = ExpScale(lightAngle, _scaleDepthLn, _invAtmosSizeScale);
             
             float startDepth = exp((_innerRadius - _outerRadius) / _scaleDepth);
             precomputedCameraOffset = startDepth * cameraScale;
@@ -87,8 +87,8 @@
                 float3 currentNormalized = current / height;
                 cameraAngle = saturate(dot(direction, currentNormalized));
                 lightAngle = dot(lightDir.xyz, currentNormalized);
-                cameraScale = ExpScale(cameraAngle, _scaleDepth, _atmosSizeScale);
-                lightScale = ExpScale(lightAngle, _scaleDepth, _atmosSizeScale);
+                cameraScale = ExpScale(cameraAngle, _scaleDepthLn, _invAtmosSizeScale);
+                lightScale = ExpScale(lightAngle, _scaleDepthLn, _invAtmosSizeScale);
                 scatter =  exp(-1.0 / _scaleDepth) + depth * (lightScale - cameraScale);
             }
             else
@@ -247,8 +247,11 @@
         #if UNITY_PASS_FORWARDADD
             return _LightColor0;
         #else
-            float intensityAtGround = smoothstep(-0.1, 0.0, positionAttenuation);
-            float duskLerp = saturate(positionAttenuation * 2.5);
+            // positionAttenuation is dot(surfaceNormal, sunDir). The intensity smoothstep extends
+            // into the night side so the dusk color survives the fade to black; the duskLerp ramp
+            // is narrow enough that the warm band doesn't bleed deep into the daylight side.
+            float intensityAtGround = smoothstep(-0.25, 0.0, positionAttenuation);
+            float duskLerp = saturate(positionAttenuation * 4.0);
             #if SRSTANDARD_TERRAIN || SRSTANDARD_WATER || SRSTANDARD_OBJECT || SRSTANDARD_SCALEDSPACE
                 return lerp(_duskColor, _noonColor, duskLerp) * intensityAtGround;
             #else
@@ -301,6 +304,12 @@
         light.dir = GetLightDirection(INPUT.worldPosition.xyz);
         light.color = INPUT.lightColor;
 
+        #if SRSTANDARD_SCALEDSPACE && NORMALMAP_WITH_VERTEX_DISPLACEMENT
+            // Vertex stage uses the displaced radial position, so non-spherical bodies go pitch
+            // black past the smooth-sphere half-plane. Recompute from the bumped normal.
+            light.color = GetLightColor(saturate(dot(INPUT.worldNormal, light.dir)));
+        #endif
+
         half lightAttenuation = 0;
         half emissionStrength = 0;
         
@@ -348,8 +357,24 @@
             color.rgb += emission;
         #endif
 
-        #if ATMOSPHERE  
-            float3 atmos = INPUT.atmosColor.rgb * atmosphereStrength;
+        #if ATMOSPHERE
+            // Tint the in-scattered atmosphere with the noon/dusk blend, faded into deep night via
+            // nightFade so the band has a gradient and lets the ambient-lit terrain show through.
+            // ScaledSpace's _lightDir is in object space so we read INPUT.normal there to keep
+            // frames matched; displaced bodies switch to the bumped normal to follow the surface.
+            #if SRSTANDARD_SCALEDSPACE
+                #if NORMALMAP_WITH_VERTEX_DISPLACEMENT
+                    float3 fragRelDir = normalize(INPUT.worldNormal);
+                #else
+                    float3 fragRelDir = normalize(INPUT.normal);
+                #endif
+            #else
+                float3 fragRelDir = normalize(INPUT.worldPosition.xyz - _planetCenter);
+            #endif
+            float fragPosAtten = dot(fragRelDir, GetLightDirection(INPUT.worldPosition.xyz));
+            half3 atmosTint = lerp(_duskColor, _noonColor, saturate(fragPosAtten * 4.0));
+            float nightFade = smoothstep(-0.4 * _atmosSizeScale, 0.0, fragPosAtten);
+            float3 atmos = INPUT.atmosColor.rgb * atmosphereStrength * atmosTint * nightFade;
             // Add in atmosphere, reducing the "saturation" of the base color the more powerful the atmosphere is.
             color.xyz = atmos + color.xyz * (1 - saturate(length(atmos)));
         #endif

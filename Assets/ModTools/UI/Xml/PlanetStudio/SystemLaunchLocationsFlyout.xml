@@ -21,7 +21,7 @@
   </Panel>
   <Panel color="DarkPanel" offsetXY="-1 0" height="40" rectAlignment="LowerCenter">
     <Button class="btn" onClick="OnResetButtonClicked();" width="50%">
-      <TextMeshPro text="RESET" />
+      <TextMeshPro text="{PlanetStudio.LaunchLocations.Reset}" />
     </Button>
   </Panel>
 </XmlLayout>

@@ -12,14 +12,14 @@
   <VerticalScrollView class="no-image">
     <VerticalLayout class="no-image" childForceExpandHeight="false" pivot="0 1" contentSizeFitter="vertical" rectAlignment="UpperCenter" childAlignment="UpperCenter" padding="20 20 20 50" spacing="10">
       <Panel class="spinner">
-        <TextMeshPro class="label tooltip" text="Target" tooltip="Indicates which area of a part to paint" />
+        <TextMeshPro class="label tooltip" text="{Design.Paint.Target.Text}" tooltip="{Design.Paint.Target.Tooltip}" />
         <Spinner id="target-spinner" value="Primary" values="All;Primary;Trim 1;Trim 2;Trim 3;Trim 4" onValueChanged="OnTargetSpinnerChanged(selectedvalue);">
           <TextMeshPro />
         </Spinner>
       </Panel>
       <Image preferredHeight="1" width="100%" color="Border" />
       <Panel class="spinner">
-        <TextMeshPro class="label tooltip" text="Theme" tooltip="The currently selected theme" />
+        <TextMeshPro class="label tooltip" text="{Design.Paint.Theme.Text}" tooltip="{Design.Paint.Theme.Tooltip}" />
         <Spinner id="theme-spinner" value="Custom" onValueChanged="OnThemeSpinnerChanged(selectedvalue);">
           <TextMeshPro />
         </Spinner>
@@ -30,13 +30,13 @@
           <Image internalId="gloss-overlay" sprite="Ui/Sprites/Design/IconPaintPreviewGlossOverlay" offsetMax="-1 -1" offsetMin="1 1" opacity="0" />
         </Image>
       </GridLayout>
-      <Button id="customize-button" class="btn btn-primary" onClick="OnCustomizedButtonClicked();" tooltip="Copies this theme into the Custom theme so that it can be customized.">
-        <TextMeshPro text="CUSTOMIZE" />
+      <Button id="customize-button" class="btn btn-primary" onClick="OnCustomizedButtonClicked();" tooltip="{Design.Paint.Customize.Tooltip}">
+        <TextMeshPro text="{Design.Paint.Customize.Text}" />
       </Button>
       <VerticalLayout id="edit-color-panel" class="no-image" spacing="15" childForceExpandHeight="false" childAlignment="UpperCenter">
         <Panel class="row">
           <TextMeshProInputField id="color-name-input" text="" width="100%" height="100%" rectAlignment="MiddleRight">
-            <TMP_Placeholder id="color-name-input-placeholder" text="Material Name..." alignment="Left" />
+            <TMP_Placeholder id="color-name-input-placeholder" text="{Design.Paint.MaterialName.Placeholder}" alignment="Left" />
             <TMP_Text text="" alignment="Left" />
           </TextMeshProInputField>
         </Panel>
@@ -51,43 +51,43 @@
           <Image class="color-picker-selection" />
         </Panel>
         <Panel class="no-image" preferredHeight="20" id="select-background-color-panel">
-          <Button class="btn" onClick="OnColorPickerClicked();" tooltip="Pick a color using a color wheel.">
-            <TextMeshPro text="Color Picker" />
+          <Button class="btn" onClick="OnColorPickerClicked();" tooltip="{Design.Paint.ColorPicker.Tooltip}">
+            <TextMeshPro text="{Design.Paint.ColorPicker.Text}" />
           </Button>
         </Panel>
         <Panel class="spinner">
-          <TextMeshPro class="label tooltip" text="Style" tooltip="Style preset that changes how smooth and metallic the color should look" />
+          <TextMeshPro class="label tooltip" text="{Design.Paint.Style.Text}" tooltip="{Design.Paint.Style.Tooltip}" />
           <Spinner id="style-spinner" value="Flat">
             <TextMeshPro />
           </Spinner>
         </Panel>
         <Panel class="slider">
-          <TextMeshPro class="label tooltip" text="Smoothness" tooltip="Indicates how smooth the current color should look" />
+          <TextMeshPro class="label tooltip" text="{Design.Paint.Smoothness.Text}" tooltip="{Design.Paint.Smoothness.Tooltip}" />
           <TextMeshPro id="smoothness-slider-text" class="value" text="None" />
           <Slider id="smoothness-slider" />
         </Panel>
         <Panel class="slider">
-          <TextMeshPro class="label tooltip" text="Metallic" tooltip="Indicates how metallic the current color should look" />
+          <TextMeshPro class="label tooltip" text="{Design.Paint.Metallic.Text}" tooltip="{Design.Paint.Metallic.Tooltip}" />
           <TextMeshPro id="metallic-slider-text" class="value" text="None" />
           <Slider id="metallic-slider" />
         </Panel>
         <Panel class="slider">
-          <TextMeshPro class="label tooltip" text="Emission" tooltip="The emission strength for the current color" />
+          <TextMeshPro class="label tooltip" text="{Design.Paint.Emission.Text}" tooltip="{Design.Paint.Emission.Tooltip}" />
           <TextMeshPro id="emission-slider-text" class="value" text="None" />
           <Slider id="emission-slider" />
         </Panel>
         <Panel class="slider">
-          <TextMeshPro class="label tooltip" text="Detail" tooltip="The strength of the detail texturing for the current color" />
+          <TextMeshPro class="label tooltip" text="{Design.Paint.Detail.Text}" tooltip="{Design.Paint.Detail.Tooltip}" />
           <TextMeshPro id="detail-slider-text" class="value" text="None" />
           <Slider id="detail-slider" />
         </Panel>
         <Panel class="slider">
-          <TextMeshPro class="label tooltip" text="Transparency" tooltip="The transparency strength for the current color. This can cause some parts to render in strange and mysterious ways, so use with caution." />
+          <TextMeshPro class="label tooltip" text="{Design.Paint.Transparency.Text}" tooltip="{Design.Paint.Transparency.Tooltip}" />
           <TextMeshPro id="transparency-slider-text" class="value" text="None" />
           <Slider id="transparency-slider" />
         </Panel>
-        <Button id="unlock-transparency" class="btn btn-primary" onClick="OnUnlockTransparencyButtonClicked();" tooltip="Enable the transparency slider.">
-          <TextMeshPro text="ENABLE TRANSPARENCY" />
+        <Button id="unlock-transparency" class="btn btn-primary" onClick="OnUnlockTransparencyButtonClicked();" tooltip="{Design.Paint.EnableTransparency.Tooltip}">
+          <TextMeshPro text="{Design.Paint.EnableTransparency.Text}" />
         </Button>
       </VerticalLayout>
     </VerticalLayout>

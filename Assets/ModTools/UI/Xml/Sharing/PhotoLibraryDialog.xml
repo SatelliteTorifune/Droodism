@@ -18,11 +18,11 @@
           <Panel class="no-image" height="40" rectAlignment="UpperCenter">
             <Panel id="back-button-panel" class="no-image">
               <Button class="icon-button" icon="Ui/Sprites/Menu/IconButtonBack" rectAlignment="MiddleLeft" onClick="OnBackButtonClicked();" />
-              <TextMeshPro class="label" text="Albums" rectAlignment="MiddleLeft" alignment="Left" offsetXY="60 0" />
+              <TextMeshPro class="label" text="{PhotoLibrary.Albums.Title}" rectAlignment="MiddleLeft" alignment="Left" offsetXY="60 0" />
             </Panel>
-            <TextMeshPro id="header-text" class="text-lg" text="Photos" alignment="Center" color="White" />
-            <Button id="details-toggle-button" class="icon-button" rectAlignment="MiddleRight" offsetXY="-50 0" tooltip="Toggle details panel" icon="Ui/Sprites/Common/IconButtonDetails" onClick="OnToggleDetailsPanel(this);" />
-            <Button id="context-menu-toggle-button" class="icon-button" rectAlignment="MiddleRight" tooltip="Open context menu" icon="Ui/Sprites/Common/IconButtonMenu" onClick="OnContextMenuButtonClicked();" />
+            <TextMeshPro id="header-text" class="text-lg" text="{PhotoLibrary.Photos.Title}" alignment="Center" color="White" />
+            <Button id="details-toggle-button" class="icon-button" rectAlignment="MiddleRight" offsetXY="-50 0" tooltip="{PhotoLibrary.ToggleDetails.Tooltip}" icon="Ui/Sprites/Common/IconButtonDetails" onClick="OnToggleDetailsPanel(this);" />
+            <Button id="context-menu-toggle-button" class="icon-button" rectAlignment="MiddleRight" tooltip="{PhotoLibrary.ContextMenu.Tooltip}" icon="Ui/Sprites/Common/IconButtonMenu" onClick="OnContextMenuButtonClicked();" />
           </Panel>
           <Panel id="items-panel" class="items-panel no-image" offsetMin="0 50">
             <Panel offsetMin="0 0" color="DarkPanel" padding="10">
@@ -44,40 +44,40 @@
             <Panel class="no-image" rectAlignment="MiddleRight" width="300" padding="15 0 0 0">
               <VerticalLayout id="photo-details" class="no-image" active="false" childAlignment="UpperCenter" rectAlignment="UpperCenter" pivot="0 1" spacing="10">
                 <Panel class="row">
-                  <TextMeshPro class="header" text="Photo Details" />
+                  <TextMeshPro class="header" text="{PhotoLibrary.PhotoDetails.Header}" />
                 </Panel>
                 <Panel class="row">
-                  <TextMeshPro class="label" width="50%" rectAlignment="MiddleLeft" alignment="Center" text="Location" />
-                  <TextMeshPro id="details-photo-location" class="value" width="50%" rectAlignment="MiddleRight" alignment="Center" text="Droo" />
+                  <TextMeshPro class="label" width="50%" rectAlignment="MiddleLeft" alignment="Center" text="{PhotoLibrary.Details.Location}" />
+                  <TextMeshPro id="details-photo-location" class="value" width="50%" rectAlignment="MiddleRight" alignment="Center" text="" />
                 </Panel>
                 <Panel class="row">
-                  <TextMeshPro class="label" width="50%" rectAlignment="MiddleLeft" alignment="Center" text="Date" />
-                  <TextMeshPro id="details-photo-date" raycastTarget="true" width="50%" rectAlignment="MiddleRight" tooltipPosition="Above" class="value" alignment="Center" text="3 months ago" tooltip="9/3/2017" />
+                  <TextMeshPro class="label" width="50%" rectAlignment="MiddleLeft" alignment="Center" text="{PhotoLibrary.Details.Date}" />
+                  <TextMeshPro id="details-photo-date" raycastTarget="true" width="50%" rectAlignment="MiddleRight" tooltipPosition="Above" class="value" alignment="Center" text="" tooltip="" />
                 </Panel>
                 <Panel class="row">
-                  <TextMeshPro class="label" width="50%" rectAlignment="MiddleLeft" alignment="Center" text="Size" />
-                  <TextMeshPro id="details-photo-size" raycastTarget="true" width="50%" rectAlignment="MiddleRight" tooltipPosition="Above" class="value" alignment="Center" text="10 KB" />
+                  <TextMeshPro class="label" width="50%" rectAlignment="MiddleLeft" alignment="Center" text="{PhotoLibrary.Details.Size}" />
+                  <TextMeshPro id="details-photo-size" raycastTarget="true" width="50%" rectAlignment="MiddleRight" tooltipPosition="Above" class="value" alignment="Center" text="" />
                 </Panel>
                 <Panel class="row">
-                  <TextMeshPro class="label" width="50%" rectAlignment="MiddleLeft" alignment="Center" text="Dimensions" />
-                  <TextMeshPro id="details-photo-dimensions" raycastTarget="true" width="50%" rectAlignment="MiddleRight" tooltipPosition="Above" class="value" alignment="Center" text="1920x1080" />
+                  <TextMeshPro class="label" width="50%" rectAlignment="MiddleLeft" alignment="Center" text="{PhotoLibrary.Details.Dimensions}" />
+                  <TextMeshPro id="details-photo-dimensions" raycastTarget="true" width="50%" rectAlignment="MiddleRight" tooltipPosition="Above" class="value" alignment="Center" text="" />
                 </Panel>
                 <TextMeshProInputField id="details-photo-description" flexibleHeight="250" padding="10" lineType="MultiLineNewline" text="">
-                  <TMP_Placeholder text="Description" alignment="TopLeft" />
+                  <TMP_Placeholder text="{Common.Details.Description}" alignment="TopLeft" />
                   <TMP_Text text="" alignment="TopLeft" />
                 </TextMeshProInputField>
               </VerticalLayout>
               <VerticalLayout id="album-details" class="no-image" active="false" contentSizeFitter="vertical" childAlignment="UpperCenter" rectAlignment="UpperCenter" pivot="0 1" spacing="10">
                 <Panel class="row">
-                  <TextMeshPro class="header" text="Album Details" />
+                  <TextMeshPro class="header" text="{PhotoLibrary.AlbumDetails.Header}" />
                 </Panel>
                 <Panel class="row">
-                  <TextMeshPro class="label" alignment="Left" text="Photos" />
-                  <TextMeshPro id="details-album-count" class="value" alignment="Right" text="12" />
+                  <TextMeshPro class="label" alignment="Left" text="{PhotoLibrary.AlbumDetails.PhotoCount}" />
+                  <TextMeshPro id="details-album-count" class="value" alignment="Right" text="" />
                 </Panel>
                 <Panel class="row">
-                  <TextMeshPro class="label" alignment="Left" text="Size" />
-                  <TextMeshPro id="details-album-size" class="value" alignment="Right" text="432 kB" />
+                  <TextMeshPro class="label" alignment="Left" text="{PhotoLibrary.Details.Size}" />
+                  <TextMeshPro id="details-album-size" class="value" alignment="Right" text="" />
                 </Panel>
               </VerticalLayout>
             </Panel>
@@ -87,46 +87,46 @@
           </Panel>
           <VerticalLayout id="item-context-menu" active="false" showAnimation="Grow_Vertical" hideAnimation="Shrink_Vertical" contentSizeFitter="vertical" animationDuration="0.1" width="220" childForceExpandHeight="false" spacing="10" pivot="1 1" color="Panel" border="Border" rectAlignment="UpperRight" padding="10" offsetXY="0 -50">
             <Button class="btn context-menu-button photo-only requires-selection" onClick="OnSetAlbumCoverClicked();">
-              <TextMeshPro text="Set as Album Cover" />
+              <TextMeshPro text="{PhotoLibrary.ContextMenu.SetAlbumCover}" />
             </Button>
             <Button class="btn context-menu-button photo-only" onClick="OnMovePhotosClicked();">
-              <TextMeshPro text="Move Photo" />
+              <TextMeshPro text="{PhotoLibrary.ContextMenu.MovePhoto}" />
             </Button>
             <Button class="btn context-menu-button photo-only" onClick="OnDeletePhotosClicked();">
-              <TextMeshPro text="Delete Photo" />
+              <TextMeshPro text="{PhotoLibrary.ContextMenu.DeletePhoto}" />
             </Button>
             <Button class="btn context-menu-button album-only" onClick="OnCreateAlbumClicked();">
-              <TextMeshPro text="Create Album" />
+              <TextMeshPro text="{PhotoLibrary.ContextMenu.CreateAlbum}" />
             </Button>
             <Button class="btn context-menu-button album-only requires-selection" onClick="OnRenameAlbumClicked();">
-              <TextMeshPro text="Rename Album" />
+              <TextMeshPro text="{PhotoLibrary.ContextMenu.RenameAlbum}" />
             </Button>
             <Button class="btn context-menu-button album-only requires-selection" onClick="OnDeleteAlbumClicked();">
-              <TextMeshPro text="Delete Album" />
+              <TextMeshPro text="{PhotoLibrary.ContextMenu.DeleteAlbum}" />
             </Button>
           </VerticalLayout>
           <Panel id="bottom-panel" class="no-image" height="40" rectAlignment="LowerCenter">
             <Button class="btn" rectAlignment="MiddleLeft" width="150" onClick="OnCloseButtonClicked();">
-              <TextMeshPro text="CLOSE" />
+              <TextMeshPro text="{Dialog.Close}" />
             </Button>
             <Panel id="quick-details" rectAlignment="MiddleCenter" active="false" width="375">
               <TextMeshPro internalId="text" color="LabelText" offsetXY="0 0" />
             </Panel>
             <HorizontalLayout class="no-image" spacing="10" childForceExpandWidth="false" childAlignment="MiddleRight" pivot="1 0" contentSizeFitter="horizontal">
               <Button id="select-photo-button" active="false" class="btn btn-primary" preferredWidth="150" onClick="OnSelectPhotoClicked();">
-                <TextMeshPro text="SELECT" />
+                <TextMeshPro text="{Design.SelectPart.Text}" />
               </Button>
-              <Button id="take-photo-button" class="icon-button btn-primary" preferredWidth="40" height="40" icon="Ui/Sprites/Common/IconButtonCamera" tooltip="Add Screenshot" onClick="OnAddScreenshotClicked();" />
-              <Button id="browse-photo-button" class="icon-button btn-primary" preferredWidth="40" height="40" icon="Ui/Sprites/Common/IconAdd" tooltip="Browse" onClick="OnBrowseClicked();" />
+              <Button id="take-photo-button" class="icon-button btn-primary" preferredWidth="40" height="40" icon="Ui/Sprites/Common/IconButtonCamera" tooltip="{PhotoLibrary.AddScreenshot.Tooltip}" onClick="OnAddScreenshotClicked();" />
+              <Button id="browse-photo-button" class="icon-button btn-primary" preferredWidth="40" height="40" icon="Ui/Sprites/Common/IconAdd" tooltip="{PhotoLibrary.Browse.Tooltip}" onClick="OnBrowseClicked();" />
             </HorizontalLayout>
           </Panel>
           <Panel id="bulk-action-panel" class="no-image" active="false" height="40" rectAlignment="LowerCenter">
             <Button class="btn" rectAlignment="MiddleLeft" width="150" onClick="OnCancelBulkAction();">
-              <TextMeshPro text="CANCEL" />
+              <TextMeshPro text="{Dialog.Cancel}" />
             </Button>
-            <TextMeshPro id="bulk-action-text" text="Select photos to delete" />
+            <TextMeshPro id="bulk-action-text" text="{PhotoLibrary.BulkDelete.StatusText}" />
             <Button class="btn btn-danger" width="150" rectAlignment="MiddleRight" onClick="OnExecuteBulkAction();">
-              <TextMeshPro id="bulk-action-button-text" text="DELETE" />
+              <TextMeshPro id="bulk-action-button-text" text="{Dialog.Delete}" />
             </Button>
           </Panel>
         </RectTransform>

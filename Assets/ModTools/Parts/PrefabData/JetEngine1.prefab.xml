@@ -52,6 +52,26 @@
           <Component type="ModApi.Craft.Parts.PartMeshScript" />
           <Component type="ModApi.Craft.Parts.DepthMaskScript" />
         </GameObject>
+        <GameObject name="ExhaustSystem">
+          <Component type="Assets.Scripts.Craft.Parts.Modifiers.Propulsion.ExhaustSystemScript" />
+          <Component type="Assets.Scripts.Design.HideScript" />
+          <GameObject name="ExhaustMesh">
+            <Component type="UnityEngine.MeshFilter" />
+            <Component type="UnityEngine.MeshRenderer" />
+            <Component type="ModApi.Craft.Parts.PartMeshScript" />
+          </GameObject>
+          <GameObject name="NozzleEmission">
+            <Component type="UnityEngine.MeshFilter" />
+            <Component type="UnityEngine.MeshRenderer" />
+            <Component type="ModApi.Craft.Parts.PartMeshScript" />
+          </GameObject>
+          <GameObject name="ExhaustCollider">
+            <Component type="UnityEngine.CapsuleCollider" />
+            <Component type="ModApi.Craft.Parts.PartColliderScript" />
+            <Component type="Assets.Scripts.Craft.Parts.Modifiers.Propulsion.ExhaustDamageScript" />
+            <Component type="UnityEngine.Rigidbody" />
+          </GameObject>
+        </GameObject>
       </GameObject>
       <GameObject name="CoreCollider">
         <Component type="UnityEngine.BoxCollider" />

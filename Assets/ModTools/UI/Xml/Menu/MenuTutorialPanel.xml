@@ -12,13 +12,13 @@
     <Panel class="safe-area no-image">
       <Panel pivot="0.5 0.5" id="tutorial-panel" active="false" showAnimation="Grow_Horizontal" animationDuration="0.25" showAnimationDelay="1" class="tutorial-offset translucent-panel-dark" color="TutorialPanel" border="Button" width="700" height="128" rectAlignment="LowerCenter" raycastTarget="true">
         <Image sprite="Ui/Sprites/Menu/TutorialProfile" ignoreLayout="true" width="128" height="128" rectAlignment="MiddleLeft" />
-        <Button id="close-button" class="icon-button audio-btn-back" ignoreLayout="true" width="24" height="24" icon="Ui/Sprites/Common/IconCloseButton" rectAlignment="UpperRight" onClick="OnCloseButtonClicked();" tooltip="Close tutorial" tooltipPosition="Above" />
+        <Button id="close-button" class="icon-button audio-btn-back" ignoreLayout="true" width="24" height="24" icon="Ui/Sprites/Common/IconCloseButton" rectAlignment="UpperRight" onClick="OnCloseButtonClicked();" tooltip="{Tutorial.CloseButton.Tooltip}" tooltipPosition="Above" />
         <VerticalLayout offsetMin="140 0" offsetMax="-30 0">
           <TextMeshPro id="tutorial-step-text" color="White" margin="0 0 0 0" />
           <TextMeshPro color="Primary" id="tutorial-instruction-text" margin="0 0 0 0" active="false" />
           <Panel id="tutorial-button-panel" preferredHeight="40">
             <Button class="btn btn-primary" width="150" rectAlignment="MiddleCenter" onClick="OnButtonClicked();">
-              <TextMeshPro name="Tutorial.OkayButton" text="OKAY" />
+              <TextMeshPro name="Tutorial.OkayButton" text="{Dialog.Okay}" />
             </Button>
           </Panel>
         </VerticalLayout>

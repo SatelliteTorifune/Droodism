@@ -3,7 +3,7 @@
   <Include path="Ui/Xml/Styles.xml" />
   <Defaults>
     <TextMeshPro class="inspector-panel:@TextMeshPro" fontSize="14" alignment="Center" />
-    <TextMeshPro class="inspector-title" font="Ui/Fonts/Pirulen/pirulen rg SDF" color="LabelText" fontSize="12" preferredHeight="30" enableAutoSizing="true" fontSizeMax="14" fontSizeMin="8" alignment="Left" />
+    <TextMeshPro class="inspector-title" font="{Ui.HeaderFontPath}" fontStyle="{Ui.HeaderFontStyle}" color="LabelText" fontSize="12" preferredHeight="30" enableAutoSizing="true" fontSizeMax="14" fontSizeMin="8" alignment="Left" />
     <Panel class="inspector-panel-row" preferredHeight="25" />
     <TextMeshPro class="label" alignment="Left" rectAlignment="MiddleLeft" color="#a3aabf" />
     <TextMeshPro class="value" alignment="Right" />
@@ -53,13 +53,13 @@
         <TextMeshPro internalId="label" offsetXY="20 0" class="label" fontStyle="Bold,UpperCase" color="LabelText" fontSize="16" alignment="Left" />
         <TextMeshPro internalId="subtitle" offsetXY="0 0" class="label" color="LabelText" fontSize="16" alignment="Right" active="false" />
         <RectTransform internalId="move-panel" rectAlignment="MiddleRight" width="60" pivot="1 0" active="false">
-          <ContentButton internalId="move-up-button" class="btn" width="20" height="20" rectAlignment="MiddleLeft" tooltip="Move item up.">
+          <ContentButton internalId="move-up-button" class="btn" width="20" height="20" rectAlignment="MiddleLeft" tooltip="{Inspector.MoveItemUpTooltip}">
             <Image sprite="Ui/Sprites/Common/IconArrowUp" width="13" height="18" />
           </ContentButton>
-          <ContentButton internalId="move-down-button" class="btn" width="20" height="20" rectAlignment="MiddleCenter" tooltip="Move item down.">
+          <ContentButton internalId="move-down-button" class="btn" width="20" height="20" rectAlignment="MiddleCenter" tooltip="{Inspector.MoveItemDownTooltip}">
             <Image sprite="Ui/Sprites/Common/IconArrowUp" width="13" height="18" rotation="0 0 180" />
           </ContentButton>
-          <ContentButton internalId="delete-button" class="btn" width="20" height="20" rectAlignment="MiddleRight" tooltip="Delete item.">
+          <ContentButton internalId="delete-button" class="btn" width="20" height="20" rectAlignment="MiddleRight" tooltip="{Inspector.DeleteItemTooltip}">
             <Image sprite="Ui/Sprites/Design/IconButtonDeleteItem" width="16" height="16" />
           </ContentButton>
         </RectTransform>

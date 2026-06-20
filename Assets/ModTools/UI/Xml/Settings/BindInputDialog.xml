@@ -14,7 +14,7 @@
       <TextMeshPro id="timer-text" class="value" fontSize="20" rectAlignment="LowerCenter" alignment="Center" text="5" minHeight="10" />
       <Panel preferredHeight="50" id="button-panel">
         <Button id="cancel-button" class="btn" rectAlignment="LowerLeft" width="150" onClick="OnCancelClicked();">
-          <TextMeshPro id="cancel-button-text" text="Cancel" />
+          <TextMeshPro id="cancel-button-text" text="{Dialog.Cancel}" />
         </Button>
         <Button id="center-button" class="btn btn-primary" rectAlignment="LowerCenter" width="150" onClick="OnCenterButtonClicked();">
           <TextMeshPro id="center-button-text" text="Add" />

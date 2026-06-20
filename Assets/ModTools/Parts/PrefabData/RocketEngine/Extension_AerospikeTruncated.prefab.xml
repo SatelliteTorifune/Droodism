@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<GameObject name="Extension_AerospikeTruncated" path="Craft/Parts/Prefabs/RocketEngine/Extension_AerospikeTruncated.prefab">
+  <Component type="UnityEngine.MeshFilter" />
+  <Component type="UnityEngine.MeshRenderer" />
+  <Component type="Assets.Scripts.Craft.Parts.Modifiers.Fuselage.MeshDefinitionScript" />
+  <Component type="Assets.Scripts.Craft.Parts.Modifiers.Propulsion.EngineComponentScript" />
+  <Component type="ModApi.Craft.Parts.PartMeshScript" />
+</GameObject>

@@ -63,6 +63,9 @@ Shader "Jundroo/SkyFromSpace"
             float _innerRadius;
             float _innerRadius2;
             float _atmosSizeScale;
+            float _invAtmosSizeScale;
+            float _scaleDepthLn;
+            float _miePhaseConst;
             float3 _invWaveLength;
             float _km4PI;
             float _kmESun;
@@ -77,6 +80,8 @@ Shader "Jundroo/SkyFromSpace"
             float _quadToScaledTransition;
             bool _legacySkyShader;
             float _maxColorValue;
+            float3 _duskColor;
+            float _skyTintEnabled;
 
             struct v2f
             {
@@ -85,6 +90,10 @@ Shader "Jundroo/SkyFromSpace"
                 float4 mie : COLOR1;
                 float3 cameraToVertex : TEXCOORD0;
                 float cameraAtmos : TEXCOORD1;
+                // Local outward normal at the pixel (atmosphere mesh is a unit sphere). Used to
+                // pick the noon/dusk lerp per-pixel so the day/night plane viewpoint doesn't
+                // wash the entire visible limb with dusk.
+                float3 pixelUp : TEXCOORD2;
                 float transparency : TEXCOORD3;
             };
 
@@ -131,7 +140,7 @@ Shader "Jundroo/SkyFromSpace"
                 float3 start = _adjustedCameraPosition.xyz + cameraToVertexDir * nearDist;
                 float startAngle = dot(cameraToVertexDir, start) / _outerRadius;
                 float depth = exp(_scaleOverScaleDepth * (_innerRadius - _cameraHeight));
-                float startOffset = depth * ExpScale(startAngle, _scaleDepth, _atmosSizeScale);
+                float startOffset = depth * ExpScale(startAngle, _scaleDepthLn, _invAtmosSizeScale);
 
                 float sampleLength = farDist / _samples;
                 float scaledLength = sampleLength * _scale;
@@ -148,7 +157,7 @@ Shader "Jundroo/SkyFromSpace"
                     float depth = exp(_scaleOverScaleDepth * (_innerRadius - height));
                     float lightAngle = dot(_lightDir.xyz, samplePoint) / height;
                     float cameraAngle = clamp(dot(cameraToVertexDir, samplePoint) / height, 0, 1);
-                    float scatter = (startOffset + depth * (ExpScale(lightAngle, _scaleDepth, _atmosSizeScale) - ExpScale(cameraAngle, _scaleDepth, _atmosSizeScale)));
+                    float scatter = (startOffset + depth * (ExpScale(lightAngle, _scaleDepthLn, _invAtmosSizeScale) - ExpScale(cameraAngle, _scaleDepthLn, _invAtmosSizeScale)));
 
                     attenuate = exp(-scatter * (_invWaveLength.xyz * _kr4PI + _km4PI));
                     
@@ -169,6 +178,7 @@ Shader "Jundroo/SkyFromSpace"
                 UNITY_INITIALIZE_OUTPUT(v2f, OUT);
                 OUT.position = UnityObjectToClipPos(vertex);
                 OUT.cameraToVertex = _adjustedCameraPosition.xyz - vertex.xyz;
+                OUT.pixelUp = vertex.xyz;
                 OUT.rayleigh = frontColor * (_invWaveLength.xyz * _krESun);
                 OUT.mie = float4(frontColor * _kmESun, 1);
 
@@ -201,7 +211,8 @@ Shader "Jundroo/SkyFromSpace"
                 float lightAngle = dot(_lightDir.xyz, normalize(INPUT.cameraToVertex.xyz));
                 float sunSize = lightAngle * lightAngle;
 
-                float miePhaseAtten = 1.5 * ((1.0 - _g2) / (2.0 + _g2)) * (1.0 + sunSize) / pow(1.0 + _g2 - 2.0*_g*lightAngle, 1.5);
+                float miePhaseDenom = 1.0 + _g2 - 2.0*_g*lightAngle;
+                float miePhaseAtten = _miePhaseConst * (1.0 + sunSize) / (miePhaseDenom * sqrt(miePhaseDenom));
                 float rayleighPhaseAtten = 0.75 * (1.0 + sunSize);
                 float4 fragColor;
 
@@ -230,6 +241,20 @@ Shader "Jundroo/SkyFromSpace"
                 #if !QUAD_SKY
                     fragColor *= 1 - _quadToScaledTransition;
                 #endif
+
+                float3 viewDir = normalize(-INPUT.cameraToVertex.xyz);
+                float3 planetUp = normalize(_adjustedCameraPosition.xyz);
+                float3 pixelUp = normalize(INPUT.pixelUp);
+                float camSun = dot(planetUp, _lightDir.xyz);
+                float sunHorizon = -sqrt(saturate(1.0 - _innerRadius2 / _cameraHeight2));
+                float cameraDusk = 1.0 - smoothstep(sunHorizon, sunHorizon + 0.1, camSun);
+                float pixelDusk = 1.0 - smoothstep(-0.1, 0.2, dot(pixelUp, _lightDir.xyz));
+                float duskAmount = lerp(cameraDusk, pixelDusk, (1.0 - abs(camSun)) * INPUT.cameraAtmos);
+                float horizonness = saturate(1.0 - dot(planetUp, viewDir));
+                horizonness = horizonness * horizonness * (3.0 - 2.0 * horizonness);
+                // Rec. 709 luma: tint the scattering's brightness so the recolor shifts hue, not density.
+                half3 duskTint = dot(fragColor.rgb, half3(0.2126, 0.7152, 0.0722)) * _duskColor.rgb;
+                fragColor.rgb = lerp(fragColor.rgb, duskTint, horizonness * _skyTintEnabled * duskAmount);
 
                 // Clamp HDR values so bloom doesn't go crazy.
                 return clamp(fragColor, 0, _maxColorValue);

@@ -17,7 +17,7 @@
     <Image class="card-background" border="Primary" />
     <Image class="card-primary-color" active="false" color="Primary" />
     <TextMeshPro class="card-primary-color" color="Primary" />
-    <TextMeshPro class="more-info-text" text="MORE\nINFO" />
+    <TextMeshPro class="more-info-text" text="{Purchase.MoreInfo}" />
     <Image class="selected:card-primary-color" active="true" />
     <Image class="selected:card-glow" active="true" />
     <RectTransform class="details-content" active="false" />
@@ -25,7 +25,7 @@
     <Image class="purchased:card-background" border="Green" />
     <Image class="purchased:card-primary-color" color="Green" />
     <TextMeshPro class="purchased:card-primary-color" color="Green" />
-    <TextMeshPro class="purchased:more-info-text" text="OWNED" />
+    <TextMeshPro class="purchased:more-info-text" text="{Purchase.Owned}" />
   </Defaults>
   <Image id="panel" showAnimation="FadeIn" hideAnimation="FadeOut" animationDuration="0.1" color="Black" raycastTarget="true">
     <Image sprite="Ui/Sprites/Common/SkyboxBackground" aspectMode="EnvelopeParent" aspectRatio="1.777778" />
@@ -34,13 +34,13 @@
         <Image class="audio-btn-click" image="Ui/Sprites/Purchase/AngleButton" color="AngleButton" type="Sliced" rotation="0 0 180" raycastTarget="true" onClick="OnRestorePurchasesClicked();">
           <Image image="Ui/Sprites/Purchase/AngleButtonBorder" color="Border" type="Sliced" />
         </Image>
-        <TextMeshPro class="modern" color="LabelText" text="RESTORE PURCHASES" fontSize="18" offsetMax="-20 0" offsetMin="20 0" />
+        <TextMeshPro class="modern" color="LabelText" text="{Purchase.RestorePurchases}" fontSize="18" offsetMax="-20 0" offsetMin="20 0" />
       </RectTransform>
       <RectTransform width="240" height="60" rectAlignment="LowerLeft">
         <Image class="audio-btn-click" image="Ui/Sprites/Purchase/AngleButton" color="AngleButton" type="Sliced" rotation="0 0 180" raycastTarget="true" onClick="OnExitClicked();">
           <Image image="Ui/Sprites/Purchase/AngleButtonBorder" color="Border" type="Sliced" />
         </Image>
-        <TextMeshPro class="modern" color="LabelText" text="EXIT" fontSize="18" offsetMax="-20 0" offsetMin="20 0" />
+        <TextMeshPro class="modern" color="LabelText" text="{Menu.Exit.Header}" fontSize="18" offsetMax="-20 0" offsetMin="20 0" />
       </RectTransform>
     </RectTransform>
     <RectTransform class="safe-area">
@@ -63,9 +63,9 @@
             </RectTransform>
           </RectTransform>
           <VerticalLayout id="complete-edition-template" active="false" spacing="25" padding="25" contentSizeFitter="vertical">
-            <TextMeshPro fontSize="22" class="" text="&quot;Juno: New Origins Complete Edition&quot; is for players who prefer a one-time purchase." />
-            <TextMeshPro fontSize="18" class="" text="It is a separate app on the store and is equivalent to purchasing all in-app purchases in this free-to-play version." />
-            <TextMeshPro fontSize="18" color="LabelText" text="Please note, progress from this free-to-play version will not be transferred." />
+            <TextMeshPro fontSize="22" class="" text="{Purchase.CompleteEdition.Line1}" />
+            <TextMeshPro fontSize="18" class="" text="{Purchase.CompleteEdition.Line2}" />
+            <TextMeshPro fontSize="18" color="LabelText" text="{Purchase.CompleteEdition.Line3}" />
             <Panel preferredHeight="256">
               <Image image="Ui/Icons/CompleteEdition-AppIcon-256" aspectMode="FitInParent" />
             </Panel>
@@ -96,7 +96,7 @@
               </Image>
               <Image internalId="button-close" class="angle-button details-button audio-btn-click" onClick="OnCloseClicked();">
                 <Image color="Border" image="Ui/Sprites/Purchase/AngleButtonBorder" type="Sliced" />
-                <TextMeshPro class="modern card-primary-color" text="CLOSE" fontSize="18" color="ButtonText" />
+                <TextMeshPro class="modern card-primary-color" text="{Dialog.Close.Header}" fontSize="18" color="ButtonText" />
               </Image>
               <Image internalId="button-buy" class="angle-button details-button audio-btn-click" onClick="OnBuyClicked();">
                 <Image class="card-primary-color" image="Ui/Sprites/Purchase/AngleButtonBorder" type="Sliced" />
@@ -112,7 +112,7 @@
       <Image color="Black" opacity="0.75" raycastTarget="true" />
       <VerticalLayout contentSizeFitter="both" padding="50" border="Primary">
         <Image ignoreLayout="true" color="Panel" />
-        <TextMeshPro class="modern" text="Processing..." />
+        <TextMeshPro class="modern" text="{Purchase.Processing}" />
       </VerticalLayout>
     </RectTransform>
   </Image>

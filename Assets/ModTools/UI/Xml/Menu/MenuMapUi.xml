@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XmlLayout xmlns="http://www.w3schools.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\XmlLayout.xsd">
+  <Include path="Ui/Xml/Styles.xml" />
+  <Defaults>
+    <TextMeshPro class="menu-map-planet-header" fontSize="11" color="LabelText" alignment="Left" overflowMode="Truncate" enableWordWrapping="false" />
+    <ContentButton class="menu-map-craft-row" preferredHeight="26" navigation="None" buttonColors="Transparent|Button|ButtonPressed|Transparent" />
+    <ContentButton class="selected" buttonColors="Primary|PrimaryHover|PrimaryPressed|Primary" />
+    <TextMeshPro class="menu-map-craft-row&gt;@TextMeshPro" alignment="Left" fontSize="13" color="ValueText" overflowMode="Truncate" enableWordWrapping="false" />
+    <TextMeshPro class="debris&gt;@TextMeshPro" color="Danger" />
+    <ContentButton class="menu-map-context-row" preferredHeight="28" preferredWidth="240" buttonColors="Button|ButtonHover|ButtonPressed|Button" />
+    <Image class="menu-map-context-row&gt;@Image" width="20" height="20" anchorMin="0 0.5" anchorMax="0 0.5" pivot="0 0.5" offsetXY="6 0" />
+    <TextMeshPro class="menu-map-context-row&gt;@TextMeshPro" alignment="Left" fontSize="13" color="ValueText" overflowMode="Truncate" enableWordWrapping="false" offsetMin="32 0" />
+  </Defaults>
+  <RectTransform class="safe-area">
+    <HorizontalLayout id="toolbar" anchorMin="0 1" anchorMax="0 1" pivot="0 1" offsetXY="15 -15" width="240" height="40" spacing="8" childAlignment="MiddleLeft" childForceExpandWidth="false" childForceExpandHeight="true" childControlWidth="true" childControlHeight="true">
+      <ContentButton id="close-button" class="audio-btn-back" preferredWidth="40" preferredHeight="40" buttonColors="Button|ButtonHover|ButtonPressed|ButtonDisabled" onClick="OnCloseClicked();">
+        <Image sprite="Ui/Sprites/Menu/IconMenu" color="ButtonIcon" width="22" height="22" />
+      </ContentButton>
+      <ContentButton id="remove-debris-button" class="audio-btn-click" preferredWidth="180" preferredHeight="40" buttonColors="Danger|DangerHover|DangerPressed|Button" onClick="OnRemoveDebrisClicked();">
+        <TextMeshPro text="{Menu.ActiveCrafts.RemoveAllDebris.ContextButtonText}" color="White" fontSize="14" alignment="Center" />
+      </ContentButton>
+    </HorizontalLayout>
+    <Panel id="crafts-list-panel" class="translucent-panel border" anchorMin="0 0" anchorMax="0 1" pivot="0 0" offsetMin="15 65" offsetMax="295 -65" translucency="0.15" color="TranslucentPanel">
+      <TextMeshProInputField id="search-input" anchorMin="0 1" anchorMax="1 1" pivot="0.5 1" offsetMin="6 -36" offsetMax="-6 -4" text="" onValueChanged="OnSearchChanged(value);">
+        <TMP_Placeholder text="{Dialog.SearchPlaceholder}" />
+        <TMP_Text text="" />
+      </TextMeshProInputField>
+      <VerticalScrollView class="no-image" offsetMin="4 4" offsetMax="-4 -40">
+        <VerticalLayout id="crafts-list-content" class="no-image" pivot="0 1" rectAlignment="UpperLeft" contentSizeFitter="vertical" childForceExpandHeight="false" childForceExpandWidth="true" childControlWidth="true" childControlHeight="true" spacing="2" padding="4 4 4 4">
+          <TextMeshPro internalId="planet-header-template" class="menu-map-planet-header" preferredHeight="22" active="false" />
+          <ContentButton internalId="craft-row-template" class="menu-map-craft-row audio-btn-click" active="false">
+            <TextMeshPro internalId="craft-name" alignment="Left" margin="8 0 8 0" />
+          </ContentButton>
+        </VerticalLayout>
+      </VerticalScrollView>
+    </Panel>
+    <VerticalLayout id="context-menu" class="border translucent-panel" translucency="0.15" color="TranslucentPanel" anchorMin="0 0" anchorMax="0 0" pivot="0 1" contentSizeFitter="both" childForceExpandHeight="false" childForceExpandWidth="true" childControlHeight="true" childControlWidth="true" padding="2 2 2 2" active="false">
+      <ContentButton internalId="context-menu-item-template" class="menu-map-context-row audio-btn-click" active="false">
+        <Image internalId="context-menu-item-icon" />
+        <TextMeshPro internalId="context-menu-item-label" />
+      </ContentButton>
+    </VerticalLayout>
+  </RectTransform>
+</XmlLayout>

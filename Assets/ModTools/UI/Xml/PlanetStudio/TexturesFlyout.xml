@@ -28,7 +28,7 @@
         </Panel>
         <Panel class="property-row" preferredHeight="30">
           <Button internalId="button-save-planetary-system" class="btn" onClick="OnBrowseButtonClicked();" width="200">
-            <TextMeshPro text="BROWSE" />
+            <TextMeshPro text="{PlanetStudio.Texture.Browse}" />
           </Button>
         </Panel>
         <Image class="separator" />
@@ -38,7 +38,7 @@
           <Slider internalId="slider" value="1" />
         </Panel>
         <Panel class="property-row row">
-          <TextMeshPro class="label" text="Color Adjustment" width="60%" alignment="Left" rectAlignment="MiddleLeft" />
+          <TextMeshPro class="label" text="{PlanetStudio.TerrainTextures.ColorAdjustment}" width="60%" alignment="Left" rectAlignment="MiddleLeft" />
           <Spinner numericFormat="0.####" minValue="0.05" maxValue="100" stepSize="0.05" width="40%" rectAlignment="MiddleRight">
             <TextMeshProInputField>
               <TMP_Text />

@@ -25,7 +25,7 @@
     <Panel class="no-preview:details" anchorMin="0.52 0" offsetMax="-20 0" offsetMin="10 10" />
     <Panel class="border-angled" active="false" />
     <Panel class="no-preview:border-angled" active="true" />
-    <Image class="status-icon" opacity="0.0" sprite="" width="24" height="24" rectAlignment="MiddleRight" offsetXY="-10 0" tooltipPosition="Above" tooltip="Not Yet Completed" />
+    <Image class="status-icon" opacity="0.0" sprite="" width="24" height="24" rectAlignment="MiddleRight" offsetXY="-10 0" tooltipPosition="Above" tooltip="{Career.Status.NotYetCompleted}" />
     <Image class="status-checkmark" opacity="1.0" sprite="Ui/Sprites/Menu/IconComplete" />
     <Image class="status-exclamation" opacity="1.0" sprite="Ui/Sprites/Menu/IconExclamation" />
     <Image class="status-lock" opacity="1.0" sprite="Ui/Sprites/Menu/IconLock" />
@@ -43,7 +43,7 @@
       <TextMeshPro id="title-text" class="text-header" alignment="Left" rectAlignment="UpperLeft" height="40" offsetXY="20 -20" />
     </Panel>
     <Panel class="column-right no-image">
-      <Button class="icon-button audio-btn-back" width="40" height="40" icon="Ui/Sprites/Common/IconCloseButton" rectAlignment="UpperRight" offsetXY="-20 -20" onClick="OnCloseButtonClicked();" tooltip="Close" tooltipPosition="Below" />
+      <Button class="icon-button audio-btn-back" width="40" height="40" icon="Ui/Sprites/Common/IconCloseButton" rectAlignment="UpperRight" offsetXY="-20 -20" onClick="OnCloseButtonClicked();" tooltip="{Menu.ListView.Close}" tooltipPosition="Below" />
     </Panel>
     <Panel id="context-menu-toggle" class="column-right no-image" active="false">
       <Button class="icon-button audio-btn-back" width="40" height="40" icon="Ui/Sprites/Common/IconButtonMenu" rectAlignment="UpperRight" offsetXY="-70 -20" onClick="OnContextMenuButtonClicked();" />
@@ -61,7 +61,7 @@
           <VerticalLayout active="false" id="items-parent" class="no-image" contentSizeFitter="vertical" spacing="10" childAlignment="UpperCenter" childForceExpandHeight="false" pivot="0 1" rectAlignment="UpperLeft" padding="0 0 0 70">
             <Panel class="no-image" preferredHeight="40" padding="1 2 0 0">
               <TextMeshProInputField id="search-input" text="" onValueChanged="OnSearchChanged(value);">
-                <TMP_Placeholder text="Search..." alignment="Left" />
+                <TMP_Placeholder text="{Dialog.SearchPlaceholder}" alignment="Left" />
                 <TMP_Text text="" alignment="Left" />
               </TextMeshProInputField>
             </Panel>
@@ -83,13 +83,13 @@
         </VerticalScrollView>
       </Panel>
     </Panel>
-    <TextMeshPro id="loading-text" text="Loading..." />
+    <TextMeshPro id="loading-text" text="{Scene.LoadingText}" />
     <Panel class="column-right details no-image">
       <Panel class="no-image" rectAlignment="UpperCenter" height="80" width="100%">
         <TextMeshPro id="details-title-text" class="text-header" alignment="Left" offsetMin="15 10" offsetMax="-100 -10" enableWordWrapping="false" overflowMode="Ellipsis" enableAutoSizing="true" />
       </Panel>
       <Panel class="no-image" offsetMin="10 10" offsetMax="10 -80">
-        <TextMeshPro id="no-selection-message" text="Select something on the left for more details." alignment="Top" />
+        <TextMeshPro id="no-selection-message" text="{Menu.ListView.SelectForDetails}" alignment="Top" />
         <VerticalScrollView id="scrollview" pivot="0 1" class="no-image">
           <VerticalLayout id="details" class="no-image" contentSizeFitter="vertical" childAlignment="UpperCenter" childForceExpandWidth="true" childForceExpandHeight="false" pivot="0 1" spacing="10" padding="5 10 0 70">
             <RectTransform active="false">
@@ -122,7 +122,7 @@
               <Panel id="details-spacer" class="no-image" preferredHeight="10" />
               <Panel id="details-input" class="no-image" preferredHeight="30" height="30">
                 <TextMeshProInputField internalId="input" text="" width="80%" height="100%" rectAlignment="MiddleLeft" characterLimit="32">
-                  <TMP_Placeholder internalId="input-placeholder" text="Text..." alignment="Center" />
+                  <TMP_Placeholder internalId="input-placeholder" text="{Play.Details.FlightNamePlaceholder}" alignment="Center" />
                   <TMP_Text text="" alignment="Center" />
                 </TextMeshProInputField>
               </Panel>
@@ -133,7 +133,7 @@
       <Panel id="footer" class="no-image" height="70" rectAlignment="LowerCenter" offsetXY="10 -10" active="false">
         <Panel class="panel panel-angled border-angled" />
         <HorizontalLayout class="no-image" padding="60 60 0 0" childForceExpandHeight="false" childForceExpandWidth="false" spacing="10" rectAlignment="MiddleCenter" childAlignment="MiddleCenter">
-          <Button id="delete-button" class="icon-button" minWidth="40" width="40" preferredHeight="40" icon="Ui/Sprites/Common/IconSubtract" onClick="OnDeleteButtonClicked(this);" tooltipPosition="Above" tooltip="Remove the selected item." />
+          <Button id="delete-button" class="icon-button" minWidth="40" width="40" preferredHeight="40" icon="Ui/Sprites/Common/IconSubtract" onClick="OnDeleteButtonClicked(this);" tooltipPosition="Above" tooltip="{Menu.ListView.RemoveSelectedItem}" />
           <Button class="btn btn-primary audio-btn-big" preferredWidth="150" preferredHeight="40" onClick="OnPrimaryButtonClicked(this);">
             <TextMeshPro id="primary-button-text" color="White" />
           </Button>

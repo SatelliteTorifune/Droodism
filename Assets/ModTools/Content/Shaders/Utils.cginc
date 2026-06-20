@@ -213,10 +213,14 @@
         return Dither(float4(input, 0), float4(randSeed, 0), power);
     }
 
-    float ExpScale(float cos, float scaleDepth, float atmosSizeScale)
+    // Computes pow(scaleDepth * exp(poly(1 - cos)), 1 / atmosSizeScale) in a single exp().
+    // The caller passes precomputed values so this avoids a pow() per call:
+    //   scaleDepthLn      = log(scaleDepth) / atmosSizeScale
+    //   invAtmosSizeScale = 1 / atmosSizeScale
+    float ExpScale(float cos, float scaleDepthLn, float invAtmosSizeScale)
     {
         float x = 1 - cos;
-        return pow(scaleDepth * exp(-0.00287 + x * (0.459 + x * (3.83 + x * (-6.80 + x * 5.25)))), 1.0 / atmosSizeScale);
+        return exp(scaleDepthLn + invAtmosSizeScale * (-0.00287 + x * (0.459 + x * (3.83 + x * (-6.80 + x * 5.25)))));
     }
 
     float4 GetSample(sampler2D map, float2 uv, float2 mapTiling, float2 mapOffset)

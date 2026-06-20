@@ -23,10 +23,10 @@
         <Image class="separator" />
       </Panel>
       <Panel id="button-panel" preferredHeight="55" pivot="0 1">
-        <Button class="icon-button audio-btn-big" icon="Ui/Sprites/Design/IconButtonDisconnectPart" offsetXY="-100 0" onClick="OnDisconnectButtonClicked();" tooltip="Removes all of this part's connections." />
-        <Button class="icon-button audio-btn-big" icon="Ui/Sprites/Design/IconButtonReconnectPart" offsetXY="-33 0" onClick="OnReconnectButtonClicked();" tooltip="Removes all of this part's connections and attempts to reconnect with all surrounding parts." />
-        <Button class="icon-button audio-btn-big" icon="Ui/Sprites/Design/IconButtonDisableAttachPoints" offsetXY="33 0" onClick="OnToggleAllAttachPoints();" tooltip="Toggles all attach points on this part." />
-        <Button class="icon-button audio-btn-big" icon="Ui/Sprites/Design/IconButtonDisableAllAttachPoints" offsetXY="100 0" onClick="OnToggleAllConnectedAttachPoints();" tooltip="Toggles all attach points on this part and all of its connected parts." />
+        <Button class="icon-button audio-btn-big" icon="Ui/Sprites/Design/IconButtonDisconnectPart" offsetXY="-100 0" onClick="OnDisconnectButtonClicked();" tooltip="{Design.PartConnections.Disconnect.Tooltip}" />
+        <Button class="icon-button audio-btn-big" icon="Ui/Sprites/Design/IconButtonReconnectPart" offsetXY="-33 0" onClick="OnReconnectButtonClicked();" tooltip="{Design.PartConnections.Reconnect.Tooltip}" />
+        <Button class="icon-button audio-btn-big" icon="Ui/Sprites/Design/IconButtonDisableAttachPoints" offsetXY="33 0" onClick="OnToggleAllAttachPoints();" tooltip="{Design.PartConnections.ToggleAttachPoints.Tooltip}" />
+        <Button class="icon-button audio-btn-big" icon="Ui/Sprites/Design/IconButtonDisableAllAttachPoints" offsetXY="100 0" onClick="OnToggleAllConnectedAttachPoints();" tooltip="{Design.PartConnections.ToggleConnectedAttachPoints.Tooltip}" />
       </Panel>
       <VerticalLayout id="attach-points" class="no-image" childForceExpandHeight="false" contentSizeFitter="vertical" spacing="10" pivot="0 1">
         <Panel class="header" preferredHeight="40">
@@ -44,13 +44,13 @@
         <VerticalLayout id="template-attach-point" class="no-image border" childForceExpandHeight="false" spacing="0" pivot="0 1" active="false">
           <Panel internalId="attachpoint-header" class="row attachpoint-header">
             <TextMeshPro internalId="ap-name" class="attachpoint-title" text="Top Load Attach Point" />
-            <Toggle internalId="ap-toggle" isOn="true" rectAlignment="MiddleRight" width="50" height="25" offsetXY="-2 0" tooltip="Enable this attach point for consideration when placing parts." />
+            <Toggle internalId="ap-toggle" isOn="true" rectAlignment="MiddleRight" width="50" height="25" offsetXY="-2 0" tooltip="{Design.PartConnections.AttachPointToggle.Tooltip}" />
             <Image internalId="ap-icon" class="ap-icon" />
           </Panel>
           <Panel internalId="add-connection" class="row">
             <ContentButton internalId="add-connection-button" class="btn">
               <Image sprite="Ui/Sprites/Design/IconAddStage" width="16" height="16" offsetXY="-100 0" color="Primary" />
-              <TextMeshPro text="Add New Connection" />
+              <TextMeshPro text="{Design.PartConnections.AddNew.Text}" />
             </ContentButton>
           </Panel>
         </VerticalLayout>
@@ -62,7 +62,7 @@
           </Panel>
           <Image class="separator" />
         </Panel>
-        <TextMeshPro id="connecting-text" class="label" text="Select target attach point" alignment="Center" rectAlignment="MiddleCenter" />
+        <TextMeshPro id="connecting-text" class="label" text="{Design.PartConnections.SelectTarget.Text}" alignment="Center" rectAlignment="MiddleCenter" />
         <VerticalLayout id="target-attach-points" class="no-image" childForceExpandHeight="false" spacing="10" pivot="0 1">
           <Button id="template-target-attach-point" class="btn" active="false">
             <TextMeshPro internalId="ap-name" />
@@ -71,10 +71,10 @@
         <Image class="separator" />
         <Panel preferredHeight="40" pivot="0 1">
           <Button id="connect-button" class="btn btn-primary" width="120" rectAlignment="MiddleRight" onClick="OnConnectButtonClicked();">
-            <TextMeshPro text="CONNECT" />
+            <TextMeshPro text="{Design.PartConnections.Connect.Text}" />
           </Button>
           <Button class="btn" width="120" rectAlignment="MiddleLeft" onClick="OnCancelConnectButtonClicked();">
-            <TextMeshPro text="CANCEL" />
+            <TextMeshPro text="{Dialog.Cancel.Short}" />
           </Button>
         </Panel>
       </VerticalLayout>

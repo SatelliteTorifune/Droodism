@@ -12,7 +12,7 @@
       <Panel class="no-image" offsetMin="90 0" offsetMax="0 -45">
         <Panel class="row" padding="0" rectAlignment="UpperLeft" height="32">
           <TextMeshProInputField internalId="search-input" text="">
-            <TMP_Placeholder id="placeholder-text" text="Search..." />
+            <TMP_Placeholder id="placeholder-text" text="{Dialog.SearchPlaceholder}" />
             <TMP_Text text="" />
           </TextMeshProInputField>
         </Panel>

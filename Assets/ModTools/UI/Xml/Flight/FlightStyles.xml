@@ -33,8 +33,8 @@
     <Image class="map-active:direction-indicator" active="false" />
     <Image class="position-indicator" active="false" />
     <Image class="map-active:position-indicator" active="true" />
-    <Panel class="map-button" offsetXY="-122 37" tooltip="Switch to map mode." />
-    <Panel class="map-active:map-button" offsetXY="-178 37" tooltip="Switch to attitude mode." />
+    <Panel class="map-button" offsetXY="-122 37" tooltip="{Flight.MapButton.SwitchToMap.Tooltip}" />
+    <Panel class="map-active:map-button" offsetXY="-178 37" tooltip="{Flight.MapButton.SwitchToAttitude.Tooltip}" />
     <Image class="map-button&gt;@Image" offsetXY="0 0" />
     <Image class="map-active:map-button&gt;@Image" offsetXY="20 0" />
     <Panel class="navball-open:map-button" active="true" />

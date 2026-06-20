@@ -14,14 +14,14 @@
   <Panel class="no-image" height="100%">
     <Panel class="no-image" height="32" padding="1 1 1 1" rectAlignment="UpperCenter">
       <TextMeshProInputField id="search-input" text="" class="search-input" onValueChanged="FilterItems(value);">
-        <TMP_Placeholder text="Search..." />
+        <TMP_Placeholder text="{Dialog.SearchPlaceholder}" />
         <TMP_Text text="" />
       </TextMeshProInputField>
     </Panel>
     <Panel height="32" color="ButtonPressed" offsetXY="0 -32" rectAlignment="UpperCenter">
       <TextMeshPro id="item-count" offsetMin="10 0" alignment="Left" rectAlignment="MiddleLeft" text="35 Crafts" width="65%" />
       <Button id="toggle-stock-button" class="btn btn-sm" rectAlignment="MiddleRight" width="50%" offsetXY="-10 0" onClick="OnToggleShowStockCraftsClicked();">
-        <TextMeshPro text="Show Stock Crafts" />
+        <TextMeshPro text="{Menu.CraftDesigns.ShowStockCrafts.Label}" />
       </Button>
     </Panel>
     <VerticalScrollView class="no-image" offsetMax="0 -65">

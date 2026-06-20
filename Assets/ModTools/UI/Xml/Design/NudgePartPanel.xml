@@ -7,7 +7,7 @@
   <VerticalLayout class="no-image" childForceExpandHeight="false" padding="20" spacing="10" pivot="0 1">
     <VerticalLayout id="content" class="no-image" childForceExpandHeight="false" spacing="10" pivot="0 1">
       <Panel class="spinner row">
-        <TextMeshPro class="label tooltip" text="Grid Size" tooltip="Changes how far to move the part with each step" />
+        <TextMeshPro class="label tooltip" text="{Design.ToolPanel.MovePart.GridSize.Text}" tooltip="{Design.ToolPanel.NudgePart.GridSize.Tooltip}" />
         <Spinner id="spinner-grid-size" numericFormat="0.###" onNumericValueChanged="OnGridSizeSpinnerChanged();" stepSize="0.05" minValue="0" maxValue="2">
           <TextMeshProInputField contentType="DecimalNumber">
             <TMP_Text />
@@ -15,25 +15,25 @@
         </Spinner>
       </Panel>
       <Panel class="spinner row">
-        <TextMeshPro class="label tooltip" text="Mode" tooltip="Indicates the parts that will be moved" />
-        <Spinner id="spinner-mode" value="Connected" values="Self;Connected" onValueChanged="OnModeChanged(selectedValue);">
+        <TextMeshPro class="label tooltip" text="{Design.ToolPanel.Transform.Mode.Text}" tooltip="{Design.ToolPanel.NudgePart.Mode.Tooltip}" />
+        <Spinner id="spinner-mode" value="Connected" values="Self;Connected" localizationPrefix="Design.ToolPanel.Transform.Mode" onValueChanged="OnModeChanged(selectedValue);">
           <TextMeshPro />
         </Spinner>
       </Panel>
       <Panel class="spinner row">
-        <TextMeshPro class="label tooltip" text="Direction" tooltip="The orientation to use when moving" />
-        <Spinner id="spinner-orientation" value="World" values="Local;World" onValueChanged="OnOrientationChanged(selectedValue);">
+        <TextMeshPro class="label tooltip" text="{Design.ToolPanel.NudgePart.Direction.Text}" tooltip="{Design.ToolPanel.NudgePart.Direction.Tooltip}" />
+        <Spinner id="spinner-orientation" value="World" values="Local;World" localizationPrefix="Design.ToolPanel.Transform.Direction" onValueChanged="OnOrientationChanged(selectedValue);">
           <TextMeshPro />
         </Spinner>
       </Panel>
       <Panel id="template-header" class="header">
         <Panel height="35" rectAlignment="LowerCenter">
-          <TextMeshPro internalId="label" text="Position" fontStyle="Bold,UpperCase" />
+          <TextMeshPro internalId="label" text="{Design.ToolPanel.NudgePart.Position.Separator.Text}" fontStyle="Bold,UpperCase" />
         </Panel>
         <Image class="separator" />
       </Panel>
       <Panel class="spinner row">
-        <TextMeshPro class="label tooltip" text="X-Pos" color="#e62e2e" tooltip="Part's current X-position" />
+        <TextMeshPro class="label tooltip" text="{Design.ToolPanel.NudgePart.Position.X.Text}" color="#e62e2e" tooltip="{Desgin.ToolPanel.NudgePart.Position.X.Tooltip}" />
         <Spinner id="spinner-x" class="position-spinner" numericFormat="0.###" onNumericValueChanged="OnPositionSpinnerChanged();">
           <TextMeshProInputField contentType="DecimalNumber">
             <TMP_Text />
@@ -41,7 +41,7 @@
         </Spinner>
       </Panel>
       <Panel class="spinner row">
-        <TextMeshPro class="label tooltip" text="Y-Pos" color="#088f00" tooltip="Part's current Y-position" />
+        <TextMeshPro class="label tooltip" text="{Design.ToolPanel.NudgePart.Position.Y.Text}" color="#088f00" tooltip="{Desgin.ToolPanel.NudgePart.Position.Y.Tooltip}" />
         <Spinner id="spinner-y" class="position-spinner" numericFormat="0.###" onNumericValueChanged="OnPositionSpinnerChanged();">
           <TextMeshProInputField contentType="DecimalNumber">
             <TMP_Text />
@@ -49,7 +49,7 @@
         </Spinner>
       </Panel>
       <Panel class="spinner row">
-        <TextMeshPro class="label tooltip" text="Z-Pos" color="#5670ff" tooltip="Part's current Z-position" />
+        <TextMeshPro class="label tooltip" text="{Design.ToolPanel.NudgePart.Position.Z.Text}" color="#5670ff" tooltip="{Desgin.ToolPanel.NudgePart.Position.Z.Tooltip}" />
         <Spinner id="spinner-z" class="position-spinner" numericFormat="0.###" onNumericValueChanged="OnPositionSpinnerChanged();">
           <TextMeshProInputField contentType="DecimalNumber">
             <TMP_Text />

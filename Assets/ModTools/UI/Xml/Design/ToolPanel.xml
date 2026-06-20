@@ -5,22 +5,22 @@
     <Panel class="tool-button" tooltipPosition="Right" />
   </Defaults>
   <VerticalLayout id="tool-buttons" class="no-image" childForceExpandHeight="false" width="50" offsetXY="0 0" rectAlignment="UpperLeft">
-    <Panel name="ToolPanel.MovePartTool" class="toggle-button tool-button audio-btn-click" tooltip="Move Part Tool" data-tool-id="MovePartTool" onClick="OnToolButtonClicked(this);">
+    <Panel name="ToolPanel.MovePartTool" class="toggle-button tool-button audio-btn-click" tooltip="{Design.ToolPanel.MovePart.Title}" data-tool-id="MovePartTool" onClick="OnToolButtonClicked(this);">
       <Image class="toggle-button-icon toggle-button-icon-white" sprite="Ui/Sprites/Design/IconButtonMovePartTool" />
     </Panel>
-    <Panel class="toggle-button tool-button audio-btn-click" tooltip="Translate Part Tool" data-tool-id="NudgePartTool" onClick="OnToolButtonClicked(this);">
+    <Panel class="toggle-button tool-button audio-btn-click" tooltip="{Design.ToolPanel.NudgePart.Title}" data-tool-id="NudgePartTool" onClick="OnToolButtonClicked(this);">
       <Image class="toggle-button-icon toggle-button-icon-white" sprite="Ui/Sprites/Design/IconButtonNudgeTool" />
     </Panel>
-    <Panel class="toggle-button tool-button audio-btn-click" tooltip="Rotate Part Tool" data-tool-id="RotatePartTool" onClick="OnToolButtonClicked(this);">
+    <Panel class="toggle-button tool-button audio-btn-click" tooltip="{Design.ToolPanel.RotatePart.Title}" data-tool-id="RotatePartTool" onClick="OnToolButtonClicked(this);">
       <Image class="toggle-button-icon toggle-button-icon-white" sprite="Ui/Sprites/Design/IconButtonRotateTool" />
     </Panel>
-    <Panel class="toggle-button tool-button audio-btn-click" tooltip="Part Shape Tool" data-tool-id="FuselageShapeTool" onClick="OnToolButtonClicked(this);">
+    <Panel class="toggle-button tool-button audio-btn-click" tooltip="{Design.ToolPanel.FuselageShape.Title}" data-tool-id="FuselageShapeTool" onClick="OnToolButtonClicked(this);">
       <Image class="toggle-button-icon toggle-button-icon-white" sprite="Ui/Sprites/Design/IconButtonFuselageShapeTool" />
     </Panel>
-    <Panel class="toggle-button tool-button audio-btn-click" tooltip="Paint Tool" data-tool-id="PaintTool" onClick="OnToolButtonClicked(this);">
+    <Panel class="toggle-button tool-button audio-btn-click" tooltip="{Design.ToolPanel.Paint.Title}" data-tool-id="PaintTool" onClick="OnToolButtonClicked(this);">
       <Image class="toggle-button-icon toggle-button-icon-white" sprite="Ui/Sprites/Design/IconButtonPaint" />
     </Panel>
-    <Panel class="toggle-button tool-button audio-btn-click" tooltip="Part Connections" data-tool-id="PartConnectionsTool" onClick="OnToolButtonClicked(this);">
+    <Panel class="toggle-button tool-button audio-btn-click" tooltip="{Design.PartConnections.Title}" data-tool-id="PartConnectionsTool" onClick="OnToolButtonClicked(this);">
       <Image class="toggle-button-icon toggle-button-icon-white" sprite="Ui/Sprites/Design/IconButtonDisconnectPart" />
     </Panel>
   </VerticalLayout>

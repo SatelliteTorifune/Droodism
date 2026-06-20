@@ -30,22 +30,22 @@
         <Button class="icon-button audio-btn-back" width="40" height="40" icon="Ui/Sprites/Common/IconCloseButton" rectAlignment="UpperRight" offsetXY="0 -10" onClick="OnOkayButtonClicked();" />
       </Panel>
       <Panel rectAlignment="UpperCenter" height="100">
-        <TextMeshPro class="text-header" text="CREW ASSIGNMENT" offsetXY="0 20" />
+        <TextMeshPro class="text-header" text="{Crew.Assignment.Header}" offsetXY="0 20" />
         <Panel rectAlignment="LowerCenter" height="30" offsetXY="0 10">
           <Panel class="column-left">
             <HorizontalLayout spacing="10">
               <Button id="filter-source-available" class="btn btn-primary" onClick="OnFilterCrewButtonClicked(false);">
-                <TextMeshPro text="AVAILABLE CREW" />
+                <TextMeshPro text="{Crew.Assignment.Filter.Available}" />
               </Button>
               <Button id="filter-source-all" class="btn btn-primary" onClick="OnFilterCrewButtonClicked(true);">
-                <TextMeshPro text="ALL CREW" />
+                <TextMeshPro text="{Crew.Assignment.Filter.All}" />
               </Button>
             </HorizontalLayout>
           </Panel>
           <Panel class="column-right">
             <HorizontalLayout spacing="10">
               <Button class="btn">
-                <TextMeshPro text="CREW IN THIS CRAFT" />
+                <TextMeshPro text="{Crew.Assignment.InThisCraft}" />
               </Button>
             </HorizontalLayout>
           </Panel>
@@ -78,7 +78,7 @@
       <Panel rectAlignment="LowerCenter" height="75">
         <Panel class="column-left">
           <Button id="cancel-button" class="btn btn-primary audio-btn-back" onClick="OnHireButtonClicked();" width="50%" rectAlignment="MiddleLeft">
-            <TextMeshPro text="HIRE ASTRONAUT" />
+            <TextMeshPro text="{Crew.Assignment.HireAstronaut}" />
           </Button>
         </Panel>
       </Panel>

@@ -12,7 +12,7 @@
             <TMP_Text text="" />
           </TextMeshProInputField>
         </Panel>
-        <Toggle internalId="active-on-start-toggle" rectAlignment="MiddleRight" tooltip="Activate on start" tooltipPosition="Above" />
+        <Toggle internalId="active-on-start-toggle" rectAlignment="MiddleRight" tooltip="{Design.ActivationGroups.ActivateOnStartTooltip}" tooltipPosition="Above" />
       </Panel>
     </VerticalLayout>
   </VerticalScrollView>

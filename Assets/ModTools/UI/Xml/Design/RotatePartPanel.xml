@@ -7,7 +7,7 @@
   <VerticalLayout class="no-image" childForceExpandHeight="false" padding="20" spacing="10" pivot="0 1">
     <VerticalLayout id="content" class="no-image" childForceExpandHeight="false" spacing="10" pivot="0 1">
       <Panel class="spinner row">
-        <TextMeshPro class="label tooltip" text="Angle Step" tooltip="Changes how many degrees to rotate with each step" />
+        <TextMeshPro class="label tooltip" text="{Design.ToolPanel.MovePart.AngleSnap.Text}" tooltip="{Design.ToolPanel.RotatePart.AngleSnap.Tooltip}" />
         <Spinner id="spinner-snap" numericFormat="0.##" onNumericValueChanged="OnSnapChanged();" stepSize="5.0" minValue="-1" maxValue="91">
           <TextMeshProInputField contentType="DecimalNumber">
             <TMP_Text />
@@ -15,30 +15,30 @@
         </Spinner>
       </Panel>
       <Panel class="spinner row">
-        <TextMeshPro class="label tooltip" text="Mode" tooltip="Indicates the parts that will be rotated" />
-        <Spinner id="spinner-mode" value="Connected" values="Self;Connected" onValueChanged="OnModeChanged(selectedValue);">
+        <TextMeshPro class="label tooltip" text="{Design.ToolPanel.Transform.Mode.Text}" tooltip="{Design.ToolPanel.RotatePart.Mode.Tooltip}" />
+        <Spinner id="spinner-mode" value="Connected" values="Self;Connected" localizationPrefix="Design.ToolPanel.Transform.Mode" onValueChanged="OnModeChanged(selectedValue);">
           <TextMeshPro />
         </Spinner>
       </Panel>
       <Panel class="spinner row">
-        <TextMeshPro class="label tooltip" text="Direction" tooltip="The orientation to use when rotating" />
-        <Spinner id="spinner-orientation" value="World" values="Local;World" onValueChanged="OnOrientationChanged(selectedValue);">
+        <TextMeshPro class="label tooltip" text="{Design.ToolPanel.RotatePart.Direction.Text}" tooltip="{Design.ToolPanel.RotatePart.Direction.Tooltip}" />
+        <Spinner id="spinner-orientation" value="World" values="Local;World" localizationPrefix="Design.ToolPanel.Transform.Direction" onValueChanged="OnOrientationChanged(selectedValue);">
           <TextMeshPro />
         </Spinner>
       </Panel>
       <Panel class="slider">
-        <TextMeshPro class="label tooltip" text="Sensitivity" tooltip="Indicates how sensitive the rotation gizmo is to dragging" />
+        <TextMeshPro class="label tooltip" text="{Design.ToolPanel.RotatePart.Sensitivity.Text}" tooltip="{Design.ToolPanel.RotatePart.Sensitivity.Tooltip}" />
         <TextMeshPro id="sensitivity-text" class="value" text="None" />
         <Slider id="sensitivity-slider" onValueChanged="OnSensitivityChanged(selectedValue);" />
       </Panel>
       <Panel id="template-header" class="header">
         <Panel height="35" rectAlignment="LowerCenter">
-          <TextMeshPro internalId="label" text="Rotation" fontStyle="Bold,UpperCase" />
+          <TextMeshPro internalId="label" text="{Design.ToolPanel.RotatePart.Rotation.Separator.Text}" fontStyle="Bold,UpperCase" />
         </Panel>
         <Image class="separator" />
       </Panel>
       <Panel class="spinner row">
-        <TextMeshPro class="label tooltip" text="X-Angle" color="#e62e2e" tooltip="Part's current rotation around the X-axis" />
+        <TextMeshPro class="label tooltip" text="{Design.ToolPanel.RotatePart.Rotation.X.Text}" color="#e62e2e" tooltip="{Design.ToolPanel.RotatePart.Rotation.X.Tooltip}" />
         <Spinner id="spinner-x" class="angle-spinner" onNumericValueChanged="OnAngleChanged();">
           <TextMeshProInputField>
             <TMP_Text />
@@ -46,7 +46,7 @@
         </Spinner>
       </Panel>
       <Panel class="spinner row">
-        <TextMeshPro class="label tooltip" text="Y-Angle" color="#088f00" tooltip="Part's current rotation around the Y-axis" />
+        <TextMeshPro class="label tooltip" text="{Design.ToolPanel.RotatePart.Rotation.Y.Text}" color="#088f00" tooltip="{Design.ToolPanel.RotatePart.Rotation.Y.Tooltip}" />
         <Spinner id="spinner-y" class="angle-spinner" onNumericValueChanged="OnAngleChanged();">
           <TextMeshProInputField>
             <TMP_Text />
@@ -54,7 +54,7 @@
         </Spinner>
       </Panel>
       <Panel class="spinner row">
-        <TextMeshPro class="label tooltip" text="Z-Angle" color="#5670ff" tooltip="Part's current rotation around the Z-axis" />
+        <TextMeshPro class="label tooltip" text="{Design.ToolPanel.RotatePart.Rotation.Z.Text}" color="#5670ff" tooltip="{Design.ToolPanel.RotatePart.Rotation.Z.Tooltip}" />
         <Spinner id="spinner-z" class="angle-spinner" onNumericValueChanged="OnAngleChanged();">
           <TextMeshProInputField>
             <TMP_Text />

@@ -18,7 +18,7 @@
     <Panel class="no-preview:footer" anchorMin="0.58 0" anchorMax="0.98 1" />
     <Panel class="no-preview:header" minWidth="320" />
     <Panel class="no-preview:details" anchorMin="0.55 0" offsetMin="10 10" offsetMax="-10 0" />
-    <Image class="status-icon" opacity="0.0" sprite="" width="24" height="24" rectAlignment="MiddleRight" offsetXY="-10 0" tooltipPosition="Above" tooltip="Not Yet Completed" />
+    <Image class="status-icon" opacity="0.0" sprite="" width="24" height="24" rectAlignment="MiddleRight" offsetXY="-10 0" tooltipPosition="Above" tooltip="{Career.Status.NotYetCompleted}" />
     <Image class="status-checkmark" opacity="1.0" sprite="Ui/Sprites/Menu/IconComplete" />
     <Image class="status-exclamation" opacity="1.0" sprite="Ui/Sprites/Menu/IconExclamation" />
     <Image class="status-lock" opacity="1.0" sprite="Ui/Sprites/Menu/IconLock" />
@@ -59,16 +59,16 @@
       <TextMeshPro id="title-text" class="text-header" alignment="Left" rectAlignment="UpperLeft" height="40" offsetXY="20 -20" />
       <Panel class="no-image" height="40" padding="70 10 0 0" offsetXY="0 -20" rectAlignment="UpperCenter" active="false">
         <TextMeshProInputField id="search-input" text="" onValueChanged="OnSearchChanged(value);">
-          <TMP_Placeholder text="Search..." alignment="Left" />
+          <TMP_Placeholder text="{Dialog.SearchPlaceholder}" alignment="Left" />
           <TMP_Text text="" alignment="Left" />
         </TextMeshProInputField>
       </Panel>
       <HorizontalLayout id="exploration-stars-header" active="false" rectAlignment="UpperRight" width="200" height="30" offsetXY="-10 -30" childAlignment="MiddleRight" spacing="10" childForceExpandHeight="false" childForceExpandWidth="false">
-        <Image class="exploration-star" internalId="fly-by" sprite="Ui/Sprites/Career/IconExplorationFlyBy" tooltip="Fly By (hyperbolic orbit)" />
-        <Image class="exploration-star" internalId="orbit" sprite="Ui/Sprites/Career/IconExplorationOrbit" tooltip="Elliptical orbit" />
-        <Image class="exploration-star" internalId="contact" sprite="Ui/Sprites/Career/IconExplorationContact" tooltip="Contact with the surface" />
-        <Image class="exploration-star" internalId="landmarks" sprite="Ui/Sprites/Career/IconExplorationLandmarks" tooltip="Visited all landmarks" />
-        <Image class="exploration-star" internalId="milestones" sprite="Ui/Sprites/Career/IconExplorationMilestones" tooltip="Completed all milestones" />
+        <Image class="exploration-star" internalId="fly-by" sprite="Ui/Sprites/Career/IconExplorationFlyBy" tooltip="{Career.Exploration.FlyBy}" />
+        <Image class="exploration-star" internalId="orbit" sprite="Ui/Sprites/Career/IconExplorationOrbit" tooltip="{Career.Exploration.Orbit}" />
+        <Image class="exploration-star" internalId="contact" sprite="Ui/Sprites/Career/IconExplorationContact" tooltip="{Career.Exploration.Contact}" />
+        <Image class="exploration-star" internalId="landmarks" sprite="Ui/Sprites/Career/IconExplorationLandmarks" tooltip="{Career.Exploration.Landmarks}" />
+        <Image class="exploration-star" internalId="milestones" sprite="Ui/Sprites/Career/IconExplorationMilestones" tooltip="{Career.Exploration.Milestones}" />
       </HorizontalLayout>
     </Panel>
     <Panel class="column-right no-image">
@@ -220,7 +220,7 @@
       <Panel id="footer" class="no-image" height="70" rectAlignment="LowerCenter" offsetXY="0 0" active="false">
         <Panel class="panel panel-angled border-angled" />
         <HorizontalLayout class="no-image" padding="60 60 0 0" childForceExpandHeight="false" childForceExpandWidth="false" spacing="10" rectAlignment="MiddleCenter" childAlignment="MiddleCenter">
-          <Button id="delete-button" class="icon-button" minWidth="40" width="40" preferredHeight="40" icon="Ui/Sprites/Common/IconSubtract" onClick="OnDeleteButtonClicked(this);" tooltipPosition="Above" tooltip="Remove the selected item." />
+          <Button id="delete-button" class="icon-button" minWidth="40" width="40" preferredHeight="40" icon="Ui/Sprites/Common/IconSubtract" onClick="OnDeleteButtonClicked(this);" tooltipPosition="Above" tooltip="{Menu.ListView.RemoveSelectedItem}" />
           <Button id="primary-button" class="btn btn-primary audio-btn-big" preferredWidth="150" preferredHeight="40" onClick="OnPrimaryButtonClicked(this);">
             <TextMeshPro id="primary-button-text" color="White" />
           </Button>
@@ -232,7 +232,7 @@
       <Panel color="#28a745" border="White">
         <TextMeshPro internalId="notification-text" margin="10 0 200 0" rectAlignment="MiddleLeft" />
         <Button class="btn btn-dark" width="125" rectAlignment="MiddleRight" offsetXY="-10 0" onClick="CloseNotification();">
-          <TextMeshPro text="OKAY" />
+          <TextMeshPro text="{Dialog.Okay}" />
         </Button>
       </Panel>
     </Panel>

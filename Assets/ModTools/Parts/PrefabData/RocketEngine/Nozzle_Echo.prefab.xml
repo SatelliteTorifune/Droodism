@@ -4,4 +4,8 @@
   <Component type="UnityEngine.MeshRenderer" />
   <Component type="Assets.Scripts.Craft.Parts.Modifiers.Propulsion.EngineComponentScript" />
   <Component type="ModApi.Craft.Parts.PartMeshScript" />
+  <GameObject name="GameObject">
+    <Component type="UnityEngine.MeshFilter" />
+    <Component type="UnityEngine.MeshRenderer" />
+  </GameObject>
 </GameObject>
