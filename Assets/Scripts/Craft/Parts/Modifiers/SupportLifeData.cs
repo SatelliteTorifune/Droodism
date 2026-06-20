@@ -15,9 +15,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Xml.Linq;
     using ModApi.Craft.Parts;
     using ModApi.Craft.Parts.Attributes;
     using UnityEngine;
@@ -43,16 +40,20 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         [SerializeField][PartModifierProperty]
         private float waterDamageScale=1f;
 
+        [SerializeField] [DesignerPropertyLabel(Order=-3)]
+        private string crewName = "Unknow";
         [SerializeField] [DesignerPropertyLabel(Order=-2)]
         private string crewRoleName = "Unknow";
         [SerializeField] [DesignerPropertyLabel(Order=-1)]
-        private string crewRadiationDoes = "Unknow";
+        private string crewRadiationDoes = "Unknow"; 
+        [SerializeField] [DesignerPropertyLabel(Order=0)]
+        private string crewMissionTime = "Unknow";
         [SerializeField] 
         [DesignerPropertySlider(0.1f, 3f, 30, Label = "<color=green>Oxygen</color> Carry Amount(days)",Order = 4, Tooltip = "How much <color=green>Oxygen</color> Drood himself/herself will carry when Eva.")]
         private float desireOxygenCapacity = 0.2f;
         [SerializeField] [DesignerPropertySlider(0.1f, 3f, 30, Label = "<color=yellow>Food</color> Carry Amount(days)",Order = 5, Tooltip = "How much <color=yellow>Food</color> Drood himself/herself will carry when Eva.")]
         private float desireFoodCapacity = 0.2f;
-        [SerializeField] [DesignerPropertySlider(0.1f, 3f, 30, Label = "<color=red>Water</color> Carry Amount(days)",Order = 6, Tooltip = "How much<color=red> Drink Water</color> Drood himself/herself will carry when Eva.")]
+        [SerializeField] [DesignerPropertySlider(0.1f, 3f, 30, Label = "<color=red>Water</color> Carry Amount(days)",Order = 6, Tooltip = "How much<color=red> Drinking Water</color> Drood himself/herself will carry when Eva.")]
         private float desireWaterCapacity = 0.2f;
         
         [SerializeField]
@@ -241,8 +242,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 this.minDeployHeight = Mathf.Min(this.autoDeployHeight, this.minDeployHeight);
                 d.Manager.RefreshUI();
             }));
+            
+            d.OnVisibilityRequested<float>((Expression<Func<float>>) (() => this.autoDeployHeight), (Func<bool, bool>) (x => this._parachuteType!="None"));
+            d.OnVisibilityRequested<bool>((Expression<Func<bool>>) (() => this.autoDeployEnabled), (Func<bool, bool>) (x => this._parachuteType!="None"));
+            d.OnVisibilityRequested<float>((Expression<Func<float>>) (() => this.minDeployHeight), (Func<bool, bool>) (x => this._parachuteType!="None"));
+            d.OnVisibilityRequested<string>((Expression<Func<string>>) (() => this.crewName), (Func<bool, bool>) (x => !this.Part.GetModifier<EvaData>().IsTourist));
             d.OnVisibilityRequested<string>((Expression<Func<string>>) (() => this.crewRoleName), (Func<bool, bool>) (x => !this.Part.GetModifier<EvaData>().IsTourist));
             d.OnVisibilityRequested<string>((Expression<Func<string>>) (() => this.crewRadiationDoes), (Func<bool, bool>) (x => !this.Part.GetModifier<EvaData>().IsTourist));
+            d.OnVisibilityRequested<string>((Expression<Func<string>>) (() => this.crewMissionTime), (Func<bool, bool>) (x => !this.Part.GetModifier<EvaData>().IsTourist));
         }
 
 
@@ -271,8 +278,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 evaData.CrewName == "Unassigned"
                     ? null
                     : DroodismCrewDataManager.Instance.GetCrewMember(evaData.CrewId);
+            this.crewName = DroodismCrewData == null
+                ? "<color=yellow>Crew Name</color>: Unknow"
+                : "<color=yellow>Crew Name</color>: " + evaData.CrewName;
             this.crewRoleName = DroodismCrewData == null ? "<color=yellow>Crew Role</color>: Unknow" : GetCrewRoleName();
             this.crewRadiationDoes=DroodismCrewData == null ? "<color=yellow>Radiation Dose: Unknow" : "<color=yellow>Radiation Dose:"+(DroodismCrewData.RadiationRate.ToString("f1")+" rad");
+            this.crewMissionTime = DroodismCrewData == null ? "<color=yellow>Total Mission Time</color>: Unknow" : "<color=yellow>Total Mission Time</color>: " + Scripts.Mod.GetStopwatchTimeString(DroodismCrewData.MissionTime);
         }
 
         /// <summary>维生罐最大容量（与旧 AddTank 逻辑一致，单位与 buffer 一致）。</summary>
@@ -331,11 +342,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private string GetCrewRoleName()
         {
-            string Description = DroodismCrewData.CrewRole == DroodType.Engineer ? "Enginner Could Fix Parts" :
-                DroodismCrewData.CrewRole == DroodType.Scientist ? "Scientist Could Increase more Science Experiment outcome(LMAO i didn't even implement this)" :
-                "Basic Drood which is good at taking control of the shit";
-            string color = DroodismCrewData.CrewRole == DroodType.Engineer ? "#00DD9F" :
-                DroodismCrewData.CrewRole == DroodType.Scientist ? "#62BF05" : "#BF2605";
+            string Description = 
+                DroodismCrewData.CrewRole == DroodType.Engineer ? "Enginner Could Fix Parts" : DroodismCrewData.CrewRole == DroodType.Scientist ? "Scientist Could Increase more Science Experiment outcome(LMAO i didn't even implement this)" : 
+                    DroodismCrewData.CrewRole ==DroodType.Pilot ?
+                "Basic Drood which is good at taking control of the craft":
+                "Unknow Drood Type";
+            string color = DroodismCrewData.CrewRole == DroodType.Engineer ? "#0072FF" :
+                DroodismCrewData.CrewRole == 
+                DroodType.Scientist ? "#62BF05" : DroodismCrewData.CrewRole == DroodType.Pilot?"#FF0003":"white";
             return "<color=yellow>Crew Role</color>: "+"<color="+color+">"+DroodismCrewData.CrewRole+"</color><br>"+Description;
         }
         
@@ -343,7 +357,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public override void OnPartRecovered()
         {
             base.OnPartRecovered();
-            
             this.Script.SaveDroodismCrewData();
         }
         #endregion

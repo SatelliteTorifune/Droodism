@@ -45,12 +45,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         public float WastedWaterComsumeRate
         {
-            get => this.wastedWaterComsumeRate*1;
+            get => this.wastedWaterComsumeRate*0.25f;
         }
         
-        public float WaterComsumeRate
-        {
-            get => this.waterComsumeRate*1;
-        }   
     }
 }

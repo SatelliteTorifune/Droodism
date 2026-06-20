@@ -12,8 +12,7 @@ GameObject:
   - component: {fileID: 5967344306734885689}
   - component: {fileID: 7990908676862513522}
   - component: {fileID: 5537895469188553751}
-  - component: {fileID: 8952786089990751662}
-  - component: {fileID: 6081676036464901381}
+  - component: {fileID: 4560909357972010048}
   m_Layer: 0
   m_Name: GravityRing
   m_TagString: Untagged
@@ -56,15 +55,15 @@ MonoBehaviour:
     _defaultColorIndexTrim2: 2
     _defaultColorIndexTrim3: 3
     _defaultColorIndexTrim4: 4
-    _id: GravityRing
+    _id: Flag
     _includeInBodyDrag: 1
     _mirrorConfig:
       _hasRotationOffset: 0
       _rotationOffsetEuler: {x: 0, y: 0, z: 0}
-    _name: Gravity Ring
+    _name: Flag
     _partCollisionHandling: 0
-    _price: 200000
-    _unscaledMass: 20000
+    _price: 1
+    _unscaledMass: 1
     _usePreferredNodeName: 1
 --- !u!114 &7990908676862513522
 MonoBehaviour:
@@ -81,15 +80,15 @@ MonoBehaviour:
   Data:
     _activationGroup: 0
     _category: {fileID: 11400000, guid: 4bfc71c0b9c1253428ca08e136ecc26f, type: 2}
-    _description: A gravity ring could hole 10 crew,Need High Pressure N2 to deploy
+    _description: 
     _displayOrder: 0
     _iconPath: Assets/Content/Craft/Parts/GravityRingIcon.png
     _iconType: 2
-    _name: <color=green>GravityRing
+    _name: <color=green>Flag
     _partTypeOverrides: []
     _position: {x: 0, y: 0, z: 0}
     _rotation: {x: 0, y: 0, z: 0}
-    _showInDesigner: 1
+    _showInDesigner: 0
     _snapshotDistanceScaler: 100
     _snapshotPartOffset: {x: 0, y: 0, z: 0}
     _snapshotPartRotation: {x: 0, y: 0, z: 0}
@@ -161,7 +160,7 @@ MonoBehaviour:
     _supportsTransparency: 1
     _thermalMassRatio: 1
     _tutorialId: 
---- !u!114 &8952786089990751662
+--- !u!114 &4560909357972010048
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -170,7 +169,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6122200776467757557}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f6b401299e81d4b44b1e255a27e61bd2, type: 3}
+  m_Script: {fileID: 11500000, guid: 68faf4cb371f33a419ecea4f66fe4367, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Data:
@@ -182,40 +181,8 @@ MonoBehaviour:
     _version: 1
     _versionLast: 1
     _versionsAllowed: 
-    IsReverse: 0
-    CurrentRotation: 90
     ExtendSpeed: 0.2
-    deployRotationSpeed: 5
+    deployRotationSpeed: 15
     isDeployed: 0
     stayDeployed: 0
     RotationSpeed: 0
---- !u!114 &6081676036464901381
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6122200776467757557}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1264219031, guid: 55a7c5278766598448d9083b0de0861d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Data:
-    _id: 
-    _inputId: 
-    _inspectorEnabled: 1
-    _partPropertiesEnabled: 1
-    _staticPriceAndMass: 0
-    _version: 1
-    _versionLast: 1
-    _versionsAllowed: 
-    _capacity: 10
-    _capacityLabel: 
-    _commandPodEnabledInCompartment: 0
-    _crewExitPosition: {x: 0, y: 0, z: 0}
-    _crewExitRotation: {x: 0, y: 0, z: 0}
-    _maxPressure: -1
-    _minPressure: -1
-    _visibleInCompartment: 0
-    _volumePerIndividual: 3

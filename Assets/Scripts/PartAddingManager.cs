@@ -91,6 +91,10 @@ namespace Assets.Scripts
                     var cam = part.GetModifier<CameraVantageData>();
                     cam.InspectorEnabled = true;
                     cam.IsNight = false;
+                    if (ModSettings.Instance.RemoveDockingPortCamera)
+                    {
+                        cam.RemoveModifier();
+                    }
                 }
                 catch (Exception)
                 {
@@ -162,6 +166,10 @@ namespace Assets.Scripts
         private static void AddRagdollModifier(PartData part)
         {
             if (part == null) return;
+            if (!ModSettings.Instance.DebugMode)
+            {
+                return;
+            }
 
             var ragdollData = part.GetModifier<RagdollModifierData>();
             if (ragdollData == null)
@@ -218,6 +226,7 @@ namespace Assets.Scripts
         private static void AddCrewCompartmentPatch(PartData part)
         {
             if (part == null) return;
+            
             
             var targetScript = part.GetModifier<CrewCabinData>();
             if (targetScript == null)

@@ -9,9 +9,13 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
+using Assets.Scripts.Craft.Parts.Modifiers.Input;
+using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
 using Assets.Scripts.Droodism;
 using Assets.Scripts.Droodism.Crew;
+using Assets.Scripts.Droodism.ResourceWarning;
 using Droodism.RadiationBelt;
+using ModApi.Craft.Propulsion;
 using ModApi.Flight.Events;
 using ModApi.Flight.GameView;
 using UnityEngine;
@@ -81,7 +85,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// 指示小蓝人是否在跑或是否为游客。
         /// Flags indicating if the crew member is running or if they are a tourist.
         /// </summary>
-        public bool isRunning, isTourist;
+        public bool IsRunning { get; private set; }
+        public bool IsTourist { get; private set; }
        
 
         /// <summary>
@@ -119,6 +124,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// 内辐射带保护值
         /// </summary>
         private float innerRadiationProtection;
+        
+        /// <summary>
+        /// 来自craft内部的辐射保护值
+        /// </summary>
+        private float craftRadiationProtection;
 
         private static BreathablePlanets _breathablePlanetsCache;
         private static bool _breathablePlanetsCacheLoaded;
@@ -170,14 +180,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             this.Data.InspectorEnabled = true;
             if (this.PartScript.Data.PartType.Name == "Eva-Tourist")
             {
-                isTourist = true;
+                IsTourist = true;
             }
             evaScript = this.PartScript.GetModifier<EvaScript>();
             UpdateCurrentPlanet();
             this.RadiationBeltConfig = RadiationBeltConfig.LoadFromFile(currentPlanetName);
             LoadRadiationData();
-
-           }
+           
+        }
 
         
         /// <summary>
@@ -233,7 +243,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         private void UpdateRunningStatus()
         {
-            isRunning = evaScript.EvaActive && 
+            IsRunning = evaScript.EvaActive && 
                         evaScript.IsPlayerCraft && 
                         !evaScript.IsWalking &&
                         evaScript.IsGroundedTerrain && 
@@ -281,7 +291,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
 
             bool usingInternalOxygen = UsingInternalOxygen();
-            double baseRate = frame.DeltaTimeWorld * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1);
+            double baseRate = frame.DeltaTimeWorld * (IsRunning ? 1.75 : 1) * (IsTourist ? 1.05 : 1);
             
             if (usingInternalOxygen)
             {
@@ -414,6 +424,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 try
                 {
                     RefreshFuelSource();
+                    CheckInCraftRadiationSource();
                     RefreshRadiationCompartment();
                 }
                 catch (Exception e)
@@ -443,6 +454,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             
             SyncCraftAndLocalFuelSources();
+            ResourceWarningScript.Instance.ResetSessionFlags();
             
 
             
@@ -598,6 +610,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 return;
             }
+
             OnCraftUnloaded();
         }
         
@@ -977,14 +990,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return;
             }   
             
-            float num2 = (isRunning ? 1.75f : 1f) * (isTourist ? 1.05f : 1f) * DamageScale * (float)frame.DeltaTimeWorld;
+            float num2 = (IsRunning ? 1.75f : 1f) * (IsTourist ? 1.05f : 1f) * DamageScale * (float)frame.DeltaTimeWorld;
             if ( 
                  (float)(Setting<float>)Game.Instance.Settings.Game.Flight.ImpactDamageScale > 0.0)
             {
                 this.PartScript.TakeDamage(num2 * Game.Instance.Settings.Game.Flight.ImpactDamageScale, PartDamageType.Basic);
                 Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
                     $"<color=red>Crew Member {evaScript.Data.CrewName}(id:{this.PartScript.Data.Id}) is taking damage because running out of {fuelType}, " +
-                    $"he/she has {Mod.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / ((isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1) * DamageScale))} left",
+                    $"he/she has {Mod.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / ((IsRunning ? 1.75 : 1) * (IsTourist ? 1.05 : 1) * DamageScale))} left",
                     false, 2f);
             }
         }
@@ -1002,7 +1015,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return;
             }   
             
-            float num2 = (isRunning ? 1.75f : 1f) * (isTourist ? 1.05f : 1f) * DamageScale * (float)frame.DeltaTimeWorld;
+            float num2 = (IsRunning ? 1.75f : 1f) * (IsTourist ? 1.05f : 1f) * DamageScale * (float)frame.DeltaTimeWorld;
             
             if (
                  (float)(Setting<float>)Game.Instance.Settings.Game.Flight.ImpactDamageScale > 0.0)
@@ -1010,7 +1023,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 this.PartScript.TakeDamage(num2 * Game.Instance.Settings.Game.Flight.ImpactDamageScale, PartDamageType.Basic);
                 Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
                     $"<color=red>Crew Member {evaScript.Data.CrewName}(id:{this.PartScript.Data.Id}) is taking damage because {resourceName} level is too high, " +
-                    $"he/she has {Mod.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / ((isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1) * DamageScale))} left",
+                    $"he/she has {Mod.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / ((IsRunning ? 1.75 : 1) * (IsTourist ? 1.05 : 1) * DamageScale))} left",
                     false, 2f);
             }
         }
@@ -1110,12 +1123,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public override void OnGenerateInspectorModel(PartInspectorModel model)
         {
             base.OnGenerateInspectorModel(model);
-            model.Add(new ToggleModel("<color=yellow>TEST",()=>animateEnabled,b=>
-            {
-                animateEnabled=b;
-            },"TEST"));
             //单独看任务时间的
-            if (!this.isTourist)
+            if (!this.IsTourist)
             {
                 model.Add<TextModel>(new TextModel("<color=yellow>Crew Role", (Func<string>) (() =>Data.DroodismCrewData==null?"Unknow":Data.DroodismCrewData.CrewRole.ToString())));
             }
@@ -1144,7 +1153,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 {
                     float percentage = (float)(Data._oxygenAmountBuffer / Data.DesireOxygenCapacity);
                     string oxygenTextColor = percentage > 0.5 ? "green" : percentage >= 0.25 ? "yellow" : "red";
-                    return $"<color={oxygenTextColor}>"+Mod.GetStopwatchTimeString(Data._oxygenAmountBuffer / (Data.OxygenConsumeRate * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)));
+                    return $"<color={oxygenTextColor}>"+Mod.GetStopwatchTimeString(Data._oxygenAmountBuffer / (Data.OxygenConsumeRate * (IsRunning ? 1.75 : 1) * (IsTourist ? 1.05 : 1)));
                 }
                 else if (!UsingInternalOxygen())
                 {
@@ -1164,7 +1173,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 float waterPercentage = (float)(Data._waterAmountBuffer / Data.DesireWaterCapacity);
                 string waterTextColor = waterPercentage > 0.5 ? "green" : waterPercentage >= 0.25 ? "yellow" : "red";
-                return $"<color={waterTextColor}>"+Mod.GetStopwatchTimeString(Data._waterAmountBuffer / (Data.WaterConsumeRate * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)));
+                return $"<color={waterTextColor}>"+Mod.GetStopwatchTimeString(Data._waterAmountBuffer / (Data.WaterConsumeRate * (IsRunning ? 1.75 : 1) * (IsTourist ? 1.05 : 1)));
             })));
             
             lifeSupportGroupModel.Add<TextModel>(new TextModel("Remain Food", (Func<string>) (() =>
@@ -1178,7 +1187,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 float foodPercentage = (float)(Data._foodAmountBuffer / Data.DesireFoodCapacity);
                 string foodTextColor = foodPercentage > 0.5 ? "green" : foodPercentage >= 0.25 ? "yellow" : "red";
-                return $"<color={foodTextColor}>"+Mod.GetStopwatchTimeString(Data._foodAmountBuffer / (Data.FoodConsumeRate * (isRunning ? 1.75 : 1) * (isTourist ? 1.05 : 1)));
+                return $"<color={foodTextColor}>"+Mod.GetStopwatchTimeString(Data._foodAmountBuffer / (Data.FoodConsumeRate * (IsRunning ? 1.75 : 1) * (IsTourist ? 1.05 : 1)));
             })));
             
             lifeSupportGroupModel.Add<TextModel>(new TextModel("CO2 Level", (Func<string>) (() =>
@@ -1212,15 +1221,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
             //辐射强度
             GroupModel RadiationInspector = new GroupModel("<color=yellow><size=115%>Radiation Inspector");
-            RadiationInspector.Add<TextModel>(new TextModel("Current Radiation Dose", (Func<string>) (() => $"{this.Data.CumulativeRad:F4} rad")));
-            RadiationInspector.Add<TextModel>(new TextModel("Current Radiation Dose Stats", (Func<string>) (() => CurrentCumulativeRadiationStats)));
-            RadiationInspector.Add<TextModel>(new TextModel("Current Radiation Dose Rate Per Hour", (Func<string>) (() => $"{this.RadiationDoseRateRadPerHour:F2} rad/h")));
-            RadiationInspector.Add<TextModel>(new TextModel("Current Radiation Level", (Func<string>) (() => $"{CurrentRadiationRateStats}")));
+            RadiationInspector.Add<TextModel>(new TextModel("Current Radiation Dose", (Func<string>) (() => $"{this.Data.CumulativeRad:F4} rad"),determineVisibility:() => this.Data.CumulativeRad >0));
+            RadiationInspector.Add<TextModel>(new TextModel("Current Radiation Dose Stats", (Func<string>) (() => CurrentCumulativeRadiationStats),determineVisibility:() => this.Data.CumulativeRad >0));
+            RadiationInspector.Add<TextModel>(new TextModel("Current Radiation Dose Rate Per Hour", (Func<string>) (() => $"{this.RadiationDoseRateRadPerHour:F2} rad/h"),determineVisibility:() => this.RadiationDoseRateRadPerHour >0));
+            RadiationInspector.Add<TextModel>(new TextModel("Current Radiation Level", (Func<string>) (() => $"{CurrentRadiationRateStats}"),determineVisibility:() => this.RadiationDoseRateRadPerHour >0));
             
             model.AddGroup(RadiationInspector);
 
             //插旗与开伞
-            if (!isTourist)
+            if (!IsTourist)
             {
                 
                 if (Data.ParachuteTypes=="ParaGlider")
@@ -1255,7 +1264,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             //特殊能力这一块
 
-            if (isTourist||this.Data.DroodismCrewData==null)
+            if (IsTourist||this.Data.DroodismCrewData==null)
             {
                 return;
             }
@@ -1491,6 +1500,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             try
             {
                 DroodismCrewDataManager.Instance.SetLifetimeRadiation(evaScript.Data.CrewId, this.Data.CumulativeRad,saveImmediately);
+                DroodismCrewDataManager.Instance.AddMissionTime(evaScript.Data.CrewId, MissionDurationTime,saveImmediately);
+                
             }
             catch (Exception e)
             {
@@ -1501,13 +1512,69 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// <summary>
         /// 计算来自craft内部的辐射源
         /// </summary>
+        private List<PartData> RTGParts=new List<PartData>();
+        private List<PartData> NTRParts = new List<PartData>();
         private void CheckInCraftRadiationSource()
         {
-            return;
-            foreach (var VARIABLE in PartScript.CraftScript.Data.Assembly.Parts)
+            if (!ModSettings.Instance.ReceiveCraftRadiation)
             {
+                return;
+            }
+            RTGParts.Clear();
+            NTRParts.Clear();
+            foreach (var partData in PartScript.CraftScript.Data.Assembly.Parts)
+            {
+                if (partData.PartType.Name == "Generator2")
+                {
+                    RTGParts.Add(partData);
+                }
+                if (partData.PartType.Name == "Rocket Engine")
+                {
+                    var rocketEngineScript = partData.PartScript.GetModifier<RocketEngineScript>();
+                    if (rocketEngineScript!=null)
+                    {
+                        if ( rocketEngineScript.Data.EngineType.Name == "Nuclear Thermal")
+                        {
+                            NTRParts.Add(partData);
+                        }
+                    }
+                }
+            }
+        }
+
+        private float GetRTGRadiationDoseRate()
+        {
+            if (!ModSettings.Instance.ReceiveCraftRadiation||RTGParts.Count==0)
+            {
+                return 0;
+            }
+
+            float finalResult = 0;
+            foreach (var partData in RTGParts)
+            {
+                float distance = Mathf.Clamp(Vector3.Distance(partData.PartScript.GameObject.transform.position, this.PartScript.GameObject.transform.position), 0.1f, 10f);
+                finalResult +=(1/ (distance*distance))*0.2f;
+            }
+            return finalResult;
+        }
+        private float GetNTRRadiationDoseRate()
+        {
+            if (!ModSettings.Instance.ReceiveCraftRadiation||NTRParts.Count==0)
+            {
+                return 0;
+            }
+            float finalResult = 0;
+            foreach (var partData in NTRParts)
+            {
+                if (partData.Activated)
+                {
+                    float distance = Mathf.Clamp(Vector3.Distance(partData.PartScript.GameObject.transform.position, this.PartScript.GameObject.transform.position), 0.1f, 10f);
+                    finalResult +=(1/ (distance*distance))*0.2f;
+                }
                 
             }
+            return finalResult;
+            
         }
 
         private void RefreshRadiationCompartment()
@@ -1516,7 +1583,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             if (eva.EvaActive||eva.ActiveWhileInCrewCompartment)
             {
-                innerRadiationProtection= outerRadiationProtection = 0;
+                innerRadiationProtection= outerRadiationProtection =craftRadiationProtection = 0;
                 return;
             }
           
@@ -1525,14 +1592,16 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 outerRadiationProtection =crewCabin.Data.RadiationShieldDuration>0? crewCabin.GetOuterRadiationProtection():0;
                 innerRadiationProtection=crewCabin.Data.RadiationShieldDuration>0? crewCabin.GetInnerRadiationProtection():0;
+                craftRadiationProtection = crewCabin.Data.RadiationShieldDuration > 0 ? crewCabin.GetCraftRadiationProtection() : 0;
             }
 
             if (crewCabin==null)
             {
-                innerRadiationProtection= outerRadiationProtection = 0;
+                innerRadiationProtection= outerRadiationProtection =craftRadiationProtection = 0;
             }
            
         }
+        
         /// <summary>
         /// 对辐射剂量计算
         /// </summary>
@@ -1551,8 +1620,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 deltaHours = Mod.GetDeltaTimeHours();
             }
-
-            this.RadiationDoseRateRadPerHour = innerDoseRateRadPerHour*(1-innerRadiationProtection)+outerDoseRateRadPerHour*(1-outerRadiationProtection);
+            
+            this.RadiationDoseRateRadPerHour = innerDoseRateRadPerHour*(1-innerRadiationProtection)+outerDoseRateRadPerHour*(1-outerRadiationProtection)+GetNTRRadiationDoseRate()*(1-craftRadiationProtection)+GetRTGRadiationDoseRate()*(1-craftRadiationProtection);
             this.Data.CumulativeRad += RadiationDoseRateRadPerHour * deltaHours;
             CurrentCumulativeRadiationStats = GetAcuteBand((float)this.Data.CumulativeRad);
             CurrentRadiationRateStats = GetRadiationRateStats(RadiationDoseRateRadPerHour);
@@ -1667,8 +1736,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         #endregion
 
         #region 杂项
-
-        public bool animateEnabled;
+        
 
         #endregion
 

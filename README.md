@@ -1,6 +1,6 @@
-# Droodism Mod (v0.79) - Life Support for SimpleRockets2(Or J:NO)
+# Droodism Mod (v0.797) - Life Support for SimpleRockets2(Or J:NO)
 
-**Latest Update: May 21 , 2026**
+**Latest Update: June 20 , 2026**
 
 > **Warning**: Hundreds of Droods were killed the making of this mod. Start a new game save when using this mod!
 
@@ -30,7 +30,7 @@ Droodism is a SimpleRockets mod that adds a **Life Support** system for Droods a
 
 ## Downloads
 
-- **[PC Version for Windows/MacOs (v0.79)](https://github.com/SatelliteTorifune/Droodism/releases/download/0.79/Droodism.sr2-mod)**
+- **[PC Version for Windows/MacOs (v0.797)](https://github.com/SatelliteTorifune/Droodism/releases/download/0.797/Droodism.sr2-mod)**
 - **[Mobile Version](https://www.bilibili.com/video/BV1GJ411x7h7/)**
 
 ---

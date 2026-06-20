@@ -14,32 +14,61 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     [PartModifierTypeId("Flag")]
     public class FlagData : PartModifierData<FlagScript>
     {
+
+        private Vector3 positionOffset1 = Vector3.zero;
+        private float currentExtentPercent = 0;
+        private float currentExtentPercent2 = 0.001f;
+        private float currentRotationPercent = 0f;
+        [SerializeField]
+        [DesignerPropertySlider(0.1f, 1f,10, Label = "Extend Speed")]
+        public float ExtendSpeed = 0.2f;
+        [SerializeField] [DesignerPropertySlider(1f, 30f,30, Label = "Deploy Rotation Speed")]
+        private float deployRotationSpeed = 15f;
+
         [SerializeField] [PartModifierProperty]
-        private float currentEnabledPercent1;
-        public float CurrentEnabledPercent1
-        {
-            get => this.currentEnabledPercent1;
-            set => this.currentEnabledPercent1 = value;
-        }
+        private bool isDeployed;
+
+        [SerializeField] [PartModifierProperty]
+        private bool stayDeployed;
+       
+        public float RotationSpeed = 0.75f;
         
-        [SerializeField] [PartModifierProperty]
-        private float _currentEnabledPercent2;
-        public float CurrentEnabledPercent2
+        public float DeployRotationSpeed
         {
-            get => this._currentEnabledPercent2;
-            set => this._currentEnabledPercent2 = value;
+            get => deployRotationSpeed;
         }
-        
-        [SerializeField] [PartModifierProperty]
-        private float _currentEnabledPercent3;
-        public float CurrentEnabledPercent3
+
+        public float CurrentExtentPercent
         {
-            get => this._currentEnabledPercent3;
-            set => this._currentEnabledPercent3 = value;
+            get => currentExtentPercent;
+            set => currentExtentPercent = value;
         }
-        public float DeploySpeed
+        public float CurrentExtentPercent2
         {
-            get =>0.5f;
+            get => currentExtentPercent2;
+            set => currentExtentPercent2 = value;
+        }
+        public float CurrentRotationPercent
+        {
+            get => currentRotationPercent;
+            set => currentRotationPercent = value;
+        }
+
+        public bool IsDeployed
+        {
+            get => isDeployed;
+            set => isDeployed = value;
+        }
+
+        public Vector3 PositionOffset1
+        {
+            get => positionOffset1;
+        }
+
+        public bool StayDeployed
+        {
+            get => stayDeployed;
+            set => stayDeployed = value;
         }
     }
 }
