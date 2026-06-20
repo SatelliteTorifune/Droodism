@@ -14,14 +14,22 @@ namespace Assets.Scripts
 
         private static string GetFuelAmountInDesigner(string fuelId,bool isWaste)
         {
-            foreach (var fuelSource in Game.Instance.Designer.CraftScript.FuelSources.FuelSources)
+            try
             {
-                if (fuelSource.FuelType.Id == fuelId)
+                foreach (var fuelSource in Game.Instance.Designer.CraftScript.FuelSources.FuelSources)
                 {
-                    return isWaste?Instance.FormatFuel(fuelSource.TotalCapacity*fuelSource.FuelType.Density,_massTypes):Instance.FormatFuel(fuelSource.TotalFuel*fuelSource.FuelType.Density,_massTypes);
+                    if (fuelSource.FuelType.Id == fuelId)
+                    {
+                        return isWaste?Instance.FormatFuel(fuelSource.TotalCapacity*fuelSource.FuelType.Density,_massTypes):Instance.FormatFuel(fuelSource.TotalFuel*fuelSource.FuelType.Density,_massTypes);
+                    }
                 }
+                return "NaN";
             }
-            return "NaN";
+            catch (Exception e)
+            {
+                return "NaN";
+            }
+           
         }
         private string GetDroodCountInDesigner()
         {

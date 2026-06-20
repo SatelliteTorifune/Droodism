@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 2217866000
+CRC: 3887952299
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: dad9a88ca99b9ebbe5fba4d6e528e8ed
+    Hash: 2ef3ad957f612d7d1a47ddd914e2750b
   TypeTreeHash:
     serializedVersion: 2
     Hash: 8357e557b520cda23c528e14b1789d5e
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: dad9a88ca99b9ebbe5fba4d6e528e8ed
+    Hash: 2ef3ad957f612d7d1a47ddd914e2750b
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -75,7 +75,6 @@ Assets:
 - Assets/Resources/Craft/Parts/Prefabs/GravityRing.prefab
 - Assets/Content/Craft/Parts/Textures/cloud_4_variants.psd
 - Assets/Resources/Craft/Parts/Prefabs/Flag.prefab
-- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/Resources/DefaultRadiationBeltConfigs/Earth.xml
 - Assets/Content/Craft/Parts/Categories/Science.asset
 - Assets/Resources/Craft/Parts/Prefabs/PhotoBioReactor.prefab
@@ -108,18 +107,22 @@ Assets:
 - Assets/Content/Craft/Parts/Categories/In-Situ Resource Utilization.asset
 - Assets/Resources/Craft/Parts/Prefabs/MethaloxGenerator.prefab
 - Assets/Resources/Craft/Parts/Definitions/PhotoBioReactor.xml
-- Assets/Resources/Craft/Parts/Definitions/Resource Fuselage.xml
+- Assets/Resources/Craft/Parts/Prefabs/ToolKit.prefab
+- Assets/_ModAssets_/Droodism.dll.bytes
 - Assets/Resources/Craft/Parts/Prefabs/GasDepressurizeDevice.prefab
 - Assets/Resources/Craft/Parts/Definitions/SewageTreatDevice.xml
 - Assets/Resources/Craft/Parts/Prefabs/DOCRDevice.prefab
+- Assets/Resources/Craft/Parts/Definitions/Resource Fuselage.xml
 - Assets/Content/Craft/Parts/GravityRingIcon.png
 - Assets/Resources/Craft/Parts/Prefabs/ResourcesPack.prefab
 - Assets/Resources/Craft/Parts/Prefabs/WaterTank.prefab
 - Assets/Resources/DefaultRadiationBeltConfigs/Vulco.xml
 - Assets/Resources/Craft/Parts/Definitions/HibernatingChamber.xml
 - Assets/Resources/DefaultFlag.jpg
+- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/Content/Craft/Parts/GasDepressure.png
 - Assets/Resources/Craft/Parts/Definitions/Flag.xml
+- Assets/Resources/Craft/Parts/Definitions/ToolKit.xml
 - Assets/Resources/Craft/Parts/Definitions/CarbonDioxideFilter.xml
 - Assets/Resources/Craft/Parts/Prefabs/Glider.prefab
 - Assets/Resources/DefaultRadiationBeltConfigs/Urados.xml
@@ -127,7 +130,6 @@ Assets:
 - Assets/Resources/Craft/Parts/Prefabs/FirstAidKit.prefab
 - Assets/Resources/DefaultRadiationBeltConfigs/Droo.xml
 - Assets/Content/Craft/Parts/PartManager.asset
-- Assets/_ModAssets_/Droodism.dll.bytes
 - Assets/Resources/Craft/Parts/Definitions/Sodium Peroxide Container.xml
 - Assets/Resources/Craft/Parts/Definitions/ChemicalReactor.xml
 - Assets/Resources/Craft/Parts/Prefabs/CarbonDioxideFilter.prefab
