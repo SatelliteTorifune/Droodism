@@ -14,7 +14,7 @@
   <RectTransform class="safe-area">
     <HorizontalLayout id="toolbar" anchorMin="0 1" anchorMax="0 1" pivot="0 1" offsetXY="15 -15" width="240" height="40" spacing="8" childAlignment="MiddleLeft" childForceExpandWidth="false" childForceExpandHeight="true" childControlWidth="true" childControlHeight="true">
       <ContentButton id="close-button" class="audio-btn-back" preferredWidth="40" preferredHeight="40" buttonColors="Button|ButtonHover|ButtonPressed|ButtonDisabled" onClick="OnCloseClicked();">
-        <Image sprite="Ui/Sprites/Menu/IconMenu" color="ButtonIcon" width="22" height="22" />
+        <Image sprite="Ui/Sprites/Menu/IconButtonBack" color="ButtonIcon" width="22" height="22" />
       </ContentButton>
       <ContentButton id="remove-debris-button" class="audio-btn-click" preferredWidth="180" preferredHeight="40" buttonColors="Danger|DangerHover|DangerPressed|Button" onClick="OnRemoveDebrisClicked();">
         <TextMeshPro text="{Menu.ActiveCrafts.RemoveAllDebris.ContextButtonText}" color="White" fontSize="14" alignment="Center" />

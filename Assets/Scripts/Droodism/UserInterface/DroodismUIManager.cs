@@ -6,6 +6,7 @@ using Assets.Scripts.Craft.Fuel;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using Assets.Scripts.Droodism.Crew;
+using ModApi;
 using ModApi.Ui;
 using ModApi.Craft;
 using ModApi.Craft.Parts;
@@ -304,11 +305,12 @@ namespace Assets.Scripts.Droodism.UserInterface
         {
             // 清空 FuelButtonRows 以避免重复添加
             FuelButtonRows.Clear();
-
+            
             // 大家好啊,我是分割线
             inspectorModel = new InspectorModel("Droodism Resources Inspector", "<color=green>Life Support Inspector");
 
             inspectorModel.Add(new TextModel("Crew Count", () => DroodCountTotal.ToString()));
+            //inspectorModel.Add(new TextModel(Locale.GetString("Droodsim.UI.Crew Count"), () => DroodCountTotal.ToString()));
             inspectorModel.Add(new TextModel("Astronaut Count", () => AstronautCount.ToString()));
             inspectorModel.Add(new TextModel("Tourist Count", () => TouristCount.ToString()));
 

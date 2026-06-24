@@ -74,21 +74,29 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         protected override void UpdateFuelSources()
         {
             var patchScript = this.PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
-            if (patchScript==null)
-            {
-                Mod.Log("CrewCabinScript.UpdateFuelSources: patchScript is null");
-                return;
-            }
-
             try
             {
-                BatterySource = PartScript.BatteryFuelSource;
-                WaterSource = patchScript.WaterFuelSource;
-                LiquidHydrogenSouce = this.GetRegularCraftFuelSource("LH2");
+                if (patchScript==null)
+                {
+                    Mod.Log("CrewCabinScript.UpdateFuelSources: patchScript is null");
+                    return;
+                }
+
+                try
+                {
+                    BatterySource = PartScript.BatteryFuelSource;
+                    WaterSource = patchScript.WaterFuelSource;
+                    LiquidHydrogenSouce = this.GetRegularCraftFuelSource("LH2");
+                }
+                catch (Exception e)
+                {
+                }
             }
             catch (Exception e)
             {
+              
             }
+           
             
         }
         

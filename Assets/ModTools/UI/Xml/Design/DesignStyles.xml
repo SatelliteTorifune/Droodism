@@ -21,5 +21,6 @@
     <Image class="delete-button-icon" image="Ui/Sprites/Design/IconButtonDeleteItem" color="Primary" width="16" height="16" raycastTarget="false" />
     <TextMeshProInputField class="search-input" text="" rectAlignment="UpperCenter" lineType="SingleLine" />
     <TextMeshPro class="tooltip" raycastTarget="true" tooltipPosition="Above" />
+    <TextMeshProDropdown class="designer-dropdown" dropdownBackgroundColor="Panel" scrollbarBackgroundColor="Panel" scrollbarColors="Button|ButtonHover|Button|Button" scrollbarImage="" scrollbarWidth="5" itemHeight="30" />
   </Defaults>
 </XmlLayout>

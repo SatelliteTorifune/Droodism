@@ -37,7 +37,6 @@ namespace Droodism.RadiationBelt
         { 
             Instance = this;
             Game.Instance.SceneManager.SceneTransitionCompleted += OnSceneTransitionCompleted;
-
         }
 
         

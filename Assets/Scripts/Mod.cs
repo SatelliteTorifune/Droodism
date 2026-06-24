@@ -163,9 +163,19 @@ namespace Assets.Scripts
             {
                 var fs = ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.FuelSources as CraftFuelSources;
                 fs.Rebuild(ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript);
-            }); 
-            
-           
+            });
+            DevConsoleApi.RegisterCommand("ShowAirCom", () =>
+            {
+                var coms = ModApi.Common.Game.Instance.FlightScene.CraftNode.Parent.PlanetData.AtmosphereData
+                    .Composition;
+                foreach (var atmosphereComponent in coms)
+                {
+                    Log($"大气组分{atmosphereComponent.GasId}");
+                    Log($"大气组分占比{atmosphereComponent.MassFraction}");
+
+                }
+            });
+
         }
 
         private void OnCraftChanged(ICraftNode craft) => PatchCraft(CurrentCraft());

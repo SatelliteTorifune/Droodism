@@ -10292,6 +10292,14 @@
               <c>true</c> if manual inputs are allowed; otherwise, <c>false</c>.
             </value>
         </member>
+        <member name="P:ModApi.Craft.Parts.Attributes.DesignerPropertySpinnerAttribute.Dropdown">
+            <summary>
+            Gets or sets a value indicating whether the property is displayed as a dropdown instead of a spinner (text spinners only).
+            </summary>
+            <value>
+              <c>true</c> if the property is displayed as a dropdown; otherwise, <c>false</c>.
+            </value>
+        </member>
         <member name="P:ModApi.Craft.Parts.Attributes.DesignerPropertySpinnerAttribute.IsTextSpinner">
             <summary>
             Gets a value indicating whether this instance is text spinner.
@@ -12373,6 +12381,12 @@
             </summary>
             <param name="activationGroup">The activation group.</param>
             <returns>The state of the activation group. True indicates the group is active.</returns>
+        </member>
+        <member name="M:ModApi.Craft.Parts.ICommandPod.OverridePilotSeatOrientation(UnityEngine.Quaternion)">
+            <summary>
+            Overrides the pilot seat orientation, persisting it in saves.
+            </summary>
+            <param name="worldRotation">The world-space orientation to use as the craft's control frame.</param>
         </member>
         <member name="M:ModApi.Craft.Parts.ICommandPod.SetActivationGroupState(System.Int32,System.Boolean)">
             <summary>
@@ -18020,6 +18034,12 @@
             <summary>
             End method called when the part is being removed from the flight scene.
             </summary>
+        </member>
+        <member name="M:ModApi.Craft.Parts.PartModifierScript.GetDesiredControlOrientation">
+            <summary>
+            Gets the orientation this modifier wants to use as the craft's forward direction, or <c>null</c> if unsupported.
+            </summary>
+            <returns>The world-space control orientation, or <c>null</c> if unsupported.</returns>
         </member>
         <member name="M:ModApi.Craft.Parts.PartModifierScript.GetData">
             <summary>
@@ -45991,6 +46011,11 @@
             The languages.
             </value>
         </member>
+        <member name="F:ModApi.Locale.EmptyLanguages">
+            <summary>
+            Empty fallback list for when the language data has not yet been loaded
+            </summary>
+        </member>
         <member name="P:ModApi.Locale.LocalizationPath">
             <summary>
             Gets the localization path.
@@ -54753,6 +54778,11 @@
             Gets or sets the rotation speed of the layer in radians per second.
             </summary>
         </member>
+        <member name="P:ModApi.Planet.Modifiers.VertexData.Clouds.CloudLayer.TerrainDisplacement">
+            <summary>
+            Gets or sets how strongly this layer follows the terrain height (0 = flat shell, 1 = fully terrain-following).
+            </summary>
+        </member>
         <member name="P:ModApi.Planet.Modifiers.VertexData.Clouds.CloudLayer.Tint">
             <summary>
             Gets or sets the tint of the layer. The alpha channel acts as an overall opacity multiplier.
@@ -61282,6 +61312,11 @@
             Gets or sets how strongly the mask affects this layer's opacity (0 = ignore, 1 = fully masked).
             </summary>
         </member>
+        <member name="P:ModApi.Planet.CloudLayerRenderInfo.TerrainDisplacement">
+            <summary>
+            Gets or sets how strongly this layer follows the terrain height (0 = flat shell, 1 = fully terrain-following).
+            </summary>
+        </member>
         <member name="P:ModApi.Planet.CloudLayerRenderInfo.DetailScale">
             <summary>
             Gets or sets how finely the close-up ground detail noise tiles on this layer (higher is finer). Ground view only.
@@ -61490,6 +61525,11 @@
         <member name="P:ModApi.Planet.PlanetCubemapData.CloudLayerData.MaskInfluence">
             <summary>
             Gets or sets how strongly the mask layer affects this layer's opacity (0 = ignore the mask, 1 = fully masked).
+            </summary>
+        </member>
+        <member name="P:ModApi.Planet.PlanetCubemapData.CloudLayerData.TerrainDisplacement">
+            <summary>
+            Gets or sets how strongly this layer follows the terrain height (0 = flat shell, 1 = fully terrain-following).
             </summary>
         </member>
         <member name="T:ModApi.Planet.PlanetCubemapManager">

@@ -466,10 +466,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
     
             void RefreshCraftFuelSources()
-            {
+            { 
+                var patch = PartScript.GetModifier<EvaScript>().CrewCompartment?.PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+                if (patch==null)
+                {
+                    
+                    Mod.Log("NULl DEtected in SupportLifeScript.RefreshFuelSource.RefreshCraftFuelSources");
+                    return;
+                }
                 try
                 {
-                    var patch = PartScript.GetModifier<EvaScript>().CrewCompartment?.PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+                   
                     OxygenSource = patch?.OxygenFuelSource;
                     FoodSource = patch?.FoodFuelSource;
                     WaterSource = patch?.WaterFuelSource;
@@ -837,6 +844,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private static bool IsBreathablePlanet(string planetName)
         {
+            
             var config = GetBreathablePlanets();
             if (config?.BreathablePlanet == null)
             {
@@ -871,6 +879,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// <returns>如果使用内部氧气则返回true，否则返回false。True if using internal oxygen, false otherwise.</returns>
         public bool UsingInternalOxygen()
         {
+            var airCom = PartScript.CraftScript.CraftNode.Parent.PlanetData.AtmosphereData.Composition;
+            //TODO 完善根据组分判断
             float airDensity = PartScript.CraftScript.AtmosphereSample.AirDensity;
             if (airDensity == 0)
             {
@@ -1125,6 +1135,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             //单独看任务时间的
             if (!this.IsTourist)
             {
+                //ModApi.Locale.GetString("");
                 model.Add<TextModel>(new TextModel("<color=yellow>Crew Role", (Func<string>) (() =>Data.DroodismCrewData==null?"Unknow":Data.DroodismCrewData.CrewRole.ToString())));
             }
             model.Add<TextModel>(new TextModel("<color=yellow>Mission Time", (Func<string>) (() =>Mod.GetStopwatchTimeString(MissionDurationTime))));
