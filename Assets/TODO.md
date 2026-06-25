@@ -1,6 +1,14 @@
 # 1.4更新
 > 修改辐射带UI(和辐射带本体)适配新增加的的地图界面
->
+> >记录所需modAPi
+> 
+> 大修燃料更新结构
+> 
+> 以下有待商榷
+> 
+> >增加全局属性
+> 
+> >移除STCommandPatch相关
 > 
 > ChemicalReactorScript
 > >修改这个部件中Sabatier_reaction的条件和逻辑

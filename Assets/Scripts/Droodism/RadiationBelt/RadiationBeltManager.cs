@@ -8,6 +8,7 @@ using ModApi.GameLoop.Interfaces;
 using ModApi.Planet;
 using ModApi.Scenes.Events;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Droodism.RadiationBelt
 {
@@ -20,7 +21,7 @@ namespace Droodism.RadiationBelt
         private GameObject currentRadiationBeltObject;
         public ProceduralRadiationBelt BeltInstance;
 
-        public RadiationBeltCameraRenderer  CameraRenderer;
+       public RadiationBeltCameraRenderer  FlightCameraRenderer,MapCameraRenderer;
         
         public List<ProceduralRadiationBelt> BeltList=new List<ProceduralRadiationBelt>();
         private readonly Dictionary<string, double> planetRadiusMetersByName = new Dictionary<string, double>();
@@ -61,14 +62,14 @@ namespace Droodism.RadiationBelt
             this.CurrentConfig = RadiationBeltConfig.LoadFromFile(CurrentFocusPlanet);
             var currentRadiationBelt = GetCurrentRadiationBelt(CurrentFocusPlanet);
             this.currentRadiationBeltObject = currentRadiationBelt.gameObject;
-            this.CameraRenderer =
+            this.FlightCameraRenderer =
                 Game.Instance.FlightScene.ViewManager.MapViewManager.MapViewCamera.gameObject
                     .GetComponent<RadiationBeltCameraRenderer>() == null
                     ? Game.Instance.FlightScene.ViewManager.MapViewManager.MapViewCamera.gameObject
                         .AddComponent<RadiationBeltCameraRenderer>()
                     : Game.Instance.FlightScene.ViewManager.MapViewManager.MapViewCamera.gameObject
                         .GetComponent<RadiationBeltCameraRenderer>();
-            CameraRenderer.beltRenderer = currentRadiationBelt;
+            FlightCameraRenderer.beltRenderer = currentRadiationBelt;
             this.BeltInstance = GetCurrentRadiationBelt(CurrentFocusPlanet);
             
         }
@@ -129,7 +130,7 @@ namespace Droodism.RadiationBelt
             CurrentConfig = RadiationBeltConfig.LoadFromFile(currentName);
             BeltInstance = GetCurrentRadiationBelt(currentName);
             currentRadiationBeltObject = BeltInstance.gameObject;
-            this.CameraRenderer.beltRenderer = BeltInstance;
+            this.FlightCameraRenderer.beltRenderer = BeltInstance;
             // Ensure meshes exist for the newly focused planet if enabled.
             if (CurrentConfig.Enabled)
             {
