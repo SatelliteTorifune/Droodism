@@ -218,4 +218,42 @@
     <s id="Droodism.ModSettings.WarningThresholdDesc">Warning will trigger when resources fall below this percentage.</s>
     <s id="Droodism.ModSettings.CriticalThreshold">Critical Threshold</s>
     <s id="Droodism.ModSettings.CriticalThresholdDesc">Critical alert will trigger when resources fall below this percentage. Auto-slowdown is triggered at this level.</s>
+
+    <!-- LifeSupportGeneratorScript -->
+    <s id="Droodism.LifeSupportGeneratorScript.ReleaseCO2Externally">Release CO2 Externally</s>
+    <s id="Droodism.LifeSupportGeneratorScript.ReleaseCO2ExternallyTooltip">Determines whether release CO2 externally or internally to the craft.</s>
+
+    <!-- Sodium_PeroxideScript -->
+    <s id="Droodism.Sodium_PeroxideScript.GenerationProgress">Generation Progress</s>
+    <s id="Droodism.Sodium_PeroxideScript.GenerationPercentage">Generation Percentage</s>
+    <s id="Droodism.Sodium_PeroxideScript.CurrentState">Current State</s>
+    <s id="Droodism.Sodium_PeroxideScript.ContainerUsedUp">&lt;color=red&gt;This Container is used up&lt;/color&gt;</s>
+    <s id="Droodism.Sodium_PeroxideScript.Working">&lt;color=green&gt;Working&lt;/color&gt;</s>
+    <s id="Droodism.Sodium_PeroxideScript.Idle">&lt;color=yellow&gt;Idle&lt;/color&gt;</s>
+
+    <!-- ChemicalReactorScript -->
+    <s id="Droodism.ChemicalReactorScript.MethaneloxMassFlow">Methanelox Mass Flow</s>
+    <s id="Droodism.ChemicalReactorScript.MethaneloxMassFlowTooltip">The kilograms of Methanelox being generated per second.</s>
+    <s id="Droodism.ChemicalReactorScript.WaterMassFlow">Water Mass Flow</s>
+    <s id="Droodism.ChemicalReactorScript.WaterMassFlowTooltip">The kilograms of water being reacted per second.</s>
+    <s id="Droodism.ChemicalReactorScript.CO2MassFlow">CO2 Mass Flow</s>
+    <s id="Droodism.ChemicalReactorScript.CO2MassFlowTooltip">The kilograms of CO2 being reacted per second.</s>
+    <s id="Droodism.ChemicalReactorScript.MonopropellantMassFlow">Monopropellant Mass Flow</s>
+    <s id="Droodism.ChemicalReactorScript.MonopropellantMassFlowTooltip">The kilograms of Monopropellant being generated per second.</s>
+    <s id="Droodism.ChemicalReactorScript.HydroloxMassFlow">Hydrolox Mass Flow</s>
+    <s id="Droodism.ChemicalReactorScript.HydroloxMassFlowTooltip">The kilograms of Hydrolox being reacted per second.</s>
+    <s id="Droodism.ChemicalReactorScript.NitrogenMassFlow">Nitrogen Mass Flow</s>
+    <s id="Droodism.ChemicalReactorScript.NitrogenMassFlowTooltip">The kilograms of High Pressure Nitrogen being reacted per second.</s>
+    <s id="Droodism.ChemicalReactorScript.LH2MassFlow">LH2 Mass Flow</s>
+    <s id="Droodism.ChemicalReactorScript.LH2MassFlowTooltip">The kilograms of Liquid Hydrogen being reacted per second.</s>
+    <s id="Droodism.ChemicalReactorScript.OxygenMassFlow">Oxygen Mass Flow</s>
+    <s id="Droodism.ChemicalReactorScript.OxygenMassFlowTooltip">The kilograms of Liquid Oxygen being reacted per second.</s>
+
+    <!-- ElectrolyticDeviceScript -->
+    <s id="Droodism.ElectrolyticDeviceScript.WaterConsumptionRate">Water Consumption Rate</s>
+    <s id="Droodism.ElectrolyticDeviceScript.OxygenGenerationRate">Oxygen Generation Rate</s>
+    <s id="Droodism.ElectrolyticDeviceScript.PowerConsumptionRate">Power Consumption Rate</s>
+
+    <!-- FlagScript -->
+    <s id="Droodism.FlagScript.LoadImage">Load Image</s>
 </Strings>

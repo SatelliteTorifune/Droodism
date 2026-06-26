@@ -120,10 +120,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             base.OnGenerateInspectorModel(model);
             
-            var WastedWaterProgressBarModel = new ProgressBarModel("Generation Progress", () =>
+            var WastedWaterProgressBarModel = new ProgressBarModel(Locale.GetString("Droodism.Sodium_PeroxideScript.GenerationProgress"), () =>
                 (float)(oxygenGeneratedAmount/Data.MaxOxygenGenerateAmount));
-            var percentageModel = new TextModel("Generation Percentage", () => Units.GetPercentageString(oxygenGeneratedAmount/Data.MaxOxygenGenerateAmount));
-            var statesIndicatorModel = new TextModel("Current State", () => isUsedUp ? "<color=red>This Container is used up</color>" : isActive&&!isUsedUp ? "<color=green>Working</color>" : "<color=yellow>Idle</color>");
+            var percentageModel = new TextModel(Locale.GetString("Droodism.Sodium_PeroxideScript.GenerationPercentage"), () => Units.GetPercentageString(oxygenGeneratedAmount/Data.MaxOxygenGenerateAmount));
+            var statesIndicatorModel = new TextModel(Locale.GetString("Droodism.Sodium_PeroxideScript.CurrentState"), () => isUsedUp ? Locale.GetString("Droodism.Sodium_PeroxideScript.ContainerUsedUp") : isActive&&!isUsedUp ? Locale.GetString("Droodism.Sodium_PeroxideScript.Working") : Locale.GetString("Droodism.Sodium_PeroxideScript.Idle"));
             model.Add(statesIndicatorModel);
             model.Add(WastedWaterProgressBarModel);
             model.Add(percentageModel);
