@@ -141,46 +141,55 @@ namespace Assets.Scripts.Craft.Fuel
             try
             {
 
-                foreach (FuelTankData item in modifiers)
+                foreach (FuelTankData fuelTankData in modifiers)
                 {
-                    var patch = item?.Part.PartScript?.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+                    var patch = fuelTankData?.Part.PartScript?.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
                     CraftFuelSource craftFuelSource = null;
-                    if (item != null && !item.Script.PartScript.Disconnected)
+                    if (fuelTankData != null && !fuelTankData.Script.PartScript.Disconnected)
                     {
                         
-                        if (item.FuelType == FuelType.Battery)
+                        if (fuelTankData.FuelType == FuelType.Battery)
                         {
-                            craftFuelSource = item.Part.PartScript.CommandPod?.BatteryFuelSource as CraftFuelSource;
+                            craftFuelSource = fuelTankData.Part.PartScript.CommandPod?.BatteryFuelSource as CraftFuelSource;
                         }
-                        else if (item.FuelType == FuelType.Monopropellant)
+                        else if (fuelTankData.FuelType != null && fuelTankData.FuelType.CraftWidePool)
                         {
-                            craftFuelSource = item.Part.PartScript.CommandPod?.MonoFuelSource as CraftFuelSource;
+                            CommandPodScript commandPod = fuelTankData.Part.PartScript.CommandPod as CommandPodScript;
+                            if ((UnityEngine.Object) commandPod != (UnityEngine.Object) null && !(commandPod.GetPooledFuelSource(fuelTankData.FuelType.Id) is CraftFuelSource source1))
+                            {
+                                source1 = this.CreateFuelSource(fuelTankData.FuelType, true);
+                                commandPod.AddPooledFuelSource(fuelTankData.FuelType.Id, (IFuelSource) source1);
+                            }
                         }
-                        else if (item.FuelType == FuelType.Jet)
+                        else if (fuelTankData.FuelType == FuelType.Monopropellant)
                         {
-                            craftFuelSource = item.Part.PartScript.CommandPod?.JetFuelSource as CraftFuelSource;
+                            craftFuelSource = fuelTankData.Part.PartScript.CommandPod?.MonoFuelSource as CraftFuelSource;
                         }
-                        else if (item.FuelType.Id =="Oxygen")
+                        else if (fuelTankData.FuelType == FuelType.Jet)
+                        {
+                            craftFuelSource = fuelTankData.Part.PartScript.CommandPod?.JetFuelSource as CraftFuelSource;
+                        }
+                        else if (fuelTankData.FuelType.Id =="Oxygen")
                         {
                             craftFuelSource=patch?.OxygenFuelSource as CraftFuelSource;
                         }
-                        else if (item.FuelType.Id =="H2O")
+                        else if (fuelTankData.FuelType.Id =="H2O")
                         {
                             craftFuelSource=patch?.WaterFuelSource as CraftFuelSource;
                         }
-                        else if (item.FuelType.Id =="Wasted Water")
+                        else if (fuelTankData.FuelType.Id =="Wasted Water")
                         {
                             craftFuelSource=patch?.WastedWaterFuelSource as CraftFuelSource;
                         }
-                        else if (item.FuelType.Id =="Food")
+                        else if (fuelTankData.FuelType.Id =="Food")
                         {
                             craftFuelSource=patch?.FoodFuelSource as CraftFuelSource;
                         }
-                        else if (item.FuelType.Id =="Solid Waste")
+                        else if (fuelTankData.FuelType.Id =="Solid Waste")
                         {
                             craftFuelSource=patch?.SolidWasteFuelSource as CraftFuelSource;
                         }
-                        else if (item.FuelType.Id =="CO2")
+                        else if (fuelTankData.FuelType.Id =="CO2")
                         {
                             craftFuelSource=patch?.CO2FuelSource as CraftFuelSource;
                         }
@@ -188,11 +197,11 @@ namespace Assets.Scripts.Craft.Fuel
                     
                     if (craftFuelSource != null)
                     {
-                        craftFuelSource?.AddFuelTank(item.Script);
+                        craftFuelSource?.AddFuelTank(fuelTankData.Script);
                     }
                     else
                     {
-                        lookup[item.Part.Id] = item.Script;
+                        lookup[fuelTankData.Part.Id] = fuelTankData.Script;
                     }
                 }
     
@@ -232,13 +241,18 @@ namespace Assets.Scripts.Craft.Fuel
             //Mod.LOG("Patched Rebuild firing");
             _fuelSources.Clear();
             _crossFeeds.Clear();
+            CraftFuelSource fuelSource1 = this.CreateFuelSource(FuelType.Battery);
+            CraftFuelSource fuelSource2 = FuelType.Jet.CraftWidePool ? this.CreateFuelSource(FuelType.Jet, true) : (CraftFuelSource) null;
+            CraftFuelSource fuelSource3 = FuelType.Monopropellant.CraftWidePool ? this.CreateFuelSource(FuelType.Monopropellant, true) : (CraftFuelSource) null;
+            Dictionary<string, IFuelSource> sources = new Dictionary<string, IFuelSource>();
             foreach (ICommandPod commandPod in craftScript.CommandPods)
             {
                 CommandPodScript commandPodScript = commandPod as CommandPodScript;
                 STCommandPodPatchScript patchScript = commandPod.Part.PartScript?.GetModifier<STCommandPodPatchScript>();
-                commandPodScript.BatteryFuelSource = CreateFuelSource(FuelType.Battery);
-                 commandPodScript.JetFuelSource = CreateFuelSource(FuelType.Jet, true);
-                commandPodScript.MonoFuelSource = CreateFuelSource(FuelType.Monopropellant, true);
+                commandPodScript.BatteryFuelSource = (IFuelSource) fuelSource1;
+                commandPodScript.JetFuelSource = (IFuelSource) fuelSource2;
+                commandPodScript.MonoFuelSource = (IFuelSource) fuelSource3;
+                commandPodScript.SetPooledFuelSources(sources);
                 if (patchScript != null)
                 {
                     try

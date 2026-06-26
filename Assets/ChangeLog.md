@@ -1,3 +1,10 @@
+## 2026 6 26
+> 更新modTool到 1.4版本
+> 
+> 根据新版本变动修改了SRCraftFuelSources中的部分函数以适配更新后的CraftFuelSources和全局资源系统
+> 
+> 对Propulsion.xml进行了密度调整,并覆写了部分1.4更新后新增的FuelType
+
 # V0.797 发布
 
 ## 2026 6 16
