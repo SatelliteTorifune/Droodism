@@ -5,55 +5,55 @@
   <Panel id="panel" showAnimation="FadeIn" hideAnimation="FadeOut" animationDuration="0.1" class="dialog-background">
     <VerticalLayout class="panel border" width="450" contentSizeFitter="vertical" spacing="10" padding="20">
       <VerticalLayout id="form" contentSizeFitter="vertical" spacing="10" padding="20">
-        <TextMeshPro id="header-text" class="value text-lg" text="LOGIN TO EXISTING ACCOUNT" minHeight="50" />
+        <TextMeshPro id="header-text" class="value text-lg" text="{Account.Dialog.Header}" minHeight="50" />
         <Panel class="row" padding="0">
           <TextMeshProInputField id="username-input" text="">
-            <TMP_Placeholder text="Username" alignment="Center" />
+            <TMP_Placeholder text="{Account.Dialog.Username.Placeholder}" alignment="Center" />
             <TMP_Text text="" alignment="Center" />
           </TextMeshProInputField>
         </Panel>
         <Panel class="row" padding="0">
           <TextMeshProInputField id="password-input" text="" contentType="Password">
-            <TMP_Placeholder text="Password" alignment="Center" />
+            <TMP_Placeholder text="{Account.Dialog.Password.Placeholder}" alignment="Center" />
             <TMP_Text text="" alignment="Center" />
           </TextMeshProInputField>
         </Panel>
         <HorizontalLayout id="lost-password" class="hide-row" preferredHeight="40" spacing="10" childForceExpandHeight="true" childForceExpandWidth="false" childAlignment="MiddleCenter">
-          <TextMeshPro text="Lost your password? " />
-          <TextMeshPro class="link" text="Click Here" onClick="OnLostPasswordClicked();" />
+          <TextMeshPro text="{Account.Dialog.LostPassword.Prefix}" />
+          <TextMeshPro class="link" text="{Account.Dialog.LostPassword.Link}" onClick="OnLostPasswordClicked();" />
         </HorizontalLayout>
         <HorizontalLayout id="lost-password" class="hide-row" preferredHeight="40" spacing="10" childForceExpandHeight="true" childForceExpandWidth="false" childAlignment="MiddleCenter">
-          <TextMeshPro text="Don't have an account? " />
-          <TextMeshPro class="link" text="Register Here" onClick="OnRegisterHereClicked();" />
+          <TextMeshPro text="{Account.Dialog.Register.Prefix}" />
+          <TextMeshPro class="link" text="{Account.Dialog.Register.Link}" onClick="OnRegisterHereClicked();" />
         </HorizontalLayout>
       </VerticalLayout>
       <Panel id="profile" minHeight="128">
         <Panel rectAlignment="MiddleLeft" width="40%">
-          <TextMeshPro text="Loading..." />
+          <TextMeshPro text="{Scene.LoadingText}" />
           <RawImage id="profile-image" width="128" height="128" rectAlignment="MiddleLeft" />
         </Panel>
         <VerticalLayout rectAlignment="MiddleRight" width="60%" spacing="10">
-          <TextMeshPro text="Logged in as:" alignment="Left" opacity=".75" />
+          <TextMeshPro text="{Account.Dialog.LoggedInAs}" alignment="Left" opacity=".75" />
           <TextMeshPro id="profile-username" alignment="Left" />
           <HorizontalLayout height="30" spacing="10" childForceExpandHeight="false">
             <Button class="btn btn-primary audio-btn-big" onClick="OnViewProfileClicked();">
-              <TextMeshPro text="View Profile" />
+              <TextMeshPro text="{Account.Dialog.ViewProfile}" />
             </Button>
             <Button class="btn btn-danger audio-btn-big" onClick="OnDeleteProfileClicked();">
-              <TextMeshPro text="Delete Account" />
+              <TextMeshPro text="{Account.Dialog.DeleteAccount}" />
             </Button>
           </HorizontalLayout>
         </VerticalLayout>
       </Panel>
       <Panel preferredHeight="50">
         <Button id="cancel-button" class="btn audio-btn-back" rectAlignment="LowerLeft" width="150">
-          <TextMeshPro id="cancel-button-text" text="CLOSE" />
+          <TextMeshPro id="cancel-button-text" text="{Dialog.Close}" />
         </Button>
         <Button id="okay-button" class="btn btn-primary audio-btn-big" rectAlignment="LowerRight" width="150">
-          <TextMeshPro id="okay-button-text" text="OKAY" />
+          <TextMeshPro id="okay-button-text" text="{Dialog.Okay}" />
         </Button>
         <Button id="logout-button" class="btn btn-primary audio-btn-big" rectAlignment="LowerRight" width="150" active="false">
-          <TextMeshPro text="LOG OUT" />
+          <TextMeshPro text="{Account.Dialog.Logout}" />
         </Button>
       </Panel>
     </VerticalLayout>

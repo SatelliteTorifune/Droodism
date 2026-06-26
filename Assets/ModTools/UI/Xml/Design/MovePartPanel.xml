@@ -6,7 +6,7 @@
   </Defaults>
   <VerticalLayout class="no-image" childForceExpandHeight="false" padding="20" spacing="10" pivot="0 1">
     <Panel class="spinner row">
-      <TextMeshPro class="label tooltip" text="Grid Size" tooltip="Attach parts to fuselages at discrete vertical coordinates" />
+      <TextMeshPro class="label tooltip" text="{Design.ToolPanel.MovePart.GridSize.Text}" tooltip="{Design.ToolPanel.MovePart.GridSize.Tooltip}" />
       <Spinner id="spinner-grid-size" numericFormat="0.##" onNumericValueChanged="OnGridSizeChanged();" stepSize="0.05" minValue="0" maxValue="2">
         <TextMeshProInputField contentType="DecimalNumber">
           <TMP_Text />
@@ -14,7 +14,7 @@
       </Spinner>
     </Panel>
     <Panel class="spinner row">
-      <TextMeshPro class="label tooltip" text="Attachment Angle" tooltip="Attach parts to fuselages at discrete angles" />
+      <TextMeshPro class="label tooltip" text="{Design.ToolPanel.MovePart.AngleSnap.Text}" tooltip="{Design.ToolPanel.MovePart.AngleSnap.Tooltip}" />
       <Spinner id="spinner-angle-snap" numericFormat="0.##" onNumericValueChanged="OnAngleSnapChanged();" stepSize="5.0" minValue="0" maxValue="180">
         <TextMeshProInputField contentType="DecimalNumber">
           <TMP_Text />
@@ -22,23 +22,27 @@
       </Spinner>
     </Panel>
     <Panel class="row">
-      <TextMeshPro class="label tooltip" text="Show Resize Gizmos" rectAlignment="MiddleLeft" tooltip="Show gizmos to control the size of fuel tanks, wings, etc." />
+      <TextMeshPro class="label tooltip" text="{Design.ToolPanel.MovePart.ShowResizeGizmos.Text}" rectAlignment="MiddleLeft" tooltip="{Design.ToolPanel.MovePart.ShowResizeGizmos.Tooltip}" />
       <Toggle id="enable-gizmos-toggle" rectAlignment="MiddleRight" onValueChanged="OnEnableGizmosChanged();" />
     </Panel>
     <Panel class="row">
-      <TextMeshPro class="label tooltip" text="Auto Rotate Parts" rectAlignment="MiddleLeft" tooltip="Allow parts to rotate into place when suggesting part connections." />
+      <TextMeshPro class="label tooltip" text="{Design.ToolPanel.MovePart.ShowFuelFlow.Text}" rectAlignment="MiddleLeft" tooltip="{Design.ToolPanel.MovePart.ShowFuelFlow.Tooltip}" />
+      <Toggle id="show-fuel-flow-toggle" rectAlignment="MiddleRight" onValueChanged="OnShowFuelFlowChanged();" />
+    </Panel>
+    <Panel class="row">
+      <TextMeshPro class="label tooltip" text="{Design.ToolPanel.MovePart.AutoRotateParts.Text}" rectAlignment="MiddleLeft" tooltip="{Design.ToolPanel.MovePart.AutoRotateParts.Tooltip}" />
       <Toggle id="enable-auto-rotation" rectAlignment="MiddleRight" onValueChanged="OnEnableAutoRotationChanged();" />
     </Panel>
     <Panel class="row">
-      <TextMeshPro class="label tooltip" text="Show Attach Points" rectAlignment="MiddleLeft" tooltip="Show attach points while moving parts." />
+      <TextMeshPro class="label tooltip" text="{Design.ToolPanel.MovePart.ShowAttachPoints.Text}" rectAlignment="MiddleLeft" tooltip="{Design.ToolPanel.MovePart.ShowAttachPoints.Tooltip}" />
       <Toggle id="show-attach-points" rectAlignment="MiddleRight" onValueChanged="OnShowAttachPointsChanged();" />
     </Panel>
     <Panel class="row">
-      <TextMeshPro class="label tooltip" text="Attach To Surfaces" rectAlignment="MiddleLeft" tooltip="Allow some of the parts to be attached directly to surfaces." />
+      <TextMeshPro class="label tooltip" text="{Design.ToolPanel.MovePart.AttachToSurfaces.Text}" rectAlignment="MiddleLeft" tooltip="{Design.ToolPanel.MovePart.AttachToSurfaces.Tooltip}" />
       <Toggle id="enable-surface-attachments" rectAlignment="MiddleRight" onValueChanged="OnEnableSurfaceAttachmentsChanged();" />
     </Panel>
     <Panel class="row">
-      <TextMeshPro class="label tooltip" text="Auto Resize Parts" rectAlignment="MiddleLeft" tooltip="Automatically resize parts to match in size when they are connected." />
+      <TextMeshPro class="label tooltip" text="{Design.ToolPanel.MovePart.AutoResizeParts.Text}" rectAlignment="MiddleLeft" tooltip="{Design.ToolPanel.MovePart.AutoResizeParts.Tooltip}" />
       <Toggle id="enable-auto-resize" rectAlignment="MiddleRight" onValueChanged="OnEnableAutoResizeChanged();" />
     </Panel>
   </VerticalLayout>

@@ -28,7 +28,7 @@
     <Image class="input-color-3" color="#d56fff" />
     <Image class="performance-panel" pivot="0 0" width="100" height="20" offsetXY="-220 -8" color="#3e454a" />
     <Image class="data-flow-grid" sprite="Ui/Sprites/PlanetStudio/DataSlotGridRow" pivot="0 0" width="205" height="16" rectAlignment="MiddleRight" offsetXY="-220 -8" color="#3e454a" />
-    <Image class="biome-pass" sprite="" color="#3e454a" tooltip="Data from previous passes are not automatically available to biome passes. GetCommonData must be used to pull data from a previous common pass into a biome pass. Also, a biome's data is reset after each pass and biomes cannot share data." />
+    <Image class="biome-pass" sprite="" color="#3e454a" tooltip="{PlanetStudio.Noise.Tooltip.BiomePass}" />
     <Image class="main-panel:data-flow-grid" active="false" />
     <Image class="hidden" active="false" />
     <Image class="data-flow-enabled:data-flow-grid" active="true" />
@@ -45,10 +45,10 @@
           <Panel internalId="inner-panel">
             <Image class="data-flow-grid" internalId="grid" />
             <Panel class="profiler">
-              <TextMeshPro internalId="perf-1" text="Percent of Total" anchorMin="0 0" anchorMax="0.2 1" alignment="Right" raycastTarget="true" tooltip="Percentage of execution time for this modifier compared to the total execution time for all modifiers. Rebuild the planet to refresh performance data." />
-              <TextMeshPro internalId="perf-2" text="Average Time" anchorMin="0.2 0" anchorMax="0.45 1" alignment="Right" raycastTarget="true" tooltip="The average execution time of the modifier in nano seconds. Rebuild the planet to refresh performance data." />
-              <TextMeshPro internalId="perf-3" text="Execution Count" anchorMin="0.45 0" anchorMax="0.7 1" alignment="Right" raycastTarget="true" tooltip="Percentage of execution count for this modifier compared to the total execution count for all modifiers. Rebuild the planet to refresh performance data." />
-              <TextMeshPro internalId="perf-4" text="Total Time" anchorMin="0.7 0" anchorMax="1.0 1" alignment="Right" raycastTarget="true" tooltip="The total execution time of the modifier in micro seconds. Rebuild the planet to refresh performance data." />
+              <TextMeshPro internalId="perf-1" text="{PlanetStudio.Noise.Profiler.PercentOfTotalLabel}" anchorMin="0 0" anchorMax="0.2 1" alignment="Right" raycastTarget="true" tooltip="{PlanetStudio.Noise.Profiler.PercentOfTotalTooltip}" />
+              <TextMeshPro internalId="perf-2" text="{PlanetStudio.Noise.Profiler.AverageTimeLabel}" anchorMin="0.2 0" anchorMax="0.45 1" alignment="Right" raycastTarget="true" tooltip="{PlanetStudio.Noise.Profiler.AverageTimeTooltip}" />
+              <TextMeshPro internalId="perf-3" text="{PlanetStudio.Noise.Profiler.ExecutionCountLabel}" anchorMin="0.45 0" anchorMax="0.7 1" alignment="Right" raycastTarget="true" tooltip="{PlanetStudio.Noise.Profiler.ExecutionCountTooltip}" />
+              <TextMeshPro internalId="perf-4" text="{PlanetStudio.Noise.Profiler.TotalTimeLabel}" anchorMin="0.7 0" anchorMax="1.0 1" alignment="Right" raycastTarget="true" tooltip="{PlanetStudio.Noise.Profiler.TotalTimeTooltip}" />
             </Panel>
           </Panel>
           <Image class="border" height="1" rectAlignment="LowerCenter" />
@@ -80,37 +80,37 @@
     </VerticalScrollView>
   </Panel>
   <HorizontalLayout color="DarkPanel" offsetXY="-1 0" height="40" rectAlignment="UpperCenter" spacing="0">
-    <ContentButton class="btn btn-primary context-button view-basic" onClick="OnViewModeButtonClicked();" tooltip="Currently viewing basic terrain features. Click to switch to the advanced view and see all terrain generation modifiers.">
+    <ContentButton class="btn btn-primary context-button view-basic" onClick="OnViewModeButtonClicked();" tooltip="{PlanetStudio.Noise.Tooltip.ViewBasic}">
       <Image sprite="Ui/Sprites/PlanetStudio/IconFeatures" internalId="image" width="20" height="20" />
     </ContentButton>
-    <ContentButton class="btn context-button view-advanced" onClick="OnViewModeButtonClicked();" tooltip="Currently viewing advanced terrain generation modifiers. Click to switch to viewing basic terrain features.">
+    <ContentButton class="btn context-button view-advanced" onClick="OnViewModeButtonClicked();" tooltip="{PlanetStudio.Noise.Tooltip.ViewAdvanced}">
       <Image sprite="Ui/Sprites/PlanetStudio/IconFeatures" internalId="image" width="20" height="20" />
     </ContentButton>
-    <ContentButton class="btn context-button view-advanced" onClick="OnAddButtonClicked();" tooltip="Add New Noise Modifier">
+    <ContentButton class="btn context-button view-advanced" onClick="OnAddButtonClicked();" tooltip="{PlanetStudio.Noise.Tooltip.AddNoise}">
       <Image sprite="Ui/Sprites/Common/IconAdd" internalId="image" width="20" height="20" />
     </ContentButton>
-    <ContentButton class="btn context-button view-advanced" offsetXY="40 0" onClick="OnAddContainerButtonClicked();" tooltip="Add New Container">
+    <ContentButton class="btn context-button view-advanced" offsetXY="40 0" onClick="OnAddContainerButtonClicked();" tooltip="{NoiseFlyout.AddContainerTitle}">
       <Image sprite="Ui/Sprites/PlanetStudio/IconNoiseAddContainer" internalId="image" width="20" height="20" />
     </ContentButton>
-    <ContentButton class="btn context-button view-advanced" offsetXY="120 0" onClick="OnDuplicateButtonClicked();" tooltip="Duplicates the selected element.">
+    <ContentButton class="btn context-button view-advanced" offsetXY="120 0" onClick="OnDuplicateButtonClicked();" tooltip="{PlanetStudio.Noise.Tooltip.Duplicate}">
       <Image sprite="Ui/Sprites/PlanetStudio/IconNoiseDuplicateNode" internalId="image" width="20" height="20" />
     </ContentButton>
-    <ContentButton id="delete-button" class="btn context-button visible-selected view-advanced" onClick="OnDeleteButtonClicked();" tooltip="Delete selected object.">
+    <ContentButton id="delete-button" class="btn context-button visible-selected view-advanced" onClick="OnDeleteButtonClicked();" tooltip="{PlanetStudio.Noise.Tooltip.Delete}">
       <Image sprite="Ui/Sprites/Menu/IconButtonTrash" internalId="image" width="20" height="20" />
     </ContentButton>
-    <ContentButton class="btn context-button" offsetXY="80 0" onClick="OnRandomizeButtonClicked();" tooltip="Randomizes the selected element's seed (and all children if there are any).">
+    <ContentButton class="btn context-button" offsetXY="80 0" onClick="OnRandomizeButtonClicked();" tooltip="{PlanetStudio.Noise.Tooltip.Randomize}">
       <Image sprite="Ui/Sprites/PlanetStudio/IconNoiseRandomizeNode" internalId="image" width="20" height="20" />
     </ContentButton>
-    <ContentButton class="btn context-button" offsetXY="120 0" onClick="OnToggleCollapseButtonClicked();" tooltip="Toggles the collapsed state of the selected element (and all children if there are any).">
+    <ContentButton class="btn context-button" offsetXY="120 0" onClick="OnToggleCollapseButtonClicked();" tooltip="{PlanetStudio.Noise.Tooltip.Collapse}">
       <Image sprite="Ui/Sprites/PlanetStudio/IconNoiseCollapseNode" internalId="image" width="20" height="20" />
     </ContentButton>
-    <ContentButton id="hide-empty-button" class="btn context-button hide-button enabled view-advanced" offsetXY="160 0" onClick="OnHideEmptyButtonClicked();" tooltip="Hide/show passes that are empty.">
+    <ContentButton id="hide-empty-button" class="btn context-button hide-button enabled view-advanced" offsetXY="160 0" onClick="OnHideEmptyButtonClicked();" tooltip="{PlanetStudio.Noise.Tooltip.HideEmpty}">
       <Image internalId="image" width="20" height="20" />
     </ContentButton>
-    <ContentButton id="toggle-data-flow-button" class="btn context-button hide-button view-advanced" offsetXY="200 0" onClick="OnToggleDataFlowButtonClicked();" tooltip="Toggle the data flow display.">
+    <ContentButton id="toggle-data-flow-button" class="btn context-button hide-button view-advanced" offsetXY="200 0" onClick="OnToggleDataFlowButtonClicked();" tooltip="{PlanetStudio.Noise.Tooltip.DataFlow}">
       <Image sprite="Ui/Sprites/PlanetStudio/IconNoiseShowDataFlow" internalId="image" width="20" height="20" />
     </ContentButton>
-    <ContentButton id="toggle-profiler" class="btn context-button hide-button view-advanced" offsetXY="200 0" onClick="OnToggleProfilerButtonClicked();" tooltip="Toggle extra columns to show modifier performance from the last rebuild of the planet.">
+    <ContentButton id="toggle-profiler" class="btn context-button hide-button view-advanced" offsetXY="200 0" onClick="OnToggleProfilerButtonClicked();" tooltip="{PlanetStudio.Noise.Tooltip.Performance}">
       <Image sprite="Ui/Sprites/PlanetStudio/IconNoiseShowProfiler" internalId="image" width="20" height="20" />
     </ContentButton>
   </HorizontalLayout>

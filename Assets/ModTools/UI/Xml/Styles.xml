@@ -53,18 +53,18 @@
     <Panel class="spinner" preferredHeight="25" prefabPath="Ui/Prefabs/XmlLayout/BasicPanel" />
     <Panel class="row" preferredHeight="30" prefabPath="Ui/Prefabs/XmlLayout/BasicPanel" />
     <HorizontalLayout class="row" preferredHeight="30" padding="0" prefabPath="Ui/Prefabs/XmlLayout/BasicHorizontalLayout" />
-    <TextMeshPro font="Ui/Fonts/Roboto/Roboto-Regular SDF" fontSize="16" raycastTarget="false" />
-    <TextMeshPro class="modern" font="Ui/Fonts/Pirulen/pirulen rg SDF" fontSize="24" />
+    <TextMeshPro font="{Ui.PrimaryFontPath}" fontSize="16" raycastTarget="false" />
+    <TextMeshPro class="modern" font="{Ui.HeaderFontPath}" fontStyle="{Ui.HeaderFontStyle}" fontSize="24" />
     <TextMeshPro class="label" color="LabelText" />
     <TextMeshPro class="value" color="ValueText" />
     <TextMeshPro class="link" color="Primary" raycastTarget="true" />
     <TextMeshPro class="text-sm" fontSize="14" />
     <TextMeshPro class="text-lg" fontSize="20" />
-    <TextMeshPro class="text-header" font="Ui/Fonts/Pirulen/pirulen rg SDF" color="LabelText" fontSize="24" preferredHeight="32" enableAutoSizing="true" fontSizeMax="24" fontSizeMin="16" />
-    <TextMeshPro class="text-subheader" font="Ui/Fonts/Pirulen/pirulen rg SDF" color="LabelText" fontSize="18" preferredHeight="32" enableAutoSizing="true" fontSizeMax="18" fontSizeMin="12" />
+    <TextMeshPro class="text-header" font="{Ui.HeaderFontPath}" fontStyle="{Ui.HeaderFontStyle}" color="LabelText" fontSize="24" preferredHeight="32" enableAutoSizing="true" fontSizeMax="24" fontSizeMin="16" />
+    <TextMeshPro class="text-subheader" font="{Ui.HeaderFontPath}" fontStyle="{Ui.HeaderFontStyle}" color="LabelText" fontSize="18" preferredHeight="32" enableAutoSizing="true" fontSizeMax="18" fontSizeMin="12" />
     <TextMeshProDropdown prefabPath="Ui/Prefabs/XmlLayout/Dropdown" image="" color="Button" dropdownBackgroundImage="" arrowImage="Ui/Sprites/Common/DropdownArrow" checkColor="White" scrollbarBackgroundColor="#222" itemBackgroundColors="Transparent|ButtonHover|Button|Button" />
-    <TMP_OptionTextTemplate font="Ui/Fonts/Roboto/Roboto-Regular SDF" color="LabelText" image="" fontSize="16" />
-    <TMP_DropdownLabel font="Ui/Fonts/Roboto/Roboto-Regular SDF" color="ValueText" fontSize="16" enableAutoSizing="true" fontSizeMin="6" fontSizeMax="16" />
+    <TMP_OptionTextTemplate font="{Ui.PrimaryFontPath}" color="LabelText" image="" fontSize="16" />
+    <TMP_DropdownLabel font="{Ui.PrimaryFontPath}" color="ValueText" fontSize="16" enableAutoSizing="true" fontSizeMin="6" fontSizeMax="16" />
     <Button class="icon-button" onClickSound="Ui/Audio/ButtonClicked" audioMode="OneShot" width="40" height="40" preferredWidth="40" preferredHeight="40" sprite="" colors="Button|ButtonHover|Button|ButtonDisabled" iconColor="ButtonIcon" iconHoverColor="ButtonIconSelected" navigation="None" tooltipPosition="Right" />
     <Button class="btn" onClickSound="Ui/Audio/ButtonClicked" audioMode="OneShot" prefabPath="Ui/Prefabs/XmlLayout/TextButton" sprite="" preferredHeight="30" height="30" raycastTarget="true" colors="Button|ButtonHover|ButtonPressed|ButtonDisabled" navigation="None" />
     <Button class="transparent" colors="TransparentPanel|ButtonHover|Button|Button" />
@@ -97,8 +97,8 @@
     <TextMeshProInputField lineType="SingleLine" color="Button" sprite="" raycastTarget="true" selectClass="input-select" hoverClass="input-hover" />
     <TextMeshProInputField class="input-hover" border="ButtonHover" />
     <TextMeshProInputField class="input-select" border="Primary" />
-    <TMP_Placeholder text="Placeholder..." color="#ffffff15" font="Ui/Fonts/Roboto/Roboto-Regular SDF" fontSize="16" fontStyle="Normal" raycastTarget="false" />
-    <TMP_Text font="Ui/Fonts/Roboto/Roboto-Regular SDF" fontSize="16" raycastTarget="false" color="White" />
+    <TMP_Placeholder text="Placeholder..." color="#ffffff15" font="{Ui.PrimaryFontPath}" fontSize="16" fontStyle="Normal" raycastTarget="false" />
+    <TMP_Text font="{Ui.PrimaryFontPath}" fontSize="16" raycastTarget="false" color="White" />
     <Panel class="toggle-buttons" preferredHeight="50" />
     <TextMeshPro class="toggle-buttons&gt;@TextMeshPro" height="20" pivot="0.5 1" rectAlignment="UpperCenter" />
     <ToggleGroup class="toggle-buttons" height="25" pivot="0.5 0" rectAlignment="LowerCenter" />
@@ -116,8 +116,8 @@
     <Image class="btn-danger&gt;@Image" color="White" />
     <Image class="btn-warning&gt;@Image" color="White" />
     <Image class="btn-success&gt;@Image" color="White" />
-    <Tooltip device="mobile" tooltipFontSize="16" tooltipWidth="300" tooltipDelayTime="1.25" tooltipBorderColor="Border" tooltipBackgroundColor="DarkPanel" tooltipTextColor="ValueText" tooltipBorderImage="Ui/Sprites/Border/TooltipBorder-1px" tooltipBackgroundImage="Ui/Sprites/Panel" tooltipUseTextMeshPro="true" tooltipFont="Ui/Fonts/Roboto/Roboto-Regular SDF" tooltipOffset="25" />
-    <Tooltip device="desktop" tooltipFontSize="16" tooltipWidth="400" tooltipDelayTime="0.65" tooltipBorderColor="Border" tooltipBackgroundColor="DarkPanel" tooltipTextColor="ValueText" tooltipBorderImage="Ui/Sprites/Border/TooltipBorder-1px" tooltipBackgroundImage="Ui/Sprites/Panel" tooltipUseTextMeshPro="true" tooltipFont="Ui/Fonts/Roboto/Roboto-Regular SDF" />
+    <Tooltip device="mobile" tooltipFontSize="16" tooltipWidth="300" tooltipDelayTime="1.25" tooltipBorderColor="Border" tooltipBackgroundColor="DarkPanel" tooltipTextColor="ValueText" tooltipBorderImage="Ui/Sprites/Border/TooltipBorder-1px" tooltipBackgroundImage="Ui/Sprites/Panel" tooltipUseTextMeshPro="true" tooltipFont="{Ui.PrimaryFontPath}" tooltipOffset="25" />
+    <Tooltip device="desktop" tooltipFontSize="16" tooltipWidth="400" tooltipDelayTime="0.65" tooltipBorderColor="Border" tooltipBackgroundColor="DarkPanel" tooltipTextColor="ValueText" tooltipBorderImage="Ui/Sprites/Border/TooltipBorder-1px" tooltipBackgroundImage="Ui/Sprites/Panel" tooltipUseTextMeshPro="true" tooltipFont="{Ui.PrimaryFontPath}" />
     <TableLayout class="panel" color="Panel" />
     <Panel class="panel" color="Panel" />
     <VerticalLayout class="panel" color="Panel" />
@@ -164,7 +164,7 @@
     <Panel class="flyout" raycastTarget="true" />
     <Panel class="flyout" rectAlignment="MiddleLeft" height="100%" offsetXY="50 0" border="Border" />
     <Panel class="flyout-header" rectAlignment="UpperCenter" width="100%" height="30" color="#171717" />
-    <TextMeshPro class="flyout-header:@TextMeshPro" internalId="flyout-title" font="Ui/Fonts/Pirulen/pirulen rg SDF" alignment="Left" color="LabelText" fontSize="14" preferredHeight="32" enableAutoSizing="true" fontSizeMax="14" fontSizeMin="10" margin="10 0 40 0" />
+    <TextMeshPro class="flyout-header:@TextMeshPro" internalId="flyout-title" font="{Ui.HeaderFontPath}" fontStyle="{Ui.HeaderFontStyle}" alignment="Left" color="LabelText" fontSize="14" preferredHeight="32" enableAutoSizing="true" fontSizeMax="14" fontSizeMin="10" margin="10 0 40 0" />
     <Panel class="flyout-content" offsetMax="0 -31" offsetMin="2 0" />
     <Image class="flyout-close-button" color="Button" image="Ui/Sprites/Common/IconCloseFlyout" width="40" height="35" offsetXY="0 0" raycastTarget="true" hoverClass="flyout-close-button-hover" onClick="OnFlyoutCloseButtonClicked(this);" rectAlignment="MiddleRight" />
     <Image class="flyout-close-button-hover" color="ButtonHover" />

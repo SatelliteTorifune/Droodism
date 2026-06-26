@@ -134,6 +134,7 @@ UnityEngine.TextAsset
    Ui/Xml/Map/MapViewUi
    Ui/Xml/Menu/About
    Ui/Xml/Menu/ListView
+   Ui/Xml/Menu/MenuMapUi
    Ui/Xml/Menu/MenuTutorialPanel
    Ui/Xml/Menu/MenuUi
    Ui/Xml/Menu/NewGameDialog
@@ -147,6 +148,7 @@ UnityEngine.TextAsset
    Ui/Xml/PlanetStudio/MenuFlyout
    Ui/Xml/PlanetStudio/NoiseFlyout
    Ui/Xml/PlanetStudio/PlanetObjectsFlyout
+   Ui/Xml/PlanetStudio/PlanetStudioTimePanel
    Ui/Xml/PlanetStudio/PlanetStudioUI
    Ui/Xml/PlanetStudio/SystemLaunchLocationsFlyout
    Ui/Xml/PlanetStudio/SystemPlanetsFlyout
@@ -414,6 +416,7 @@ UnityEngine.Sprite
    Ui/Sprites/Flight/IconStatusThrottle
    Ui/Sprites/Flight/IconTargetLocation
    Ui/Sprites/Flight/IconTimeFastForward
+   Ui/Sprites/Flight/IconTimePaused
    Ui/Sprites/Flight/IconTimePlay
    Ui/Sprites/Flight/IconTimeSlowMotion
    Ui/Sprites/Flight/IconTimeWarp
@@ -461,6 +464,7 @@ UnityEngine.Sprite
    Ui/Sprites/Menu/IconComplete
    Ui/Sprites/Menu/IconExclamation
    Ui/Sprites/Menu/IconLock
+   Ui/Sprites/Menu/IconMenu
    Ui/Sprites/Menu/IconStore
    Ui/Sprites/Menu/JundrooLogo
    Ui/Sprites/Menu/LevelIcons/DockingPractice
@@ -561,6 +565,37 @@ UnityEngine.Sprite
    Ui/Sprites/PlanetStudio/PlanetTemplates/Star
    Ui/Sprites/PlanetStudio/PlanetTemplates/Terrestrial
    Ui/Sprites/PlanetStudio/PlanetTemplates/Venusian
+   Ui/Sprites/Purchase/AngleButton
+   Ui/Sprites/Purchase/AngleButtonBorder
+   Ui/Sprites/Purchase/BorderGlow
+   Ui/Sprites/Purchase/CardBackground
+   Ui/Sprites/Purchase/Cards/CareerBundle/CoverImage
+   Ui/Sprites/Purchase/Cards/CareerBundle/Video-1-Thumb
+   Ui/Sprites/Purchase/Cards/CareerBundle/Video-2-Thumb
+   Ui/Sprites/Purchase/Cards/CareerBundle/Video-3-Thumb
+   Ui/Sprites/Purchase/Cards/CareerBundle/Video-4-Thumb
+   Ui/Sprites/Purchase/Cards/CareerBundle/Video-5-Thumb
+   Ui/Sprites/Purchase/Cards/CareerBundle/Video-6-Thumb
+   Ui/Sprites/Purchase/Cards/CompleteEdition/CoverImage
+   Ui/Sprites/Purchase/Cards/EngineerBundle/CoverImage
+   Ui/Sprites/Purchase/Cards/EngineerBundle/Video-1-Thumb
+   Ui/Sprites/Purchase/Cards/EngineerBundle/Video-2-Thumb
+   Ui/Sprites/Purchase/Cards/EngineerBundle/Video-3-Thumb
+   Ui/Sprites/Purchase/Cards/EngineerBundle/Video-4-Thumb
+   Ui/Sprites/Purchase/Cards/EngineerBundle/Video-5-Thumb
+   Ui/Sprites/Purchase/Cards/EngineerBundle/Video-6-Thumb
+   Ui/Sprites/Purchase/Cards/RemoveAds/CoverImage
+   Ui/Sprites/Purchase/Cards/RemoveAds/Screenshot-1
+   Ui/Sprites/Purchase/Cards/RemoveAds/Screenshot-2
+   Ui/Sprites/Purchase/Cards/RemoveAds/Screenshot-3
+   Ui/Sprites/Purchase/Cards/SandboxBundle/CoverImage
+   Ui/Sprites/Purchase/Cards/SandboxBundle/Video-1-Thumb
+   Ui/Sprites/Purchase/Cards/SandboxBundle/Video-2-Thumb
+   Ui/Sprites/Purchase/Cards/SandboxBundle/Video-3-Thumb
+   Ui/Sprites/Purchase/Cards/SandboxBundle/Video-4-Thumb
+   Ui/Sprites/Purchase/Cards/SandboxBundle/Video-5-Thumb
+   Ui/Sprites/Purchase/Cards/SandboxBundle/Video-6-Thumb
+   Ui/Sprites/Purchase/PlayVideo
    Ui/Sprites/Settings/CalibrationArrow
    Ui/Sprites/Settings/graphic-center-stick
    Ui/Sprites/Settings/graphic-move-stick
@@ -620,9 +655,6 @@ UnityEngine.Texture2D
    Ui/Sprites/Common/ResizeArrowVertical_small
 
 UnityEngine.Font
-   Fonts/Arial Bold
-   Fonts/Arial Italic
-   Fonts/Arial
    Fonts/Courier New Bold
    Fonts/Courier New
    Ui/Fonts/AngkatanBersenjata/AngkatanBersenjata-2OD4o
@@ -669,4 +701,24 @@ UnityEditor.DefaultAsset
 UnityEngine.Shader
    Ui/Materials/ColorPickerShader
    Ui/Materials/GradientShader
+
+UnityEngine.Video.VideoClip
+   Ui/Sprites/Purchase/Cards/CareerBundle/Video-1
+   Ui/Sprites/Purchase/Cards/CareerBundle/Video-2
+   Ui/Sprites/Purchase/Cards/CareerBundle/Video-3
+   Ui/Sprites/Purchase/Cards/CareerBundle/Video-4
+   Ui/Sprites/Purchase/Cards/CareerBundle/Video-5
+   Ui/Sprites/Purchase/Cards/CareerBundle/Video-6
+   Ui/Sprites/Purchase/Cards/EngineerBundle/Video-1
+   Ui/Sprites/Purchase/Cards/EngineerBundle/Video-2
+   Ui/Sprites/Purchase/Cards/EngineerBundle/Video-3
+   Ui/Sprites/Purchase/Cards/EngineerBundle/Video-4
+   Ui/Sprites/Purchase/Cards/EngineerBundle/Video-5
+   Ui/Sprites/Purchase/Cards/EngineerBundle/Video-6
+   Ui/Sprites/Purchase/Cards/SandboxBundle/Video-1
+   Ui/Sprites/Purchase/Cards/SandboxBundle/Video-2
+   Ui/Sprites/Purchase/Cards/SandboxBundle/Video-3
+   Ui/Sprites/Purchase/Cards/SandboxBundle/Video-4
+   Ui/Sprites/Purchase/Cards/SandboxBundle/Video-5
+   Ui/Sprites/Purchase/Cards/SandboxBundle/Video-6
 

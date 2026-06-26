@@ -12,7 +12,7 @@
     </Panel>
     <Panel id="autofix" height="40" rectAlignment="UpperCenter" offsetMax="0 -60">
       <Button name="FixButton" class="btn btn-primary" onClick="OnFixClicked();">
-        <TextMeshPro text="&lt;b&gt;Attempt Auto-Fix&lt;/b&gt;" />
+        <TextMeshPro text="&lt;b&gt;{Design.Validation.AutoFix.Text}&lt;/b&gt;" />
       </Button>
     </Panel>
     <VerticalScrollView id="scrollview" class="no-image" pivot="0 1" offsetMax="0 -70">

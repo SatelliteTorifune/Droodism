@@ -18,19 +18,19 @@
     <RectTransform class="safe-area">
       <Panel class="translucent-panel border" width="550" padding="20" maxSize="550 960" allowDragging="true" returnToOriginalPositionWhenReleased="false">
         <RectTransform>
-          <TextMeshPro class="text-header" text="SETTINGS" alignment="Top" />
+          <TextMeshPro class="text-header" text="{Menu.Settings}" alignment="Top" />
           <HorizontalLayout id="control-categories" class="no-image" childForceExpandHeight="true" height="30" rectAlignment="UpperCenter" spacing="10" offsetXY="0 -50">
             <Button internalId="Game" class="btn btn-primary">
-              <TextMeshPro text="Game" />
+              <TextMeshPro text="{Settings.Game}" />
             </Button>
             <Button internalId="Quality" class="btn">
-              <TextMeshPro text="Quality" />
+              <TextMeshPro text="{Settings.Quality}" />
             </Button>
             <Button internalId="Mods" class="btn">
-              <TextMeshPro text="Mods" />
+              <TextMeshPro text="{Settings.TabMods}" />
             </Button>
             <Button class="btn" onClick="OnControlsButtonClicked();">
-              <TextMeshPro text="Controls" />
+              <TextMeshPro text="{Settings.Controls}" />
             </Button>
           </HorizontalLayout>
           <Panel class="no-image" offsetMax="0 -90">
@@ -103,16 +103,16 @@
             </Panel>
             <Panel class="no-image" rectAlignment="LowerCenter" height="45" offsetXY="0 0">
               <Button id="close-button" class="btn audio-btn-back" rectAlignment="LowerLeft" width="30%" onClick="OnCloseButtonClicked();">
-                <TextMeshPro text="Close" />
+                <TextMeshPro text="{Dialog.Close}" />
               </Button>
               <Button id="cancel-button" class="btn audio-btn-back" rectAlignment="LowerLeft" width="30%" onClick="OnCancelButtonClicked();" active="false">
-                <TextMeshPro text="Cancel" />
+                <TextMeshPro text="{Dialog.Cancel}" />
               </Button>
               <Button id="discard-button" class="btn audio-btn-back" rectAlignment="LowerCenter" width="30%" onClick="OnDiscardButtonClicked();" active="false">
-                <TextMeshPro text="Discard" />
+                <TextMeshPro text="{Dialog.Discard}" />
               </Button>
               <Button id="apply-button" class="btn btn-primary audio-btn-big" rectAlignment="LowerRight" width="30%" onClick="OnApplyButtonClicked();" active="false">
-                <TextMeshPro text="Apply" />
+                <TextMeshPro text="{Dialog.Apply}" />
               </Button>
             </Panel>
           </Panel>

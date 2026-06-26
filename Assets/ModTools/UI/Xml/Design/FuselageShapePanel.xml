@@ -5,7 +5,7 @@
   <VerticalScrollView class="no-image">
     <VerticalLayout id="content-root" class="no-image" childForceExpandHeight="false" pivot="0 1" contentSizeFitter="vertical" rectAlignment="UpperCenter" childAlignment="UpperCenter" padding="20" spacing="10">
       <Panel class="spinner row no-image">
-        <TextMeshPro class="label tooltip" text="Grid Size" tooltip="Changes how far to move with each step" />
+        <TextMeshPro class="label tooltip" text="{Design.ToolPanel.MovePart.GridSize.Text}" tooltip="{Design.ToolPanel.FuselageShape.GridSize.Tooltip}" />
         <Spinner id="spinner-grid-size" numericFormat="0.##" onNumericValueChanged="OnGridSizeSpinnerChanged();" stepSize="0.05" minValue="0" maxValue="2">
           <TextMeshProInputField contentType="DecimalNumber">
             <TMP_Text />
@@ -15,15 +15,15 @@
       <TextMeshPro id="message-text" />
       <VerticalLayout id="joint-panel" class="no-image" spacing="10" padding="0 0 0 50">
         <Panel class="row" preferredHeight="40">
-          <ContentButton class="btn btn-primary" onClick="OnBackwardsClicked();" rectAlignment="MiddleLeft" width="45%" tooltip="Change selection" tooltipPosition="Above">
+          <ContentButton class="btn btn-primary" onClick="OnBackwardsClicked();" rectAlignment="MiddleLeft" width="45%" tooltip="{Design.ToolPanel.FuselageShape.ChangeSelection.Tooltip}" tooltipPosition="Above">
             <Image sprite="Ui/Sprites/Design/IconArrowRightLong" setNativeSize="true" rotation="0 0 180" />
           </ContentButton>
-          <ContentButton class="btn btn-primary" onClick="OnForwardsClicked();" rectAlignment="MiddleRight" width="45%" tooltip="Change selection" tooltipPosition="Above">
+          <ContentButton class="btn btn-primary" onClick="OnForwardsClicked();" rectAlignment="MiddleRight" width="45%" tooltip="{Design.ToolPanel.FuselageShape.ChangeSelection.Tooltip}" tooltipPosition="Above">
             <Image sprite="Ui/Sprites/Design/IconArrowRightLong" setNativeSize="true" />
           </ContentButton>
         </Panel>
         <Panel class="spinner row">
-          <TextMeshPro class="label tooltip" text="Width" tooltip="The width of the part cross section" />
+          <TextMeshPro class="label tooltip" text="{Design.ToolPanel.FuselageShape.Width.Text}" tooltip="{Design.ToolPanel.FuselageShape.Width.Tooltip}" />
           <Spinner id="spinner-width" numericFormat="0.####" onNumericValueChanged="OnWidthChanged(selectedValue);">
             <TextMeshProInputField contentType="DecimalNumber">
               <TMP_Text />
@@ -31,7 +31,7 @@
           </Spinner>
         </Panel>
         <Panel class="spinner row">
-          <TextMeshPro class="label tooltip" text="Depth" tooltip="The depth of the part cross section" />
+          <TextMeshPro class="label tooltip" text="{Design.ToolPanel.FuselageShape.Depth.Text}" tooltip="{Design.ToolPanel.FuselageShape.Depth.Tooltip}" />
           <Spinner id="spinner-depth" numericFormat="0.####" onNumericValueChanged="OnDepthChanged(selectedValue);">
             <TextMeshProInputField contentType="DecimalNumber">
               <TMP_Text />
@@ -39,68 +39,68 @@
           </Spinner>
         </Panel>
         <Panel class="slider">
-          <TextMeshPro class="label tooltip" text="Corner Radius" tooltip="Higher means rounded edges. Lower means harder edges" />
+          <TextMeshPro class="label tooltip" text="{Design.ToolPanel.FuselageShape.CornerRadius.Text}" tooltip="{Design.ToolPanel.FuselageShape.CornerRadius.Tooltip}" />
           <TextMeshPro name="slider-value" class="value" text="None" />
           <Slider id="corner-radius-all" />
         </Panel>
         <Panel class="slider">
-          <TextMeshPro class="label tooltip" text="Corner 1" />
+          <TextMeshPro class="label tooltip" text="{Design.ToolPanel.FuselageShape.Corner1.Text}" />
           <TextMeshPro name="slider-value" class="value" text="None" />
           <Slider id="corner-radius-1" />
         </Panel>
         <Panel class="slider">
-          <TextMeshPro class="label tooltip" text="Corner 2" />
+          <TextMeshPro class="label tooltip" text="{Design.ToolPanel.FuselageShape.Corner2.Text}" />
           <TextMeshPro name="slider-value" class="value" text="None" />
           <Slider id="corner-radius-2" />
         </Panel>
         <Panel class="slider">
-          <TextMeshPro class="label tooltip" text="Corner 3" />
+          <TextMeshPro class="label tooltip" text="{Design.ToolPanel.FuselageShape.Corner3.Text}" />
           <TextMeshPro name="slider-value" class="value" text="None" />
           <Slider id="corner-radius-3" />
         </Panel>
         <Panel class="slider">
-          <TextMeshPro class="label tooltip" text="Corner 4" />
+          <TextMeshPro class="label tooltip" text="{Design.ToolPanel.FuselageShape.Corner4.Text}" />
           <TextMeshPro name="slider-value" class="value" text="None" />
           <Slider id="corner-radius-4" />
         </Panel>
         <Panel class="slider">
-          <TextMeshPro class="label tooltip" text="Clamp 1" />
+          <TextMeshPro class="label tooltip" text="{Design.ToolPanel.FuselageShape.Clamp1.Text}" />
           <TextMeshPro name="slider-value" class="value" text="None" />
           <Slider id="clamp-1" />
         </Panel>
         <Panel class="slider">
-          <TextMeshPro class="label tooltip" text="Clamp 2" />
+          <TextMeshPro class="label tooltip" text="{Design.ToolPanel.FuselageShape.Clamp2.Text}" />
           <TextMeshPro name="slider-value" class="value" text="None" />
           <Slider id="clamp-2" />
         </Panel>
         <Panel class="slider">
-          <TextMeshPro class="label tooltip" text="Clamp 3" />
+          <TextMeshPro class="label tooltip" text="{Design.ToolPanel.FuselageShape.Clamp3.Text}" />
           <TextMeshPro name="slider-value" class="value" text="None" />
           <Slider id="clamp-3" />
         </Panel>
         <Panel class="slider">
-          <TextMeshPro class="label tooltip" text="Clamp 4" />
+          <TextMeshPro class="label tooltip" text="{Design.ToolPanel.FuselageShape.Clamp4.Text}" />
           <TextMeshPro name="slider-value" class="value" text="None" />
           <Slider id="clamp-4" />
         </Panel>
         <Panel id="add-section-row" class="row" preferredHeight="40">
           <Image color="Border" height="1" rectAlignment="UpperCenter" />
           <Button class="btn btn-primary" onClick="OnAddSectionClicked();" rectAlignment="LowerCenter" width="80%">
-            <TextMeshPro text="Add Section" />
+            <TextMeshPro text="{Design.ToolPanel.FuselageShape.AddSection.Text}" />
           </Button>
         </Panel>
       </VerticalLayout>
       <VerticalLayout id="fuselage-panel" class="no-image" spacing="10" active="false">
         <Panel class="row" preferredHeight="40">
-          <ContentButton class="btn btn-primary" onClick="OnBackwardsClicked();" rectAlignment="MiddleLeft" width="45%" tooltip="Change part selection" tooltipPosition="Above">
+          <ContentButton class="btn btn-primary" onClick="OnBackwardsClicked();" rectAlignment="MiddleLeft" width="45%" tooltip="{Design.ToolPanel.FuselageShape.ChangePartSelection.Tooltip}" tooltipPosition="Above">
             <Image sprite="Ui/Sprites/Design/IconArrowRightLong" setNativeSize="true" rotation="0 0 180" />
           </ContentButton>
-          <ContentButton class="btn btn-primary" onClick="OnForwardsClicked();" rectAlignment="MiddleRight" width="45%" tooltip="Change part selection" tooltipPosition="Above">
+          <ContentButton class="btn btn-primary" onClick="OnForwardsClicked();" rectAlignment="MiddleRight" width="45%" tooltip="{Design.ToolPanel.FuselageShape.ChangePartSelection.Tooltip}" tooltipPosition="Above">
             <Image sprite="Ui/Sprites/Design/IconArrowRightLong" setNativeSize="true" />
           </ContentButton>
         </Panel>
         <Panel class="spinner row">
-          <TextMeshPro class="label tooltip" text="Length" tooltip="The length of the part" />
+          <TextMeshPro class="label tooltip" text="{Design.ToolPanel.FuselageShape.Length.Text}" tooltip="{Design.ToolPanel.FuselageShape.Length.Tooltip}" />
           <Spinner id="spinner-offset-y" numericFormat="0.####" onNumericValueChanged="OnFuselageOffsetChanged();">
             <TextMeshProInputField contentType="DecimalNumber">
               <TMP_Text />
@@ -108,7 +108,7 @@
           </Spinner>
         </Panel>
         <Panel class="spinner row">
-          <TextMeshPro class="label tooltip" text="X-Offset" tooltip="The change along the x-axis for the part" />
+          <TextMeshPro class="label tooltip" text="{Design.ToolPanel.FuselageShape.Offset.X.Text}" tooltip="{Design.ToolPanel.FuselageShape.Offset.X.Tooltip}" />
           <Spinner id="spinner-offset-x" numericFormat="0.####" onNumericValueChanged="OnFuselageOffsetChanged();">
             <TextMeshProInputField contentType="DecimalNumber">
               <TMP_Text />
@@ -116,7 +116,7 @@
           </Spinner>
         </Panel>
         <Panel class="spinner row">
-          <TextMeshPro class="label tooltip" text="Z-Offset" tooltip="The change along the z-axis for the part" />
+          <TextMeshPro class="label tooltip" text="{Design.ToolPanel.FuselageShape.Offset.Z.Text}" tooltip="{Design.ToolPanel.FuselageShape.Offset.Z.Tooltip}" />
           <Spinner id="spinner-offset-z" numericFormat="0.####" onNumericValueChanged="OnFuselageOffsetChanged();">
             <TextMeshProInputField contentType="DecimalNumber">
               <TMP_Text />
@@ -124,19 +124,19 @@
           </Spinner>
         </Panel>
         <Panel class="slider">
-          <TextMeshPro class="label tooltip" text="Pinch" tooltip="Higher values will reduce the size of one of the sides" />
+          <TextMeshPro class="label tooltip" text="{Design.ToolPanel.FuselageShape.Pinch.Text}" tooltip="{Design.ToolPanel.FuselageShape.Pinch.Tooltip}" />
           <TextMeshPro name="slider-value" class="value" text="None" />
           <Slider id="pinch" />
         </Panel>
         <Panel class="slider">
-          <TextMeshPro class="label tooltip" text="Slant" tooltip="Higher values will slant one of the sides of the top face" />
+          <TextMeshPro class="label tooltip" text="{Design.ToolPanel.FuselageShape.Slant.Text}" tooltip="{Design.ToolPanel.FuselageShape.Slant.Tooltip}" />
           <TextMeshPro name="slider-value" class="value" text="None" />
           <Slider id="slant" />
         </Panel>
         <Panel id="curve-override" class="row" preferredHeight="40">
           <Image color="Border" height="1" rectAlignment="UpperCenter" />
           <Button class="btn btn-primary" onClick="OnCurveOverrideClicked();" rectAlignment="LowerCenter" width="80%">
-            <TextMeshPro text="Curve Override" />
+            <TextMeshPro text="{Design.ToolPanel.FuselageShape.CurveOverride.Text}" />
           </Button>
         </Panel>
       </VerticalLayout>

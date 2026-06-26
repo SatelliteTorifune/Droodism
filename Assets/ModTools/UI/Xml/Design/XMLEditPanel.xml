@@ -4,11 +4,11 @@
   <Defaults></Defaults>
   <VerticalLayout class="no-image" childForceExpandHeight="false" contentSizeFitter="vertical" pivot="0 1" rectAlignment="UpperCenter" childAlignment="UpperCenter" padding="10" spacing="5">
     <Panel class="row" rectAlignment="UpperCenter" preferredHeight="40">
-      <ContentButton class="btn" onClick="OnDiscardClicked();" rectAlignment="MiddleLeft" width="45%" tooltip="Discard the unsaved changes" tooltipPosition="Above">
-        <TextMeshPro text="Reset" rectAlignment="MiddleLeft" alignment="Center" />
+      <ContentButton class="btn" onClick="OnDiscardClicked();" rectAlignment="MiddleLeft" width="45%" tooltip="{Design.XmlEdit.Reset.Tooltip}" tooltipPosition="Above">
+        <TextMeshPro text="{Design.XmlEdit.Reset.Text}" rectAlignment="MiddleLeft" alignment="Center" />
       </ContentButton>
-      <ContentButton class="btn btn-primary" onClick="OnApplyClicked();" rectAlignment="MiddleRight" width="45%" tooltip="Apply the recent changes to the part" tooltipPosition="Above">
-        <TextMeshPro text="Apply" rectAlignment="MiddleLeft" alignment="Center" />
+      <ContentButton class="btn btn-primary" onClick="OnApplyClicked();" rectAlignment="MiddleRight" width="45%" tooltip="{Design.XmlEdit.Apply.Tooltip}" tooltipPosition="Above">
+        <TextMeshPro text="{Dialog.Apply}" rectAlignment="MiddleLeft" alignment="Center" />
       </ContentButton>
     </Panel>
     <Panel class="row" rectAlignment="UpperCenter" preferredHeight="40">

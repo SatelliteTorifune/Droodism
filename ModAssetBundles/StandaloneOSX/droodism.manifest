@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 1765178672
+CRC: 3887952299
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: bb834b08000cdf394dfb9c58f83fac2d
+    Hash: 2ef3ad957f612d7d1a47ddd914e2750b
   TypeTreeHash:
     serializedVersion: 2
     Hash: 8357e557b520cda23c528e14b1789d5e
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: bb834b08000cdf394dfb9c58f83fac2d
+    Hash: 2ef3ad957f612d7d1a47ddd914e2750b
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -108,16 +108,18 @@ Assets:
 - Assets/Resources/Craft/Parts/Prefabs/MethaloxGenerator.prefab
 - Assets/Resources/Craft/Parts/Definitions/PhotoBioReactor.xml
 - Assets/Resources/Craft/Parts/Prefabs/ToolKit.prefab
-- Assets/Resources/Craft/Parts/Definitions/Resource Fuselage.xml
+- Assets/_ModAssets_/Droodism.dll.bytes
 - Assets/Resources/Craft/Parts/Prefabs/GasDepressurizeDevice.prefab
 - Assets/Resources/Craft/Parts/Definitions/SewageTreatDevice.xml
 - Assets/Resources/Craft/Parts/Prefabs/DOCRDevice.prefab
+- Assets/Resources/Craft/Parts/Definitions/Resource Fuselage.xml
 - Assets/Content/Craft/Parts/GravityRingIcon.png
 - Assets/Resources/Craft/Parts/Prefabs/ResourcesPack.prefab
 - Assets/Resources/Craft/Parts/Prefabs/WaterTank.prefab
 - Assets/Resources/DefaultRadiationBeltConfigs/Vulco.xml
 - Assets/Resources/Craft/Parts/Definitions/HibernatingChamber.xml
 - Assets/Resources/DefaultFlag.jpg
+- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/Content/Craft/Parts/GasDepressure.png
 - Assets/Resources/Craft/Parts/Definitions/Flag.xml
 - Assets/Resources/Craft/Parts/Definitions/ToolKit.xml
@@ -137,15 +139,13 @@ Assets:
 - Assets/Resources/Craft/Parts/Prefabs/SewageTreatDevice.prefab
 - Assets/Resources/Craft/Parts/Definitions/FirstAidKit.xml
 - Assets/Resources/Craft/Parts/Prefabs/Sodium Peroxide Container.prefab
-- Assets/_ModAssets_/Droodism.dll.bytes
+- Assets/Resources/Craft/Parts/Prefabs/MiningMachine.prefab
 - Assets/Resources/Craft/Parts/Definitions/ResourcesPack.xml
 - Assets/Content/Craft/Parts/Categories/Icons/ISRU.png
 - Assets/Content/Craft/Parts/Textures/Normal/Tool_box_Tool_box_polymer_Normal.png
 - Assets/Content/XML UI/UIResourceDatabase.asset
-- Assets/Resources/Craft/Parts/Prefabs/MiningMachine.prefab
 - Assets/Resources/Craft/Parts/Prefabs/GasPressurizeDevice.prefab
 - Assets/Content/Craft/Parts/Textures/Detail/first_aid_kit.jpeg
-- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/Resources/Craft/Parts/Definitions/WaterPump.xml
 - Assets/Resources/DefaultRadiationBeltConfigs/Orcus.xml
 - Assets/Resources/Craft/Parts/Prefabs/WaterPump.prefab

@@ -7,16 +7,16 @@
       <TextMeshPro id="label-text" class="value" text="Title" minHeight="100" />
       <Panel class="row" padding="0">
         <TextMeshProInputField id="input" text="">
-          <TMP_Placeholder id="placeholder-text" text="Enter Text..." alignment="Center" />
+          <TMP_Placeholder id="placeholder-text" text="{Menu.InputDialog.PlaceholderText}" alignment="Center" />
           <TMP_Text text="" alignment="Center" />
         </TextMeshProInputField>
       </Panel>
       <Panel preferredHeight="50">
         <Button id="cancel-button" class="btn audio-btn-back" rectAlignment="LowerLeft" width="150">
-          <TextMeshPro id="cancel-button-text" text="CANCEL" />
+          <TextMeshPro id="cancel-button-text" text="{Dialog.Cancel}" />
         </Button>
         <Button id="okay-button" class="btn btn-primary audio-btn-big" rectAlignment="LowerRight" width="150">
-          <TextMeshPro id="okay-button-text" text="OKAY" />
+          <TextMeshPro id="okay-button-text" text="{Dialog.Okay}" />
         </Button>
       </Panel>
     </VerticalLayout>

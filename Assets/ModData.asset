@@ -75,7 +75,7 @@ MonoBehaviour:
   _steamTitle: 
   _steamVisibility: 0
   _versionMajor: 0
-  _versionMinor: 797
+  _versionMinor: 8
   _partCategories:
   - {fileID: 11400000, guid: 2d849a06cee127543a64b34a37e37bc1, type: 2}
   - {fileID: 11400000, guid: 7d2b6f557b8767544a162f30e61d22b6, type: 2}
@@ -102,6 +102,7 @@ MonoBehaviour:
   - {fileID: 4900000, guid: 69fd3de320f79e14db97198de0f602fc, type: 3}
   - {fileID: 4900000, guid: 94d3c8abb77d8b54291b1cf067f7ddbf, type: 3}
   - {fileID: 4900000, guid: 11a692886d113e149937457d57601c68, type: 3}
+  - {fileID: 4900000, guid: ba467d2740a3cc64bbffaa09ba7b4213, type: 3}
   - {fileID: 4900000, guid: 62fc707502e4fdf46846d1bc5c46426e, type: 3}
   - {fileID: 4900000, guid: 3187f51072da32145ad84924d186c061, type: 3}
   - {fileID: 0}

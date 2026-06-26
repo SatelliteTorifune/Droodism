@@ -1943,6 +1943,7 @@
           <xs:attribute name="interactable" type="xmlLayout:boolean" />
           <xs:attribute name="value" type="xs:string" />
           <xs:attribute name="values" type="xs:string" />
+          <xs:attribute name="localizationPrefix" type="xs:string" />
           <xs:attribute name="numericValue" type="xmlLayout:float" />
           <xs:attribute name="minValue" type="xmlLayout:float" />
           <xs:attribute name="maxValue" type="xmlLayout:float" />

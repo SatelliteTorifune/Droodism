@@ -99,10 +99,35 @@
                                             <xs:documentation>Determines whether this fuel type should be displayed in the designer.</xs:documentation>
                                         </xs:annotation>
                                     </xs:attribute>
+                                    <xs:attribute name="monopropellant" type="xs:boolean" use="optional">
+                                        <xs:annotation>
+                                            <xs:documentation>If true, this fuel type is treated as a monopropellant (decomposes via catalyst, no oxidizer required). Defaults to true for the legacy id "Monopropellant", false otherwise.</xs:documentation>
+                                        </xs:annotation>
+                                    </xs:attribute>
+                                    <xs:attribute name="harvestable" type="xs:boolean" use="optional">
+                                        <xs:annotation>
+                                            <xs:documentation>If true, this fuel type can be harvested from a celestial body's atmosphere, hydrosphere, or surface. Used by ISRU harvester/scoop/drill part inspectors.</xs:documentation>
+                                        </xs:annotation>
+                                    </xs:attribute>
+                                    <xs:attribute name="craftWidePool" type="xs:boolean" use="optional">
+                                        <xs:annotation>
+                                            <xs:documentation>If true, tanks of this fuel aggregate into a single craft-wide pool rather than draining as independent fuel-line networks. Consumers such as RCS thrusters draw from the pool. Defaults to false; stock sets it for monopropellant, jet fuel, and H2O2.</xs:documentation>
+                                        </xs:annotation>
+                                    </xs:attribute>
                                 </xs:complexType>
                             </xs:element>
                         </xs:sequence>
                     </xs:complexType>
+                </xs:element>
+                <xs:element name="IonEngine" type="EngineCategoryType" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>The ion engine category: one Fuel row per propellant ion engine parts can run on, with per-fuel performance multipliers.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="RcsEngine" type="EngineCategoryType" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>The RCS category: one Fuel row per monopropellant RCS nozzle parts can run on, with per-fuel performance multipliers.</xs:documentation>
+                    </xs:annotation>
                 </xs:element>
                 <xs:element name="RocketEngines">
                     <xs:complexType>
@@ -219,6 +244,29 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
+    <xs:complexType name="EngineCategoryType">
+        <xs:sequence>
+            <xs:element minOccurs="1" maxOccurs="unbounded" name="Fuel">
+                <xs:complexType>
+                    <xs:attribute name="id" type="xs:string" use="required">
+                        <xs:annotation>
+                            <xs:documentation>The fuel id (must match a Fuel defined under &lt;Fuels&gt;).</xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                    <xs:attribute name="thrustMultiplier" type="xs:decimal" use="optional">
+                        <xs:annotation>
+                            <xs:documentation>Scales the part's calibrated thrust for this fuel. Defaults to 1.0.</xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                    <xs:attribute name="consumptionMultiplier" type="xs:decimal" use="optional">
+                        <xs:annotation>
+                            <xs:documentation>Scales the part's calibrated volumetric fuel consumption for this fuel. Values above 1.0 lower the effective Isp at the same thrust; values below raise it. Defaults to 1.0.</xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
     <xs:element name="RocketEngine" type="RocketEngineType"/>
     <xs:complexType name="RocketEngineType">
         <xs:sequence minOccurs="0">

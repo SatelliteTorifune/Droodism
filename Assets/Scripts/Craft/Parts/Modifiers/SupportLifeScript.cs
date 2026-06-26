@@ -1097,8 +1097,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         private void PilotDamageReduction(in FlightFrameData frame)
         {
-            //TODO 1.4更新再移除
-            return;
+           
             if (this.Data.DroodismCrewData.CrewRole != DroodType.Pilot)
             {
                 return;

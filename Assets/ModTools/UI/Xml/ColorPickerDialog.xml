@@ -21,35 +21,35 @@
         </Panel>
         <VerticalLayout rectAlignment="MiddleRight" width="40%" childForceExpandHeight="false" spacing="5">
           <Panel preferredHeight="15">
-            <TextMeshPro rectAlignment="MiddleLeft" width="50%" text="OLD" class="label" />
-            <TextMeshPro rectAlignment="MiddleRight" width="50%" text="NEW" class="label" />
+            <TextMeshPro rectAlignment="MiddleLeft" width="50%" text="{ColorPicker.OldColor}" class="label" />
+            <TextMeshPro rectAlignment="MiddleRight" width="50%" text="{ColorPicker.NewColor}" class="label" />
           </Panel>
           <Panel preferredHeight="30">
             <Image id="color-preview-old" rectAlignment="MiddleLeft" width="50%" onClick="OnOldColorClicked();" />
             <Image id="color-preview-new" rectAlignment="MiddleRight" width="50%" />
           </Panel>
           <Panel id="slider-red" class="slider">
-            <TextMeshPro internalId="slider-label" class="label" text="Red" />
+            <TextMeshPro internalId="slider-label" class="label" text="{ColorPicker.Red}" />
             <TextMeshPro internalId="slider-value" class="value" text="255" />
             <Slider internalId="slider" />
           </Panel>
           <Panel id="slider-green" class="slider">
-            <TextMeshPro internalId="slider-label" class="label" text="Green" />
+            <TextMeshPro internalId="slider-label" class="label" text="{ColorPicker.Green}" />
             <TextMeshPro internalId="slider-value" class="value" text="255" />
             <Slider internalId="slider" />
           </Panel>
           <Panel id="slider-blue" class="slider">
-            <TextMeshPro internalId="slider-label" class="label" text="Blue" />
+            <TextMeshPro internalId="slider-label" class="label" text="{ColorPicker.Blue}" />
             <TextMeshPro internalId="slider-value" class="value" text="255" />
             <Slider internalId="slider" />
           </Panel>
           <Panel id="slider-alpha" class="slider">
-            <TextMeshPro internalId="slider-label" class="label" text="Alpha" />
+            <TextMeshPro internalId="slider-label" class="label" text="{ColorPicker.Alpha}" />
             <TextMeshPro internalId="slider-value" class="value" text="255" />
             <Slider internalId="slider" />
           </Panel>
           <Panel id="slider-intensity" class="slider">
-            <TextMeshPro internalId="slider-label" class="label" text="Intensity" />
+            <TextMeshPro internalId="slider-label" class="label" text="{ColorPicker.Intensity}" />
             <TextMeshPro internalId="slider-value" class="value" text="0" />
             <Slider internalId="slider" />
           </Panel>
@@ -57,17 +57,17 @@
           <Panel class="row toggle-buttons" rectAlignment="UpperCenter" preferredHeight="25">
             <ToggleGroup>
               <ToggleButton>
-                <TextMeshPro text="HSV" />
+                <TextMeshPro text="{ColorPicker.HSV}" />
               </ToggleButton>
               <ToggleButton id="toggle-rgb" rectAlignment="MiddleRight" isOn="true">
-                <TextMeshPro text="RGB" />
+                <TextMeshPro text="{ColorPicker.RGB}" />
               </ToggleButton>
             </ToggleGroup>
           </Panel>
           <Panel preferredHeight="5" />
           <Panel class="no-image" preferredHeight="30">
             <Panel class="column-left">
-              <TextMeshPro internalId="label" class="label" text="Hex" alignment="Center" />
+              <TextMeshPro internalId="label" class="label" text="{ColorPicker.Hex}" alignment="Center" />
             </Panel>
             <Panel class="column-right" padding="0">
               <TextMeshProInputField id="hex-input">
@@ -79,10 +79,10 @@
       </Panel>
       <Panel preferredHeight="50">
         <Button id="cancel-button" class="btn audio-btn-back" rectAlignment="LowerLeft" width="150">
-          <TextMeshPro id="cancel-button-text" text="CANCEL" />
+          <TextMeshPro id="cancel-button-text" text="{Dialog.Cancel}" />
         </Button>
         <Button id="okay-button" class="btn btn-primary audio-btn-big" rectAlignment="LowerRight" width="150">
-          <TextMeshPro id="okay-button-text" text="OKAY" />
+          <TextMeshPro id="okay-button-text" text="{Dialog.Okay}" />
         </Button>
       </Panel>
     </VerticalLayout>

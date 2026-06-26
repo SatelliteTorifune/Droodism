@@ -166,9 +166,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 switch (this.Data.GasType)
                 {
                     case "O2" :
-                        highPressureGasSource = GetCraftFuelSource("LqdOxygen");
-                        //TODO 1.4 出了就移除 此注释
-                        //highPressureGasSource = GetCraftFuelSource("LOX");
+                        highPressureGasSource = GetCraftFuelSource("LOX");
                         lowPressureGasSource=patchScript.OxygenFuelSource;
                         break;
                     case "CO2" :

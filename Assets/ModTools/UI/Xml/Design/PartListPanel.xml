@@ -26,7 +26,7 @@
     <Panel id="subassemblies" class="no-image" active="false">
       <Panel class="no-image" height="32" padding="0 2 0 0" rectAlignment="UpperCenter">
         <TextMeshProInputField id="subassembly-search-input" text="" class="search-input" onValueChanged="FilterSubassemblies(value);">
-          <TMP_Placeholder text="Search..." />
+          <TMP_Placeholder text="{Dialog.SearchPlaceholder}" />
           <TMP_Text text="" />
         </TextMeshProInputField>
       </Panel>
@@ -44,7 +44,7 @@
     </Panel>
   </Panel>
   <Panel rectAlignment="UpperCenter" offsetMin="51 0">
-    <TextMeshPro id="no-category-selected" alignment="Top" offsetXY="0 -10" text="Select a category on the left to view parts." />
+    <TextMeshPro id="no-category-selected" alignment="Top" offsetXY="0 -10" text="{Design.Partslist.NoCategorySelected.Text}" />
   </Panel>
   <Panel id="info-popup" active="false" border="Border" showAnimation="FadeIn" animationDuration="0.1" color="#010101F0" width="300" padding="15" contentSizeFitter="vertical" pivot="0 1">
     <VerticalLayout class="no-image" childForceExpandHeight="false" spacing="10">
@@ -55,29 +55,29 @@
         <TextMeshPro internalId="mass" text="1kg" alignment="Center" anchorMin="0.5 0" />
       </Panel>
       <Panel internalId="variable-properties" active="false" preferredHeight="20">
-        <TextMeshPro text="Mass and price vary with size" alignment="Center" />
+        <TextMeshPro text="{Design.Partslist.InfoPopup.MassAndPriceVaryWithSize}" alignment="Center" />
       </Panel>
       <VerticalLayout internalId="engine-details" childForceExpandHeight="false" spacing="5">
         <Image preferredHeight="1" color="Border" />
-        <TextMeshPro class="value" text="Engine Details" alignment="Center" />
+        <TextMeshPro class="value" text="{Design.Partslist.InfoPopup.EngineDetails}" alignment="Center" />
         <Panel class="row" preferredHeight="20">
-          <TextMeshPro class="label" text="Thrust" alignment="Center" anchorMax="0.5 1" />
+          <TextMeshPro class="label" text="{Design.Partslist.InfoPopup.Thrust}" alignment="Center" anchorMax="0.5 1" />
           <TextMeshPro internalId="engine-thrust" class="value" text="400kN" alignment="Center" anchorMin="0.5 0" />
         </Panel>
         <Panel class="row" preferredHeight="20">
-          <TextMeshPro class="label" text="Isp (vac)" alignment="Center" anchorMax="0.5 1" />
+          <TextMeshPro class="label" text="{Design.Partslist.InfoPopup.IspVac}" alignment="Center" anchorMax="0.5 1" />
           <TextMeshPro internalId="engine-isp-vac" class="value" text="321s" alignment="Center" anchorMin="0.5 0" />
         </Panel>
         <Panel class="row" preferredHeight="20">
-          <TextMeshPro class="label" text="Isp (SL)" alignment="Center" anchorMax="0.5 1" />
+          <TextMeshPro class="label" text="{Design.Partslist.InfoPopup.IspSL}" alignment="Center" anchorMax="0.5 1" />
           <TextMeshPro internalId="engine-isp-sl" class="value" text="282s" alignment="Center" anchorMin="0.5 0" />
         </Panel>
         <Panel class="row" preferredHeight="20">
-          <TextMeshPro class="label" text="Fuel Type" alignment="Center" anchorMax="0.5 1" />
+          <TextMeshPro class="label" text="{Design.Partslist.InfoPopup.FuelType}" alignment="Center" anchorMax="0.5 1" />
           <TextMeshPro internalId="engine-fuel-type" class="value" text="RP-1" alignment="Center" anchorMin="0.5 0" />
         </Panel>
         <Panel class="row" preferredHeight="20">
-          <TextMeshPro class="label" text="Power Usage" alignment="Center" anchorMax="0.5 1" />
+          <TextMeshPro class="label" text="{Design.Partslist.InfoPopup.PowerUsage}" alignment="Center" anchorMax="0.5 1" />
           <TextMeshPro internalId="engine-power-usage" class="value" text="0 kW" alignment="Center" anchorMin="0.5 0" />
         </Panel>
       </VerticalLayout>

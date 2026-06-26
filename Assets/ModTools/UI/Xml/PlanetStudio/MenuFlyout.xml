@@ -5,40 +5,40 @@
   <VerticalScrollView class="no-image">
     <VerticalLayout class="no-image" childForceExpandHeight="false" padding="20" spacing="10" contentSizeFitter="vertical" pivot="0 1" childAlignment="UpperCenter" rectAlignment="UpperLeft">
       <Button class="btn" rectAlignment="LowerLeft" onClick="OnCreatePlanetButtonClicked();">
-        <TextMeshPro text="CREATE PLANET" />
+        <TextMeshPro text="{PlanetStudio.Menu.CreatePlanet}" />
       </Button>
       <Button class="btn" rectAlignment="LowerLeft" onClick="OnLoadPlanetButtonClicked();">
-        <TextMeshPro text="LOAD PLANET" />
+        <TextMeshPro text="{PlanetStudio.Menu.LoadPlanet}" />
       </Button>
       <Image class="separator" />
       <Button class="btn" rectAlignment="LowerLeft" onClick="OnCreateSystemButtonClicked();">
-        <TextMeshPro text="CREATE SYSTEM" />
+        <TextMeshPro text="{PlanetStudio.Menu.CreateSystem}" />
       </Button>
       <Button class="btn" rectAlignment="LowerLeft" onClick="OnLoadSystemButtonClicked();">
-        <TextMeshPro text="LOAD SYSTEM" />
+        <TextMeshPro text="{PlanetStudio.Menu.LoadSystem}" />
       </Button>
       <Image class="separator" />
       <Button class="btn cb-only" rectAlignment="LowerLeft" onClick="OnSavePlanetButtonClicked();">
-        <TextMeshPro text="SAVE PLANET" />
+        <TextMeshPro text="{PlanetStudio.Menu.SavePlanet}" />
       </Button>
       <Button class="btn ps-only" rectAlignment="LowerLeft" onClick="OnSaveSystemButtonClicked();">
-        <TextMeshPro text="SAVE SYSTEM" />
+        <TextMeshPro text="{PlanetStudio.Menu.SaveSystem}" />
       </Button>
       <Image class="separator" />
       <Panel preferredHeight="40">
-        <Button class="icon-button audio-btn-big" icon="Ui/Sprites/Common/IconSettings" rectAlignment="MiddleLeft" offsetXY="15 0" onClick="OnSettingsButtonClicked();" tooltip="Open the settings window" tooltipPosition="Above" />
-        <Button class="icon-button audio-btn-big" icon="Ui/Sprites/Common/IconButtonShare" rectAlignment="MiddleCenter" onClick="OnShareButtonClicked();" tooltip="Upload this to the website to share it with other players." tooltipPosition="Above" />
-        <Button class="icon-button audio-btn-big" icon="Ui/Sprites/Common/IconButtonCamera" rectAlignment="MiddleRight" offsetXY="-15 0" onClick="OnPhotoLibraryButtonClicked();" tooltip="Photo Library" tooltipPosition="Above" id="photo-library-button" />
+        <Button class="icon-button audio-btn-big" icon="Ui/Sprites/Common/IconSettings" rectAlignment="MiddleLeft" offsetXY="15 0" onClick="OnSettingsButtonClicked();" tooltip="{PlanetStudio.Menu.Tooltip.Settings}" tooltipPosition="Above" />
+        <Button class="icon-button audio-btn-big" icon="Ui/Sprites/Common/IconButtonShare" rectAlignment="MiddleCenter" onClick="OnShareButtonClicked();" tooltip="{PlanetStudio.Menu.Tooltip.Upload}" tooltipPosition="Above" />
+        <Button class="icon-button audio-btn-big" icon="Ui/Sprites/Common/IconButtonCamera" rectAlignment="MiddleRight" offsetXY="-15 0" onClick="OnPhotoLibraryButtonClicked();" tooltip="{Menu.PhotoLibrary.Tooltip}" tooltipPosition="Above" id="photo-library-button" />
       </Panel>
       <Button class="btn btn-primary" rectAlignment="LowerLeft" onClick="OnHelpButtonClicked();">
-        <TextMeshPro text="GUIDE" />
+        <TextMeshPro text="{PlanetStudio.Menu.Guide}" />
       </Button>
-      <Button class="btn" rectAlignment="LowerLeft" onClick="OnBugReportButtonClicked();" tooltip="Report a bug to the developers." device="desktop">
-        <TextMeshPro text="REPORT A BUG" />
+      <Button class="btn" rectAlignment="LowerLeft" onClick="OnBugReportButtonClicked();" tooltip="{Menu.ReportBugButton.Tooltip}" device="desktop">
+        <TextMeshPro text="{Menu.ReportBugButton.Text}" />
       </Button>
       <Image class="separator" />
       <Button class="btn" rectAlignment="LowerLeft" onClick="OnExitButtonClicked();">
-        <TextMeshPro text="EXIT" />
+        <TextMeshPro text="{Menu.Exit}" />
       </Button>
     </VerticalLayout>
   </VerticalScrollView>

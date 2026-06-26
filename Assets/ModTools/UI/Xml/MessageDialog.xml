@@ -14,13 +14,13 @@
       <TextMeshPro id="label-text" class="value" text="Title" minHeight="90" richText="true" />
       <HorizontalLayout preferredHeight="50" spacing="25" childForceExpandHeight="false" childAlignment="LowerLeft">
         <Button id="cancel-button" class="btn audio-btn-back dialog-button">
-          <TextMeshPro id="cancel-button-text" text="CANCEL" />
+          <TextMeshPro id="cancel-button-text" text="{Dialog.Cancel}" />
         </Button>
         <Button id="middle-button" class="btn audio-btn-back dialog-button" active="false">
           <TextMeshPro id="middle-button-text" text="MIDDLE" />
         </Button>
         <Button id="okay-button" class="btn btn-primary dialog-button audio-btn-big lower-right">
-          <TextMeshPro id="okay-button-text" text="OKAY" />
+          <TextMeshPro id="okay-button-text" text="{Dialog.Okay}" />
         </Button>
       </HorizontalLayout>
     </VerticalLayout>

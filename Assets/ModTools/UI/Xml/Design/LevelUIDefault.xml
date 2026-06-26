@@ -14,7 +14,7 @@
     <TextMeshPro id="level-description" class="label" text="You must build a rocket that can exceed a speed of 750m/s before it reaches an altitude of 2,000 meters. You must be careful not to stray outside of your lane or your score will not count!" margin="5" />
     <Panel preferredHeight="50">
       <Button class="btn btn-primary audio-btn-big" rectAlignment="MiddleCenter" width="150" onClick="OnExitClicked();">
-        <TextMeshPro text="EXIT LEVEL" />
+        <TextMeshPro text="{Design.Level.ExitLevel}" />
       </Button>
     </Panel>
   </VerticalLayout>

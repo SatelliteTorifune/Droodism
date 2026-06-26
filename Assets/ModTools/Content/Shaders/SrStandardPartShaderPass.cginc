@@ -7,6 +7,10 @@
 float4 _MaterialColors[50];
 float4 _MaterialData[50];
 float4 _PartData[25];
+// Per-part nozzle glow. x: nozzle wall temperature in Kelvin (0 = no glow). y: Trim 4 material index. z: inner-wall temperature in Kelvin.
+float4 _PartNozzleData[25];
+// Per-renderer nozzle axial bounds (mesh-local min/max Y) used to normalize the glow gradient.
+float4 _NozzleAxis;
 float  _EmissiveOverride;
 float  _AlphaOverride = -1;
 float  _IsFlightScene;
@@ -40,6 +44,7 @@ UNITY_DECLARE_TEX2DARRAY(_NormalMapTextures);
 #include "Sr2ShaderStructures.cginc"
 #include "SrStandardEffects.cginc"
 #include "Utils.cginc"
+#include "Blackbody.cginc"
 
 
 inline fixed3 GetNormal(half4 tex) 
@@ -137,6 +142,29 @@ FragmentOutput frag(v2f INPUT)
     half3 emission = color.rgb * emissionStrength;
     color.rgb *= 1 - saturate(emissionStrength);
 
+    // Thermal emission: partData.y is the part's glow temperature in Kelvin. BlackbodyEmission
+    // gives the hue directly; a heat ramp scales it to HDR so only hot parts glow and bloom.
+    float heat = max(0, partData.y - 700.0) / 1500.0;
+    emission += BlackbodyEmission(partData.y) * BlackbodyIntensity(heat);
+
+    // Nozzle wall glow: only fragments using the part's Trim 4 material glow. "along" is the axial
+    // position from object-space Y (0 at the exit, 1 at the throat), independent of the mesh UVs.
+    float4 partNozzle = _PartNozzleData[INPUT.ids.w];
+    UNITY_BRANCH
+    if ((partNozzle.x > 670.0 || partNozzle.z > 670.0) && abs(floor(INPUT.ids.x) - partNozzle.y) < 0.5)
+    {
+        float3 nozzleObjPos = mul(unity_WorldToObject, float4(INPUT.worldPosition.xyz, 1.0)).xyz;
+        float along = saturate((nozzleObjPos.y - _NozzleAxis.x) / max(1e-4, _NozzleAxis.y - _NozzleAxis.x));
+
+        float3 radialDir = mul((float3x3)unity_ObjectToWorld, float3(nozzleObjPos.x, 0.0, nozzleObjPos.z));
+        float inner = saturate(dot(normalize(INPUT.worldNormal), normalize(radialDir)) * -4.0);
+        float gradientTemp = lerp(670.0, partNozzle.x, along);
+        float nozzleTemp = lerp(gradientTemp, max(gradientTemp, partNozzle.z), inner);
+
+        float nozzleHeat = max(0, nozzleTemp - 700.0) / 1500.0;
+        emission += BlackbodyEmission(nozzleTemp) * BlackbodyIntensity(nozzleHeat);
+    }
+
     // Update our normal based on the normal map
     #if NORMAL_MAPS_ON
         half4 texNormal = UNITY_SAMPLE_TEX2DARRAY(_NormalMapTextures, float3(uv, INPUT.ids.z));
@@ -175,8 +203,10 @@ FragmentOutput frag(v2f INPUT)
         // Clamp between 0, 1
         //float mask = saturate(dotProd);
 
+        // partData.y carries Kelvin now, so rebuild the legacy 0..1 reentry strength from it.
         // The large scalar allows for a "white-hot" look to appear during extreme drag conditions.
-        float reEntryMask = baseReEntryDot * _ReentryMaskBaseStrength * partData.y * 10;
+        float reEntryStrength = saturate((partData.y - 670.0) / 1070.0);
+        float reEntryMask = baseReEntryDot * _ReentryMaskBaseStrength * reEntryStrength * 10;
         float vaporTrailMask = baseVaporDot * _VaporMaskBaseStrength * partData.z;
 
         outColors.mask = half4(reEntryMask, vaporTrailMask, 0, 1);

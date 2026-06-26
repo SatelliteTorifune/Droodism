@@ -1,14 +1,6 @@
 # 1.4更新
 > 修改辐射带UI(和辐射带本体)适配新增加的的地图界面
-> 
-> 分体燃料支持
-> >液氧
-> > >把使用LqdOxygen ID的fuelType迁移到原版
-> > >
-> > >移除Propulsion.xml中的LqdOxygen FuelType
-> >
-> 二氧化碳
-> > >迁移到原版,如果ID不变.移除Propulsion.xml中的CO2就行
+>
 > 
 > ChemicalReactorScript
 > >修改这个部件中Sabatier_reaction的条件和逻辑

@@ -7,16 +7,16 @@
   </Defaults>
   <Panel id="panel" showAnimation="FadeIn" animationDuration="0.1" class="dialog-background">
     <VerticalLayout class="panel border" width="450" contentSizeFitter="vertical" spacing="10" padding="20">
-      <TextMeshPro class="text-header" text="LOAD SCENARIO" />
+      <TextMeshPro class="text-header" text="{Scenario.Dialog.Header}" />
       <VerticalLayout color="DarkPanel" childForceExpandHeight="false" childForceExpandWidth="true" contentSizeFitter="vertical" childAlignment="UpperCenter" pivot="0 1" spacing="20" padding="20" rectAlignment="UpperCenter">
         <Button id="template-row" class="btn" rectAlignment="LowerLeft" width="150" onClick="OnScenarioClicked(this);">
           <TextMeshPro internalId="name" text="BUTTON" />
         </Button>
       </VerticalLayout>
-      <TextMeshPro class="label" text="Warning, you will lose your current flight state!" />
+      <TextMeshPro class="label" text="{Scenario.Dialog.Warning}" />
       <Panel preferredHeight="50">
         <Button class="btn" rectAlignment="LowerCenter" width="50%" onClick="OnCancelClicked();">
-          <TextMeshPro text="CLOSE" />
+          <TextMeshPro text="{Dialog.Close}" />
         </Button>
       </Panel>
     </VerticalLayout>
