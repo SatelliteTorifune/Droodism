@@ -1,3 +1,6 @@
+## 2026 6 27
+> 修复了_crewCompartment.UnloadCrewMember的参数判定
+
 ## 2026 6 26
 > 更新modTool到 1.4版本
 > 

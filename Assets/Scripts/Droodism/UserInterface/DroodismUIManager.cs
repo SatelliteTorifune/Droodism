@@ -433,7 +433,7 @@ namespace Assets.Scripts.Droodism.UserInterface
                     CrewInspectorGroup.Add<TextModel>(new TextModel("Radiation Rate Stats",
                         (Func<string>)(() => $"{supportLifeScript.CurrentRadiationRateStats}"),
                         tooltip: $"{eva.Data.CrewName} ;s Current Radiation Rate Stats,if it's red, watch out!",determineVisibility:() => supportLifeScript.RadiationDoseRateRadPerHour>0f));
-                    TextButtonModel textButtonModel2 = new TextButtonModel("Crew Eva", (Action<TextButtonModel>) (b => eva.CrewCompartment.UnloadCrewMember(eva,true)), determineVisiblity:  (() =>  eva.CrewCompartment !=  null));
+                    TextButtonModel textButtonModel2 = new TextButtonModel(Locale.GetString("Parts.EvaScript.Eva"), (Action<TextButtonModel>) (b => eva.CrewCompartment.UnloadCrewMember(eva,true)), determineVisiblity:  (() =>  eva.CrewCompartment !=  null));
                     textButtonModel2.Style = ButtonModel.ButtonStyle.Primary;
                     CrewInspectorGroup.Add<TextButtonModel>(textButtonModel2);
 
@@ -476,15 +476,15 @@ namespace Assets.Scripts.Droodism.UserInterface
                 IconButtonModel fuelTransferButtonNone = new IconButtonModel(
                     "Ui/Sprites/Flight/IconFuelTransferNone",
                     (Action<IconButtonModel>)(x => SetFuelTransferMode(FuelTransferMode.None, fuelSource.FuelType.Id)),
-                    "Disable fuel transfer.");
+                    Locale.GetString("Flight.Inspector.FuelTank.FuelTransfer.None.Tooltip"));
                 IconButtonModel fuelTransferButtonFill = new IconButtonModel(
                     "Ui/Sprites/Flight/IconFuelTransferFill",
                     (Action<IconButtonModel>)(x => SetFuelTransferMode(FuelTransferMode.Fill, fuelSource.FuelType.Id)),
-                    "Fills the tank during fuel transfer. Requires at least one other tank to be set to Drain.");
+                    Locale.GetString("Flight.Inspector.FuelTank.FuelTransfer.Fill.Tooltip"));
                 IconButtonModel fuelTransferButtonDrain = new IconButtonModel(
                     "Ui/Sprites/Flight/IconFuelTransferDrain",
                     (Action<IconButtonModel>)(x => SetFuelTransferMode(FuelTransferMode.Drain, fuelSource.FuelType.Id)),
-                    "Drains this tank during fuel transfer. Requires at least one other tank to be set to Fill.");
+                    Locale.GetString("Flight.Inspector.FuelTank.FuelTransfer.Drain.Tooltip"));
                 iconButtonRowModel.Add(fuelTransferButtonFill);
                 iconButtonRowModel.Add(fuelTransferButtonNone);
                 iconButtonRowModel.Add(fuelTransferButtonDrain);

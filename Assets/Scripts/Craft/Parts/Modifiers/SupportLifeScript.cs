@@ -1107,7 +1107,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         private void PilotDamageReduction(in FlightFrameData frame)
         {
-           
+            if (this.Data.DroodismCrewData == null)
+            {
+                return;
+            }
             if (this.Data.DroodismCrewData.CrewRole != DroodType.Pilot)
             {
                 return;

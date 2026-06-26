@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 3887952299
+CRC: 4192649501
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 2ef3ad957f612d7d1a47ddd914e2750b
+    Hash: 935b8b07c9357aaa8345459dc57703ad
   TypeTreeHash:
     serializedVersion: 2
     Hash: 8357e557b520cda23c528e14b1789d5e
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 2ef3ad957f612d7d1a47ddd914e2750b
+    Hash: 935b8b07c9357aaa8345459dc57703ad
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -73,6 +73,7 @@ Assets:
 - Assets/Resources/DefaultRadiationBeltConfigs/Cylero.xml
 - Assets/Resources/DefaultRadiationBeltConfigs/Tydos.xml
 - Assets/Resources/Craft/Parts/Prefabs/GravityRing.prefab
+- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/Content/Craft/Parts/Textures/cloud_4_variants.psd
 - Assets/Resources/Craft/Parts/Prefabs/Flag.prefab
 - Assets/Resources/DefaultRadiationBeltConfigs/Earth.xml
@@ -108,18 +109,17 @@ Assets:
 - Assets/Resources/Craft/Parts/Prefabs/MethaloxGenerator.prefab
 - Assets/Resources/Craft/Parts/Definitions/PhotoBioReactor.xml
 - Assets/Resources/Craft/Parts/Prefabs/ToolKit.prefab
-- Assets/_ModAssets_/Droodism.dll.bytes
+- Assets/Resources/Craft/Parts/Definitions/Resource Fuselage.xml
 - Assets/Resources/Craft/Parts/Prefabs/GasDepressurizeDevice.prefab
 - Assets/Resources/Craft/Parts/Definitions/SewageTreatDevice.xml
 - Assets/Resources/Craft/Parts/Prefabs/DOCRDevice.prefab
-- Assets/Resources/Craft/Parts/Definitions/Resource Fuselage.xml
 - Assets/Content/Craft/Parts/GravityRingIcon.png
 - Assets/Resources/Craft/Parts/Prefabs/ResourcesPack.prefab
+- Assets/_ModAssets_/Droodism.dll.bytes
 - Assets/Resources/Craft/Parts/Prefabs/WaterTank.prefab
 - Assets/Resources/DefaultRadiationBeltConfigs/Vulco.xml
 - Assets/Resources/Craft/Parts/Definitions/HibernatingChamber.xml
 - Assets/Resources/DefaultFlag.jpg
-- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/Content/Craft/Parts/GasDepressure.png
 - Assets/Resources/Craft/Parts/Definitions/Flag.xml
 - Assets/Resources/Craft/Parts/Definitions/ToolKit.xml

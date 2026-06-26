@@ -96,8 +96,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     foreach (var eva in _crewCompartment.Crew)
                     {
                     
-                        _crewCompartment.UnloadCrewMember(eva,this.PartScript.CraftScript.CraftNode.IsPlayer || (!PartScript.CraftScript.CraftNode.IsPlayer && Game.Instance.FlightScene.CraftNode
-                            .CraftScript.ActiveCommandPod.EvaScript.IsFpsActive));
+                        _crewCompartment.UnloadCrewMember(eva,this.PartScript.CraftScript.CraftNode.IsPlayer);
                         eva.PartScript.GetModifier<SupportLifeScript>().Data.AutoDeployEnabled = false;
                         ui.ShowMessage($"{eva.Data.CrewMember.Name} has landed on the ground");
                     }

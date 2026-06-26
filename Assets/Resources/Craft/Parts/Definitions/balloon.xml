@@ -13,7 +13,7 @@
     </SubpartTypes>
   </PartType>
   <DesignerParts>
-    <DesignerPart name="balloon" category="Propulsion" description="" order="0" showInDesigner="false" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
+    <DesignerPart name="balloon" category="Propulsion" description="" order="0" showInDesigner="true" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
       <Assembly>
         <Parts>
           <Part id="1" partType="balloon" position="0,0,0" rotation="0,0,0">
