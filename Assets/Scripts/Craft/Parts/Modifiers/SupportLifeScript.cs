@@ -1323,29 +1323,29 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             IFlightSceneUI ui = ModApi.Common.Game.Instance.FlightScene.FlightSceneUI;
             if (!(craftScript.Data.Assembly.Parts.Count == 1 &&craftScript.RootPart.Data.PartType.Name.Contains("Eva"))&&evaScript.ActiveWhileInCrewCompartment)
             {
-                ui.ShowMessage("Can Not Plant Flag,Not in Eva",false,10);
+                ui.ShowMessage(Locale.GetString("Droodism.SupportLifeScript.CannotPlantFlagNotInEva"),false,10);
                 return;
             }
             if (craftScript.FlightData.Grounded==false)
             {
-                ui.ShowMessage("Can Not Plant Flag,Not Grounded",false,10);
+                ui.ShowMessage(Locale.GetString("Droodism.SupportLifeScript.CannotPlantFlagNotGrounded"),false,10);
                 return;
             }
             if (craftScript.FlightData.SurfaceVelocityMagnitude>=1)
             {
-                ui.ShowMessage("Can Not Plant Flag,Velocity is too high",false,10);
+                ui.ShowMessage(Locale.GetString("Droodism.SupportLifeScript.CannotPlantFlagVelocityHigh"),false,10);
                 return;
             }
 
             if (evaScript.IsInWater)
             {
-                ui.ShowMessage("Can Not Plant Flag,Drood is in water",false,10);
+                ui.ShowMessage(Locale.GetString("Droodism.SupportLifeScript.CannotPlantFlagInWater"),false,10);
                 return;
             }
 
             if (this.Data.UtilizationFactor<300)
             {
-                ui.ShowMessage("Can Not Plant Flag,This Drood had already plant one!",false,10);
+                ui.ShowMessage(Locale.GetString("Droodism.SupportLifeScript.CannotPlantFlagAlreadyPlanted"),false,10);
                 return;
             }
 
@@ -1369,36 +1369,36 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             if (!isEva())
             {
-                ui.ShowMessage("Can Not Deploy Parachute,Not in Eva",false,10);
+                ui.ShowMessage(Locale.GetString("Droodism.SupportLifeScript.CannotDeployParachuteNotInEva"),false,10);
                 return;
             }
             if (evaScript.IsGrounded)
             {
-                ui.ShowMessage("Can Not Deploy Parachute,Drood is Grounded",false,10);
+                ui.ShowMessage(Locale.GetString("Droodism.SupportLifeScript.CannotDeployParachuteGrounded"),false,10);
                 return;
             }
 
             if (craftScript.FlightData.AltitudeAboveGroundLevel<=10)
             {
-                ui.ShowMessage("Can Not Deploy Parachute Here",false,10);
+                ui.ShowMessage(Locale.GetString("Droodism.SupportLifeScript.CannotDeployParachuteHere"),false,10);
                 return;
             }
             if (craftScript.FlightData.AtmosphereSample.AirDensity<=0.01)
             {
-                ui.ShowMessage("Can Not Deploy Parachute,Air Density is too thin",false,10);
+                ui.ShowMessage(Locale.GetString("Droodism.SupportLifeScript.CannotDeployParachuteAirThin"),false,10);
                 return;
             }
 
             if (craftScript.FlightData.SurfaceVelocityMagnitude >=
                 craftScript.FlightData.AtmosphereSample.SpeedOfSound)
             {
-                ui.ShowMessage("Can Not Deploy Parachute,Speed is too high",false,10);
+                ui.ShowMessage(Locale.GetString("Droodism.SupportLifeScript.CannotDeployParachuteSpeedHigh"),false,10);
                 return;
             }
             
             if (evaScript.IsInWater)
             {
-                ui.ShowMessage("Can Not Deploy Parachute,Drood is in water",false,10);
+                ui.ShowMessage(Locale.GetString("Droodism.SupportLifeScript.CannotDeployParachuteInWater"),false,10);
                 return;
             }
             
@@ -1672,27 +1672,27 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             var part = Game.Instance.FlightScene.ViewManager.GameView.SelectedPart;
             if (part==null)
             {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage("No part selected", false, 3f);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(Locale.GetString("Droodism.SupportLifeScript.NoPartSelected"), false, 3f);
                 isRepairing = false;
                 return;
             }
             
             if (part.Data.PartType.Name==("Eva")||part.Data.PartType.Name==("Eva-Tourist"))
             {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage("Can't Repair Drood", false, 3f);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(Locale.GetString("Droodism.SupportLifeScript.CannotRepairDrood"), false, 3f);
                 isRepairing = false;
                 return;
             }
             if ((part.GameObject.transform.position - this.PartScript.GameObject.transform.position).magnitude > 5f)
             {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Selected {part.Data.PartType.Name} is too far away to repair.", false, 3f);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(string.Format(Locale.GetString("Droodism.SupportLifeScript.PartTooFarToRepair"), part.Data.PartType.Name), false, 3f);
                 isRepairing = false;
                 return;
             }
 
             if (part.Data.Damage <= 0)
             {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Selected {part.Data.PartType.Name} doesn't need to be repaired.", false, 3f);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(string.Format(Locale.GetString("Droodism.SupportLifeScript.PartDoesNotNeedRepair"), part.Data.PartType.Name), false, 3f);
                 isRepairing = false;
                 return;
             }
@@ -1711,34 +1711,34 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             if (pd.PartType.Name==("Eva")||pd.PartType.Name==("Eva-Tourist"))
             {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Can not heal a drood", false, 3f);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(Locale.GetString("Droodism.SupportLifeScript.CannotHealDrood"), false, 3f);
                 isRepairing = false;
                 return;
             }
             if ((pd.PartScript.GameObject.transform.position - this.PartScript.GameObject.transform.position).magnitude > 5f)
             {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Repairing Process Is Interrupted: {pd.PartType.Name} is too far away from engineer", false, 3f);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(string.Format(Locale.GetString("Droodism.SupportLifeScript.RepairInterruptedTooFar"), pd.PartType.Name), false, 3f);
                 isRepairing = false;
                 return;
             }
             
             if (pd.Damage<=0)
             {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Repairing Process Completed for {pd.PartType.Name}.", false, 3f);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(string.Format(Locale.GetString("Droodism.SupportLifeScript.RepairCompleted"), pd.PartType.Name), false, 3f);
                 isRepairing = false;
                 return;
             }
 
             if (Data.UtilizationFactor<=0)
             {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Repairing Process Is Interrupted:Not Enough Repairing Tools for {pd.PartType.Name}", false, 4f);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(string.Format(Locale.GetString("Droodism.SupportLifeScript.RepairInterruptedNoTools"), pd.PartType.Name), false, 4f);
                 isRepairing = false;
                 return;
             }
             
             if (Data.UtilizationFactor>0)
             {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Repairing {pd.PartType.Name}:Progress {Units.GetPercentageString(Mathf.Clamp01((100f - pd.Damage) / 100f))}", false, 3f);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(string.Format(Locale.GetString("Droodism.SupportLifeScript.RepairProgress"), pd.PartType.Name, Units.GetPercentageString(Mathf.Clamp01((100f - pd.Damage) / 100f))), false, 3f);
                 float num = (float)data.DeltaTimeWorld * 2f;
                 Data.UtilizationFactor -=num ;
                 pd.Damage -= num;

@@ -1,259 +1,310 @@
 <Strings>
-    <!-- DroodismUIManager -->
-    <s id="Droodism.DroodismUIManager.InspectorTitle">Droodism Resources Inspector</s>
-    <s id="Droodism.DroodismUIManager.LifeSupportInspector">Life Support Inspector</s>
-    <s id="Droodism.DroodismUIManager.CrewCount">Crew Count</s>
-    <s id="Droodism.DroodismUIManager.AstronautCount">Astronaut Count</s>
-    <s id="Droodism.DroodismUIManager.TouristCount">Tourist Count</s>
-    <s id="Droodism.DroodismUIManager.UnknownRole">Unknown Role</s>
-    <s id="Droodism.DroodismUIManager.MissionTime">Mission Time</s>
-    <s id="Droodism.DroodismUIManager.MissionTimeTooltip">{0}'s mission time since launch.</s>
-    <s id="Droodism.DroodismUIManager.RadiationDose">Radiation Dose</s>
-    <s id="Droodism.DroodismUIManager.RadiationDoseTooltip">{0}'s current radiation dose.</s>
-    <s id="Droodism.DroodismUIManager.RadiationStats">Radiation Stats</s>
-    <s id="Droodism.DroodismUIManager.RadiationStatsTooltip">{0}'s current radiation cumulative dose stats.</s>
-    <s id="Droodism.DroodismUIManager.RadiationRate">Radiation Rate</s>
-    <s id="Droodism.DroodismUIManager.RadiationRateTooltip">{0}'s current radiation increase rate per hour.</s>
-    <s id="Droodism.DroodismUIManager.RadiationRateStats">Radiation Rate Stats</s>
-    <s id="Droodism.DroodismUIManager.RadiationRateStatsTooltip">{0}'s current radiation rate stats - if it's red, watch out!</s>
-    <s id="Droodism.DroodismUIManager.CraftResourcesInspector">Craft Resources Inspector</s>
-    <s id="Droodism.DroodismUIManager.ResourcesFillWasteDrain">Resources Fill, Waste Drain</s>
-    <s id="Droodism.DroodismUIManager.ResourcesDrainWasteFill">Resources Drain, Waste Fill</s>
-    <s id="Droodism.DroodismUIManager.ResetAllTransferMode">Reset All Transfer Mode</s>
-    <s id="Droodism.DroodismUIManager.ToggleSingleTypeTransferMode">Toggle Single Type Transfer Mode</s>
-    <s id="Droodism.DroodismUIManager.CrewInspector">Crew Inspector</s>
-    <s id="Droodism.DroodismUIManager.RemainOxygen">Remain Oxygen</s>
-    <s id="Droodism.DroodismUIManager.UsingExternalOxygen">Using External Oxygen</s>
-    <s id="Droodism.DroodismUIManager.NotAvailable">N/A</s>
-    <s id="Droodism.DroodismUIManager.RemainWater">Remain Water</s>
-    <s id="Droodism.DroodismUIManager.RemainFood">Remain Food</s>
-    <s id="Droodism.DroodismUIManager.CO2Level">CO2 Level</s>
-    <s id="Droodism.DroodismUIManager.WastedWaterLevel">Wasted Water Level</s>
-    <s id="Droodism.DroodismUIManager.SolidWasteLevel">Solid Waste Level</s>
-    <s id="Droodism.DroodismUIManager.CannotSetFuelTransferSingleDrood">Cannot set fuel transfer mode for a single Drood.</s>
-    <s id="Droodism.DroodismUIManager.Empty">empty</s>
-    <s id="Droodism.DroodismUIManager.ToggleDroodismUI">Toggle Droodism UI.</s>
-
-    <!-- RadiationBeltUI -->
-    <s id="Droodism.RadiationBeltUI.RadiationBelt">Radiation Belt</s>
-    <s id="Droodism.RadiationBeltUI.DebugMenu">Debug Menu</s>
-    <s id="Droodism.RadiationBeltUI.CurrentPlanet">Current Planet</s>
-    <s id="Droodism.RadiationBeltUI.ShowGeneral">Show General</s>
-    <s id="Droodism.RadiationBeltUI.ShowInner">Show Inner</s>
-    <s id="Droodism.RadiationBeltUI.ShowOuter">Show Outer</s>
-    <s id="Droodism.RadiationBeltUI.BeltTiltDeg">Belt Tilt (Deg)</s>
-    <s id="Droodism.RadiationBeltUI.InnerDist">Inner Dist</s>
-    <s id="Droodism.RadiationBeltUI.InnerRadius">Inner Radius</s>
-    <s id="Droodism.RadiationBeltUI.InnerBorderRadius">Inner Border Radius</s>
-    <s id="Droodism.RadiationBeltUI.InnerPeakDoseRateRadPerHour">Inner Peak Dose Rate (rad/h)</s>
-    <s id="Droodism.RadiationBeltUI.OuterDist">Outer Dist</s>
-    <s id="Droodism.RadiationBeltUI.OuterRadius">Outer Radius</s>
-    <s id="Droodism.RadiationBeltUI.OuterBorderRadius">Outer Border Radius</s>
-    <s id="Droodism.RadiationBeltUI.OuterPeakDoseRateRadPerHour">Outer Peak Dose Rate (rad/h)</s>
-
-    <!-- RadiationBeltDebugUI -->
-    <s id="Droodism.RadiationBeltDebugUI.InspectorTitle">Radiation Belt Inspector</s>
-    <s id="Droodism.RadiationBeltDebugUI.DebugInspectorTitle">Radiation Belt Debug Inspector</s>
-    <s id="Droodism.RadiationBeltDebugUI.ForceRebuildInspector">Force Rebuild Inspector</s>
-    <s id="Droodism.RadiationBeltDebugUI.ReGenerateBeltMesh">ReGenerate Belt Mesh</s>
-    <s id="Droodism.RadiationBeltDebugUI.SaveCurrentConfig">Save Current Config</s>
-    <s id="Droodism.RadiationBeltDebugUI.LoadCurrentConfig">Load Current Config</s>
-    <s id="Droodism.RadiationBeltDebugUI.ReturnToDefaultPreset">Return to Default Preset</s>
-    <s id="Droodism.RadiationBeltDebugUI.ApplyGiantPreset">Apply Giant Preset</s>
-    <s id="Droodism.RadiationBeltDebugUI.ApplyMetallicPreset">Apply Metallic Preset</s>
-    <s id="Droodism.RadiationBeltDebugUI.ApplySolidIronPreset">Apply SolidIron Preset</s>
-    <s id="Droodism.RadiationBeltDebugUI.ApplyAnomalyPreset">Apply Anomaly Preset</s>
-    <s id="Droodism.RadiationBeltDebugUI.Show">show</s>
-    <s id="Droodism.RadiationBeltDebugUI.ShowInner">show inner</s>
-    <s id="Droodism.RadiationBeltDebugUI.ShowOuter">show outer</s>
-    <s id="Droodism.RadiationBeltDebugUI.General">General</s>
-    <s id="Droodism.RadiationBeltDebugUI.MainEnabled">Main Enabled</s>
-    <s id="Droodism.RadiationBeltDebugUI.RenderMetersPerUnit">Render Meters Per Unit</s>
-    <s id="Droodism.RadiationBeltDebugUI.TiltGroup">Tilt Group</s>
-    <s id="Droodism.RadiationBeltDebugUI.BeltTiltAxisX">Belt Tilt Axis X</s>
-    <s id="Droodism.RadiationBeltDebugUI.BeltTiltAxisY">Belt Tilt Axis Y</s>
-    <s id="Droodism.RadiationBeltDebugUI.BeltTiltAxisZ">Belt Tilt Axis Z</s>
-    <s id="Droodism.RadiationBeltDebugUI.BeltSpinSpeedDegPerSec">Belt Spin Speed (Deg/s)</s>
-    <s id="Droodism.RadiationBeltDebugUI.BeltSpinPhaseDeg">Belt Spin Phase (Deg)</s>
-    <s id="Droodism.RadiationBeltDebugUI.Inner">Inner</s>
-    <s id="Droodism.RadiationBeltDebugUI.InnerBorderDist">Inner Border Dist</s>
-    <s id="Droodism.RadiationBeltDebugUI.InnerDeform">Inner Deform</s>
-    <s id="Droodism.RadiationBeltDebugUI.InnerDeformXY">Inner Deform XY</s>
-    <s id="Droodism.RadiationBeltDebugUI.InnerBorderDeformXY">Inner Border Deform XY</s>
-    <s id="Droodism.RadiationBeltDebugUI.InnerCompression">Inner Compression</s>
-    <s id="Droodism.RadiationBeltDebugUI.InnerExtension">Inner Extension</s>
-    <s id="Droodism.RadiationBeltDebugUI.InnerHeightScale">Inner Height Scale</s>
-    <s id="Droodism.RadiationBeltDebugUI.InnerParticleCount">Inner Particle Count</s>
-    <s id="Droodism.RadiationBeltDebugUI.InnerQuality">Inner Quality</s>
-    <s id="Droodism.RadiationBeltDebugUI.InnerBaseIntensity">Inner Base Intensity</s>
-    <s id="Droodism.RadiationBeltDebugUI.InnerIntensityEdgeWidth">Inner Intensity Edge Width</s>
-    <s id="Droodism.RadiationBeltDebugUI.InnerIntensityExponent">Inner Intensity Exponent</s>
-    <s id="Droodism.RadiationBeltDebugUI.Outer">Outer</s>
-    <s id="Droodism.RadiationBeltDebugUI.OuterBorderDist">Outer Border Dist</s>
-    <s id="Droodism.RadiationBeltDebugUI.OuterDeform">Outer Deform</s>
-    <s id="Droodism.RadiationBeltDebugUI.OuterDeformXY">Outer Deform XY</s>
-    <s id="Droodism.RadiationBeltDebugUI.OuterBorderDeformXY">Outer Border Deform XY</s>
-    <s id="Droodism.RadiationBeltDebugUI.OuterCompression">Outer Compression</s>
-    <s id="Droodism.RadiationBeltDebugUI.OuterExtension">Outer Extension</s>
-    <s id="Droodism.RadiationBeltDebugUI.OuterHeightScale">Outer Height Scale</s>
-    <s id="Droodism.RadiationBeltDebugUI.OuterParticleCount">Outer Particle Count</s>
-    <s id="Droodism.RadiationBeltDebugUI.OuterQuality">Outer Quality</s>
-    <s id="Droodism.RadiationBeltDebugUI.OuterBaseIntensity">Outer Base Intensity</s>
-    <s id="Droodism.RadiationBeltDebugUI.OuterIntensityEdgeWidth">Outer Intensity Edge Width</s>
-    <s id="Droodism.RadiationBeltDebugUI.OuterIntensityExponent">Outer Intensity Exponent</s>
-
-    <!-- SupportLifeScript -->
-    <s id="Droodism.SupportLifeScript.MissionTime">Mission Time</s>
-    <s id="Droodism.SupportLifeScript.CrewRole">Crew Role</s>
-    <s id="Droodism.SupportLifeScript.LifeSupportInfo">Life Support Info</s>
-    <s id="Droodism.SupportLifeScript.RemainOxygen">Remain Oxygen</s>
-    <s id="Droodism.SupportLifeScript.UsingExternalOxygen">Using External Oxygen</s>
-    <s id="Droodism.SupportLifeScript.OxygenSupplyTime">Oxygen Supply Time</s>
-    <s id="Droodism.SupportLifeScript.RemainWater">Remain Water</s>
-    <s id="Droodism.SupportLifeScript.WaterSupplyTime">Water Supply Time</s>
-    <s id="Droodism.SupportLifeScript.RemainFood">Remain Food</s>
-    <s id="Droodism.SupportLifeScript.FoodSupplyTime">Food Supply Time</s>
-    <s id="Droodism.SupportLifeScript.CO2Level">CO2 Level</s>
-    <s id="Droodism.SupportLifeScript.WastedWaterLevel">Wasted Water Level</s>
-    <s id="Droodism.SupportLifeScript.SolidWasteLevel">Solid Waste Level</s>
-    <s id="Droodism.SupportLifeScript.RadiationInspector">Radiation Inspector</s>
-    <s id="Droodism.SupportLifeScript.CurrentRadiationDose">Current Radiation Dose</s>
-    <s id="Droodism.SupportLifeScript.CurrentRadiationDoseStats">Current Radiation Dose Stats</s>
-    <s id="Droodism.SupportLifeScript.CurrentRadiationDoseRatePerHour">Current Radiation Dose Rate Per Hour</s>
-    <s id="Droodism.SupportLifeScript.CurrentRadiationLevel">Current Radiation Level</s>
-    <s id="Droodism.SupportLifeScript.AutoDeployParaGlider">Auto Deploy ParaGlider</s>
-    <s id="Droodism.SupportLifeScript.AutoDeployParachute">Auto Deploy Parachute</s>
-    <s id="Droodism.SupportLifeScript.EnableAutoDeployment">Enable Auto Deployment</s>
-    <s id="Droodism.SupportLifeScript.AutoDeployHeight">Auto Deploy Height</s>
-    <s id="Droodism.SupportLifeScript.FullyDeployHeight">Fully Deploy Height</s>
-    <s id="Droodism.SupportLifeScript.ManualDeployParaGlider">Manual Deploy ParaGlider</s>
-    <s id="Droodism.SupportLifeScript.ManualDeployParachute">Manual Deploy Parachute</s>
-    <s id="Droodism.SupportLifeScript.PlantFlag">Plant Flag</s>
-    <s id="Droodism.SupportLifeScript.RemainRepairingTools">Remain Repairing Tools</s>
-    <s id="Droodism.SupportLifeScript.Repair">Repair</s>
-    <s id="Droodism.SupportLifeScript.Infinity">Infinity</s>
-    <s id="Droodism.SupportLifeScript.NotAvailable">N/A</s>
-    <s id="Droodism.SupportLifeScript.Unknown">Unknown</s>
-    <s id="Droodism.SupportLifeScript.CrewMemberStatusDamage">Crew Member {0} (id:{1}) is taking damage because running out of {2}, he/she has {3} left</s>
-    <s id="Droodism.SupportLifeScript.CrewMemberWasteDamage">Crew Member {0} (id:{1}) is taking damage because {2} level is too high, he/she has {3} left</s>
-    <s id="Droodism.SupportLifeScript.CrewMemberRadiationDamage">Crew Member {0} (id:{1}) is taking damage due to {2} he/she has {3} left</s>
-    <s id="Droodism.SupportLifeScript.SevereCumulativeRadiation">severe cumulative radiation exposure</s>
-    <s id="Droodism.SupportLifeScript.ModerateCumulativeRadiation">moderate cumulative radiation exposure</s>
-    <s id="Droodism.SupportLifeScript.MildCumulativeRadiation">mild cumulative radiation exposure</s>
-    <s id="Droodism.SupportLifeScript.HighRadiationRate">high radiation rate exposure</s>
-    <s id="Droodism.SupportLifeScript.RadiationCritical">Critical</s>
-    <s id="Droodism.SupportLifeScript.RadiationSevere">Severe</s>
-    <s id="Droodism.SupportLifeScript.RadiationMild">Mild</s>
-    <s id="Droodism.SupportLifeScript.RadiationNominal">nominal</s>
-    <s id="Droodism.SupportLifeScript.NoPartSelected">No part selected</s>
-    <s id="Droodism.SupportLifeScript.CantRepairDrood">Can't Repair Drood</s>
-    <s id="Droodism.SupportLifeScript.PartTooFarAway">Selected {0} is too far away to repair.</s>
-    <s id="Droodism.SupportLifeScript.PartDoesntNeedRepair">Selected {0} doesn't need to be repaired.</s>
-    <s id="Droodism.SupportLifeScript.CantHealDrood">Can not heal a drood</s>
-    <s id="Droodism.SupportLifeScript.RepairInterruptedTooFar">Repairing Process Is Interrupted: {0} is too far away from engineer</s>
-    <s id="Droodism.SupportLifeScript.RepairCompleted">Repairing Process Completed for {0}.</s>
-    <s id="Droodism.SupportLifeScript.NotEnoughRepairingTools">Repairing Process Is Interrupted: Not Enough Repairing Tools for {0}</s>
-    <s id="Droodism.SupportLifeScript.RepairingProgress">Repairing {0}: Progress {1}</s>
-    <s id="Droodism.SupportLifeScript.CanNotPlantFlagNotEva">Can Not Plant Flag, Not in Eva</s>
-    <s id="Droodism.SupportLifeScript.CanNotPlantFlagNotGrounded">Can Not Plant Flag, Not Grounded</s>
-    <s id="Droodism.SupportLifeScript.CanNotPlantFlagVelocityHigh">Can Not Plant Flag, Velocity is too high</s>
-    <s id="Droodism.SupportLifeScript.CanNotPlantFlagInWater">Can Not Plant Flag, Drood is in water</s>
-    <s id="Droodism.SupportLifeScript.CanNotPlantFlagAlreadyPlanted">Can Not Plant Flag, This Drood had already plant one!</s>
-    <s id="Droodism.SupportLifeScript.CanNotDeployNotEva">Can Not Deploy Parachute, Not in Eva</s>
-    <s id="Droodism.SupportLifeScript.CanNotDeployGrounded">Can Not Deploy Parachute, Drood is Grounded</s>
-    <s id="Droodism.SupportLifeScript.CanNotDeployHere">Can Not Deploy Parachute Here</s>
-    <s id="Droodism.SupportLifeScript.CanNotDeployAirDensityThin">Can Not Deploy Parachute, Air Density is too thin</s>
-    <s id="Droodism.SupportLifeScript.CanNotDeploySpeedHigh">Can Not Deploy Parachute, Speed is too high</s>
-    <s id="Droodism.SupportLifeScript.CanNotDeployInWater">Can Not Deploy Parachute, Drood is in water</s>
-
-    <!-- CrewCabinScript -->
-    <s id="Droodism.CrewCabinScript.RadiationShieldType">Radiation Shield Type</s>
-    <s id="Droodism.CrewCabinScript.RadiationShieldDuration">Radiation Shield Duration</s>
-    <s id="Droodism.CrewCabinScript.RefillShield">Refill Shield</s>
-    <s id="Droodism.CrewCabinScript.RadiationShieldTypeTooltip">Current Crew Compartment's Ant-Radiation Material Type</s>
-    <s id="Droodism.CrewCabinScript.RadiationDuration">Radiation Duration</s>
+    <!-- ChemicalReactorScript -->
+    <s id="Droodism.ChemicalReactorScript.CO2MassFlow">CO2 Mass Flow</s>
+    <s id="Droodism.ChemicalReactorScript.CO2MassFlowTooltip">The kilograms of CO2 being reacted per second.</s>
+    <s id="Droodism.ChemicalReactorScript.HydroloxMassFlow">Hydrolox Mass Flow</s>
+    <s id="Droodism.ChemicalReactorScript.HydroloxMassFlowTooltip">The kilograms of Hydrolox being reacted per second.</s>
+    <s id="Droodism.ChemicalReactorScript.LH2MassFlow">LH2 Mass Flow</s>
+    <s id="Droodism.ChemicalReactorScript.LH2MassFlowTooltip">The kilograms of Liquid Hydrogen being reacted per second.</s>
+    <s id="Droodism.ChemicalReactorScript.MethaneloxMassFlow">Methanelox Mass Flow</s>
+    <s id="Droodism.ChemicalReactorScript.MethaneloxMassFlowTooltip">The kilograms of Methanelox being generated per second.</s>
+    <s id="Droodism.ChemicalReactorScript.MonopropellantMassFlow">Monopropellant Mass Flow</s>
+    <s id="Droodism.ChemicalReactorScript.MonopropellantMassFlowTooltip">The kilograms of Monopropellant being generated per second.</s>
+    <s id="Droodism.ChemicalReactorScript.NitrogenMassFlow">Nitrogen Mass Flow</s>
+    <s id="Droodism.ChemicalReactorScript.NitrogenMassFlowTooltip">The kilograms of High Pressure Nitrogen being reacted per second.</s>
+    <s id="Droodism.ChemicalReactorScript.OxygenMassFlow">Oxygen Mass Flow</s>
+    <s id="Droodism.ChemicalReactorScript.OxygenMassFlowTooltip">The kilograms of Liquid Oxygen being reacted per second.</s>
+    <s id="Droodism.ChemicalReactorScript.WaterMassFlow">Water Mass Flow</s>
+    <s id="Droodism.ChemicalReactorScript.WaterMassFlowTooltip">The kilograms of water being reacted per second.</s>
 
     <!-- CraftPerformanceAnalysisPatch -->
-    <s id="Droodism.CraftPerformanceAnalysisPatch.LifeSupportResourcesInfo">Life Support Resources Info</s>
-    <s id="Droodism.CraftPerformanceAnalysisPatch.DroodCount">Drood Count</s>
-    <s id="Droodism.CraftPerformanceAnalysisPatch.Water">Water</s>
-    <s id="Droodism.CraftPerformanceAnalysisPatch.CarbonDioxide">Carbon Dioxide</s>
-    <s id="Droodism.CraftPerformanceAnalysisPatch.Capacity">Capacity</s>
     <s id="Droodism.CraftPerformanceAnalysisPatch.Amount">Amount</s>
+    <s id="Droodism.CraftPerformanceAnalysisPatch.Capacity">Capacity</s>
+    <s id="Droodism.CraftPerformanceAnalysisPatch.CarbonDioxide">Carbon Dioxide</s>
+    <s id="Droodism.CraftPerformanceAnalysisPatch.DroodCount">Drood Count</s>
+    <s id="Droodism.CraftPerformanceAnalysisPatch.LifeSupportResourcesInfo">Life Support Resources Info</s>
+    <s id="Droodism.CraftPerformanceAnalysisPatch.Water">Water</s>
 
-    <!-- ResourceWarningScript -->
-    <s id="Droodism.ResourceWarning.Critical">CRITICAL</s>
-    <s id="Droodism.ResourceWarning.Warning">WARNING</s>
-    <s id="Droodism.ResourceWarning.LevelAt">level at</s>
-    <s id="Droodism.ResourceWarning.At">at</s>
-    <s id="Droodism.ResourceWarning.Remaining">remaining</s>
-    <s id="Droodism.ResourceWarning.ResourceCriticalTimePaused">Resource critical! Time paused.</s>
-    <s id="Droodism.ResourceWarning.WarpSpeedReduced">Resource warning! Warp speed reduced.</s>
+    <!-- CrewCabinScript -->
+    <s id="Droodism.CrewCabinScript.RadiationDuration">Radiation Duration</s>
+    <s id="Droodism.CrewCabinScript.RadiationShieldDuration">Radiation Shield Duration</s>
+    <s id="Droodism.CrewCabinScript.RadiationShieldType">Radiation Shield Type</s>
+    <s id="Droodism.CrewCabinScript.RadiationShieldTypeTooltip">Current Crew Compartment's Ant-Radiation Material Type</s>
+    <s id="Droodism.CrewCabinScript.RefillShield">Refill Shield</s>
 
-    <!-- OnHireButtonClickedPatch -->
-    <s id="Droodism.OnHireButtonClickedPatch.NotEnoughMoney">You do not have enough money to hire a new astronaut. You currently have {0} and it costs {1} to hire a new astronaut.</s>
-    <s id="Droodism.OnHireButtonClickedPatch.CrewFull">Your crew is already as large as it can get. You can unlock larger crews in the Tech Tree.</s>
-    <s id="Droodism.OnHireButtonClickedPatch.ChooseDroodType">Choose the what kind of Drood you want to hire:</s>
-    <s id="Droodism.OnHireButtonClickedPatch.Pilot">Pilot</s>
-    <s id="Droodism.OnHireButtonClickedPatch.Engineer">Engineer</s>
-    <s id="Droodism.OnHireButtonClickedPatch.Scientist">Scientist</s>
+    <!-- DroodismUIManager -->
+    <s id="Droodism.DroodismUIManager.AstronautCount">Astronaut Count</s>
+    <s id="Droodism.DroodismUIManager.CannotSetFuelTransferSingleDrood">Cannot set fuel transfer mode for a single Drood.</s>
+    <s id="Droodism.DroodismUIManager.CO2Level">CO2 Level</s>
+    <s id="Droodism.DroodismUIManager.CraftResourcesInspector">Craft Resources Inspector</s>
+    <s id="Droodism.DroodismUIManager.CrewCount">Crew Count</s>
+    <s id="Droodism.DroodismUIManager.CrewInspector">Crew Inspector</s>
+    <s id="Droodism.DroodismUIManager.Empty">empty</s>
+    <s id="Droodism.DroodismUIManager.InspectorTitle">Droodism Resources Inspector</s>
+    <s id="Droodism.DroodismUIManager.LifeSupportInspector">Life Support Inspector</s>
+    <s id="Droodism.DroodismUIManager.MissionTime">Mission Time</s>
+    <s id="Droodism.DroodismUIManager.MissionTimeTooltip">{0}'s mission time since launch.</s>
+    <s id="Droodism.DroodismUIManager.NotAvailable">N/A</s>
+    <s id="Droodism.DroodismUIManager.RadiationDose">Radiation Dose</s>
+    <s id="Droodism.DroodismUIManager.RadiationDoseTooltip">{0}'s current radiation dose.</s>
+    <s id="Droodism.DroodismUIManager.RadiationRate">Radiation Rate</s>
+    <s id="Droodism.DroodismUIManager.RadiationRateStats">Radiation Rate Stats</s>
+    <s id="Droodism.DroodismUIManager.RadiationRateStatsTooltip">{0}'s current radiation rate stats - if it's red, watch out!</s>
+    <s id="Droodism.DroodismUIManager.RadiationRateTooltip">{0}'s current radiation increase rate per hour.</s>
+    <s id="Droodism.DroodismUIManager.RadiationStats">Radiation Stats</s>
+    <s id="Droodism.DroodismUIManager.RadiationStatsTooltip">{0}'s current radiation cumulative dose stats.</s>
+    <s id="Droodism.DroodismUIManager.RemainFood">Remain Food</s>
+    <s id="Droodism.DroodismUIManager.RemainOxygen">Remain Oxygen</s>
+    <s id="Droodism.DroodismUIManager.RemainWater">Remain Water</s>
+    <s id="Droodism.DroodismUIManager.ResetAllTransferMode">Reset All Transfer Mode</s>
+    <s id="Droodism.DroodismUIManager.ResourcesDrainWasteFill">Resources Drain, Waste Fill</s>
+    <s id="Droodism.DroodismUIManager.ResourcesFillWasteDrain">Resources Fill, Waste Drain</s>
+    <s id="Droodism.DroodismUIManager.SolidWasteLevel">Solid Waste Level</s>
+    <s id="Droodism.DroodismUIManager.ToggleDroodismUI">Toggle Droodism UI.</s>
+    <s id="Droodism.DroodismUIManager.ToggleSingleTypeTransferMode">Toggle Single Type Transfer Mode</s>
+    <s id="Droodism.DroodismUIManager.TouristCount">Tourist Count</s>
+    <s id="Droodism.DroodismUIManager.UnknownRole">Unknown Role</s>
+    <s id="Droodism.DroodismUIManager.UsingExternalOxygen">Using External Oxygen</s>
+    <s id="Droodism.DroodismUIManager.WastedWaterLevel">Wasted Water Level</s>
 
-    <!-- ModSettings -->
-    <s id="Droodism.ModSettings.CategoryName">Droodism</s>
-    <s id="Droodism.ModSettings.ConsumeResourceWhenUnloaded">Drood Consume Resource When Unloaded</s>
-    <s id="Droodism.ModSettings.ConsumeResourceWhenUnloadedDesc">Drood will still Consume Resource Even the Craft is Unloaded.&lt;br&gt;known bug the time calculate went a &lt;size=125%&gt;&lt;color=red&gt;LITTLE BIT&lt;/color&gt;&lt;/size&gt; wrong way</s>
-    <s id="Droodism.ModSettings.ToggleDebugMode">Toggle Debug Mode</s>
-    <s id="Droodism.ModSettings.ToggleDebugModeDesc">Enable some log in dev console,and toggle some hidden option</s>
-    <s id="Droodism.ModSettings.AltNavBallColor">Alt Nav Ball Color</s>
-    <s id="Droodism.ModSettings.AltNavBallColorDesc">Use Alt Nav Ball Color</s>
-    <s id="Droodism.ModSettings.ActiveUpdateRadiationBeltConfig">Active Update Radiation Belt Config</s>
-    <s id="Droodism.ModSettings.ActiveUpdateRadiationBeltConfigDesc">Active Update Radiation Belt Config(Cause Performance loss,but better for debugging)</s>
-    <s id="Droodism.ModSettings.ReceiveCraftRadiation">Receive Craft Radiation</s>
-    <s id="Droodism.ModSettings.ReceiveCraftRadiationDesc">Drood will Receive radiation from the RTG and NTR engines in current craft if on,maybe not so realistic,&lt;color=red&gt;&lt;size=150%&gt;Enable only you like hardcore gameplay&lt;/size&gt;&lt;/color&gt;</s>
-    <s id="Droodism.ModSettings.DisableDockingPortCamera">Disable Docking Port Camera</s>
-    <s id="Droodism.ModSettings.DisableDockingPortCameraDesc">Remove the camera from the docking port&lt;br&gt;&lt;color=red&gt;Warning&lt;/color&gt;: This will completely disabled &lt;color=red&gt;&lt;size=200%&gt;ANY&lt;/size&gt;&lt;/color&gt;camera modifier in&lt;color=red&gt;&lt;size=200%&gt; ANY&lt;/size&gt;&lt;/color&gt; docking ports (even if they're in flight already!), use it only if you really hate them</s>
-    <s id="Droodism.ModSettings.EnableResourceWarning">Enable Resource Warning</s>
-    <s id="Droodism.ModSettings.EnableResourceWarningDesc">During warp, automatically detect  when Drood resources fall below threshold and pause game then alert the player.</s>
-    <s id="Droodism.ModSettings.WarningThreshold">Warning Threshold</s>
-    <s id="Droodism.ModSettings.WarningThresholdDesc">Warning will trigger when resources fall below this percentage.</s>
-    <s id="Droodism.ModSettings.CriticalThreshold">Critical Threshold</s>
-    <s id="Droodism.ModSettings.CriticalThresholdDesc">Critical alert will trigger when resources fall below this percentage. Auto-slowdown is triggered at this level.</s>
+    <!-- ElectrolyticDeviceScript -->
+    <s id="Droodism.ElectrolyticDeviceScript.OxygenGenerationRate">Oxygen Generation Rate</s>
+    <s id="Droodism.ElectrolyticDeviceScript.PowerConsumptionRate">Power Consumption Rate</s>
+    <s id="Droodism.ElectrolyticDeviceScript.WaterConsumptionRate">Water Consumption Rate</s>
+
+    <!-- FirstAddKitScript -->
+    <s id="Droodism.FirstAddKitScript.CrewHealthy">Selected Crew {0} is pretty healthy.</s>
+    <s id="Droodism.FirstAddKitScript.CrewTakingDamage">Selected Crew {0} is taking damage</s>
+    <s id="Droodism.FirstAddKitScript.CrewTooFarToHealing">Selected Crew {0} is too far away to healing.</s>
+    <s id="Droodism.FirstAddKitScript.HealingCompleted">Healing Process Completed for {0}.</s>
+    <s id="Droodism.FirstAddKitScript.HealingInterruptedNoTools">Healing Process Is Interrupted: Not Enough Healing Tools for {0}</s>
+    <s id="Droodism.FirstAddKitScript.HealingInterruptedTakingDamage">Healing Process Is Interrupted: {0} is taking damage</s>
+    <s id="Droodism.FirstAddKitScript.HealingInterruptedTooFar">Healing Process Is Interrupted: {0} is too far away from this First Add Kit</s>
+    <s id="Droodism.FirstAddKitScript.HealingProgress">Healing {0}: Progress {1}</s>
+    <s id="Droodism.FirstAddKitScript.NoDroodSelected">No Drood selected</s>
+    <s id="Droodism.FirstAddKitScript.SelectNotDrood">Select Part is not a Drood</s>
+
+    <!-- FlagScript -->
+    <s id="Droodism.FlagScript.LoadImage">Load Image</s>
+
+    <!-- GasDealerScript -->
+    <s id="Droodism.GasDealerScript.ActionIrreversible">This action is &lt;color=red&gt;&lt;size=110%&gt;irreversible&lt;/size&gt;&lt;/color&gt;</s>
+    <s id="Droodism.GasDealerScript.Engage">Engage</s>
+    <s id="Droodism.GasDealerScript.EngageTooltip">Release All Gas in the High Pressure Gas Tank and Low Pressure Gas Tank, this action is irreversible and will disable all other functions of this part. Use it with caution.</s>
+    <s id="Droodism.GasDealerScript.EmergencyDepressurization">Emergency Depressurization</s>
+    <s id="Droodism.GasDealerScript.GasReleasing">All {0} in the High Pressure Gas Tank and Low Pressure Gas Tank is releasing.</s>
+    <s id="Droodism.GasDealerScript.Malfunction">&lt;color=red&gt;Malfunction&lt;/color&gt;</s>
+    <s id="Droodism.GasDealerScript.MalfunctionTooltip">&lt;color=red&gt;Emergency Depressurization Sequence had been completed, this part is malfunctioning and cannot be used.&lt;/color&gt;</s>
+    <s id="Droodism.GasDealerScript.Malfunctioning">&lt;color=red&gt;This part is malfunctioning and cannot be used.&lt;/color&gt;</s>
+    <s id="Droodism.GasDealerScript.SequenceInitiated">Emergency Depressurization Sequence Initiated</s>
+
+    <!-- GliderScript -->
+    <s id="Droodism.Glider.HasLanded">has landed on the ground</s>
 
     <!-- LifeSupportGeneratorScript -->
     <s id="Droodism.LifeSupportGeneratorScript.ReleaseCO2Externally">Release CO2 Externally</s>
     <s id="Droodism.LifeSupportGeneratorScript.ReleaseCO2ExternallyTooltip">Determines whether release CO2 externally or internally to the craft.</s>
 
+    <!-- ModSettings -->
+    <s id="Droodism.ModSettings.ActiveUpdateRadiationBeltConfig">Active Update Radiation Belt Config</s>
+    <s id="Droodism.ModSettings.ActiveUpdateRadiationBeltConfigDesc">Active Update Radiation Belt Config(Cause Performance loss,but better for debugging)</s>
+    <s id="Droodism.ModSettings.AltNavBallColor">Alt Nav Ball Color</s>
+    <s id="Droodism.ModSettings.AltNavBallColorDesc">Use Alt Nav Ball Color</s>
+    <s id="Droodism.ModSettings.CategoryName">Droodism</s>
+    <s id="Droodism.ModSettings.ConsumeResourceWhenUnloaded">Drood Consume Resource When Unloaded</s>
+    <s id="Droodism.ModSettings.ConsumeResourceWhenUnloadedDesc">Drood will still Consume Resource Even the Craft is Unloaded.&lt;br&gt;known bug the time calculate went a &lt;size=125%&gt;&lt;color=red&gt;LITTLE BIT&lt;/color&gt;&lt;/size&gt; wrong way</s>
+    <s id="Droodism.ModSettings.CriticalThreshold">Critical Threshold</s>
+    <s id="Droodism.ModSettings.CriticalThresholdDesc">Critical alert will trigger when resources fall below this percentage. Auto-slowdown is triggered at this level.</s>
+    <s id="Droodism.ModSettings.DisableDockingPortCamera">Disable Docking Port Camera</s>
+    <s id="Droodism.ModSettings.DisableDockingPortCameraDesc">Remove the camera from the docking port&lt;br&gt;&lt;color=red&gt;Warning&lt;/color&gt;: This will completely disabled &lt;color=red&gt;&lt;size=200%&gt;ANY&lt;/size&gt;&lt;/color&gt;camera modifier in&lt;color=red&gt;&lt;size=200%&gt; ANY&lt;/size&gt;&lt;/color&gt; docking ports (even if they're in flight already!), use it only if you really hate them</s>
+    <s id="Droodism.ModSettings.EnableResourceWarning">Enable Resource Warning</s>
+    <s id="Droodism.ModSettings.EnableResourceWarningDesc">During warp, automatically detect  when Drood resources fall below threshold and pause game then alert the player.</s>
+    <s id="Droodism.ModSettings.ReceiveCraftRadiation">Receive Craft Radiation</s>
+    <s id="Droodism.ModSettings.ReceiveCraftRadiationDesc">Drood will Receive radiation from the RTG and NTR engines in current craft if on,maybe not so realistic,&lt;color=red&gt;&lt;size=150%&gt;Enable only you like hardcore gameplay&lt;/size&gt;&lt;/color&gt;</s>
+    <s id="Droodism.ModSettings.ToggleDebugMode">Toggle Debug Mode</s>
+    <s id="Droodism.ModSettings.ToggleDebugModeDesc">Enable some log in dev console,and toggle some hidden option</s>
+    <s id="Droodism.ModSettings.WarningThreshold">Warning Threshold</s>
+    <s id="Droodism.ModSettings.WarningThresholdDesc">Warning will trigger when resources fall below this percentage.</s>
+
+    <!-- OnHireButtonClickedPatch -->
+    <s id="Droodism.OnHireButtonClickedPatch.ChooseDroodType">Choose the what kind of Drood you want to hire:</s>
+    <s id="Droodism.OnHireButtonClickedPatch.CrewFull">Your crew is already as large as it can get. You can unlock larger crews in the Tech Tree.</s>
+    <s id="Droodism.OnHireButtonClickedPatch.Engineer">Engineer</s>
+    <s id="Droodism.OnHireButtonClickedPatch.NotEnoughMoney">You do not have enough money to hire a new astronaut. You currently have {0} and it costs {1} to hire a new astronaut.</s>
+    <s id="Droodism.OnHireButtonClickedPatch.Pilot">Pilot</s>
+    <s id="Droodism.OnHireButtonClickedPatch.Scientist">Scientist</s>
+
+    <!-- PhotoBioReactorScript -->
+    <s id="Droodism.PhotoBioReactorScript.ArtificialLightTooltip">Using Electronic Artificial Light to Working</s>
+    <s id="Droodism.PhotoBioReactorScript.FoodGenerationPercentage">Food Generation Percentage</s>
+    <s id="Droodism.PhotoBioReactorScript.FoodGenerationProgress">Food Generation Progress</s>
+    <s id="Droodism.PhotoBioReactorScript.PointingEfficiency">Pointing Efficiency</s>
+    <s id="Droodism.PhotoBioReactorScript.Status">Status</s>
+    <s id="Droodism.PhotoBioReactorScript.UseArtificialLight">Use Artificial Light</s>
+
+    <!-- RadiationBeltDebugUI -->
+    <s id="Droodism.RadiationBeltDebugUI.ApplyAnomalyPreset">Apply Anomaly Preset</s>
+    <s id="Droodism.RadiationBeltDebugUI.ApplyGiantPreset">Apply Giant Preset</s>
+    <s id="Droodism.RadiationBeltDebugUI.ApplyMetallicPreset">Apply Metallic Preset</s>
+    <s id="Droodism.RadiationBeltDebugUI.ApplySolidIronPreset">Apply SolidIron Preset</s>
+    <s id="Droodism.RadiationBeltDebugUI.BeltSpinPhaseDeg">Belt Spin Phase (Deg)</s>
+    <s id="Droodism.RadiationBeltDebugUI.BeltSpinSpeedDegPerSec">Belt Spin Speed (Deg/s)</s>
+    <s id="Droodism.RadiationBeltDebugUI.BeltTiltAxisX">Belt Tilt Axis X</s>
+    <s id="Droodism.RadiationBeltDebugUI.BeltTiltAxisY">Belt Tilt Axis Y</s>
+    <s id="Droodism.RadiationBeltDebugUI.BeltTiltAxisZ">Belt Tilt Axis Z</s>
+    <s id="Droodism.RadiationBeltDebugUI.DebugInspectorTitle">Radiation Belt Debug Inspector</s>
+    <s id="Droodism.RadiationBeltDebugUI.ForceRebuildInspector">Force Rebuild Inspector</s>
+    <s id="Droodism.RadiationBeltDebugUI.General">General</s>
+    <s id="Droodism.RadiationBeltDebugUI.Inner">Inner</s>
+    <s id="Droodism.RadiationBeltDebugUI.InnerBaseIntensity">Inner Base Intensity</s>
+    <s id="Droodism.RadiationBeltDebugUI.InnerBorderDeformXY">Inner Border Deform XY</s>
+    <s id="Droodism.RadiationBeltDebugUI.InnerBorderDist">Inner Border Dist</s>
+    <s id="Droodism.RadiationBeltDebugUI.InnerCompression">Inner Compression</s>
+    <s id="Droodism.RadiationBeltDebugUI.InnerDeform">Inner Deform</s>
+    <s id="Droodism.RadiationBeltDebugUI.InnerDeformXY">Inner Deform XY</s>
+    <s id="Droodism.RadiationBeltDebugUI.InnerExtension">Inner Extension</s>
+    <s id="Droodism.RadiationBeltDebugUI.InnerHeightScale">Inner Height Scale</s>
+    <s id="Droodism.RadiationBeltDebugUI.InnerIntensityEdgeWidth">Inner Intensity Edge Width</s>
+    <s id="Droodism.RadiationBeltDebugUI.InnerIntensityExponent">Inner Intensity Exponent</s>
+    <s id="Droodism.RadiationBeltDebugUI.InnerParticleCount">Inner Particle Count</s>
+    <s id="Droodism.RadiationBeltDebugUI.InnerPeakDoseRateRadPerHour">Inner Peak Dose Rate (rad/h)</s>
+    <s id="Droodism.RadiationBeltDebugUI.InnerQuality">Inner Quality</s>
+    <s id="Droodism.RadiationBeltDebugUI.InnerRadius">Inner Radius</s>
+    <s id="Droodism.RadiationBeltDebugUI.InspectorTitle">Radiation Belt Inspector</s>
+    <s id="Droodism.RadiationBeltDebugUI.LoadCurrentConfig">Load Current Config</s>
+    <s id="Droodism.RadiationBeltDebugUI.MainEnabled">Main Enabled</s>
+    <s id="Droodism.RadiationBeltDebugUI.Outer">Outer</s>
+    <s id="Droodism.RadiationBeltDebugUI.OuterBaseIntensity">Outer Base Intensity</s>
+    <s id="Droodism.RadiationBeltDebugUI.OuterBorderDeformXY">Outer Border Deform XY</s>
+    <s id="Droodism.RadiationBeltDebugUI.OuterBorderDist">Outer Border Dist</s>
+    <s id="Droodism.RadiationBeltDebugUI.OuterCompression">Outer Compression</s>
+    <s id="Droodism.RadiationBeltDebugUI.OuterDeform">Outer Deform</s>
+    <s id="Droodism.RadiationBeltDebugUI.OuterDeformXY">Outer Deform XY</s>
+    <s id="Droodism.RadiationBeltDebugUI.OuterExtension">Outer Extension</s>
+    <s id="Droodism.RadiationBeltDebugUI.OuterHeightScale">Outer Height Scale</s>
+    <s id="Droodism.RadiationBeltDebugUI.OuterIntensityEdgeWidth">Outer Intensity Edge Width</s>
+    <s id="Droodism.RadiationBeltDebugUI.OuterIntensityExponent">Outer Intensity Exponent</s>
+    <s id="Droodism.RadiationBeltDebugUI.OuterParticleCount">Outer Particle Count</s>
+    <s id="Droodism.RadiationBeltDebugUI.OuterPeakDoseRateRadPerHour">Outer Peak Dose Rate (rad/h)</s>
+    <s id="Droodism.RadiationBeltDebugUI.OuterQuality">Outer Quality</s>
+    <s id="Droodism.RadiationBeltDebugUI.OuterRadius">Outer Radius</s>
+    <s id="Droodism.RadiationBeltDebugUI.ReGenerateBeltMesh">ReGenerate Belt Mesh</s>
+    <s id="Droodism.RadiationBeltDebugUI.RenderMetersPerUnit">Render Meters Per Unit</s>
+    <s id="Droodism.RadiationBeltDebugUI.ReturnToDefaultPreset">Return to Default Preset</s>
+    <s id="Droodism.RadiationBeltDebugUI.SaveCurrentConfig">Save Current Config</s>
+    <s id="Droodism.RadiationBeltDebugUI.Show">show</s>
+    <s id="Droodism.RadiationBeltDebugUI.ShowInner">show inner</s>
+    <s id="Droodism.RadiationBeltDebugUI.ShowOuter">show outer</s>
+    <s id="Droodism.RadiationBeltDebugUI.TiltGroup">Tilt Group</s>
+
+    <!-- RadiationBeltUI -->
+    <s id="Droodism.RadiationBeltUI.BeltTiltDeg">Belt Tilt (Deg)</s>
+    <s id="Droodism.RadiationBeltUI.CurrentPlanet">Current Planet</s>
+    <s id="Droodism.RadiationBeltUI.DebugMenu">Debug Menu</s>
+    <s id="Droodism.RadiationBeltUI.InnerBorderRadius">Inner Border Radius</s>
+    <s id="Droodism.RadiationBeltUI.InnerDist">Inner Dist</s>
+    <s id="Droodism.RadiationBeltUI.InnerPeakDoseRateRadPerHour">Inner Peak Dose Rate (rad/h)</s>
+    <s id="Droodism.RadiationBeltUI.InnerRadius">Inner Radius</s>
+    <s id="Droodism.RadiationBeltUI.OuterBorderRadius">Outer Border Radius</s>
+    <s id="Droodism.RadiationBeltUI.OuterDist">Outer Dist</s>
+    <s id="Droodism.RadiationBeltUI.OuterPeakDoseRateRadPerHour">Outer Peak Dose Rate (rad/h)</s>
+    <s id="Droodism.RadiationBeltUI.OuterRadius">Outer Radius</s>
+    <s id="Droodism.RadiationBeltUI.RadiationBelt">Radiation Belt</s>
+    <s id="Droodism.RadiationBeltUI.ShowGeneral">Show General</s>
+    <s id="Droodism.RadiationBeltUI.ShowInner">Show Inner</s>
+    <s id="Droodism.RadiationBeltUI.ShowOuter">Show Outer</s>
+
+    <!-- ResourceWarningScript -->
+    <s id="Droodism.ResourceWarning.At">at</s>
+    <s id="Droodism.ResourceWarning.Critical">CRITICAL</s>
+    <s id="Droodism.ResourceWarning.LevelAt">level at</s>
+    <s id="Droodism.ResourceWarning.Remaining">remaining</s>
+    <s id="Droodism.ResourceWarning.ResourceCriticalTimePaused">Resource critical! Time paused.</s>
+    <s id="Droodism.ResourceWarning.WarpSpeedReduced">Resource warning! Warp speed reduced.</s>
+    <s id="Droodism.ResourceWarning.Warning">WARNING</s>
+
     <!-- Sodium_PeroxideScript -->
-    <s id="Droodism.Sodium_PeroxideScript.GenerationProgress">Generation Progress</s>
-    <s id="Droodism.Sodium_PeroxideScript.GenerationPercentage">Generation Percentage</s>
-    <s id="Droodism.Sodium_PeroxideScript.CurrentState">Current State</s>
     <s id="Droodism.Sodium_PeroxideScript.ContainerUsedUp">&lt;color=red&gt;This Container is used up&lt;/color&gt;</s>
-    <s id="Droodism.Sodium_PeroxideScript.Working">&lt;color=green&gt;Working&lt;/color&gt;</s>
+    <s id="Droodism.Sodium_PeroxideScript.CurrentState">Current State</s>
+    <s id="Droodism.Sodium_PeroxideScript.GenerationPercentage">Generation Percentage</s>
+    <s id="Droodism.Sodium_PeroxideScript.GenerationProgress">Generation Progress</s>
     <s id="Droodism.Sodium_PeroxideScript.Idle">&lt;color=yellow&gt;Idle&lt;/color&gt;</s>
+    <s id="Droodism.Sodium_PeroxideScript.Working">&lt;color=green&gt;Working&lt;/color&gt;</s>
 
-    <!-- ChemicalReactorScript -->
-    <s id="Droodism.ChemicalReactorScript.MethaneloxMassFlow">Methanelox Mass Flow</s>
-    <s id="Droodism.ChemicalReactorScript.MethaneloxMassFlowTooltip">The kilograms of Methanelox being generated per second.</s>
-    <s id="Droodism.ChemicalReactorScript.WaterMassFlow">Water Mass Flow</s>
-    <s id="Droodism.ChemicalReactorScript.WaterMassFlowTooltip">The kilograms of water being reacted per second.</s>
-    <s id="Droodism.ChemicalReactorScript.CO2MassFlow">CO2 Mass Flow</s>
-    <s id="Droodism.ChemicalReactorScript.CO2MassFlowTooltip">The kilograms of CO2 being reacted per second.</s>
-    <s id="Droodism.ChemicalReactorScript.MonopropellantMassFlow">Monopropellant Mass Flow</s>
-    <s id="Droodism.ChemicalReactorScript.MonopropellantMassFlowTooltip">The kilograms of Monopropellant being generated per second.</s>
-    <s id="Droodism.ChemicalReactorScript.HydroloxMassFlow">Hydrolox Mass Flow</s>
-    <s id="Droodism.ChemicalReactorScript.HydroloxMassFlowTooltip">The kilograms of Hydrolox being reacted per second.</s>
-    <s id="Droodism.ChemicalReactorScript.NitrogenMassFlow">Nitrogen Mass Flow</s>
-    <s id="Droodism.ChemicalReactorScript.NitrogenMassFlowTooltip">The kilograms of High Pressure Nitrogen being reacted per second.</s>
-    <s id="Droodism.ChemicalReactorScript.LH2MassFlow">LH2 Mass Flow</s>
-    <s id="Droodism.ChemicalReactorScript.LH2MassFlowTooltip">The kilograms of Liquid Hydrogen being reacted per second.</s>
-    <s id="Droodism.ChemicalReactorScript.OxygenMassFlow">Oxygen Mass Flow</s>
-    <s id="Droodism.ChemicalReactorScript.OxygenMassFlowTooltip">The kilograms of Liquid Oxygen being reacted per second.</s>
+    <!-- SupportLifeScript -->
+    <s id="Droodism.SupportLifeScript.AutoDeployHeight">Auto Deploy Height</s>
+    <s id="Droodism.SupportLifeScript.AutoDeployParachute">Auto Deploy Parachute</s>
+    <s id="Droodism.SupportLifeScript.CanNotDeployAirDensityThin">Can Not Deploy Parachute, Air Density is too thin</s>
+    <s id="Droodism.SupportLifeScript.CanNotDeployGrounded">Can Not Deploy Parachute, Drood is Grounded</s>
+    <s id="Droodism.SupportLifeScript.CanNotDeployHere">Can Not Deploy Parachute Here</s>
+    <s id="Droodism.SupportLifeScript.CanNotDeployInWater">Can Not Deploy Parachute, Drood is in water</s>
+    <s id="Droodism.SupportLifeScript.CanNotDeployNotEva">Can Not Deploy Parachute, Not in Eva</s>
+    <s id="Droodism.SupportLifeScript.CanNotDeploySpeedHigh">Can Not Deploy Parachute, Speed is too high</s>
+    <s id="Droodism.SupportLifeScript.CanNotPlantFlagAlreadyPlanted">Can Not Plant Flag, This Drood had already plant one!</s>
+    <s id="Droodism.SupportLifeScript.CanNotPlantFlagInWater">Can Not Plant Flag, Drood is in water</s>
+    <s id="Droodism.SupportLifeScript.CanNotPlantFlagNotEva">Can Not Plant Flag, Not in Eva</s>
+    <s id="Droodism.SupportLifeScript.CanNotPlantFlagNotGrounded">Can Not Plant Flag, Not Grounded</s>
+    <s id="Droodism.SupportLifeScript.CanNotPlantFlagVelocityHigh">Can Not Plant Flag, Velocity is too high</s>
+    <s id="Droodism.SupportLifeScript.CantHealDrood">Can not heal a drood</s>
+    <s id="Droodism.SupportLifeScript.CantRepairDrood">Can't Repair Drood</s>
+    <s id="Droodism.SupportLifeScript.CO2Level">CO2 Level</s>
+    <s id="Droodism.SupportLifeScript.CrewMemberDamage">Crew Member {0} (id:{1}) is taking damage because running out of {2}, he/she has {3} left</s>
+    <s id="Droodism.SupportLifeScript.CrewMemberRadiationDamage">Crew Member {0} (id:{1}) is taking damage due to {2} he/she has {3} left</s>
+    <s id="Droodism.SupportLifeScript.CrewMemberStatusDamage">Crew Member {0} (id:{1}) is taking damage because {2} level is too high, he/she has {3} left</s>
+    <s id="Droodism.SupportLifeScript.CrewMemberWasteDamage">Crew Member {0} (id:{1}) is taking damage because {2} level is too high, he/she has {3} left</s>
+    <s id="Droodism.SupportLifeScript.CrewRole">Crew Role</s>
+    <s id="Droodism.SupportLifeScript.CurrentRadiationDose">Current Radiation Dose</s>
+    <s id="Droodism.SupportLifeScript.CurrentRadiationDoseRatePerHour">Current Radiation Dose Rate Per Hour</s>
+    <s id="Droodism.SupportLifeScript.CurrentRadiationDoseStats">Current Radiation Dose Stats</s>
+    <s id="Droodism.SupportLifeScript.CurrentRadiationLevel">Current Radiation Level</s>
+    <s id="Droodism.SupportLifeScript.EnableAutoDeployment">Enable Auto Deployment</s>
+    <s id="Droodism.SupportLifeScript.FoodSupplyTime">Food Supply Time</s>
+    <s id="Droodism.SupportLifeScript.FullyDeployHeight">Fully Deploy Height</s>
+    <s id="Droodism.SupportLifeScript.HighRadiationRate">high radiation rate exposure</s>
+    <s id="Droodism.SupportLifeScript.Infinity">Infinity</s>
+    <s id="Droodism.SupportLifeScript.LifeSupportInfo">Life Support Info</s>
+    <s id="Droodism.SupportLifeScript.ManualDeployParachute">Manual Deploy Parachute</s>
+    <s id="Droodism.SupportLifeScript.ManualDeployParaGlider">Manual Deploy ParaGlider</s>
+    <s id="Droodism.SupportLifeScript.MildCumulativeRadiation">mild cumulative radiation exposure</s>
+    <s id="Droodism.SupportLifeScript.MissionTime">Mission Time</s>
+    <s id="Droodism.SupportLifeScript.ModerateCumulativeRadiation">moderate cumulative radiation exposure</s>
+    <s id="Droodism.SupportLifeScript.NoPartSelected">No part selected</s>
+    <s id="Droodism.SupportLifeScript.NotAvailable">N/A</s>
+    <s id="Droodism.SupportLifeScript.OxygenSupplyTime">Oxygen Supply Time</s>
+    <s id="Droodism.SupportLifeScript.PartDoesntNeedRepair">Selected {0} doesn't need to be repaired.</s>
+    <s id="Droodism.SupportLifeScript.PartTooFarAway">Selected {0} is too far away to repair.</s>
+    <s id="Droodism.SupportLifeScript.PlantFlag">Plant Flag</s>
+    <s id="Droodism.SupportLifeScript.RadiationCritical">Critical</s>
+    <s id="Droodism.SupportLifeScript.RadiationInspector">Radiation Inspector</s>
+    <s id="Droodism.SupportLifeScript.RadiationMild">Mild</s>
+    <s id="Droodism.SupportLifeScript.RadiationNominal">nominal</s>
+    <s id="Droodism.SupportLifeScript.RadiationSevere">Severe</s>
+    <s id="Droodism.SupportLifeScript.RemainFood">Remain Food</s>
+    <s id="Droodism.SupportLifeScript.RemainOxygen">Remain Oxygen</s>
+    <s id="Droodism.SupportLifeScript.RemainRepairingTools">Remain Repairing Tools</s>
+    <s id="Droodism.SupportLifeScript.RemainWater">Remain Water</s>
+    <s id="Droodism.SupportLifeScript.Repair">Repair</s>
+    <s id="Droodism.SupportLifeScript.RepairCompleted">Repairing Process Completed for {0}.</s>
+    <s id="Droodism.SupportLifeScript.RepairingProgress">Repairing {0}: Progress {1}</s>
+    <s id="Droodism.SupportLifeScript.RepairInterruptedTooFar">Repairing Process Is Interrupted: {0} is too far away from engineer</s>
+    <s id="Droodism.SupportLifeScript.NotEnoughRepairingTools">Repairing Process Is Interrupted: Not Enough Repairing Tools for {0}</s>
+    <s id="Droodism.SupportLifeScript.SevereCumulativeRadiation">severe cumulative radiation exposure</s>
+    <s id="Droodism.SupportLifeScript.SolidWasteLevel">Solid Waste Level</s>
+    <s id="Droodism.SupportLifeScript.Unknown">Unknown</s>
+    <s id="Droodism.SupportLifeScript.UsingExternalOxygen">Using External Oxygen</s>
+    <s id="Droodism.SupportLifeScript.AutoDeployParaGlider">Auto Deploy ParaGlider</s>
+    <s id="Droodism.SupportLifeScript.ManualDeployParaGlider">Manual Deploy ParaGlider</s>
+    <s id="Droodism.SupportLifeScript.WastedWaterLevel">Wasted Water Level</s>
+    <s id="Droodism.SupportLifeScript.WaterSupplyTime">Water Supply Time</s>
 
-    <!-- ElectrolyticDeviceScript -->
-    <s id="Droodism.ElectrolyticDeviceScript.WaterConsumptionRate">Water Consumption Rate</s>
-    <s id="Droodism.ElectrolyticDeviceScript.OxygenGenerationRate">Oxygen Generation Rate</s>
-    <s id="Droodism.ElectrolyticDeviceScript.PowerConsumptionRate">Power Consumption Rate</s>
-
-    <!-- FlagScript -->
-    <s id="Droodism.FlagScript.LoadImage">Load Image</s>
+    <!-- ToolBoxScript -->
+    <s id="Droodism.ToolBox.CrewNotEngineer">Selected Crew {0} is not an Engineer</s>
+    <s id="Droodism.ToolBox.CrewTooFarToResupply">Selected Crew {0} is too far away to resupply.</s>
+    <s id="Droodism.ToolBox.EngineerHasFullTools">Selected Engineer {0} has full set of tool.</s>
+    <s id="Droodism.ToolBox.NoDroodSelected">No Drood selected</s>
+    <s id="Droodism.ToolBox.ResupplyCompleted">Resupply Process Completed for {0}.</s>
+    <s id="Droodism.ToolBox.ResupplyInterruptedNoTools">Resupply Process Is Interrupted: Not Enough Healing Tools for {0}</s>
+    <s id="Droodism.ToolBox.ResupplyInterruptedTooFar">Resupply Process Is Interrupted: {0} is too far away from this Tool box</s>
+    <s id="Droodism.ToolBox.ResupplyProgress">Resupply {0}: Progress {1}</s>
+    <s id="Droodism.ToolBox.SelectNotDrood">Select Part is not a Drood</s>
 </Strings>

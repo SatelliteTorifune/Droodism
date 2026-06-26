@@ -322,17 +322,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public override void OnGenerateInspectorModel(PartInspectorModel model)
         {
             base.OnGenerateInspectorModel(model);
-            var pointingEfficiencyModel = new TextModel("Pointing Efficiency", (Func<string>) (() => Units.GetPercentageString(this._rechargePointingEfficiency)));
-            var GrowProgressPercentModel = new TextModel("Food Generation Percentage", (Func<string>) (() => Units.GetPercentageString(growProgress/Data.GrowProgressTotal)));
-            var GrowProgressBarModel = new ProgressBarModel("Food Generation Progress", () =>
+            var pointingEfficiencyModel = new TextModel(Locale.GetString("Droodism.PhotoBioReactorScript.PointingEfficiency"), (Func<string>) (() => Units.GetPercentageString(this._rechargePointingEfficiency)));
+            var GrowProgressPercentModel = new TextModel(Locale.GetString("Droodism.PhotoBioReactorScript.FoodGenerationPercentage"), (Func<string>) (() => Units.GetPercentageString(growProgress/Data.GrowProgressTotal)));
+            var GrowProgressBarModel = new ProgressBarModel(Locale.GetString("Droodism.PhotoBioReactorScript.FoodGenerationProgress"), () =>
                 (float)(growProgress/Data.GrowProgressTotal));
-            var statues=new TextModel("Status",()=> deviceStatus);
-            var toggleArtificialLight = new ToggleModel("Use Artificial Light", () => usingArtificialLight, (Action<bool>) (b=>
+            var statues=new TextModel(Locale.GetString("Droodism.PhotoBioReactorScript.Status"),()=> deviceStatus);
+            var toggleArtificialLight = new ToggleModel(Locale.GetString("Droodism.PhotoBioReactorScript.UseArtificialLight"), () => usingArtificialLight, (Action<bool>) (b=>
             {
                 usingArtificialLight = b;
                 pointingEfficiencyModel.Visible = !b;
 
-            }),"Using Electronic Artificial Light to Working");
+            }), Locale.GetString("Droodism.PhotoBioReactorScript.ArtificialLightTooltip"));
             model.Add(pointingEfficiencyModel);
             model.Add(GrowProgressBarModel);
             model.Add(GrowProgressPercentModel);
