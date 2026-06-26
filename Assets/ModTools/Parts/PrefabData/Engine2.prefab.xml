@@ -1,8 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <GameObject name="Engine2" path="Craft/Parts/Prefabs/Engine2.prefab">
-  <GameObject name="SmokeParticleSystem">
-    <Component type="UnityEngine.ParticleSystem" />
-    <Component type="UnityEngine.ParticleSystemRenderer" />
+  <GameObject name="SmokeTrail">
     <Component type="Assets.Scripts.Craft.Parts.Modifiers.SmokeTrailScript" />
   </GameObject>
   <GameObject name="SmallBoosterBase">

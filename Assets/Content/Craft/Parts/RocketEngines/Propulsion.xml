@@ -1,29 +1,32 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Propulsion xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\..\..\ModTools\Parts\Propulsion.xsd">
   <Fuels>
-    <Fuel id="Oxygen" name="Oxygen" gamma="0" density="0.001429" molecularWeight="32" combustionTemperature="0" price="20" explosivePower="0" description="Low pressure oxygen Drood could breathe directly">
+    <Fuel id="Oxygen" name="Gas Oxygen" gamma="0" density="0.001429" molecularWeight="32" combustionTemperature="0" price="20" explosivePower="0"  description="Low pressure oxygen Drood could breathe directly">
       <Visual exhaustColor="#00000000" exhaustColorTip="#00000000" exhaustColorShock="#00000000" exhaustColorFlame="#00000000" exhaustColorSoot="#00000000" exhaustColorSmoke="#ffffff00" globalIntensity ="0" shockIntensity="-20" rimShade="0" />
+    </Fuel>
+    <Fuel id="H2O" name="Water" gamma="1.21" density="1.0" molecularWeight="11.8" combustionTemperature="3304" price="0.01" explosivePower="0"  harvestable="true" description="Now that's what I call high-quality H2O.">
+      <Visual fuelLineColor="#3aa0ffff" exhaustColor="#ffffff60" exhaustColorExpanded="#ffffffff" exhaustColorTip="#aaffff40" exhaustColorShock="#aaffff60" exhaustColorFlame="#ffffffff" exhaustColorSoot="#ffffffff" exhaustColorSmoke="#f5faff90" globalIntensity ="1" shockIntensity="1" rimShade="0.95" />
     </Fuel>
     <Fuel id="Food" name="Food" gamma="0" density="1.5" molecularWeight="128" combustionTemperature="0" price="25" explosivePower="0" description="The heavy compressed food Drood eat ">
       <Visual exhaustColor="#00000000" exhaustColorTip="#00000000" exhaustColorShock="#00000000" exhaustColorFlame="#00000000" exhaustColorSoot="#00000000" exhaustColorSmoke="#ffffff00" globalIntensity ="0" shockIntensity="-20" rimShade="0" />
     </Fuel>
-    <Fuel id="HPCO2" name="High Pressure Carbon Dioxide" gamma="0" density="0.0526" molecularWeight="44" combustionTemperature="0" price="10" explosivePower="0" description="High Pressure Carbon Dioxide with larger density for storage">
+    <Fuel id="CO2" name="Carbon Dioxide" gamma="0" density="0.001977" molecularWeight="44.01" combustionTemperature="0" price="0.05" explosivePower="0"  harvestable="true" description="Carbon dioxide, harvested from the atmosphere where a world has one or mined from frozen surface deposits. On its own it's just cargo, but feed it to a Sabatier converter with some hydrogen and it becomes methane fuel.">
+      <Visual fuelLineColor="#b8c4c0ff" exhaustColor="#cccccc20" exhaustColorExpanded="#ccccccff" exhaustColorTip="#cccccc80" exhaustColorShock="#cccccc80" exhaustColorFlame="#ccccccff" exhaustColorSoot="#ffffffff" exhaustColorSmoke="#ffffff40" globalIntensity="1" shockIntensity="1" rimShade="0.95" />
+    </Fuel>
+    <Fuel id="HPCO2" name="High Pressure Carbon Dioxide" gamma="1.30" density="1.101" molecularWeight="44.01" combustionTemperature="0" price="0.15" explosivePower="0" harvestable="false" description="High Pressure Carbon Dioxide with larger density for storage">
+      <Visual fuelLineColor="#b8c4c0ff" exhaustColor="#cccccc20" exhaustColorExpanded="#ccccccff" exhaustColorTip="#cccccc80" exhaustColorShock="#cccccc80" exhaustColorFlame="#ccccccff" exhaustColorSoot="#ffffffff" exhaustColorSmoke="#ffffff40" globalIntensity="1" shockIntensity="1" rimShade="0.95" />
+    </Fuel>
+    <Fuel id="Wasted Water" name="Wasted Water" gamma="0" density="1.05" molecularWeight="34" combustionTemperature="0" price="0" explosivePower="0"  description="Wasted Water Drood Generated">
       <Visual exhaustColor="#00000000" exhaustColorTip="#00000000" exhaustColorShock="#00000000" exhaustColorFlame="#00000000" exhaustColorSoot="#00000000" exhaustColorSmoke="#ffffff00" globalIntensity ="0" shockIntensity="-20" rimShade="0" />
     </Fuel>
-    <Fuel id="Wasted Water" name="Wasted Water" gamma="0" density="1.05" molecularWeight="34" combustionTemperature="0" price="0" explosivePower="0" description="Wasted Water Drood Generated">
-      <Visual exhaustColor="#00000000" exhaustColorTip="#00000000" exhaustColorShock="#00000000" exhaustColorFlame="#00000000" exhaustColorSoot="#00000000" exhaustColorSmoke="#ffffff00" globalIntensity ="0" shockIntensity="-20" rimShade="0" />
-    </Fuel>    
-    <Fuel id="N2" name="Nitrogen" gamma="0" density="0.00125" molecularWeight="28" combustionTemperature="0" price="100" explosivePower="0" description="Nitrogen gas">
+    <Fuel id="Solid Waste" name="Solid Waste" gamma="0" density="2" molecularWeight="100" combustionTemperature="0" price="0" explosivePower="15"  description="Solid Waste Drood Generated,or you can call it sh1t">
       <Visual exhaustColor="#00000000" exhaustColorTip="#00000000" exhaustColorShock="#00000000" exhaustColorFlame="#00000000" exhaustColorSoot="#00000000" exhaustColorSmoke="#ffffff00" globalIntensity ="0" shockIntensity="-20" rimShade="0" />
     </Fuel>
-    <Fuel id="HPN2" name="High Pressure Nitrogen" gamma="0" density="0.0525" molecularWeight="28" combustionTemperature="0" price="0" explosivePower="0" description="High Pressure Nitrogen with larger density for storage">
+    <Fuel id="N2" name="Nitrogen" gamma="0" density="0.00125" molecularWeight="28.014" combustionTemperature="0" price="0.15" explosivePower="0" harvestable="true" description="Nitrogen, scooped from the atmosphere of any world that has one. Nothing burns it directly, but combine it with hydrogen in a converter and you can synthesize hydrazine, a potent storable propellant.">
       <Visual exhaustColor="#00000000" exhaustColorTip="#00000000" exhaustColorShock="#00000000" exhaustColorFlame="#00000000" exhaustColorSoot="#00000000" exhaustColorSmoke="#ffffff00" globalIntensity ="0" shockIntensity="-20" rimShade="0" />
     </Fuel>
-    <Fuel id="Solid Waste" name="Solid Waste" gamma="0" density="2" molecularWeight="100" combustionTemperature="0" price="0" explosivePower="15" description="Solid Waste Drood Generated,or you can call it sh1t">
-      <Visual exhaustColor="#00000000" exhaustColorTip="#00000000" exhaustColorShock="#00000000" exhaustColorFlame="#00000000" exhaustColorSoot="#00000000" exhaustColorSmoke="#ffffff00" globalIntensity ="0" shockIntensity="-20" rimShade="0" />
-    </Fuel>
-    <Fuel id="Ore" name="Ore" gamma="0" density="3.8" molecularWeight="120" combustionTemperature="3450" price="0" explosivePower="0" fuelTransferRate="0" description="Heavy Raw Solid Ore mined by mining machines,require further processing to be used as fuel">
-      <Visual exhaustColor="#ffc181ff" exhaustColorExpanded="#ffc181ff" exhaustColorTip="#ffb64da0" exhaustColorShock="#ffc74cff" exhaustColorFlame="#ff6a00ff" exhaustColorSoot="#3d0000ff" exhaustColorSmoke="#ffffffff" globalIntensity ="10" shockIntensity="0.1" rimShade="0" smokeOffset="0" />
+    <Fuel id="HPN2" name="High Pressure Nitrogen" gamma="1.40" density="0.807" molecularWeight="28.014" combustionTemperature="0" price="0.15" explosivePower="0" harvestable="false" description="High Pressure Nitrogen with larger density for storage">
+      <Visual fuelLineColor="#6f8fc8ff" exhaustColor="#a0c0ff20" exhaustColorExpanded="#a0c0ffff" exhaustColorTip="#a0c0ff80" exhaustColorShock="#a0c0ff80" exhaustColorFlame="#a0c0ffff" exhaustColorSoot="#ffffffff" exhaustColorSmoke="#ffffff40" globalIntensity="1" shockIntensity="1" rimShade="0.95" />
     </Fuel>
   </Fuels>
   <RocketEngines />

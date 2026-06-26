@@ -283,7 +283,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 : "<color=yellow>Crew Name</color>: " + evaData.CrewName;
             this.crewRoleName = DroodismCrewData == null ? "<color=yellow>Crew Role</color>: Unknow" : GetCrewRoleName();
             this.crewRadiationDoes=DroodismCrewData == null ? "<color=yellow>Radiation Dose: Unknow" : "<color=yellow>Radiation Dose:"+(DroodismCrewData.RadiationRate.ToString("f1")+" rad");
-            this.crewMissionTime = DroodismCrewData == null ? "<color=yellow>Total Mission Time</color>: Unknow" : "<color=yellow>Total Mission Time</color>: " + Scripts.Mod.GetStopwatchTimeString(DroodismCrewData.MissionTime);
+            this.crewMissionTime = DroodismCrewData == null ? "<color=yellow>Total Mission Time</color>: Unknow" : "<color=yellow>Total Mission Time</color>: " + Units.GetStopwatchTimeString(DroodismCrewData.MissionTime);
         }
 
         /// <summary>维生罐最大容量（与旧 AddTank 逻辑一致，单位与 buffer 一致）。</summary>

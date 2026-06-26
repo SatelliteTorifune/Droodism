@@ -137,7 +137,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 case "N2+LH2=N2H4":
                     hydroloxSource = GetRegularCraftFuelSource("LH2");
                     monoSource = PartScript.CommandPod.MonoFuelSource;
-                    HPNitrogenSource = GetRegularCraftFuelSource("HPN2");
+                    HPNitrogenSource = GetRegularCraftFuelSource("N2");
                     break;
                 case "LH2+LOX=Hydrolox":
                     lH2Source = GetRegularCraftFuelSource("LH2");

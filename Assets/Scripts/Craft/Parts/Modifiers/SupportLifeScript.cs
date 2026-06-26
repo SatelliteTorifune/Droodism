@@ -466,10 +466,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
     
             void RefreshCraftFuelSources()
-            {
+            { 
+                var patch = PartScript.GetModifier<EvaScript>().CrewCompartment?.PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+                if (patch==null)
+                {
+                    
+                    Mod.Log("NULl DEtected in SupportLifeScript.RefreshFuelSource.RefreshCraftFuelSources");
+                    return;
+                }
                 try
                 {
-                    var patch = PartScript.GetModifier<EvaScript>().CrewCompartment?.PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+                   
                     OxygenSource = patch?.OxygenFuelSource;
                     FoodSource = patch?.FoodFuelSource;
                     WaterSource = patch?.WaterFuelSource;
@@ -837,6 +844,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private static bool IsBreathablePlanet(string planetName)
         {
+            
             var config = GetBreathablePlanets();
             if (config?.BreathablePlanet == null)
             {
@@ -871,6 +879,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// <returns>如果使用内部氧气则返回true，否则返回false。True if using internal oxygen, false otherwise.</returns>
         public bool UsingInternalOxygen()
         {
+            var airCom = PartScript.CraftScript.CraftNode.Parent.PlanetData.AtmosphereData.Composition;
+            //TODO 完善根据组分判断
             float airDensity = PartScript.CraftScript.AtmosphereSample.AirDensity;
             if (airDensity == 0)
             {
@@ -997,7 +1007,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 this.PartScript.TakeDamage(num2 * Game.Instance.Settings.Game.Flight.ImpactDamageScale, PartDamageType.Basic);
                 Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
                     $"<color=red>Crew Member {evaScript.Data.CrewName}(id:{this.PartScript.Data.Id}) is taking damage because running out of {fuelType}, " +
-                    $"he/she has {Mod.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / ((IsRunning ? 1.75 : 1) * (IsTourist ? 1.05 : 1) * DamageScale))} left",
+                    $"he/she has {Units.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / ((IsRunning ? 1.75 : 1) * (IsTourist ? 1.05 : 1) * DamageScale))} left",
                     false, 2f);
             }
         }
@@ -1023,7 +1033,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 this.PartScript.TakeDamage(num2 * Game.Instance.Settings.Game.Flight.ImpactDamageScale, PartDamageType.Basic);
                 Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
                     $"<color=red>Crew Member {evaScript.Data.CrewName}(id:{this.PartScript.Data.Id}) is taking damage because {resourceName} level is too high, " +
-                    $"he/she has {Mod.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / ((IsRunning ? 1.75 : 1) * (IsTourist ? 1.05 : 1) * DamageScale))} left",
+                    $"he/she has {Units.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / ((IsRunning ? 1.75 : 1) * (IsTourist ? 1.05 : 1) * DamageScale))} left",
                     false, 2f);
             }
         }
@@ -1090,7 +1100,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 this.PartScript.TakeDamage(damageMultiplier * dtWorld * impactScale);
                 Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
                     $"<color=red>Crew Member {evaScript.Data.CrewName}(id:{this.PartScript.Data.Id}) is taking damage due to {damageReason} " +"<br>"+
-                    $"he/she has {Mod.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / (damageMultiplier * impactScale))} left",
+                    $"he/she has {Units.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / (damageMultiplier * impactScale))} left",
                     false, 2f);
             }
         }
@@ -1125,9 +1135,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             //单独看任务时间的
             if (!this.IsTourist)
             {
+                //ModApi.Locale.GetString("");
                 model.Add<TextModel>(new TextModel("<color=yellow>Crew Role", (Func<string>) (() =>Data.DroodismCrewData==null?"Unknow":Data.DroodismCrewData.CrewRole.ToString())));
             }
-            model.Add<TextModel>(new TextModel("<color=yellow>Mission Time", (Func<string>) (() =>Mod.GetStopwatchTimeString(MissionDurationTime))));
+            model.Add<TextModel>(new TextModel("<color=yellow>Mission Time", (Func<string>) (() =>Units.GetStopwatchTimeString(MissionDurationTime))));
             //维生资源
             GroupModel lifeSupportGroupModel = new GroupModel("<color=green><size=115%>Life Support Info");
             
@@ -1152,7 +1163,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 {
                     float percentage = (float)(Data._oxygenAmountBuffer / Data.DesireOxygenCapacity);
                     string oxygenTextColor = percentage > 0.5 ? "green" : percentage >= 0.25 ? "yellow" : "red";
-                    return $"<color={oxygenTextColor}>"+Mod.GetStopwatchTimeString(Data._oxygenAmountBuffer / (Data.OxygenConsumeRate * (IsRunning ? 1.75 : 1) * (IsTourist ? 1.05 : 1)));
+                    return $"<color={oxygenTextColor}>"+Units.GetStopwatchTimeString(Data._oxygenAmountBuffer / (Data.OxygenConsumeRate * (IsRunning ? 1.75 : 1) * (IsTourist ? 1.05 : 1)));
                 }
                 else if (!UsingInternalOxygen())
                 {
@@ -1172,7 +1183,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 float waterPercentage = (float)(Data._waterAmountBuffer / Data.DesireWaterCapacity);
                 string waterTextColor = waterPercentage > 0.5 ? "green" : waterPercentage >= 0.25 ? "yellow" : "red";
-                return $"<color={waterTextColor}>"+Mod.GetStopwatchTimeString(Data._waterAmountBuffer / (Data.WaterConsumeRate * (IsRunning ? 1.75 : 1) * (IsTourist ? 1.05 : 1)));
+                return $"<color={waterTextColor}>"+Units.GetStopwatchTimeString(Data._waterAmountBuffer / (Data.WaterConsumeRate * (IsRunning ? 1.75 : 1) * (IsTourist ? 1.05 : 1)));
             })));
             
             lifeSupportGroupModel.Add<TextModel>(new TextModel("Remain Food", (Func<string>) (() =>
@@ -1186,7 +1197,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 float foodPercentage = (float)(Data._foodAmountBuffer / Data.DesireFoodCapacity);
                 string foodTextColor = foodPercentage > 0.5 ? "green" : foodPercentage >= 0.25 ? "yellow" : "red";
-                return $"<color={foodTextColor}>"+Mod.GetStopwatchTimeString(Data._foodAmountBuffer / (Data.FoodConsumeRate * (IsRunning ? 1.75 : 1) * (IsTourist ? 1.05 : 1)));
+                return $"<color={foodTextColor}>"+Units.GetStopwatchTimeString(Data._foodAmountBuffer / (Data.FoodConsumeRate * (IsRunning ? 1.75 : 1) * (IsTourist ? 1.05 : 1)));
             })));
             
             lifeSupportGroupModel.Add<TextModel>(new TextModel("CO2 Level", (Func<string>) (() =>

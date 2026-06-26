@@ -1757,7 +1757,7 @@
         </member>
         <member name="F:Assets.Scripts.Audio.FliteTtsService._gate">
             <summary>
-            Guards <see cref="F:Assets.Scripts.Audio.FliteTtsService._pendingRequests"/>, <see cref="F:Assets.Scripts.Audio.FliteTtsService._resultQueue"/>, and <see cref="F:Assets.Scripts.Audio.FliteTtsService._synthInFlight"/> across threads.
+            Guards <see cref="F:Assets.Scripts.Audio.FliteTtsService._pendingRequests"/>, <see cref="F:Assets.Scripts.Audio.FliteTtsService._resultQueue"/>, <see cref="F:Assets.Scripts.Audio.FliteTtsService._synthInFlight"/>, and <see cref="F:Assets.Scripts.Audio.FliteTtsService._generation"/> across threads.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Audio.FliteTtsService._pendingRequests">
@@ -1795,6 +1795,11 @@
             Whether a synthesis is in flight; only touched under <see cref="F:Assets.Scripts.Audio.FliteTtsService._gate"/> to serialize to one worker at a time.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Audio.FliteTtsService._generation">
+            <summary>
+            Bumped under <see cref="F:Assets.Scripts.Audio.FliteTtsService._gate"/> by <see cref="M:Assets.Scripts.Audio.FliteTtsService.StopAll"/> so a synth already on the worker drops its result instead of playing it after the stop.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Audio.FliteTtsService._playbackEndsAtDsp">
             <summary>
             The dsp time the scheduled utterance ends (0 = none), tracked explicitly because PlayOneShot's effect on isPlaying is unreliable.
@@ -1820,6 +1825,11 @@
             Gets the lazily-created singleton; main-thread only, as Vizzy instructions (the sole caller) run there.
             </summary>
         </member>
+        <member name="M:Assets.Scripts.Audio.FliteTtsService.StopAllPlayback">
+            <summary>
+            Stops all playback if the service exists, without forcing it into being. Called when a flight ends so spoken Vizzy output never carries into the next scene.
+            </summary>
+        </member>
         <member name="M:Assets.Scripts.Audio.FliteTtsService.Speak(System.String,System.Single,System.Single)">
             <summary>
             Queues an utterance for worker-thread synthesis; it plays on the next main-thread pump, and the call is dropped only when one utterance is already active with another queued.
@@ -1828,6 +1838,12 @@
         <member name="M:Assets.Scripts.Audio.FliteTtsService.PumpResults">
             <summary>
             Starts any queued utterance whose turn has come; called each frame by the driver on the main thread.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Audio.FliteTtsService.StopAll">
+            <summary>
+            Silences the current utterance and discards everything queued, keeping the host for reuse. Bumps the
+            generation so an in-flight worker synth can't enqueue its result afterward.
             </summary>
         </member>
         <member name="T:Assets.Scripts.Audio.FliteTtsServiceDriver">
@@ -12802,7 +12818,8 @@
         <member name="M:Assets.Scripts.Craft.BodyCollisionHandler.EmitSlidingSparks(UnityEngine.Collision)">
             <summary>
             Emits a scrape effect at sliding contacts above the speed threshold: structures and parts throw
-            sparks, bare terrain puffs biome-colored dust. Probability ramps with speed.
+            sparks, bare terrain puffs biome-colored dust, and Droods never spark (dust on terrain, nothing
+            on structures). Probability ramps with speed.
             </summary>
         </member>
         <member name="M:Assets.Scripts.Craft.BodyCollisionHandler.EmitTerrainImpact(UnityEngine.Collision)">
@@ -20547,6 +20564,16 @@
             The percentage of volume to be used by gyros in parts with configurable contents.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.CommandPodData._controlOverrideActive">
+            <summary>
+            Whether an in-flight control orientation override is currently applied to this command pod.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.CommandPodData._controlOverrideRotation">
+            <summary>
+            The in-flight control orientation override, in coordinates local to the command pod script's transform.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Craft.Parts.Modifiers.CommandPodData._controlsStateElement">
             <summary>
             The controls state element, which is obtained when the command pod data is restored from state XML. This element is
@@ -20688,6 +20715,14 @@
             <summary>
             Gets or sets the percentage of volume to be used by batteries in parts with configurable contents.
             </summary>
+        </member>
+        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.CommandPodData.ControlOrientationOverride">
+            <summary>
+            Gets or sets the in-flight control orientation override in coordinates local to the command pod script's transform, or null if none is active.
+            </summary>
+            <value>
+            The control orientation override, or null if none is active.
+            </value>
         </member>
         <member name="P:Assets.Scripts.Craft.Parts.Modifiers.CommandPodData.CraftConfigAutoAssign">
             <summary>
@@ -20919,6 +20954,11 @@
             <seealso cref="!:ModApi.Craft.Parts.PartModifierScript&lt;Assets.Scripts.Craft.Parts.Modifiers.CommandPodData&gt;" />
             <seealso cref="T:ModApi.Craft.Parts.ICommandPod" />
             <seealso cref="T:ModApi.GameLoop.Interfaces.IFlightFixedUpdate" />
+        </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.CommandPodScript.ControlOverrideAlignmentToleranceDegrees">
+            <summary>
+            The angle within which a requested control orientation is treated as matching this pod's native orientation.
+            </summary>
         </member>
         <member name="F:Assets.Scripts.Craft.Parts.Modifiers.CommandPodScript._activeCommandPodActivationGroupChangedChangedMigrator">
             <summary>
@@ -21226,6 +21266,12 @@
             <param name="activationGroup">The activation group.</param>
             <returns>The state of the activation group. True indicates the group is active.</returns>
         </member>
+        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.CommandPodScript.GetDesiredControlOrientation">
+            <summary>
+            Gets this command pod's native pilot heading as the control orientation, or null for EVA.
+            </summary>
+            <returns>The world-space control orientation, or null if unsupported.</returns>
+        </member>
         <member name="M:Assets.Scripts.Craft.Parts.Modifiers.CommandPodScript.OnCraftLoaded(ModApi.Craft.ICraftScript,System.Boolean)">
             <summary>
             Called when the craft has finished loading. It is possible that this method will be called
@@ -21274,6 +21320,12 @@
             <summary>
             Called when the part owning this modifier is destroyed.
             </summary>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.CommandPodScript.OverridePilotSeatOrientation(UnityEngine.Quaternion)">
+            <summary>
+            Overrides the live pilot seat orientation, persisting it separately from the pod's native orientation.
+            </summary>
+            <param name="worldRotation">The world-space orientation to use as the craft's control frame.</param>
         </member>
         <member name="M:Assets.Scripts.Craft.Parts.Modifiers.CommandPodScript.RecalculateNumStages">
             <summary>
@@ -21349,6 +21401,12 @@
             Changes the craft configuration (Rocket/Plane) in flight and resets the auto-pilot PIDs, keeping the current control frame instead of snapping the pilot seat to the new default.
             </summary>
             <param name="newType">The new craft configuration type.</param>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.CommandPodScript.GetNativePilotOrientation">
+            <summary>
+            Gets the command pod's native pilot heading orientation, ignoring any active control override.
+            </summary>
+            <returns>The world-space native pilot orientation.</returns>
         </member>
         <member name="M:Assets.Scripts.Craft.Parts.Modifiers.CommandPodScript.OnActiveCommandPodActivationGroupChanged(ModApi.Craft.Parts.ICommandPod,System.Int32,System.Boolean)">
             <summary>
@@ -22129,6 +22187,12 @@
             Update method that is only called in the flight scene when the game is not paused.
             </summary>
             <param name="frame">The flight frame data.</param>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.DockingPortScript.GetDesiredControlOrientation">
+            <summary>
+            Gets the control orientation for this docking port, with the craft's forward pointing out of the port.
+            </summary>
+            <returns>The world-space control orientation.</returns>
         </member>
         <member name="M:Assets.Scripts.Craft.Parts.Modifiers.DockingPortScript.GetStatus">
             <summary>
@@ -38457,9 +38521,9 @@
             The controller script.
             </summary>
         </member>
-        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Mfd.MapWidgetScript._craft">
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Mfd.MapWidgetScript._mfd">
             <summary>
-            The craft script.
+            The MFD script that owns this widget.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Mfd.MapWidgetScript._cubemapsRequest">
@@ -41957,7 +42021,7 @@
         </member>
         <member name="M:Assets.Scripts.Craft.Parts.Modifiers.PropellerAssemblyScript.EmitDownwashDust">
             <summary>
-            Emits terrain dust from the propeller's downwash when it is powered, spinning, and over dry ground.
+            Emits terrain dust from the propeller's downwash when it is producing thrust, spinning, and over dry ground.
             </summary>
         </member>
         <member name="M:Assets.Scripts.Craft.Parts.Modifiers.PropellerAssemblyScript.DrawPropBlurMeshes">
@@ -56442,6 +56506,11 @@
             <seealso cref="T:ModApi.Craft.Parts.IPartScript" />
             <seealso cref="T:ModApi.GameLoop.Interfaces.IFlightFixedUpdate" />
         </member>
+        <member name="F:Assets.Scripts.Craft.Parts.PartScript.ControlForwardMatchToleranceDegrees">
+            <summary>
+            The angle within which the craft forward is treated as already matching a part's control orientation.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Craft.Parts.PartScript._achievementUnlockedIcarus">
             <summary>
             A value indicating whether the achievement for flying too close to the sun has been unlocked (this session).
@@ -56963,6 +57032,12 @@
             </summary>
             <returns>The inspector model.</returns>
         </member>
+        <member name="M:Assets.Scripts.Craft.Parts.PartScript.GetDesiredControlOrientation">
+            <summary>
+            Gets the orientation a modifier wants to use as the craft's forward direction, or null if none.
+            </summary>
+            <returns>The desired control orientation, or null if unsupported.</returns>
+        </member>
         <member name="M:Assets.Scripts.Craft.Parts.PartScript.GetEstimatedDragForce">
             <summary>
             Gets the estimated drag force in scaled Newtons.
@@ -57124,6 +57199,11 @@
             Note: The node has been loaded and is accessible, just like for <see cref="M:Assets.Scripts.Craft.Parts.PartScript.OnNodeLoaded" />
             </summary>
         </member>
+        <member name="M:Assets.Scripts.Craft.Parts.PartScript.OverrideCraftForwardToPart">
+            <summary>
+            Redefines the craft's forward direction to match this part by reorienting the active command pod's pilot seat.
+            </summary>
+        </member>
         <member name="M:Assets.Scripts.Craft.Parts.PartScript.RegisterInertiaTensorCollider(UnityEngine.GameObject,System.Boolean)">
             <summary>
             Registers the collider with the part script to ensure that it is enabled (or disabled) when the body calculates
@@ -57198,6 +57278,13 @@
             <summary>
             Initializes the water physics.
             </summary>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Parts.PartScript.IsCraftForwardAligned(UnityEngine.Quaternion)">
+            <summary>
+            Determines whether the craft's forward direction already matches the given control orientation.
+            </summary>
+            <param name="controlOrientation">The world-space control orientation to compare against.</param>
+            <returns><c>true</c> if the craft forward already matches; otherwise <c>false</c>.</returns>
         </member>
         <member name="M:Assets.Scripts.Craft.Parts.PartScript.OnExplodePartClicked">
             <summary>
@@ -68201,6 +68288,11 @@
             A class representing a part modifier's property that is configurable in the designer via a spinner control.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Design.PartProperties.SpinnerProperty._dropdownControl">
+            <summary>
+            The hybrid spinner/dropdown control used instead of a spinner when the attribute opts into a dropdown (text spinners only).
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Design.PartProperties.SpinnerProperty._label">
             <summary>
             The property label.
@@ -68365,6 +68457,13 @@
             </summary>
             <returns>The current value of the property.</returns>
         </member>
+        <member name="M:Assets.Scripts.Design.PartProperties.SpinnerProperty.GetDropdownOptionLabel(System.String)">
+            <summary>
+            Gets the display label for the specified dropdown option value.
+            </summary>
+            <param name="value">The option value.</param>
+            <returns>The display label.</returns>
+        </member>
         <member name="M:Assets.Scripts.Design.PartProperties.SpinnerProperty.GetStringValueIndex(System.String)">
             <summary>
             Gets the index of the specified value.
@@ -68386,10 +68485,22 @@
             Called when the decrease button is activated.
             </summary>
         </member>
+        <member name="M:Assets.Scripts.Design.PartProperties.SpinnerProperty.OnDropdownControlValueChanged(System.String)">
+            <summary>
+            Called when the dropdown control's value changes (via selection or a stepper button).
+            </summary>
+            <param name="value">The newly selected value.</param>
+        </member>
         <member name="M:Assets.Scripts.Design.PartProperties.SpinnerProperty.OnIncreaseClick">
             <summary>
             Called when the increase button is activated.
             </summary>
+        </member>
+        <member name="M:Assets.Scripts.Design.PartProperties.SpinnerProperty.RefreshDropdownControl(ModApi.Design.PartProperties.IDesignerPartPropertiesDesignerInterface)">
+            <summary>
+            Refreshes the dropdown control, updating its values and selecting the current value.
+            </summary>
+            <param name="modifierPartProperties">The designer interface for the current part modifier.</param>
         </member>
         <member name="M:Assets.Scripts.Design.PartProperties.SpinnerProperty.SetCurrentValue(ModApi.Design.PartProperties.IDesignerPartPropertiesDesignerInterface,System.Int32)">
             <summary>
@@ -68595,7 +68706,7 @@
             <param name="onValueChanged">The onValueChanged callback.</param>
             <returns>The initialized spinner script.</returns>
         </member>
-        <member name="M:Assets.Scripts.Design.PartProperties.StylePartProperties.InitializeTextSpinner(UI.Xml.XmlLayout,System.String,System.Action{System.String},System.Func{System.String,System.String},Assets.Scripts.Ui.SpinnerScript@,TMPro.TextMeshProUGUI@)">
+        <member name="M:Assets.Scripts.Design.PartProperties.StylePartProperties.InitializeTextSpinner(UI.Xml.XmlLayout,System.String,System.Action{System.String},System.Func{System.String,System.String},Assets.Scripts.Ui.DropdownScript@,TMPro.TextMeshProUGUI@)">
             <summary>
             Initializes a text spinner.
             </summary>
@@ -84133,6 +84244,186 @@
             event handlers.
             </summary>
             <returns>Unity yield instruction.</returns>
+        </member>
+        <member name="T:Assets.Scripts.Ui.DropdownScript">
+            <summary>
+            Script for a hybrid spinner/dropdown control.
+            </summary>
+            <seealso cref="T:UnityEngine.MonoBehaviour" />
+        </member>
+        <member name="F:Assets.Scripts.Ui.DropdownScript.ScrollSensitivity">
+            <summary>
+            The scroll-wheel sensitivity applied to the popup list, matching the other dropdowns in the UI.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Ui.DropdownScript._dropdown">
+            <summary>
+            The dropdown.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Ui.DropdownScript._initialized">
+            <summary>
+            The initialized flag.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Ui.DropdownScript._localizationPrefix">
+            <summary>
+            The localization prefix.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Ui.DropdownScript._nextButton">
+            <summary>
+            The next (step forward) button.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Ui.DropdownScript._options">
+            <summary>
+            A reusable list used to populate the dropdown options.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Ui.DropdownScript._prevButton">
+            <summary>
+            The previous (step backward) button.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Ui.DropdownScript._value">
+            <summary>
+            The current value.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Ui.DropdownScript._values">
+            <summary>
+            The values.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Ui.DropdownScript._xmlElement">
+            <summary>
+            The XML element of the group hosting the control.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Ui.DropdownScript.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Assets.Scripts.Ui.DropdownScript"/> class.
+            </summary>
+        </member>
+        <member name="P:Assets.Scripts.Ui.DropdownScript.LocalizationPrefix">
+            <summary>
+            Gets or sets the localization prefix.
+            </summary>
+            <value>
+            The localization prefix.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Ui.DropdownScript.OnLabelRequested">
+            <summary>
+            Gets or sets the function used to request a text label for the specified value.
+            </summary>
+            <value>
+            The function used to request a text label for the specified value.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Ui.DropdownScript.OnValueChanged">
+            <summary>
+            Gets or sets the action to execute when the value has changed.
+            </summary>
+            <value>
+            The action to execute when the value has changed.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Ui.DropdownScript.Value">
+            <summary>
+            Gets or sets the value.
+            </summary>
+            <value>
+            The value.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Ui.DropdownScript.Values">
+            <summary>
+            Gets the values.
+            </summary>
+            <value>
+            The values.
+            </value>
+        </member>
+        <member name="M:Assets.Scripts.Ui.DropdownScript.OnDestroy">
+            <summary>
+            Called when the script is destroyed.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Ui.DropdownScript.Start">
+            <summary>
+            Unity Start method.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Ui.DropdownScript.AddItemSeparator(UnityEngine.Transform)">
+            <summary>
+            Adds a thin horizontal separator at the bottom of the dropdown item template.
+            </summary>
+            <param name="itemTemplate">The item template transform.</param>
+        </member>
+        <member name="M:Assets.Scripts.Ui.DropdownScript.AddPanelOutline(UnityEngine.RectTransform)">
+            <summary>
+            Adds an outline border around the dropdown popup panel.
+            </summary>
+            <param name="panel">The dropdown popup (template) transform.</param>
+        </member>
+        <member name="M:Assets.Scripts.Ui.DropdownScript.GetDisplayLabel(System.String)">
+            <summary>
+            Gets the display label for the specified value.
+            </summary>
+            <param name="value">The value.</param>
+            <returns>The display label.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Ui.DropdownScript.HighlightSelectedItem(UnityEngine.UI.Toggle)">
+            <summary>
+            Replaces the per-item checkmark with a full-width highlight on the selected option.
+            </summary>
+            <param name="itemTemplate">The dropdown item toggle template.</param>
+        </member>
+        <member name="M:Assets.Scripts.Ui.DropdownScript.Initialize">
+            <summary>
+            Initializes this instance.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Ui.DropdownScript.OnDropdownSelected(System.Int32)">
+            <summary>
+            Called when an option is selected directly from the dropdown list.
+            </summary>
+            <param name="index">The index of the newly selected option.</param>
+        </member>
+        <member name="M:Assets.Scripts.Ui.DropdownScript.RebuildOptions">
+            <summary>
+            Rebuilds the dropdown options from the current values and selects the current value.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Ui.DropdownScript.ResizePopupToContent">
+            <summary>
+            Grows the dropdown popup wider than the preview when needed so that long option labels are not cut off.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Ui.DropdownScript.ScrollSelectedIntoView">
+            <summary>
+            Scrolls the open popup so the selected option is centred in view.
+            </summary>
+            <returns>The coroutine enumerator.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Ui.DropdownScript.Step(System.Int32)">
+            <summary>
+            Steps the selection by the specified direction, wrapping around the ends.
+            </summary>
+            <param name="direction">The direction to step (positive is next, negative is previous).</param>
+        </member>
+        <member name="M:Assets.Scripts.Ui.DropdownScript.StyleDropdown">
+            <summary>
+            Applies styling the XmlLayout dropdown cannot express declaratively.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Ui.DropdownScript.StyleItemColors(UnityEngine.UI.Toggle)">
+            <summary>
+            Applies the theme's hover/selected colours to the dropdown item background.
+            </summary>
+            <param name="itemTemplate">The dropdown item toggle template.</param>
         </member>
         <member name="T:Assets.Scripts.Ui.FlyoutScript">
             <summary>
@@ -101239,6 +101530,14 @@
             <param name="craft">The craft.</param>
             <returns>The world bounds.</returns>
         </member>
+        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.ComputeCraftBoundsSize(ModApi.Craft.ICraftScript,UnityEngine.Quaternion)">
+            <summary>
+            Returns the connected craft's extents along an arbitrary world frame's axes, from the cached per-body AABBs.
+            </summary>
+            <param name="craft">The craft.</param>
+            <param name="worldFrame">The world rotation whose local axes the extents are measured along.</param>
+            <returns>The craft bounds size (m) in <paramref name="worldFrame"/>; zero when no connected body has cached renderers.</returns>
+        </member>
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.DragTempLayer">
             <summary>
             The layer mesh renderers are temporarily placed on while the airstream camera renders (shared with the drag calculator).
@@ -101284,6 +101583,11 @@
             The AABB-magnitude delta that counts as a structural change.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.MachChangeTolerance">
+            <summary>
+            The Mach delta since the last seed that forces a reseed.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.CameraOffset">
             <summary>
             The distance (m) the camera is placed in front of the craft.
@@ -101292,6 +101596,11 @@
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.MeshHardMachFloor">
             <summary>
             Hard Mach floor below which the reentry mesh stays hidden even if the heating gate trips, keeping the effect strictly supersonic.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.SupersonicOnsetMach">
+            <summary>
+            Mach number at or below which there is no cone (<see cref="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.ComputeMachStep"/> returns 0).
             </summary>
         </member>
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.TrailMachStart">
@@ -101348,12 +101657,17 @@
         </member>
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.TrailParticleSizeMultiplier">
             <summary>
-            Particle size multiplier on the bounds-derived nominal extent.
+            Per-particle puff size as a multiple of the craft's frontal extent (sqrt of its frontal area).
             </summary>
         </member>
-        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.TrailSizeLerpToMin">
+        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.UpReferenceParallelThreshold">
             <summary>
-            Lerp factor between max and min bounds axis for particle size; 0 = pure max.
+            Dot magnitude above which a craft axis is too parallel to a look direction to seed a LookRotation up reference, so the next axis is used.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.TrailRotationWiggle">
+            <summary>
+            Per-particle random billboard-roll wiggle (deg, +/-) on top of the craft's flow-axis roll.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.TrailEmissionSizeNominal">
@@ -101686,9 +102000,19 @@
             The craft AABB diagonal at the time of the last airstream render.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer._lastRenderedMach">
+            <summary>
+            The Mach number at the last airstream render.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer._hasFirstRender">
             <summary>
             Whether a first render has occurred since the last RT (re)creation.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer._lastSeedHadCone">
+            <summary>
+            Whether the last seed ran the pointy-mask pass (i.e. was taken supersonic).
             </summary>
         </member>
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer._lastRenderTime">
@@ -101969,6 +102293,32 @@
             <param name="velocityWorld">The surface velocity in world space.</param>
             <param name="craftRotation">The craft's world rotation.</param>
             <returns>The craft rotation in the velocity frame.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.ComputeCraftFlowRollDegrees(UnityEngine.Quaternion,UnityEngine.Vector3)">
+            <summary>
+            Returns the craft's roll about the flow axis (deg): its twist in the plane normal to the flow.
+            </summary>
+            <param name="craftRotation">The craft's world rotation.</param>
+            <param name="flowDir">The prograde (flow) direction in world space.</param>
+            <returns>The signed roll angle in degrees.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.ComputeFrontalArea(UnityEngine.Quaternion,UnityEngine.Vector3,UnityEngine.Vector3)">
+            <summary>
+            Returns the frontal area (m^2) an axis-aligned box presents to <paramref name="flowDir"/> (the projected-box-area sum).
+            </summary>
+            <param name="boxRotation">The box's world rotation.</param>
+            <param name="boxSize">The box extents along its own axes.</param>
+            <param name="flowDir">The prograde (flow) direction in world space.</param>
+            <returns>The frontal area in square metres.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.PickNonParallelUpAxis(UnityEngine.Quaternion,UnityEngine.Vector3,Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.UpRefAxis@)">
+            <summary>
+            Picks a craft axis (up, else forward, else right) not too parallel to <paramref name="dirWorld"/> to seed a LookRotation.
+            </summary>
+            <param name="rotation">The craft's world rotation.</param>
+            <param name="dirWorld">The look direction in world space.</param>
+            <param name="axis">The axis that was picked.</param>
+            <returns>The chosen up reference in world space.</returns>
         </member>
         <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.TrailEmissionRateForCurrentQuality">
             <summary>
@@ -105295,6 +105645,9 @@
         </member>
         <member name="F:Assets.Scripts.Flight.GroundCloudController._cloudCubemap">
             <summary>The clouds cubemap loaded for the current planet.</summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GroundCloudController._terrainHeightCubemap">
+            <summary>The terrain normal cubemap loaded for the current planet (height in its alpha), used to displace the cloud shells.</summary>
         </member>
         <member name="P:Assets.Scripts.Flight.GroundCloudController.Instance">
             <summary>Gets the active controller, or <c>null</c> when the ground clouds are off.</summary>
@@ -121773,12 +122126,6 @@
             they stay anchored when GameView's transform doesn't translate with the frame.
             </summary>
         </member>
-        <member name="F:Assets.Scripts.Flight.ParticleManagerScript.GroundCloudParticleRenderQueue">
-            <summary>
-            The render queue applied to the managed particles while ground clouds are enabled, so they draw over the
-            ground cloud shells (which sit at RenderQueue.Transparent + 1..6) instead of being painted over by them.
-            </summary>
-        </member>
         <member name="F:Assets.Scripts.Flight.ParticleManagerScript.TerrainColorCacheSize">
             <summary>
             The number of recent terrain particle-color samples cached across all terrain particle emitters.
@@ -121819,11 +122166,6 @@
             The cached game view, used to unsubscribe on destroy.
             </summary>
         </member>
-        <member name="F:Assets.Scripts.Flight.ParticleManagerScript._groundCloudsSetting">
-            <summary>
-            The cached ground-clouds setting, used to unsubscribe the change handler on destroy.
-            </summary>
-        </member>
         <member name="F:Assets.Scripts.Flight.ParticleManagerScript._hasLastEngineSmokeCraftPos">
             <summary>
             Whether <see cref="F:Assets.Scripts.Flight.ParticleManagerScript._lastEngineSmokeCraftPos"/> holds a usable value.
@@ -121847,11 +122189,6 @@
         <member name="F:Assets.Scripts.Flight.ParticleManagerScript._maxParticles">
             <summary>
             The maximum particle budget shared across all categories.
-            </summary>
-        </member>
-        <member name="F:Assets.Scripts.Flight.ParticleManagerScript._particleQueuesRaised">
-            <summary>
-            Whether the managed particles' render queue is currently raised above the ground cloud shells.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Flight.ParticleManagerScript._playerCraftScript">
@@ -122012,13 +122349,6 @@
             Queues the per-frame shift that cancels physics-tick jitter.
             </summary>
         </member>
-        <member name="M:Assets.Scripts.Flight.ParticleManagerScript.OnGroundCloudsSettingChanged(System.Object,ModApi.Settings.Core.Events.SettingChangedEventArgs{System.Boolean})">
-            <summary>
-            Re-applies the particle render queue when the ground-clouds setting changes.
-            </summary>
-            <param name="sender">The sender.</param>
-            <param name="e">The <see cref="!:SettingChangedEventArgs&lt;bool&gt;"/> instance containing the event data.</param>
-        </member>
         <member name="M:Assets.Scripts.Flight.ParticleManagerScript.OnPlayerChangedSoi(ModApi.Craft.ICraftNode,ModApi.Flight.Sim.IPlanetNode)">
             <summary>
             Flushes the terrain color cache when the player enters a new sphere of influence.
@@ -122068,12 +122398,6 @@
         <member name="M:Assets.Scripts.Flight.ParticleManagerScript.UpdateEngineSmokeDrag">
             <summary>
             Per-frame drag pass for engine smoke.
-            </summary>
-        </member>
-        <member name="M:Assets.Scripts.Flight.ParticleManagerScript.UpdateParticleRenderQueues">
-            <summary>
-            Raises the managed particles' render queue above the ground cloud shells while ground clouds are enabled
-            (otherwise the near-camera shells draw over them); restores the default queue when they are off.
             </summary>
         </member>
         <member name="M:Assets.Scripts.Flight.ParticleManagerScript.UpdateReentryDrag">
@@ -172885,19 +173209,29 @@
             The default close-up detail erosion strength for the ground clouds (0 to ~0.6).
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.CloudTerrainDisplacementLod">
+            <summary>
+            The terrain height cubemap mip sampled when displacing the cloud shells; 0 samples full detail.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.DetailAnimMaxDeltaTime">
             <summary>
-            The maximum per-frame advance (seconds) of the detail animation, bounding it against hitches and time warp.
+            The maximum sim-time (seconds) integrated per detail-animation sub-step, bounding each step for accuracy.
             </summary>
         </member>
-        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.DetailFadeEndMeters">
+        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.DetailAnimMaxSubSteps">
             <summary>
-            The camera distance (metres) by which the ground cloud detail erosion has fully faded out.
+            The maximum number of detail-animation sub-steps per frame, capping the cost under extreme time warp.
             </summary>
         </member>
-        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.DetailFadeStartMeters">
+        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.DetailFadeEndTiles">
             <summary>
-            The camera distance (metres) at which the ground cloud detail erosion starts fading out.
+            The number of detail-noise repeats across the viewport by which the ground cloud detail erosion has fully faded out.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.DetailFadeStartTiles">
+            <summary>
+            The number of detail-noise repeats across the viewport at which the ground cloud detail erosion starts fading out.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.GroundCloudCameraFadeMeters">
@@ -173015,6 +173349,31 @@
             The transform the cloud spheres are parented to.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer._terrainDisplacementEnabled">
+            <summary>
+            A value indicating whether terrain-height displacement is active for the current rebuild (height cubemap present and, in scaled space, the vertex-displacement setting on).
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer._terrainHeightCubemap">
+            <summary>
+            The terrain normal cubemap whose alpha channel holds the baked terrain height, sampled to displace the cloud shells (or <c>null</c> if unavailable).
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer._terrainMaxAsl">
+            <summary>
+            The terrain's maximum surface radius as a factor of the planet radius ((radius + maxHeight) / radius), the upper end of the displacement lerp.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer._terrainMinAsl">
+            <summary>
+            The terrain's minimum surface radius as a factor of the planet radius ((radius + minHeight) / radius), the lower end of the displacement lerp.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer._terrainSeaLevelAsl">
+            <summary>
+            The sea-level surface radius as a factor of the planet radius ((radius + seaLevel) / radius); terrain below it does not lift the clouds.
+            </summary>
+        </member>
         <member name="M:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.#ctor(Assets.Scripts.Terrain.Rendering.PlanetRenderingData,ModApi.Planet.IPlanetData,System.Boolean)">
             <summary>
             Initializes a new instance of the <see cref="T:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer"/> class.
@@ -173042,10 +173401,21 @@
         </member>
         <member name="M:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.Refresh(UnityEngine.Transform,UnityEngine.Cubemap)">
             <summary>
+            Rebuilds the cloud spheres without terrain-height displacement. Used by the distant views (map view and main
+            menu) where the displacement is imperceptible and the terrain height cubemap is not wired up.
+            </summary>
+            <param name="parent">The transform to parent the cloud spheres to.</param>
+            <param name="cloudCubemap">The detached clouds cubemap.</param>
+        </member>
+        <member name="M:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.Refresh(UnityEngine.Transform,UnityEngine.Cubemap,UnityEngine.Cubemap,System.Single,System.Single)">
+            <summary>
             Rebuilds the cloud spheres for the planet based on the current configuration, cubemap and quality.
             </summary>
             <param name="parent">The transform to parent the cloud spheres to.</param>
             <param name="cloudCubemap">The detached clouds cubemap.</param>
+            <param name="terrainHeightCubemap">The terrain normal cubemap whose alpha holds the baked terrain height, used to displace the cloud shells (or <c>null</c> to disable displacement).</param>
+            <param name="terrainMinHeight">The planet's minimum terrain height above the radius datum, in meters.</param>
+            <param name="terrainMaxHeight">The planet's maximum terrain height above the radius datum, in meters.</param>
         </member>
         <member name="M:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.Update(System.Single,System.Single)">
             <summary>
@@ -173098,6 +173468,13 @@
             <param name="v">The vector.</param>
             <param name="angle">The angle in radians.</param>
             <returns>The rotated vector.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.SetCloudAtmosphere(UnityEngine.Material,System.Boolean)">
+            <summary>
+            Enables aerial-perspective atmosphere scatter on a cloud material (ground variant, atmospheric planets only).
+            </summary>
+            <param name="material">The cloud material.</param>
+            <param name="atmosphere">If set to <c>true</c>, the cloud hazes with the terrain's atmosphere scatter.</param>
         </member>
         <member name="M:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.SetCloudCameraSplit(UnityEngine.Material,System.Boolean)">
             <summary>
@@ -173173,6 +173550,13 @@
             <param name="detailScales">The per-channel close-up detail tiling scale vector (xyz = channels R, G, B).</param>
             <param name="detailStrengths">The per-channel close-up detail erosion strength vector (xyz = channels R, G, B).</param>
         </member>
+        <member name="M:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.SetCloudTerrainDisplacement(UnityEngine.Material,System.Single)">
+            <summary>
+            Pushes the shared displacement parameters and enables the keyword when this rebuild has displacement active and the layer follows the terrain; otherwise leaves it off.
+            </summary>
+            <param name="material">The cloud material.</param>
+            <param name="displacement">The layer's terrain-follow amount (0 = flat shell, 1 = fully terrain-following).</param>
+        </member>
         <member name="M:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.TryUpdateDetailProjection">
             <summary>
             Advances the camera-anchored detail projection and its per-channel time animation, filling the shared
@@ -173183,6 +173567,11 @@
         <member name="T:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.ShaderPropertyIds">
             <summary>
             The shader property IDs used by the cloud materials.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.ShaderPropertyIds.BumpCube">
+            <summary>
+            The terrain height cubemap shader property id (alpha holds the baked terrain height for displacement).
             </summary>
         </member>
         <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.ShaderPropertyIds.CameraFade">
@@ -173237,7 +173626,7 @@
         </member>
         <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.ShaderPropertyIds.DetailFade">
             <summary>
-            The detail erosion camera-distance fade range (x = start, y = end metres) shader property id (ground variant).
+            The detail erosion tiling-obviousness fade range (x = start, y = end repeats across the viewport) shader property id (ground variant).
             </summary>
         </member>
         <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.ShaderPropertyIds.DetailNoise">
@@ -173320,6 +173709,16 @@
             The per-channel mask influence property id (xyz = channels R, G, B).
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.ShaderPropertyIds.MaxAsl">
+            <summary>
+            The maximum terrain surface radius factor shader property id (the upper end of the displacement lerp).
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.ShaderPropertyIds.MinAsl">
+            <summary>
+            The minimum terrain surface radius factor shader property id (the lower end of the displacement lerp).
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.ShaderPropertyIds.NoonColor">
             <summary>
             The noon sunlight color shader property id.
@@ -173330,6 +173729,11 @@
             The per-channel rotation angle property id (xyz = channels R, G, B).
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.ShaderPropertyIds.SeaLevelAsl">
+            <summary>
+            The sea-level surface radius factor shader property id (terrain below it does not lift the clouds).
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.ShaderPropertyIds.SelfHeight">
             <summary>
             The per-layer relative height shader property id.
@@ -173338,6 +173742,11 @@
         <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.ShaderPropertyIds.SunDirection">
             <summary>
             The sun direction shader property id.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.ShaderPropertyIds.TerrainDisplacement">
+            <summary>
+            The terrain-height displacement amount shader property id (0 = flat shell, 1 = fully terrain-following).
             </summary>
         </member>
         <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.ShaderPropertyIds.TerrainShadow">
@@ -173353,6 +173762,11 @@
         <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.ShaderPropertyIds.UseMask">
             <summary>
             The use-mask shader property id.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.ShaderPropertyIds.VertexDisplacementLod">
+            <summary>
+            The terrain height cubemap mip shader property id, sampled when displacing the cloud shells.
             </summary>
         </member>
         <member name="T:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.CloudLayerSphere">
@@ -174706,6 +175120,16 @@
         <member name="F:Assets.Scripts.Terrain.Rendering.ScaledSpaceRenderer._cubemapLowDetailSize">
             <summary>
             The cubemap low detail size.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Terrain.Rendering.ScaledSpaceRenderer._cubemapMaxHeight">
+            <summary>
+            The planet's maximum terrain height above the radius datum, cached from the cubemap data for cloud displacement.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Terrain.Rendering.ScaledSpaceRenderer._cubemapMinHeight">
+            <summary>
+            The planet's minimum terrain height above the radius datum, cached from the cubemap data for cloud displacement.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Terrain.Rendering.ScaledSpaceRenderer._cubemapNormals">

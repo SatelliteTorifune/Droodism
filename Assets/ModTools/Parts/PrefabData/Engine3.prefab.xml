@@ -4,9 +4,7 @@
     <Component type="UnityEngine.MeshFilter" />
     <Component type="UnityEngine.MeshRenderer" />
   </GameObject>
-  <GameObject name="SmokeParticleSystem">
-    <Component type="UnityEngine.ParticleSystem" />
-    <Component type="UnityEngine.ParticleSystemRenderer" />
+  <GameObject name="SmokeTrail">
     <Component type="Assets.Scripts.Craft.Parts.Modifiers.SmokeTrailScript" />
   </GameObject>
   <GameObject name="ApexGimbalBaseX">
