@@ -1,6 +1,7 @@
 using System;
 using Assets.Scripts.Design;
 using HarmonyLib;
+using ModApi;
 using ModApi.Mods;
 using ModApi.Ui.Inspector;
 
@@ -39,9 +40,9 @@ namespace Assets.Scripts
                         return;
                     }
 
-                    GroupModel textGroup = new GroupModel("<color=green>Life Support Resources Info");
+                    GroupModel textGroup = new GroupModel("<color=green>" + Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.LifeSupportResourcesInfo"));
 
-                    textGroup.Add<TextModel>(new TextModel("Drood Count",
+                    textGroup.Add<TextModel>(new TextModel(Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.DroodCount"),
                         () => Scripts.Mod.Instance.GetDroodCountInDesigner()));
                     foreach (var var in fuelTypes)
                     {
@@ -51,14 +52,14 @@ namespace Assets.Scripts
                     void AddStuff(String fuelType)
                     {
                         bool isWaste = fuelType.Contains("Waste") || fuelType == "CO2";
-                        string name = "";
+                        string name;
                         switch (fuelType)
                         {
                             case "H2O":
-                                name = "Water";
+                                name = Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.Water");
                                 break;
                             case "CO2":
-                                name = "Carbon Dioxide";
+                                name = Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.CarbonDioxide");
                                 break;
 
                             default:
@@ -67,7 +68,10 @@ namespace Assets.Scripts
 
                         }
 
-                        textGroup.Add<TextModel>(new TextModel(name + (isWaste ? " Capacity" : " Amount"),
+                        string suffix = isWaste
+                            ? " " + Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.Capacity")
+                            : " " + Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.Amount");
+                        textGroup.Add<TextModel>(new TextModel(name + suffix,
                             () => GetFuelAmountInDesigner(fuelType, isWaste)));
                     }
 

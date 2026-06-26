@@ -1,3 +1,5 @@
+using ModApi;
+
 namespace Assets.Scripts
 {
     using ModApi.Settings.Core;
@@ -5,7 +7,7 @@ namespace Assets.Scripts
     /// <summary>
     /// The settings for the mod.
     /// </summary>
-    /// <seealso cref="ModApi.Settings.Core.SettingsCategory{Assets.Scripts.ModSettings}" />
+    /// <seealso cref="ModSettings" />
     public class ModSettings : SettingsCategory<ModSettings>
     {
         /// <summary>
@@ -52,32 +54,32 @@ namespace Assets.Scripts
         /// </summary>
         protected override void InitializeSettings()
         {
-            ConsumeResourceWhenUnloaded=CreateBool("Drood Consume Resource When Unloaded")
-                .SetDescription("Drood will still Consume Resource Even the Craft is Unloaded.<br>known bug the time calculate went a <size=125%><color=red>LITTLE BIT</color></size> wrong way")
+            ConsumeResourceWhenUnloaded=CreateBool(Locale.GetString("Droodism.ModSettings.ConsumeResourceWhenUnloaded"))
+                .SetDescription(Locale.GetString("Droodism.ModSettings.ConsumeResourceWhenUnloadedDesc"))
                 .SetDefault(false);
-            DebugMode=CreateBool("Toggle Debug Mode")
-                .SetDescription("Enable some log in dev console,and toggle some hidden option")
+            DebugMode=CreateBool(Locale.GetString("Droodism.ModSettings.ToggleDebugMode"))
+                .SetDescription(Locale.GetString("Droodism.ModSettings.ToggleDebugModeDesc"))
                 .SetDefault(false);
-            AltNavBallColor=CreateBool("Alt Nav Ball Color")
-                .SetDescription("Use Alt Nav Ball Color")
+            AltNavBallColor=CreateBool(Locale.GetString("Droodism.ModSettings.AltNavBallColor"))
+                .SetDescription(Locale.GetString("Droodism.ModSettings.AltNavBallColorDesc"))
                 .SetDefault(false);
-            ActiveUpdateRadiationBeltConfig=CreateBool("Active Update Radiation Belt Config")
-                .SetDescription("Active Update Radiation Belt Config(Cause Performance loss,but better for debugging)")
+            ActiveUpdateRadiationBeltConfig=CreateBool(Locale.GetString("Droodism.ModSettings.ActiveUpdateRadiationBeltConfig"))
+                .SetDescription(Locale.GetString("Droodism.ModSettings.ActiveUpdateRadiationBeltConfigDesc"))
                 .SetDefault(false);
-            ReceiveCraftRadiation=CreateBool("Receive Craft Radiation")
-                .SetDescription("Drood will Receive radiation from the RTG and NTR engines in current craft if on,maybe not so realistic,<color=red><size=150%>Enable only you like hardcore gameplay</size></color>")
+            ReceiveCraftRadiation=CreateBool(Locale.GetString("Droodism.ModSettings.ReceiveCraftRadiation"))
+                .SetDescription(Locale.GetString("Droodism.ModSettings.ReceiveCraftRadiationDesc"))
                 .SetDefault(false);
-            RemoveDockingPortCamera=CreateBool("Disable Docking Port Camera")
-                .SetDescription("Remove the camera from the docking port<br><color=red>Warning</color>: This will completely disabled <color=red><size=200%>ANY</size></color>camera modifier in<color=red><size=200%> ANY</size></color> docking ports (even if they're in flight already!), use it only if you really hate them")
+            RemoveDockingPortCamera=CreateBool(Locale.GetString("Droodism.ModSettings.DisableDockingPortCamera"))
+                .SetDescription(Locale.GetString("Droodism.ModSettings.DisableDockingPortCameraDesc"))
                 .SetDefault(false);
-            EnableResourceWarning = CreateBool("Enable Resource Warning")
-                .SetDescription("During warp, automatically detect  when Drood resources fall below threshold and pause game then alert the player.")
+            EnableResourceWarning = CreateBool(Locale.GetString("Droodism.ModSettings.EnableResourceWarning"))
+                .SetDescription(Locale.GetString("Droodism.ModSettings.EnableResourceWarningDesc"))
                 .SetDefault(true);
-            ResourceWarningThreshold = CreateNumeric<float>("Warning Threshold",0.2f,0.5f,0.05f)
-                .SetDescription("Warning will trigger when resources fall below this percentage.")
+            ResourceWarningThreshold = CreateNumeric<float>(Locale.GetString("Droodism.ModSettings.WarningThreshold"),0.2f,0.5f,0.05f)
+                .SetDescription(Locale.GetString("Droodism.ModSettings.WarningThresholdDesc"))
                 .SetDefault(0.25f);
-            ResourceCriticalThreshold = CreateNumeric<float>("Critical Threshold",0.05f,0.2f,0.01f)
-                .SetDescription("Critical alert will trigger when resources fall below this percentage. Auto-slowdown is triggered at this level.")
+            ResourceCriticalThreshold = CreateNumeric<float>(Locale.GetString("Droodism.ModSettings.CriticalThreshold"),0.05f,0.2f,0.01f)
+                .SetDescription(Locale.GetString("Droodism.ModSettings.CriticalThresholdDesc"))
                 .SetDefault(0.10f);
         }
     }

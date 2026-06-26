@@ -172,4 +172,50 @@
     <s id="Droodism.CrewCabinScript.RefillShield">Refill Shield</s>
     <s id="Droodism.CrewCabinScript.RadiationShieldTypeTooltip">Current Crew Compartment's Ant-Radiation Material Type</s>
     <s id="Droodism.CrewCabinScript.RadiationDuration">Radiation Duration</s>
+
+    <!-- CraftPerformanceAnalysisPatch -->
+    <s id="Droodism.CraftPerformanceAnalysisPatch.LifeSupportResourcesInfo">Life Support Resources Info</s>
+    <s id="Droodism.CraftPerformanceAnalysisPatch.DroodCount">Drood Count</s>
+    <s id="Droodism.CraftPerformanceAnalysisPatch.Water">Water</s>
+    <s id="Droodism.CraftPerformanceAnalysisPatch.CarbonDioxide">Carbon Dioxide</s>
+    <s id="Droodism.CraftPerformanceAnalysisPatch.Capacity">Capacity</s>
+    <s id="Droodism.CraftPerformanceAnalysisPatch.Amount">Amount</s>
+
+    <!-- ResourceWarningScript -->
+    <s id="Droodism.ResourceWarning.Critical">CRITICAL</s>
+    <s id="Droodism.ResourceWarning.Warning">WARNING</s>
+    <s id="Droodism.ResourceWarning.LevelAt">level at</s>
+    <s id="Droodism.ResourceWarning.At">at</s>
+    <s id="Droodism.ResourceWarning.Remaining">remaining</s>
+    <s id="Droodism.ResourceWarning.ResourceCriticalTimePaused">Resource critical! Time paused.</s>
+    <s id="Droodism.ResourceWarning.WarpSpeedReduced">Resource warning! Warp speed reduced.</s>
+
+    <!-- OnHireButtonClickedPatch -->
+    <s id="Droodism.OnHireButtonClickedPatch.NotEnoughMoney">You do not have enough money to hire a new astronaut. You currently have {0} and it costs {1} to hire a new astronaut.</s>
+    <s id="Droodism.OnHireButtonClickedPatch.CrewFull">Your crew is already as large as it can get. You can unlock larger crews in the Tech Tree.</s>
+    <s id="Droodism.OnHireButtonClickedPatch.ChooseDroodType">Choose the what kind of Drood you want to hire:</s>
+    <s id="Droodism.OnHireButtonClickedPatch.Pilot">Pilot</s>
+    <s id="Droodism.OnHireButtonClickedPatch.Engineer">Engineer</s>
+    <s id="Droodism.OnHireButtonClickedPatch.Scientist">Scientist</s>
+
+    <!-- ModSettings -->
+    <s id="Droodism.ModSettings.CategoryName">Droodism</s>
+    <s id="Droodism.ModSettings.ConsumeResourceWhenUnloaded">Drood Consume Resource When Unloaded</s>
+    <s id="Droodism.ModSettings.ConsumeResourceWhenUnloadedDesc">Drood will still Consume Resource Even the Craft is Unloaded.&lt;br&gt;known bug the time calculate went a &lt;size=125%&gt;&lt;color=red&gt;LITTLE BIT&lt;/color&gt;&lt;/size&gt; wrong way</s>
+    <s id="Droodism.ModSettings.ToggleDebugMode">Toggle Debug Mode</s>
+    <s id="Droodism.ModSettings.ToggleDebugModeDesc">Enable some log in dev console,and toggle some hidden option</s>
+    <s id="Droodism.ModSettings.AltNavBallColor">Alt Nav Ball Color</s>
+    <s id="Droodism.ModSettings.AltNavBallColorDesc">Use Alt Nav Ball Color</s>
+    <s id="Droodism.ModSettings.ActiveUpdateRadiationBeltConfig">Active Update Radiation Belt Config</s>
+    <s id="Droodism.ModSettings.ActiveUpdateRadiationBeltConfigDesc">Active Update Radiation Belt Config(Cause Performance loss,but better for debugging)</s>
+    <s id="Droodism.ModSettings.ReceiveCraftRadiation">Receive Craft Radiation</s>
+    <s id="Droodism.ModSettings.ReceiveCraftRadiationDesc">Drood will Receive radiation from the RTG and NTR engines in current craft if on,maybe not so realistic,&lt;color=red&gt;&lt;size=150%&gt;Enable only you like hardcore gameplay&lt;/size&gt;&lt;/color&gt;</s>
+    <s id="Droodism.ModSettings.DisableDockingPortCamera">Disable Docking Port Camera</s>
+    <s id="Droodism.ModSettings.DisableDockingPortCameraDesc">Remove the camera from the docking port&lt;br&gt;&lt;color=red&gt;Warning&lt;/color&gt;: This will completely disabled &lt;color=red&gt;&lt;size=200%&gt;ANY&lt;/size&gt;&lt;/color&gt;camera modifier in&lt;color=red&gt;&lt;size=200%&gt; ANY&lt;/size&gt;&lt;/color&gt; docking ports (even if they're in flight already!), use it only if you really hate them</s>
+    <s id="Droodism.ModSettings.EnableResourceWarning">Enable Resource Warning</s>
+    <s id="Droodism.ModSettings.EnableResourceWarningDesc">During warp, automatically detect  when Drood resources fall below threshold and pause game then alert the player.</s>
+    <s id="Droodism.ModSettings.WarningThreshold">Warning Threshold</s>
+    <s id="Droodism.ModSettings.WarningThresholdDesc">Warning will trigger when resources fall below this percentage.</s>
+    <s id="Droodism.ModSettings.CriticalThreshold">Critical Threshold</s>
+    <s id="Droodism.ModSettings.CriticalThresholdDesc">Critical alert will trigger when resources fall below this percentage. Auto-slowdown is triggered at this level.</s>
 </Strings>
