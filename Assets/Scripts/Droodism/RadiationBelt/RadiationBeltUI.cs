@@ -17,51 +17,51 @@ namespace Assets.Scripts
             {
                 return;
             }
-            GroupModel groupModel = new("<color=yellow>Radiation Belt</color>");
+            GroupModel groupModel = new("<color=yellow>" + Locale.GetString("Droodism.RadiationBeltUI.RadiationBelt") + "</color>");
             request.Model.AddGroup(groupModel);
             groupModel.Collapsed = true;
             if (ModSettings.Instance.DebugMode)
             {
-                groupModel.Add(new TextButtonModel("Debug Menu", (b) =>
+                groupModel.Add(new TextButtonModel(Locale.GetString("Droodism.RadiationBeltUI.DebugMenu"), (b) =>
                 {
                     RadiationBeltDebugUI.Instance.OnToggleInspectorPanelState();
                 }));
 
             }
 
-            groupModel.Add(new TextModel("Current Planet", () => RadiationBeltManager.Instance.CurrentFocusPlanet));
-            groupModel.Add(new ToggleModel("Show General", () => RadiationBeltDebugUI.Instance.ShowGeneral,b =>
+            groupModel.Add(new TextModel(Locale.GetString("Droodism.RadiationBeltUI.CurrentPlanet"), () => RadiationBeltManager.Instance.CurrentFocusPlanet));
+            groupModel.Add(new ToggleModel(Locale.GetString("Droodism.RadiationBeltUI.ShowGeneral"), () => RadiationBeltDebugUI.Instance.ShowGeneral,b =>
             {
                 RadiationBeltDebugUI.Instance.ShowGeneral = b;
             }));
-            groupModel.Add(new ToggleModel("Show Inner", () => RadiationBeltDebugUI.Instance.ShowInner,b =>
+            groupModel.Add(new ToggleModel(Locale.GetString("Droodism.RadiationBeltUI.ShowInner"), () => RadiationBeltDebugUI.Instance.ShowInner,b =>
             {
                 RadiationBeltDebugUI.Instance.ShowInner = b;
             }));
-            groupModel.Add(new ToggleModel("Show Outer", () => RadiationBeltDebugUI.Instance.ShowOuter,b =>
+            groupModel.Add(new ToggleModel(Locale.GetString("Droodism.RadiationBeltUI.ShowOuter"), () => RadiationBeltDebugUI.Instance.ShowOuter,b =>
             {
                 RadiationBeltDebugUI.Instance.ShowOuter = b;
             }));
             
-            groupModel.Add(new TextModel("Belt Tilt (Deg)", () => ConfigText(c =>
+            groupModel.Add(new TextModel(Locale.GetString("Droodism.RadiationBeltUI.BeltTiltDeg"), () => ConfigText(c =>
             {
                 if (c.Enabled)
                 {
                     return FloatText(c.beltTiltDegrees, 2);
                 }
-                return "N/A";
+                return Locale.GetString("Droodism.DroodismUIManager.NotAvailable");
               
             })));
             
-            groupModel.Add(new TextModel("Inner Dist", () => ConfigText(c => DistanceKmText(c, c.innerDist))));
-            groupModel.Add(new TextModel("Inner Radius", () => ConfigText(c => DistanceKmText(c, c.innerRadius))));
-            groupModel.Add(new TextModel("Inner Border Radius", () => ConfigText(c => DistanceKmText(c, c.innerBorderRadius))));
-            groupModel.Add(new TextModel("Inner Peak Dose Rate (rad/h)", () => ConfigText(c => DoseRateText(c, c.innerPeakDoseRateRadPerHour))));
+            groupModel.Add(new TextModel(Locale.GetString("Droodism.RadiationBeltUI.InnerDist"), () => ConfigText(c => DistanceKmText(c, c.innerDist))));
+            groupModel.Add(new TextModel(Locale.GetString("Droodism.RadiationBeltUI.InnerRadius"), () => ConfigText(c => DistanceKmText(c, c.innerRadius))));
+            groupModel.Add(new TextModel(Locale.GetString("Droodism.RadiationBeltUI.InnerBorderRadius"), () => ConfigText(c => DistanceKmText(c, c.innerBorderRadius))));
+            groupModel.Add(new TextModel(Locale.GetString("Droodism.RadiationBeltUI.InnerPeakDoseRateRadPerHour"), () => ConfigText(c => DoseRateText(c, c.innerPeakDoseRateRadPerHour))));
             
-            groupModel.Add(new TextModel("Outer Dist", () => ConfigText(c => DistanceKmText(c, c.outerDist))));
-            groupModel.Add(new TextModel("Outer Radius", () => ConfigText(c => DistanceKmText(c, c.outerRadius))));
-            groupModel.Add(new TextModel("Outer Border Radius", () => ConfigText(c => DistanceKmText(c, c.outerBorderRadius))));
-            groupModel.Add(new TextModel("Outer Peak Dose Rate (rad/h)", () => ConfigText(c => DoseRateText(c, c.outerPeakDoseRateRadPerHour))));
+            groupModel.Add(new TextModel(Locale.GetString("Droodism.RadiationBeltUI.OuterDist"), () => ConfigText(c => DistanceKmText(c, c.outerDist))));
+            groupModel.Add(new TextModel(Locale.GetString("Droodism.RadiationBeltUI.OuterRadius"), () => ConfigText(c => DistanceKmText(c, c.outerRadius))));
+            groupModel.Add(new TextModel(Locale.GetString("Droodism.RadiationBeltUI.OuterBorderRadius"), () => ConfigText(c => DistanceKmText(c, c.outerBorderRadius))));
+            groupModel.Add(new TextModel(Locale.GetString("Droodism.RadiationBeltUI.OuterPeakDoseRateRadPerHour"), () => ConfigText(c => DoseRateText(c, c.outerPeakDoseRateRadPerHour))));
         }
 
         private static string ConfigText(System.Func<RadiationBeltConfig, string> selector)
@@ -69,7 +69,7 @@ namespace Assets.Scripts
             var manager = RadiationBeltManager.Instance;
             if (manager == null || manager.CurrentConfig == null)
             {
-                return "N/A";
+                return Locale.GetString("Droodism.DroodismUIManager.NotAvailable");
             }
 
             return selector(manager.CurrentConfig);
@@ -84,14 +84,14 @@ namespace Assets.Scripts
         {
             if (config == null || !config.Enabled)
             {
-                return "N/A";
+                return Locale.GetString("Droodism.DroodismUIManager.NotAvailable");
             }
 
             string currentPlanet = RadiationBeltManager.Instance?.CurrentFocusPlanet;
             IPlanetData planet = FindPlanet(currentPlanet);
             if (planet == null)
             {
-                return "N/A";
+                return Locale.GetString("Droodism.DroodismUIManager.NotAvailable");
             }
 
             float km = normalizedDistance * (float)planet.Radius / 1000f;
@@ -102,7 +102,7 @@ namespace Assets.Scripts
         {
             if (config == null || !config.Enabled)
             {
-                return "N/A";
+                return Locale.GetString("Droodism.DroodismUIManager.NotAvailable");
             }
 
             return FloatText(radPerHour, 2);

@@ -15,7 +15,7 @@ using Assets.Scripts.Droodism;
 using Assets.Scripts.Droodism.Crew;
 using Assets.Scripts.Droodism.ResourceWarning;
 using Droodism.RadiationBelt;
-using ModApi.Craft.Propulsion;
+using ModApi;
 using ModApi.Flight.Events;
 using ModApi.Flight.GameView;
 using UnityEngine;
@@ -1138,14 +1138,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             //单独看任务时间的
             if (!this.IsTourist)
             {
-                //ModApi.Locale.GetString("");
-                model.Add<TextModel>(new TextModel("<color=yellow>Crew Role", (Func<string>) (() =>Data.DroodismCrewData==null?"Unknow":Data.DroodismCrewData.CrewRole.ToString())));
+                model.Add<TextModel>(new TextModel("<color=yellow>" + Locale.GetString("Droodism.SupportLifeScript.CrewRole"), (Func<string>) (() =>Data.DroodismCrewData==null?Locale.GetString("Droodism.SupportLifeScript.Unknown"):Data.DroodismCrewData.CrewRole.ToString())));
             }
-            model.Add<TextModel>(new TextModel("<color=yellow>Mission Time", (Func<string>) (() =>Units.GetStopwatchTimeString(MissionDurationTime))));
+            model.Add<TextModel>(new TextModel("<color=yellow>" + Locale.GetString("Droodism.SupportLifeScript.MissionTime"), (Func<string>) (() =>Units.GetStopwatchTimeString(MissionDurationTime))));
             //维生资源
-            GroupModel lifeSupportGroupModel = new GroupModel("<color=green><size=115%>Life Support Info");
+            GroupModel lifeSupportGroupModel = new GroupModel("<color=green><size=115%>" + Locale.GetString("Droodism.SupportLifeScript.LifeSupportInfo"));
             
-            lifeSupportGroupModel.Add<TextModel>(new TextModel("Remain Oxygen", (Func<string>) (() =>
+            lifeSupportGroupModel.Add<TextModel>(new TextModel(Locale.GetString("Droodism.SupportLifeScript.RemainOxygen"), (Func<string>) (() =>
             {
                 if (UsingInternalOxygen())
                 {
@@ -1155,12 +1154,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
                 else if (!UsingInternalOxygen())
                 {
-                    return "<color=green>Using External Oxygen</color>";
+                    return "<color=green>" + Locale.GetString("Droodism.SupportLifeScript.UsingExternalOxygen") + "</color>";
                 }
-                return "<color=purple>N/A</color>";
+                return "<color=purple>" + Locale.GetString("Droodism.SupportLifeScript.NotAvailable") + "</color>";
             })));
             
-            lifeSupportGroupModel.Add<TextModel>(new TextModel("Oxygen Supply Time", (Func<string>) (() =>
+            lifeSupportGroupModel.Add<TextModel>(new TextModel(Locale.GetString("Droodism.SupportLifeScript.OxygenSupplyTime"), (Func<string>) (() =>
             {
                 if (UsingInternalOxygen())
                 {
@@ -1170,40 +1169,40 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
                 else if (!UsingInternalOxygen())
                 {
-                    return "<color=green>Infinity</color>";
+                    return "<color=green>" + Locale.GetString("Droodism.SupportLifeScript.Infinity") + "</color>";
                 }
-                return "N/A";
+                return Locale.GetString("Droodism.SupportLifeScript.NotAvailable");
             })));
             
-            lifeSupportGroupModel.Add<TextModel>(new TextModel("Remain Water", (Func<string>) (() =>
+            lifeSupportGroupModel.Add<TextModel>(new TextModel(Locale.GetString("Droodism.SupportLifeScript.RemainWater"), (Func<string>) (() =>
             {
                 float waterPercentage = (float)(Data._waterAmountBuffer / Data.DesireWaterCapacity);
                 string waterTextColor = waterPercentage > 0.5 ? "green" : waterPercentage >= 0.25 ? "yellow" : "red";
                 return $"<color={waterTextColor}>{Units.GetPercentageString(waterPercentage)}</color>";
             })));
             
-            lifeSupportGroupModel.Add<TextModel>(new TextModel("Water Supply Time", (Func<string>) (() =>
+            lifeSupportGroupModel.Add<TextModel>(new TextModel(Locale.GetString("Droodism.SupportLifeScript.WaterSupplyTime"), (Func<string>) (() =>
             {
                 float waterPercentage = (float)(Data._waterAmountBuffer / Data.DesireWaterCapacity);
                 string waterTextColor = waterPercentage > 0.5 ? "green" : waterPercentage >= 0.25 ? "yellow" : "red";
                 return $"<color={waterTextColor}>"+Units.GetStopwatchTimeString(Data._waterAmountBuffer / (Data.WaterConsumeRate * (IsRunning ? 1.75 : 1) * (IsTourist ? 1.05 : 1)));
             })));
             
-            lifeSupportGroupModel.Add<TextModel>(new TextModel("Remain Food", (Func<string>) (() =>
+            lifeSupportGroupModel.Add<TextModel>(new TextModel(Locale.GetString("Droodism.SupportLifeScript.RemainFood"), (Func<string>) (() =>
             {
                 float foodPercentage = (float)(Data._foodAmountBuffer / Data.DesireFoodCapacity);
                 string foodTextColor = foodPercentage > 0.5 ? "green" : foodPercentage >= 0.25 ? "yellow" : "red";
                 return $"<color={foodTextColor}>{Units.GetPercentageString(foodPercentage)}</color>";
             })));
         
-            lifeSupportGroupModel.Add<TextModel>(new TextModel("Food Supply Time", (Func<string>) (() =>
+            lifeSupportGroupModel.Add<TextModel>(new TextModel(Locale.GetString("Droodism.SupportLifeScript.FoodSupplyTime"), (Func<string>) (() =>
             {
                 float foodPercentage = (float)(Data._foodAmountBuffer / Data.DesireFoodCapacity);
                 string foodTextColor = foodPercentage > 0.5 ? "green" : foodPercentage >= 0.25 ? "yellow" : "red";
                 return $"<color={foodTextColor}>"+Units.GetStopwatchTimeString(Data._foodAmountBuffer / (Data.FoodConsumeRate * (IsRunning ? 1.75 : 1) * (IsTourist ? 1.05 : 1)));
             })));
             
-            lifeSupportGroupModel.Add<TextModel>(new TextModel("CO2 Level", (Func<string>) (() =>
+            lifeSupportGroupModel.Add<TextModel>(new TextModel(Locale.GetString("Droodism.SupportLifeScript.CO2Level"), (Func<string>) (() =>
             {
                 if (UsingInternalOxygen())
                 {
@@ -1213,17 +1212,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
                 else
                 {
-                    return "<color=green>Using External Oxygen</color>";
+                    return "<color=green>" + Locale.GetString("Droodism.SupportLifeScript.UsingExternalOxygen") + "</color>";
                 }
                 
             })));
-            lifeSupportGroupModel.Add<TextModel>(new TextModel("Wasted Water Level", (Func<string>) (() =>
+            lifeSupportGroupModel.Add<TextModel>(new TextModel(Locale.GetString("Droodism.SupportLifeScript.WastedWaterLevel"), (Func<string>) (() =>
             {
                 float Percentage = (float)(Data._wastedWaterAmountBuffer / Data.DesireWastedWaterCapacity);
                 string color = Percentage > 0.85 ? "red" : Percentage >= 0.6 ? "yellow" : "green";
                 return $"<color={color}>{Units.GetPercentageString(Percentage)}</color>";
             })));
-            lifeSupportGroupModel.Add<TextModel>(new TextModel("Solid Waste Level", (Func<string>) (() =>
+            lifeSupportGroupModel.Add<TextModel>(new TextModel(Locale.GetString("Droodism.SupportLifeScript.SolidWasteLevel"), (Func<string>) (() =>
             {
                 float Percentage = (float)(Data._solidWasteAmountBuffer / Data.DesireSolidWasteCapacity);
                 string color = Percentage > 0.85 ? "red" : Percentage >= 0.6 ? "yellow" : "green";
@@ -1233,11 +1232,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             model.AddGroup(lifeSupportGroupModel);
 
             //辐射强度
-            GroupModel RadiationInspector = new GroupModel("<color=yellow><size=115%>Radiation Inspector");
-            RadiationInspector.Add<TextModel>(new TextModel("Current Radiation Dose", (Func<string>) (() => $"{this.Data.CumulativeRad:F4} rad"),determineVisibility:() => this.Data.CumulativeRad >0));
-            RadiationInspector.Add<TextModel>(new TextModel("Current Radiation Dose Stats", (Func<string>) (() => CurrentCumulativeRadiationStats),determineVisibility:() => this.Data.CumulativeRad >0));
-            RadiationInspector.Add<TextModel>(new TextModel("Current Radiation Dose Rate Per Hour", (Func<string>) (() => $"{this.RadiationDoseRateRadPerHour:F2} rad/h"),determineVisibility:() => this.RadiationDoseRateRadPerHour >0));
-            RadiationInspector.Add<TextModel>(new TextModel("Current Radiation Level", (Func<string>) (() => $"{CurrentRadiationRateStats}"),determineVisibility:() => this.RadiationDoseRateRadPerHour >0));
+            GroupModel RadiationInspector = new GroupModel("<color=yellow><size=115%>" + Locale.GetString("Droodism.SupportLifeScript.RadiationInspector"));
+            RadiationInspector.Add<TextModel>(new TextModel(Locale.GetString("Droodism.SupportLifeScript.CurrentRadiationDose"), (Func<string>) (() => $"{this.Data.CumulativeRad:F4} rad"),determineVisibility:() => this.Data.CumulativeRad >0));
+            RadiationInspector.Add<TextModel>(new TextModel(Locale.GetString("Droodism.SupportLifeScript.CurrentRadiationDoseStats"), (Func<string>) (() => CurrentCumulativeRadiationStats),determineVisibility:() => this.Data.CumulativeRad >0));
+            RadiationInspector.Add<TextModel>(new TextModel(Locale.GetString("Droodism.SupportLifeScript.CurrentRadiationDoseRatePerHour"), (Func<string>) (() => $"{this.RadiationDoseRateRadPerHour:F2} rad/h"),determineVisibility:() => this.RadiationDoseRateRadPerHour >0));
+            RadiationInspector.Add<TextModel>(new TextModel(Locale.GetString("Droodism.SupportLifeScript.CurrentRadiationLevel"), (Func<string>) (() => $"{CurrentRadiationRateStats}"),determineVisibility:() => this.RadiationDoseRateRadPerHour >0));
             
             model.AddGroup(RadiationInspector);
 
@@ -1247,28 +1246,28 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 
                 if (Data.ParachuteTypes=="ParaGlider")
                 {
-                    model.Add(new ToggleModel("Auto Deploy ParaGlider",()=>Data.AutoDeployEnabled,b=>
+                    model.Add(new ToggleModel(Locale.GetString("Droodism.SupportLifeScript.AutoDeployParaGlider"),()=>Data.AutoDeployEnabled,b=>
                     {
                         Data.AutoDeployEnabled=b;
-                    },"Enable Auto Deployment"));
-                    model.Add(new SliderModel("Auto Deploy Height", (Func<float>) (() => this.Data.AutoDeployHeight), (Action<float>) (s => this.Data.AutoDeployHeight = s), 100, 3000, true,true)).ValueFormatter = (Func<float, string>) (x => Units.GetDistanceString(x));
+                    },Locale.GetString("Droodism.SupportLifeScript.EnableAutoDeployment")));
+                    model.Add(new SliderModel(Locale.GetString("Droodism.SupportLifeScript.AutoDeployHeight"), (Func<float>) (() => this.Data.AutoDeployHeight), (Action<float>) (s => this.Data.AutoDeployHeight = s), 100, 3000, true,true)).ValueFormatter = (Func<float, string>) (x => Units.GetDistanceString(x));
                   
-                    model.Add(new SliderModel("Fully Deploy Height", (Func<float>) (() => Mathf.Min(Data.MinDeployHeight, Data.AutoDeployHeight)), (Action<float>) (s =>
+                    model.Add(new SliderModel(Locale.GetString("Droodism.SupportLifeScript.FullyDeployHeight"), (Func<float>) (() => Mathf.Min(Data.MinDeployHeight, Data.AutoDeployHeight)), (Action<float>) (s =>
                     {
                         this.Data.MinDeployHeight = Mathf.Min(s, Data.AutoDeployHeight);
                     }), 100, 3000, true,true)).ValueFormatter = (Func<float, string>) (x => Units.GetDistanceString(x));
-                    model.Add<TextButtonModel>(new TextButtonModel("<color=red>Manual Deploy ParaGlider", (Action<TextButtonModel>)(b => this.DeployParaglider())));
+                    model.Add<TextButtonModel>(new TextButtonModel("<color=red>" + Locale.GetString("Droodism.SupportLifeScript.ManualDeployParaGlider"), (Action<TextButtonModel>)(b => this.DeployParaglider())));
                 }
 
                 if (Data.ParachuteTypes=="Parachute")
                 {
-                    model.Add(new ToggleModel("Auto Deploy Parachute",()=>Data.AutoDeployEnabled,b=>
+                    model.Add(new ToggleModel(Locale.GetString("Droodism.SupportLifeScript.AutoDeployParachute"),()=>Data.AutoDeployEnabled,b=>
                     {
                         Data.AutoDeployEnabled=b;
-                    },"Enable Auto Deployment"));
-                    model.Add(new SliderModel("Auto Deploy Height", (Func<float>) (() => this.Data.AutoDeployHeight), (Action<float>) (s => this.Data.AutoDeployHeight = s), 100, 3000, true,true)).ValueFormatter = (Func<float, string>) (x => Units.GetDistanceString(x));
-                    model.Add<TextButtonModel>(new TextButtonModel("<color=red>Manual Deploy Parachute", (Action<TextButtonModel>)(b => this.DeployParaglider())));
-                    model.Add(new SliderModel("Fully Deploy Height", (Func<float>) (() => Mathf.Min(Data.MinDeployHeight, Data.AutoDeployHeight)), (Action<float>) (s =>
+                    },Locale.GetString("Droodism.SupportLifeScript.EnableAutoDeployment")));
+                    model.Add(new SliderModel(Locale.GetString("Droodism.SupportLifeScript.AutoDeployHeight"), (Func<float>) (() => this.Data.AutoDeployHeight), (Action<float>) (s => this.Data.AutoDeployHeight = s), 100, 3000, true,true)).ValueFormatter = (Func<float, string>) (x => Units.GetDistanceString(x));
+                    model.Add<TextButtonModel>(new TextButtonModel("<color=red>" + Locale.GetString("Droodism.SupportLifeScript.ManualDeployParachute"), (Action<TextButtonModel>)(b => this.DeployParaglider())));
+                    model.Add(new SliderModel(Locale.GetString("Droodism.SupportLifeScript.FullyDeployHeight"), (Func<float>) (() => Mathf.Min(Data.MinDeployHeight, Data.AutoDeployHeight)), (Action<float>) (s =>
                     {
                         
                         this.Data.MinDeployHeight = Mathf.Min(s, Data.AutoDeployHeight);
@@ -1284,13 +1283,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
             if (this.Data.DroodismCrewData.CrewRole == DroodType.Pilot)
             {
-                model.Add<TextButtonModel>(new TextButtonModel("Plant Flag", (Action<TextButtonModel>)(b => this.PlantFlagClick())));
+                model.Add<TextButtonModel>(new TextButtonModel(Locale.GetString("Droodism.SupportLifeScript.PlantFlag"), (Action<TextButtonModel>)(b => this.PlantFlagClick())));
             }
 
             if (this.Data.DroodismCrewData.CrewRole == DroodType.Engineer)
             {
-                model.Add(new TextModel("Remain Repairing Tools",(Func<string>) (() => $"{this.Data.UtilizationFactor:F1}")));
-                model.Add(new TextButtonModel("Repair", (Action<TextButtonModel>)(b => { this.RepairPart(); })));
+                model.Add(new TextModel(Locale.GetString("Droodism.SupportLifeScript.RemainRepairingTools"),(Func<string>) (() => $"{this.Data.UtilizationFactor:F1}")));
+                model.Add(new TextButtonModel(Locale.GetString("Droodism.SupportLifeScript.Repair"), (Action<TextButtonModel>)(b => { this.RepairPart(); })));
             }
             
         }
