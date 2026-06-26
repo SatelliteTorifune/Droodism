@@ -4,6 +4,10 @@
 > 根据新版本变动修改了SRCraftFuelSources中的部分函数以适配更新后的CraftFuelSources和全局资源系统
 > 
 > 对Propulsion.xml进行了密度调整,并覆写了部分1.4更新后新增的FuelType
+> 
+> 优化文件结构
+> 
+> 关于Mod.GetStopwatchTimeString的bug已经修复,故移除了此函数,改为Units.GetStopwatchTimeString()便于本地化
 
 # V0.797 发布
 

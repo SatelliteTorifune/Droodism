@@ -146,11 +146,11 @@ namespace Assets.Scripts.Droodism.UserInterface
 
             string timeLeft = isWasted
                 ? (fuelConsumption >= 0
-                    ? $"<color=#E05D6A>{Mod.GetStopwatchTimeString(Math.Abs((fuelSource.TotalCapacity - fuelSource.TotalFuel) / fuelConsumption))}</color>"
-                    : $"<color=#81EE80>{Mod.GetStopwatchTimeString(Math.Abs(fuelSource.TotalFuel / fuelConsumption))}</color>")
+                    ? $"<color=#E05D6A>{Units.GetStopwatchTimeString(Math.Abs((fuelSource.TotalCapacity - fuelSource.TotalFuel) / fuelConsumption))}</color>"
+                    : $"<color=#81EE80>{Units.GetStopwatchTimeString(Math.Abs(fuelSource.TotalFuel / fuelConsumption))}</color>")
                 : (fuelConsumption >= 0
-                    ? $"<color=#81EE80>{Mod.GetStopwatchTimeString(Math.Abs((fuelSource.TotalCapacity - fuelSource.TotalFuel) / fuelConsumption))}</color>"
-                    : $"<color=#E05D6A>{Mod.GetStopwatchTimeString(Math.Abs(fuelSource.TotalFuel / fuelConsumption))}</color>");
+                    ? $"<color=#81EE80>{Units.GetStopwatchTimeString(Math.Abs((fuelSource.TotalCapacity - fuelSource.TotalFuel) / fuelConsumption))}</color>"
+                    : $"<color=#E05D6A>{Units.GetStopwatchTimeString(Math.Abs(fuelSource.TotalFuel / fuelConsumption))}</color>");
             ;
             string color = isWasted
                 ? fuelConsumption > 0 ? "E05D6A" : fuelConsumption < 0 ? "81EE80" : "FF9900"
@@ -354,7 +354,7 @@ namespace Assets.Scripts.Droodism.UserInterface
                         ? "Unknow Role"
                         : $"<color={color}>{droodismCrewData.CrewRole.ToString()}</color>", () => eva.Data.CrewName));
                     CrewInspectorGroup.Add<TextModel>(new TextModel("Mission Time",
-                        (Func<string>)(() => Mod.GetStopwatchTimeString(supportLifeScript.MissionDurationTime)),
+                        (Func<string>)(() => Units.GetStopwatchTimeString(supportLifeScript.MissionDurationTime)),
                         tooltip: eva.Data.CrewName + ";s mission time since launch."));
                     CrewInspectorGroup.Add<TextModel>(new TextModel("Remain Oxygen", (Func<string>)(() =>
                     {

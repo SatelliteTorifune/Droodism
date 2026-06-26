@@ -130,13 +130,9 @@ namespace Assets.Scripts
         protected override void OnModInitialized()
         {
             base.OnModInitialized();
-            
-
             Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
             Game.Instance.SceneManager.SceneTransitionCompleted+=OnSceneTransitionCompleted;
             RegisterCommands();
-           
-            
         }
 
         /// <summary>
@@ -179,6 +175,12 @@ namespace Assets.Scripts
         }
 
         private void OnCraftChanged(ICraftNode craft) => PatchCraft(CurrentCraft());
+        
+
+        private void OnSceneTransitionCompleted(object sender, SceneTransitionEventArgs e)
+        {
+            那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花();
+        }
         public void 那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花()
         {
             
@@ -198,154 +200,6 @@ namespace Assets.Scripts
             }
             
         }
-
-        private void OnSceneTransitionCompleted(object sender, SceneTransitionEventArgs e)
-        {
-            那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花();
-        }
-        
-        public void SpawnFlag() 
-        {
-            var templateText = Mod.ResourceLoader.LoadAsset<TextAsset>("Assets/Content/Resources/flag.xml");
-            var craftData = Game.Instance.CraftLoader.LoadCraftImmediate(XDocument.Parse(templateText.text).Root);
-            var xml = craftData.GenerateXml((Transform)null, false, true);
-            Vector3d position = Game.Instance.FlightScene.CraftNode.Position;
-            double latitude = ConvertPlanetPositionToLatLongAgl(position).x;
-            double longitude=ConvertPlanetPositionToLatLongAgl(position).y;
-            var location = new LaunchLocation(
-                "location",
-                LaunchLocationType.SurfaceLockedGround,
-                Game.Instance.FlightScene.CraftNode.Parent.PlanetData.Name,
-                latitude,
-                longitude,
-                new Vector3d(0.0, 0.0, 3000.0),
-                0,
-                0.2);
-            var flag = ((FlightSceneScript)Game.Instance.FlightScene).SpawnCraft($"Flag at {Game.Instance.FlightScene.CraftNode.Parent.Name},{(ConvertPlanetPositionToLatLongAgl(position).x)} ,{(ConvertPlanetPositionToLatLongAgl(position).y)}", craftData, location, xml);
-            flag.AllowPlayerControl = true;
-            Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Planted Flag at <color=green> {Game.Instance.FlightScene.CraftNode.Parent.Name} </color>'s surface,at {(ConvertPlanetPositionToLatLongAgl(position).x)}° , {(ConvertPlanetPositionToLatLongAgl(position).y)}° ",true,120f);
-        }
-
-        private void  CheckDefaultPlanetRadiationBeltConfig()
-        {
-            var folderPath = GetRadiationBeltConfigFolderPath();
-            if (!Directory.Exists(folderPath))
-            {
-                Directory.CreateDirectory(folderPath);
-            }
-            SetUp("Cylero");
-            SetUp("Droo");
-            SetUp("Earth");
-            SetUp("Miros");
-            SetUp("Nebra");
-            SetUp("Oord");
-            SetUp("Orcus");
-            SetUp("Sergeaa");
-            SetUp("Taurus");
-            SetUp("Tydos");
-            SetUp("Urados");
-            SetUp("Vulco");
-            void SetUp(string planet)
-            {
-                var asset = Mod.ResourceLoader.LoadAsset<TextAsset>("Assets/Resources/DefaultRadiationBeltConfigs/"+planet+".xml");
-                if (asset != null)
-                {
-                    var targetPath = Path.Combine(folderPath, planet+".xml");
-                    if (!File.Exists(targetPath))
-                    {
-                        File.WriteAllText(targetPath, asset.text, Encoding.UTF8);
-                    }
-                }
-            }
-            
-        }
-
-        private void CheckDefaultBreathablePlanetConfig()
-        {
-            var folderPath = GetDefaultBreathablePlanetConfigFolderPath();
-            if (!Directory.Exists(folderPath))
-            {
-                Directory.CreateDirectory(folderPath);
-            }
-            var asset = Mod.ResourceLoader.LoadAsset<TextAsset>("Assets/Resources/BreathablePlanets.xml");
-            Log($"[Droodism] CheckDefaultBreathablePlanetConfig: asset={asset != null}, folderPath={folderPath}");
-            if (asset != null)
-            {
-                var targetPath = Path.Combine(folderPath, "BreathablePlanets.xml");
-                if (!File.Exists(targetPath))
-                {
-                    File.WriteAllText(targetPath, asset.text, Encoding.UTF8);
-                     Log($"[Droodism] Copied BreathablePlanets.xml to: {targetPath}");
-                }
-                else
-                {
-                     Log($"[Droodism] BreathablePlanets.xml already exists at: {targetPath}");
-                }
-            }
-            else
-            {
-                LogError("[Droodism] Failed to load BreathablePlanets.xml from Resources!");
-            }
-        }
-        private  static string GetRadiationBeltConfigFolderPath()
-        {
-            string folderPath = Application.persistentDataPath + RadiationBeltConfig.CONFIG_FOLDER;
-            if (!Directory.Exists(folderPath))
-            {
-                Directory.CreateDirectory(folderPath);
-            }
-            return folderPath;
-            
-        }
-        private  static string GetDefaultBreathablePlanetConfigFolderPath()
-        {
-            string folderPath = Application.persistentDataPath + BreathablePlanets.CONFIG_FOLDER;
-            if (!Directory.Exists(folderPath))
-            {
-                Directory.CreateDirectory(folderPath);
-            }
-            return folderPath;
-        }
-
-        private void CheckDefaultFlagImage()
-        {
-            const string defaultImageResourcePath = "Assets/Resources/DefaultFlag1.bytes";
-            const string defaultImageFileName = "CustomImage.jpg";
-
-            var folderPath = Path.Combine(Application.persistentDataPath, "UserData", "DroodismConfig", "FlagImage");
-            if (!Directory.Exists(folderPath))
-            {
-                Directory.CreateDirectory(folderPath);
-            }
-
-            var targetPath = Path.Combine(folderPath, defaultImageFileName);
-            if (File.Exists(targetPath))
-            {
-                return;
-            }
-
-            TextAsset defaultImageAsset = null;
-            try
-            {
-                defaultImageAsset = Instance.ResourceLoader.LoadAsset<TextAsset>(defaultImageResourcePath);
-            }
-            catch (Exception e)
-            {
-                LogError($"[Droodism] Failed to load default flag image asset at '{defaultImageResourcePath}': {e}");
-            }
-            
-
-            try
-            {
-                File.WriteAllBytes(targetPath, defaultImageAsset.bytes);
-                Log($"[Droodism] Wrote default flag image to: {targetPath}");
-            }
-            catch (Exception e)
-            {
-                LogError($"[Droodism] Failed to write default flag image to '{targetPath}': {e}");
-            }
-        }
-        
         
     }
     
