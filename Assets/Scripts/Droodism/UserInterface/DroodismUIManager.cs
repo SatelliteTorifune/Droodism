@@ -310,7 +310,6 @@ namespace Assets.Scripts.Droodism.UserInterface
             inspectorModel = new InspectorModel(Locale.GetString("Droodism.DroodismUIManager.InspectorTitle"), "<color=green>" + Locale.GetString("Droodism.DroodismUIManager.LifeSupportInspector"));
 
             inspectorModel.Add(new TextModel(Locale.GetString("Droodism.DroodismUIManager.CrewCount"), () => DroodCountTotal.ToString()));
-            //inspectorModel.Add(new TextModel(Locale.GetString("Droodsim.UI.Crew Count"), () => DroodCountTotal.ToString()));
             inspectorModel.Add(new TextModel(Locale.GetString("Droodism.DroodismUIManager.AstronautCount"), () => AstronautCount.ToString()));
             inspectorModel.Add(new TextModel(Locale.GetString("Droodism.DroodismUIManager.TouristCount"), () => TouristCount.ToString()));
 

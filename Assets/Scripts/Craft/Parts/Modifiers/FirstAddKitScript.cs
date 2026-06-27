@@ -79,8 +79,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public override void OnGenerateInspectorModel(PartInspectorModel model)
         {
             base.OnGenerateInspectorModel(model);
-            model.Add(new TextModel("<color=yellow>Remain Healing Points",(Func<string>) (() => $"{this.Data.HealHp:F1}")));
-            model.Add(new TextButtonModel("<color=green>Heal Drood", (Action<TextButtonModel>)(b => { this.OnHealingClick(); })));
+            model.Add(new TextModel(Locale.GetString("Droodism.FirstAddKitScript.RemainHealingPoints"),(Func<string>) (() => $"{this.Data.HealHp:F1}")));
+            model.Add(new TextButtonModel(Locale.GetString("Droodism.FirstAddKitScript.HealDrood"), (Action<TextButtonModel>)(b => { this.OnHealingClick(); })));
         }
 
         private void OnHealingClick()

@@ -73,8 +73,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public override void OnGenerateInspectorModel(PartInspectorModel model)
         {
             base.OnGenerateInspectorModel(model);
-            model.Add(new TextModel("<color=yellow>Remain Tool Kits",(Func<string>) (() => $"{this.Data.ToolPoint:F1}")));
-            model.Add(new TextButtonModel("<color=green>Refill Engineer Tool Kits", (Action<TextButtonModel>)(b => { this.OnFixingClick(); })));
+            model.Add(new TextModel(Locale.GetString("Droodism.ToolBox.RemainToolKits"),(Func<string>) (() => $"{this.Data.ToolPoint:F1}")));
+            model.Add(new TextButtonModel(Locale.GetString("Droodism.ToolBox.RefillToolKits"), (Action<TextButtonModel>)(b => { this.OnFixingClick(); })));
         }
 
         private void OnFixingClick()

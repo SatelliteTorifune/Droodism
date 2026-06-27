@@ -110,7 +110,6 @@
     <s id="Droodism.ModSettings.ActiveUpdateRadiationBeltConfigDesc">Active Update Radiation Belt Config(Cause Performance loss,but better for debugging)</s>
     <s id="Droodism.ModSettings.AltNavBallColor">Alt Nav Ball Color</s>
     <s id="Droodism.ModSettings.AltNavBallColorDesc">Use Alt Nav Ball Color</s>
-    <s id="Droodism.ModSettings.CategoryName">Droodism</s>
     <s id="Droodism.ModSettings.ConsumeResourceWhenUnloaded">Drood Consume Resource When Unloaded</s>
     <s id="Droodism.ModSettings.ConsumeResourceWhenUnloadedDesc">Drood will still Consume Resource Even the Craft is Unloaded.&lt;br&gt;known bug the time calculate went a &lt;size=125%&gt;&lt;color=red&gt;LITTLE BIT&lt;/color&gt;&lt;/size&gt; wrong way</s>
     <s id="Droodism.ModSettings.CriticalThreshold">Critical Threshold</s>
@@ -237,23 +236,21 @@
     <!-- SupportLifeScript -->
     <s id="Droodism.SupportLifeScript.AutoDeployHeight">Auto Deploy Height</s>
     <s id="Droodism.SupportLifeScript.AutoDeployParachute">Auto Deploy Parachute</s>
-    <s id="Droodism.SupportLifeScript.CanNotDeployAirDensityThin">Can Not Deploy Parachute, Air Density is too thin</s>
-    <s id="Droodism.SupportLifeScript.CanNotDeployGrounded">Can Not Deploy Parachute, Drood is Grounded</s>
-    <s id="Droodism.SupportLifeScript.CanNotDeployHere">Can Not Deploy Parachute Here</s>
-    <s id="Droodism.SupportLifeScript.CanNotDeployInWater">Can Not Deploy Parachute, Drood is in water</s>
-    <s id="Droodism.SupportLifeScript.CanNotDeployNotEva">Can Not Deploy Parachute, Not in Eva</s>
-    <s id="Droodism.SupportLifeScript.CanNotDeploySpeedHigh">Can Not Deploy Parachute, Speed is too high</s>
+    <s id="Droodism.SupportLifeScript.CannotDeployParachuteAirThin">Can Not Deploy Parachute, Air Density is too thin</s>
+    <s id="Droodism.SupportLifeScript.CannotDeployParachuteGrounded">Can Not Deploy Parachute, Drood is Grounded</s>
+    <s id="Droodism.SupportLifeScript.CannotDeployParachuteHere">Can Not Deploy Parachute Here</s>
+    <s id="Droodism.SupportLifeScript.CannotDeployParachuteInWater">Can Not Deploy Parachute, Drood is in water</s>
+    <s id="Droodism.SupportLifeScript.CannotDeployParachuteNotInEva">Can Not Deploy Parachute, Not in Eva</s>
+    <s id="Droodism.SupportLifeScript.CannotDeployParachuteSpeedHigh">Can Not Deploy Parachute, Speed is too high</s>
     <s id="Droodism.SupportLifeScript.CanNotPlantFlagAlreadyPlanted">Can Not Plant Flag, This Drood had already plant one!</s>
     <s id="Droodism.SupportLifeScript.CanNotPlantFlagInWater">Can Not Plant Flag, Drood is in water</s>
-    <s id="Droodism.SupportLifeScript.CanNotPlantFlagNotEva">Can Not Plant Flag, Not in Eva</s>
     <s id="Droodism.SupportLifeScript.CanNotPlantFlagNotGrounded">Can Not Plant Flag, Not Grounded</s>
     <s id="Droodism.SupportLifeScript.CanNotPlantFlagVelocityHigh">Can Not Plant Flag, Velocity is too high</s>
-    <s id="Droodism.SupportLifeScript.CantHealDrood">Can not heal a drood</s>
-    <s id="Droodism.SupportLifeScript.CantRepairDrood">Can't Repair Drood</s>
+    <s id="Droodism.SupportLifeScript.CannotHealDrood">Can not heal a drood</s>
+    <s id="Droodism.SupportLifeScript.CannotRepairDrood">Can't Repair Drood</s>
+    <s id="Droodism.SupportLifeScript.CannotPlantFlagNotInEva">Can Not Plant Flag, Not in Eva</s>
     <s id="Droodism.SupportLifeScript.CO2Level">CO2 Level</s>
     <s id="Droodism.SupportLifeScript.CrewMemberDamage">Crew Member {0} (id:{1}) is taking damage because running out of {2}, he/she has {3} left</s>
-    <s id="Droodism.SupportLifeScript.CrewMemberRadiationDamage">Crew Member {0} (id:{1}) is taking damage due to {2} he/she has {3} left</s>
-    <s id="Droodism.SupportLifeScript.CrewMemberStatusDamage">Crew Member {0} (id:{1}) is taking damage because {2} level is too high, he/she has {3} left</s>
     <s id="Droodism.SupportLifeScript.CrewMemberWasteDamage">Crew Member {0} (id:{1}) is taking damage because {2} level is too high, he/she has {3} left</s>
     <s id="Droodism.SupportLifeScript.CrewRole">Crew Role</s>
     <s id="Droodism.SupportLifeScript.CurrentRadiationDose">Current Radiation Dose</s>
@@ -263,35 +260,27 @@
     <s id="Droodism.SupportLifeScript.EnableAutoDeployment">Enable Auto Deployment</s>
     <s id="Droodism.SupportLifeScript.FoodSupplyTime">Food Supply Time</s>
     <s id="Droodism.SupportLifeScript.FullyDeployHeight">Fully Deploy Height</s>
-    <s id="Droodism.SupportLifeScript.HighRadiationRate">high radiation rate exposure</s>
     <s id="Droodism.SupportLifeScript.Infinity">Infinity</s>
     <s id="Droodism.SupportLifeScript.LifeSupportInfo">Life Support Info</s>
     <s id="Droodism.SupportLifeScript.ManualDeployParachute">Manual Deploy Parachute</s>
     <s id="Droodism.SupportLifeScript.ManualDeployParaGlider">Manual Deploy ParaGlider</s>
-    <s id="Droodism.SupportLifeScript.MildCumulativeRadiation">mild cumulative radiation exposure</s>
     <s id="Droodism.SupportLifeScript.MissionTime">Mission Time</s>
-    <s id="Droodism.SupportLifeScript.ModerateCumulativeRadiation">moderate cumulative radiation exposure</s>
     <s id="Droodism.SupportLifeScript.NoPartSelected">No part selected</s>
     <s id="Droodism.SupportLifeScript.NotAvailable">N/A</s>
     <s id="Droodism.SupportLifeScript.OxygenSupplyTime">Oxygen Supply Time</s>
-    <s id="Droodism.SupportLifeScript.PartDoesntNeedRepair">Selected {0} doesn't need to be repaired.</s>
-    <s id="Droodism.SupportLifeScript.PartTooFarAway">Selected {0} is too far away to repair.</s>
+    <s id="Droodism.SupportLifeScript.PartDoesNotNeedRepair">Selected {0} doesn't need to be repaired.</s>
+    <s id="Droodism.SupportLifeScript.PartTooFarToRepair">Selected {0} is too far away to repair.</s>
     <s id="Droodism.SupportLifeScript.PlantFlag">Plant Flag</s>
-    <s id="Droodism.SupportLifeScript.RadiationCritical">Critical</s>
     <s id="Droodism.SupportLifeScript.RadiationInspector">Radiation Inspector</s>
-    <s id="Droodism.SupportLifeScript.RadiationMild">Mild</s>
-    <s id="Droodism.SupportLifeScript.RadiationNominal">nominal</s>
-    <s id="Droodism.SupportLifeScript.RadiationSevere">Severe</s>
     <s id="Droodism.SupportLifeScript.RemainFood">Remain Food</s>
     <s id="Droodism.SupportLifeScript.RemainOxygen">Remain Oxygen</s>
     <s id="Droodism.SupportLifeScript.RemainRepairingTools">Remain Repairing Tools</s>
     <s id="Droodism.SupportLifeScript.RemainWater">Remain Water</s>
     <s id="Droodism.SupportLifeScript.Repair">Repair</s>
     <s id="Droodism.SupportLifeScript.RepairCompleted">Repairing Process Completed for {0}.</s>
-    <s id="Droodism.SupportLifeScript.RepairingProgress">Repairing {0}: Progress {1}</s>
+    <s id="Droodism.SupportLifeScript.RepairProgress">Repairing {0}: Progress {1}</s>
     <s id="Droodism.SupportLifeScript.RepairInterruptedTooFar">Repairing Process Is Interrupted: {0} is too far away from engineer</s>
-    <s id="Droodism.SupportLifeScript.NotEnoughRepairingTools">Repairing Process Is Interrupted: Not Enough Repairing Tools for {0}</s>
-    <s id="Droodism.SupportLifeScript.SevereCumulativeRadiation">severe cumulative radiation exposure</s>
+    <s id="Droodism.SupportLifeScript.RepairInterruptedNoTools">Repairing Process Is Interrupted: Not Enough Repairing Tools for {0}</s>
     <s id="Droodism.SupportLifeScript.SolidWasteLevel">Solid Waste Level</s>
     <s id="Droodism.SupportLifeScript.Unknown">Unknown</s>
     <s id="Droodism.SupportLifeScript.UsingExternalOxygen">Using External Oxygen</s>
@@ -309,5 +298,40 @@
     <s id="Droodism.ToolBox.ResupplyInterruptedNoTools">Resupply Process Is Interrupted: Not Enough Healing Tools for {0}</s>
     <s id="Droodism.ToolBox.ResupplyInterruptedTooFar">Resupply Process Is Interrupted: {0} is too far away from this Tool box</s>
     <s id="Droodism.ToolBox.ResupplyProgress">Resupply {0}: Progress {1}</s>
+    <s id="Droodism.ToolBox.RemainToolKits">Remain Tool Kits</s>
+    <s id="Droodism.ToolBox.RefillToolKits">Refill Engineer Tool Kits</s>
     <s id="Droodism.ToolBox.SelectNotDrood">Select Part is not a Drood</s>
+
+    <!-- FlagScript -->
+    <s id="Droodism.FlagScript.LoadImage">Load Image</s>
+    <s id="Droodism.Glider.HasLanded">has landed</s>
+
+    <!-- GasDealerScript -->
+    <s id="Droodism.GasDealerScript.ActionIrreversible">This action is irreversible</s>
+    <s id="Droodism.GasDealerScript.EmergencyDepressurization">Emergency Depressurization</s>
+    <s id="Droodism.GasDealerScript.Engage">Engage</s>
+    <s id="Droodism.GasDealerScript.EngageTooltip">Engage emergency depressurization</s>
+    <s id="Droodism.GasDealerScript.GasReleasing">Releasing {0}</s>
+    <s id="Droodism.GasDealerScript.Malfunction">Malfunction</s>
+    <s id="Droodism.GasDealerScript.MalfunctionTooltip">Depressurization valve malfunction, cannot engage</s>
+    <s id="Droodism.GasDealerScript.Malfunctioning">Depressurization valve malfunction!</s>
+    <s id="Droodism.GasDealerScript.SequenceInitiated">Depressurization sequence initiated</s>
+
+    <!-- ModUlti -->
+    <s id="Droodism.ModUlti.FlagPlanted">Planted Flag at {0}'s surface, at {1}° , {2}°</s>
+
+    <!-- RagdollModifierScript -->
+    <s id="Droodism.RagdollModifier.Ragdoll">Ragdoll</s>
+    <s id="Droodism.RagdollModifier.Enable">Enable</s>
+    <s id="Droodism.RagdollModifier.Disable">Disable</s>
+    <s id="Droodism.RagdollModifier.Status">Status</s>
+    <s id="Droodism.RagdollModifier.Active">Active</s>
+    <s id="Droodism.RagdollModifier.Inactive">Inactive</s>
+
+    <!-- FirstAddKitScript -->
+    <s id="Droodism.FirstAddKitScript.RemainHealingPoints">Remain Healing Points</s>
+    <s id="Droodism.FirstAddKitScript.HealDrood">Heal Drood</s>
+
+    <!-- ModUlti -->
+    <s id="Droodism.ModUlti.FlagPlanted">Planted Flag at {0}'s surface, at {1}° , {2}°</s>
 </Strings>

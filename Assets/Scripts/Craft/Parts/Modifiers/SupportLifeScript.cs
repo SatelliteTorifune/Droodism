@@ -1006,8 +1006,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 this.PartScript.TakeDamage(num2 * Game.Instance.Settings.Game.Flight.ImpactDamageScale, PartDamageType.Basic);
                 Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
-                    $"<color=red>Crew Member {evaScript.Data.CrewName}(id:{this.PartScript.Data.Id}) is taking damage because running out of {fuelType}, " +
-                    $"he/she has {Units.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / ((IsRunning ? 1.75 : 1) * (IsTourist ? 1.05 : 1) * DamageScale))} left",
+                    $"<color=red>" + string.Format(Locale.GetString("Droodism.SupportLifeScript.CrewMemberDamage"),
+                        evaScript.Data.CrewName, this.PartScript.Data.Id, fuelType,
+                        Units.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / ((IsRunning ? 1.75 : 1) * (IsTourist ? 1.05 : 1) * DamageScale))),
                     false, 2f);
             }
         }
@@ -1032,8 +1033,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 this.PartScript.TakeDamage(num2 * Game.Instance.Settings.Game.Flight.ImpactDamageScale, PartDamageType.Basic);
                 Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
-                    $"<color=red>Crew Member {evaScript.Data.CrewName}(id:{this.PartScript.Data.Id}) is taking damage because {resourceName} level is too high, " +
-                    $"he/she has {Units.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / ((IsRunning ? 1.75 : 1) * (IsTourist ? 1.05 : 1) * DamageScale))} left",
+                    $"<color=red>" + string.Format(Locale.GetString("Droodism.SupportLifeScript.CrewMemberWasteDamage"),
+                        evaScript.Data.CrewName, this.PartScript.Data.Id, resourceName,
+                        Units.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / ((IsRunning ? 1.75 : 1) * (IsTourist ? 1.05 : 1) * DamageScale))),
                     false, 2f);
             }
         }
