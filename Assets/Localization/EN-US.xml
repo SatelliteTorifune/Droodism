@@ -147,6 +147,7 @@
     <s id="Droodism.RadiationBeltDebugUI.ApplySolidIronPreset">Apply SolidIron Preset</s>
     <s id="Droodism.RadiationBeltDebugUI.BeltSpinPhaseDeg">Belt Spin Phase (Deg)</s>
     <s id="Droodism.RadiationBeltDebugUI.BeltSpinSpeedDegPerSec">Belt Spin Speed (Deg/s)</s>
+    <s id="Droodism.RadiationBeltDebugUI.BeltTiltDeg">Belt Tilt Deg</s>
     <s id="Droodism.RadiationBeltDebugUI.BeltTiltAxisX">Belt Tilt Axis X</s>
     <s id="Droodism.RadiationBeltDebugUI.BeltTiltAxisY">Belt Tilt Axis Y</s>
     <s id="Droodism.RadiationBeltDebugUI.BeltTiltAxisZ">Belt Tilt Axis Z</s>
@@ -157,6 +158,7 @@
     <s id="Droodism.RadiationBeltDebugUI.InnerBaseIntensity">Inner Base Intensity</s>
     <s id="Droodism.RadiationBeltDebugUI.InnerBorderDeformXY">Inner Border Deform XY</s>
     <s id="Droodism.RadiationBeltDebugUI.InnerBorderDist">Inner Border Dist</s>
+    <s id="Droodism.RadiationBeltDebugUI.InnerBorderRadius">Inner Border Radius</s>
     <s id="Droodism.RadiationBeltDebugUI.InnerDist">Inner Dist</s>
     <s id="Droodism.RadiationBeltDebugUI.InnerCompression">Inner Compression</s>
     <s id="Droodism.RadiationBeltDebugUI.InnerDeform">Inner Deform</s>
@@ -176,6 +178,7 @@
     <s id="Droodism.RadiationBeltDebugUI.OuterBaseIntensity">Outer Base Intensity</s>
     <s id="Droodism.RadiationBeltDebugUI.OuterBorderDeformXY">Outer Border Deform XY</s>
     <s id="Droodism.RadiationBeltDebugUI.OuterBorderDist">Outer Border Dist</s>
+    <s id="Droodism.RadiationBeltDebugUI.OuterBorderRadius">Outer Border Radius</s>
     <s id="Droodism.RadiationBeltDebugUI.OuterDist">Outer Dist</s>
     <s id="Droodism.RadiationBeltDebugUI.OuterCompression">Outer Compression</s>
     <s id="Droodism.RadiationBeltDebugUI.OuterDeform">Outer Deform</s>
