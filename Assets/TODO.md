@@ -4,6 +4,8 @@
 > > >菜单里面的Camera
 > > >
 > > >行星的GO
+> > > 
+> > >对应的事件
 > 
 > ChemicalReactorScript
 > >修改这个部件中Sabatier_reaction的条件和逻辑

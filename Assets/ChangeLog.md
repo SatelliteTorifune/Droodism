@@ -1,3 +1,6 @@
+
+## 2026 6 27
+> 修复了IsRagdollActive的判定问题
 ## 2026 6 27
 > 修复了_crewCompartment.UnloadCrewMember的参数判定
 > 
