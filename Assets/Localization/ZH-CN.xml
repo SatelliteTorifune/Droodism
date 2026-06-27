@@ -60,7 +60,7 @@
     <s id="Droodism.DroodismUIManager.ResourcesDrainWasteFill">资源消耗，废物填充</s>
     <s id="Droodism.DroodismUIManager.ResourcesFillWasteDrain">资源填充，废物排出</s>
     <s id="Droodism.DroodismUIManager.SolidWasteLevel">固体废物浓度</s>
-    <s id="Droodism.DroodismUIManager.ToggleDroodismUI">切换 Droodism UI</s>
+    <s id="Droodism.DroodismUIManager.ToggleDroodismUI">开启 Droodism UI</s>
     <s id="Droodism.DroodismUIManager.ToggleSingleTypeTransferMode">切换单种资源传输模式</s>
     <s id="Droodism.DroodismUIManager.TouristCount">游客数量</s>
     <s id="Droodism.DroodismUIManager.UnknownRole">未知</s>
@@ -121,7 +121,7 @@
     <s id="Droodism.ModSettings.EnableResourceWarningDesc">在时间加速期间，自动检测 Drood 资源何时低于阈值，暂停游戏并提醒玩家</s>
     <s id="Droodism.ModSettings.ReceiveCraftRadiation">飞行器内部辐射</s>
     <s id="Droodism.ModSettings.ReceiveCraftRadiationDesc">如果开启，Drood 将收到当前飞行器中 RTG 和 NTR 引擎的辐射，可能不够真实，&lt;color=red&gt;&lt;size=150%&gt;仅为真正喜欢的硬核玩家时启用&lt;/size&gt;&lt;/color&gt;</s>
-    <s id="Droodism.ModSettings.ToggleDebugMode">切换调试模式</s>
+    <s id="Droodism.ModSettings.ToggleDebugMode">开启调试模式</s>
     <s id="Droodism.ModSettings.ToggleDebugModeDesc">在开发控制台中启用一些日志，并开启一些隐藏选项</s>
     <s id="Droodism.ModSettings.WarningThreshold">警告阈值</s>
     <s id="Droodism.ModSettings.WarningThresholdDesc">当资源低于此百分比时将触发警告</s>
