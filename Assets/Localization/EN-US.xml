@@ -128,9 +128,7 @@
 
     <!-- OnHireButtonClickedPatch -->
     <s id="Droodism.OnHireButtonClickedPatch.ChooseDroodType">Choose the what kind of Drood you want to hire:</s>
-    <s id="Droodism.OnHireButtonClickedPatch.CrewFull">Your crew is already as large as it can get. You can unlock larger crews in the Tech Tree.</s>
     <s id="Droodism.OnHireButtonClickedPatch.Engineer">Engineer</s>
-    <s id="Droodism.OnHireButtonClickedPatch.NotEnoughMoney">You do not have enough money to hire a new astronaut. You currently have {0} and it costs {1} to hire a new astronaut.</s>
     <s id="Droodism.OnHireButtonClickedPatch.Pilot">Pilot</s>
     <s id="Droodism.OnHireButtonClickedPatch.Scientist">Scientist</s>
 

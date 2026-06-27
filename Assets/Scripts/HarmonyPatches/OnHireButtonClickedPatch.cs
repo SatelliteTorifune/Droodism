@@ -34,12 +34,12 @@ namespace Assets.Scripts
                 IGameStateValidator validator = Game.Instance.GameState.Validator;
                 if (Game.IsCareer && !CareerState.IsDebugMode && !Game.Instance.GameState.Validator.IsItemAvailable("Cheats.SkipValidation") && Game.Instance.GameState.AvailableFunds < (long) hireCostScaled)
                     Game.Instance.UserInterface.CreateMessageDialog().MessageText = string.Format(
-                        Locale.GetString("Droodism.OnHireButtonClickedPatch.NotEnoughMoney"),
+                        Locale.GetString("Crew.Assignment.InsufficientFunds"),
                         Units.GetMoneyString(Game.Instance.GameState.AvailableFunds),
                         Units.GetMoneyString((long) hireCostScaled));
                 else if (Game.IsCareer && !CareerState.IsDebugMode &&  (int)_sourcesCountProp.GetValue(_sourcesField.GetValue(__instance)) >=  validator.ItemValue("Crew"))
                 {
-                    Game.Instance.UserInterface.CreateMessageDialog().MessageText = Locale.GetString("Droodism.OnHireButtonClickedPatch.CrewFull");
+                    Game.Instance.UserInterface.CreateMessageDialog().MessageText = Locale.GetString("Crew.Assignment.CrewFull");
                 }
                 //目前为止一切正常,下面开始
                 else
