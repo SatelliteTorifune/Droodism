@@ -158,6 +158,7 @@
     <s id="Droodism.RadiationBeltDebugUI.InnerBaseIntensity">内带基础强度</s>
     <s id="Droodism.RadiationBeltDebugUI.InnerBorderDeformXY">内带边界形变 XY</s>
     <s id="Droodism.RadiationBeltDebugUI.InnerBorderDist">内带边界距离</s>
+    <s id="Droodism.RadiationBeltDebugUI.InnerDist">内带距离</s>
     <s id="Droodism.RadiationBeltDebugUI.InnerCompression">内带压缩</s>
     <s id="Droodism.RadiationBeltDebugUI.InnerDeform">内带形变</s>
     <s id="Droodism.RadiationBeltDebugUI.InnerDeformXY">内带形变 XY</s>
@@ -176,6 +177,7 @@
     <s id="Droodism.RadiationBeltDebugUI.OuterBaseIntensity">外带基础强度</s>
     <s id="Droodism.RadiationBeltDebugUI.OuterBorderDeformXY">外带边界形变 XY</s>
     <s id="Droodism.RadiationBeltDebugUI.OuterBorderDist">外带边界距离</s>
+    <s id="Droodism.RadiationBeltDebugUI.OuterDist">外带距离</s>
     <s id="Droodism.RadiationBeltDebugUI.OuterCompression">外带压缩</s>
     <s id="Droodism.RadiationBeltDebugUI.OuterDeform">外带形变</s>
     <s id="Droodism.RadiationBeltDebugUI.OuterDeformXY">外带形变 XY</s>
@@ -251,7 +253,7 @@
     <s id="Droodism.SupportLifeScript.CrewMemberRadiationDamage">乘员 {0} (id:{1}) 正在受到伤害因为 {2}，预计死亡时间 {3}</s>
     <s id="Droodism.SupportLifeScript.CrewMemberStatusDamage">乘员 {0} (id:{1}) 正在受到伤害因为 {2} 太高，预计死亡时间 {3}</s>
     <s id="Droodism.SupportLifeScript.CrewMemberWasteDamage">乘员 {0} (id:{1}) 正在因{2} 浓度太高受到伤害，预计死亡时间 {3}</s>
-    <s id="Droodism.SupportLifeScript.CrewRole">乘员职能</s>
+    <s id="Droodism.SupportLifeScript.CrewRole">乘员类型</s>
     <s id="Droodism.SupportLifeScript.CurrentRadiationDose">当前辐射剂量</s>
     <s id="Droodism.SupportLifeScript.CurrentRadiationDoseRatePerHour">当前每小时辐射剂量率</s>
     <s id="Droodism.SupportLifeScript.CurrentRadiationDoseStats">当前辐射剂量统计</s>
@@ -264,9 +266,9 @@
     <s id="Droodism.SupportLifeScript.LifeSupportInfo">维生信息</s>
     <s id="Droodism.SupportLifeScript.ManualDeployParachute">手动展开降落伞</s>
     <s id="Droodism.SupportLifeScript.ManualDeployParaGlider">手动展开滑翔伞</s>
-    <s id="Droodism.SupportLifeScript.MildCumulativeRadiation">轻度累积辐射暴露</s>
+    <s id="Droodism.SupportLifeScript.MildCumulativeRadiation">轻度累积辐射</s>
     <s id="Droodism.SupportLifeScript.MissionTime">任务时间</s>
-    <s id="Droodism.SupportLifeScript.ModerateCumulativeRadiation">中度累积辐射暴露</s>
+    <s id="Droodism.SupportLifeScript.ModerateCumulativeRadiation">中度累积辐射</s>
     <s id="Droodism.SupportLifeScript.NoPartSelected">未选择部件</s>
     <s id="Droodism.SupportLifeScript.NotAvailable">无</s>
     <s id="Droodism.SupportLifeScript.OxygenSupplyTime">氧气供应时间</s>
@@ -287,7 +289,7 @@
     <s id="Droodism.SupportLifeScript.RepairingProgress">正在修复 {0}：进度 {1}</s>
     <s id="Droodism.SupportLifeScript.RepairInterruptedTooFar">修复中断：{0} 距离工程师太远</s>
     <s id="Droodism.SupportLifeScript.NotEnoughRepairingTools">修复中断：{0} 的修复工具不足</s>
-    <s id="Droodism.SupportLifeScript.SevereCumulativeRadiation">重度累积辐射暴露</s>
+    <s id="Droodism.SupportLifeScript.SevereCumulativeRadiation">重度累积辐射</s>
     <s id="Droodism.SupportLifeScript.SolidWasteLevel">固体废物浓度</s>
     <s id="Droodism.SupportLifeScript.Unknown">未知</s>
     <s id="Droodism.SupportLifeScript.UsingExternalOxygen">使用外部氧气</s>

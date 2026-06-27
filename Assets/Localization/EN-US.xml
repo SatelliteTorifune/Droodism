@@ -157,6 +157,7 @@
     <s id="Droodism.RadiationBeltDebugUI.InnerBaseIntensity">Inner Base Intensity</s>
     <s id="Droodism.RadiationBeltDebugUI.InnerBorderDeformXY">Inner Border Deform XY</s>
     <s id="Droodism.RadiationBeltDebugUI.InnerBorderDist">Inner Border Dist</s>
+    <s id="Droodism.RadiationBeltDebugUI.InnerDist">Inner Dist</s>
     <s id="Droodism.RadiationBeltDebugUI.InnerCompression">Inner Compression</s>
     <s id="Droodism.RadiationBeltDebugUI.InnerDeform">Inner Deform</s>
     <s id="Droodism.RadiationBeltDebugUI.InnerDeformXY">Inner Deform XY</s>
@@ -175,6 +176,7 @@
     <s id="Droodism.RadiationBeltDebugUI.OuterBaseIntensity">Outer Base Intensity</s>
     <s id="Droodism.RadiationBeltDebugUI.OuterBorderDeformXY">Outer Border Deform XY</s>
     <s id="Droodism.RadiationBeltDebugUI.OuterBorderDist">Outer Border Dist</s>
+    <s id="Droodism.RadiationBeltDebugUI.OuterDist">Outer Dist</s>
     <s id="Droodism.RadiationBeltDebugUI.OuterCompression">Outer Compression</s>
     <s id="Droodism.RadiationBeltDebugUI.OuterDeform">Outer Deform</s>
     <s id="Droodism.RadiationBeltDebugUI.OuterDeformXY">Outer Deform XY</s>
