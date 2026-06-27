@@ -226,6 +226,7 @@ namespace Droodism.RadiationBelt
             }
             catch (Exception e)
             {
+                
             }
             return null;
             

@@ -66,7 +66,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
         }
 
-        private void WorkingLogic(in FlightFrameData frame)
+        protected override void WorkingLogic(in FlightFrameData frame)
         {
             if (frame.DeltaTimeWorld==0)
             {
