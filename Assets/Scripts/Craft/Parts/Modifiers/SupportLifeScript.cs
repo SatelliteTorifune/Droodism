@@ -1519,6 +1519,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             catch (Exception e)
             {
+                Scripts.Mod.Log("Droodism.SupportLifeScript.SaveDroodismCrewData"+e);
             }
             
         }

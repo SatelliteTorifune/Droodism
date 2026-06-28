@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
-using Assets.Scripts.Droodism;
+using Assets.Scripts;
 using Assets.Scripts.Droodism.Crew;
 using ModApi.Craft.Propulsion;
 using ModApi.Design.PartProperties;
@@ -357,7 +357,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public override void OnPartRecovered()
         {
             base.OnPartRecovered();
-            this.Script.SaveDroodismCrewData();
+            try
+            {
+                this.Script.SaveDroodismCrewData();
+            }
+            catch(Exception e)
+            {
+                Scripts.Mod.Log("Droodism.SupportLifeData.OnPartRecovered"+e);
+            }
+           
         }
         #endregion
     }

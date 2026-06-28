@@ -15,6 +15,6 @@ MonoBehaviour:
   _careerModeOnly: 0
   _displayName: Life Support
   _displayOrder: 16
-  _icon: {fileID: 21300000, guid: 88bab83b907fcd541b86b335c7df8448, type: 3}
+  _icon: {fileID: 21300000, guid: e5deade6f1b0e2549a7e30a9fa064c81, type: 3}
   _id: LifeSupport
   _tooltip: 

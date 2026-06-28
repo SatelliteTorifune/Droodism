@@ -81,6 +81,7 @@ namespace Droodism.RadiationBelt
         //这个其实很蠢,我手动写了一个切换时更新的
         void Update()
         {
+            //我在思考要不要新增一个class
             if (Game.InFlightScene)
             {
 
