@@ -11217,6 +11217,11 @@
             A value indicating whether this tech tree is for a stock career.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Career.Research.TechTree._itemAliases">
+            <summary>
+            Maps alternate designer-part item ids (legacy "Part.&lt;display name&gt;" and short "DesignerParts.Prefab.Preset" forms) to the canonical item id.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Career.Research.TechTree._items">
             <summary>
             The items and their values.
@@ -11413,6 +11418,13 @@
             </summary>
             <param name="node">The node.</param>
             <returns>The number of nodes the player can afford.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Career.Research.TechTree.RegisterItemAlias(System.String,System.String)">
+            <summary>
+            Registers an alternate id that resolves to an existing item, unless it collides with a real item or another alias.
+            </summary>
+            <param name="aliasId">The alternate id.</param>
+            <param name="canonicalId">The id of the item the alias resolves to.</param>
         </member>
         <member name="M:Assets.Scripts.Career.Research.TechTree.UpdateTechItemValue(Assets.Scripts.Career.Research.TechItemValue,Assets.Scripts.Career.Research.TechNode)">
             <summary>
@@ -13075,12 +13087,6 @@
         <member name="F:Assets.Scripts.Craft.BodyScript._partIsland">
             <summary>
             The part island
-            </summary>
-        </member>
-        <member name="F:Assets.Scripts.Craft.BodyScript._plasmaTemperature">
-            <summary>
-            The stagnation point temperature times the convection rate, in Kelvin. Just a fudge number
-            used to get the re-entry effects about right.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Craft.BodyScript._recalculateMass">
@@ -19032,6 +19038,12 @@
             Gets a value indicating whether this renderer has transparency.
             </summary>
             <value><c>true</c> if this renderer has transparency; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:Assets.Scripts.Craft.PartGroupScript.PartGroupRendererMaterialMap.IsNozzle">
+            <summary>
+            Gets a value indicating whether this renderer is a nozzle renderer (always false for the combined mesh).
+            </summary>
+            <value><c>true</c> if this renderer is a nozzle renderer; otherwise, <c>false</c>.</value>
         </member>
         <member name="P:Assets.Scripts.Craft.PartGroupScript.PartGroupRendererMaterialMap.IsTMProRenderer">
             <summary>
@@ -47452,7 +47464,7 @@
             </summary>
             <param name="subPart">The sub part.</param>
         </member>
-        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.RocketEngineComponentsScript.LoadEngineComponent(Assets.Scripts.Craft.Parts.Modifiers.Propulsion.EngineComponentScript,System.String,System.String,Jundroo.ModTools.ILoadedMod)">
+        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.RocketEngineComponentsScript.LoadEngineComponent(Assets.Scripts.Craft.Parts.Modifiers.Propulsion.EngineComponentScript,System.String,System.String,Jundroo.ModTools.ILoadedMod,System.Boolean)">
             <summary>
             Loads the engine component, unless the component with the specified ID is already loaded, in which case it just returns
             the currently loaded engine component.
@@ -47461,20 +47473,22 @@
             <param name="prefabPathPrefix">The prefab path prefix.</param>
             <param name="id">The identifier.</param>
             <param name="mod">The mod in which the subpart is defined (or <c>null</c> for stock parts).</param>
+            <param name="isNozzle">If set to <c>true</c>, the subpart's renderers are marked as nozzle renderers for the nozzle glow.</param>
             <returns>
             The loaded engine component.
             </returns>
         </member>
-        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.RocketEngineComponentsScript.LoadGameObject(System.String,UnityEngine.Transform,Jundroo.ModTools.ILoadedMod)">
+        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.RocketEngineComponentsScript.LoadGameObject(System.String,UnityEngine.Transform,Jundroo.ModTools.ILoadedMod,System.Boolean)">
             <summary>
             Loads the sub part.
             </summary>
             <param name="path">The path to the subpart's resource.</param>
             <param name="parent">The parent.</param>
             <param name="mod">The mod in which the subpart is defined (or <c>null</c> for stock parts).</param>
+            <param name="isNozzle">If set to <c>true</c>, the loaded renderers are marked as nozzle renderers for the nozzle glow.</param>
             <returns>The loaded sub part's game object.</returns>
         </member>
-        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.RocketEngineComponentsScript.LoadSubPart(UnityEngine.GameObject,System.String,System.String,Jundroo.ModTools.ILoadedMod)">
+        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.RocketEngineComponentsScript.LoadSubPart(UnityEngine.GameObject,System.String,System.String,Jundroo.ModTools.ILoadedMod,System.Boolean)">
             <summary>
             Loads the sub part, unless the sub part with the specified ID is already loaded, in which case it just returns
             the currently loaded sub part.
@@ -47483,6 +47497,7 @@
             <param name="prefabPathPrefix">The prefab path prefix.</param>
             <param name="id">The identifier.</param>
             <param name="mod">The mod in which the subpart is defined (or <c>null</c> for stock parts).</param>
+            <param name="isNozzle">If set to <c>true</c>, the subpart's renderers are marked as nozzle renderers for the nozzle glow.</param>
             <returns>The sub part game object.</returns>
         </member>
         <member name="T:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.RocketEngineData">
@@ -55936,7 +55951,7 @@
             The renderer maps.
             </value>
         </member>
-        <member name="M:Assets.Scripts.Craft.Parts.PartMaterialScript.AddRenderer(UnityEngine.Renderer,System.Nullable{System.Boolean},System.Nullable{System.Boolean},UnityEngine.Material[])">
+        <member name="M:Assets.Scripts.Craft.Parts.PartMaterialScript.AddRenderer(UnityEngine.Renderer,System.Nullable{System.Boolean},System.Nullable{System.Boolean},UnityEngine.Material[],System.Boolean)">
             <summary>
             Adds the renderer to the list of renderers for this part.
             </summary>
@@ -55944,6 +55959,7 @@
             <param name="excludeFromCombine">If set to <c>true</c>, the renderer will be excluded from mesh combining.</param>
             <param name="excludeFromDrag">If set to <c>true</c>, the renderer will be excluded from the drag model (unless the mesh is combined).</param>
             <param name="originalMaterials">The original materials.</param>
+            <param name="isNozzle">If set to <c>true</c>, the renderer is marked as a nozzle renderer and may render the nozzle glow.</param>
         </member>
         <member name="M:Assets.Scripts.Craft.Parts.PartMaterialScript.GetEligibleRenderersForCombine">
             <summary>
@@ -56299,6 +56315,12 @@
             Gets or sets a value indicating whether this renderer has transparency.
             </summary>
             <value><c>true</c> if this renderer has transparency; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:Assets.Scripts.Craft.Parts.PartMaterialScript.RendererMaterialMap.IsNozzle">
+            <summary>
+            Gets or sets a value indicating whether this renderer is part of an engine nozzle and may render the nozzle glow.
+            </summary>
+            <value><c>true</c> if this renderer is a nozzle renderer; otherwise, <c>false</c>.</value>
         </member>
         <member name="P:Assets.Scripts.Craft.Parts.PartMaterialScript.RendererMaterialMap.IsTMProRenderer">
             <summary>
@@ -84663,6 +84685,21 @@
             <param name="fontXml">The font XML.</param>
             <returns>Generated TMP font.</returns>
         </member>
+        <member name="M:Assets.Scripts.Ui.FontCache.PreWarmCharacters(TMPro.TMP_FontAsset,UnityEngine.Font,System.Xml.Linq.XElement)">
+            <summary>
+            Pre-renders the characters listed in the font XML into the atlas.
+            </summary>
+            <param name="font">The font being built.</param>
+            <param name="fontFile">The source font file, used for log messages.</param>
+            <param name="characterSetXml">The Characters element describing the set to pre-render.</param>
+        </member>
+        <member name="M:Assets.Scripts.Ui.FontCache.WarnUnrenderedGlyphs(UnityEngine.Font,System.Int32)">
+            <summary>
+            Logs a warning for characters that could not be rendered into the atlas.
+            </summary>
+            <param name="fontFile">The source font file.</param>
+            <param name="count">The number of characters that were not rendered.</param>
+        </member>
         <member name="M:Assets.Scripts.Ui.FontCache.ReleaseCachedFont(System.String)">
             <summary>
             Destroys the asset, atlas textures, and material cached under the id so a re-load doesn't orphan them.
@@ -97744,6 +97781,11 @@
             initialization sequence.
             </summary>
         </member>
+        <member name="P:Assets.Scripts.Flight.FlightSceneScript.ReentryTrailManager">
+            <summary>
+            Gets the reentry trail manager, which emits reentry particle trails for non-player craft and debris. May be null very early in the flight scene initialization sequence.
+            </summary>
+        </member>
         <member name="P:Assets.Scripts.Flight.FlightSceneScript.FixedUpdateFrameCount">
             <summary>
             Gets the number of fixed update frames since the start of this flight.
@@ -101603,86 +101645,15 @@
             Mach number at or below which there is no cone (<see cref="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.ComputeMachStep"/> returns 0).
             </summary>
         </member>
-        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.TrailMachStart">
-            <summary>
-            Mach number at which the particle trail starts ramping up from 0.
-            </summary>
-        </member>
-        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.TrailMachFull">
-            <summary>
-            Mach number at which the particle trail reaches full intensity.
-            </summary>
-        </member>
-        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.HeatingGateThreshold">
-            <summary>
-            density * Mach² threshold below which the mesh stays dark (matches UpdateMesh).
-            </summary>
-        </member>
-        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.HeatingGateRange">
-            <summary>
-            Range above <see cref="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.HeatingGateThreshold"/> over which the mesh ramps to full intensity.
-            </summary>
-        </member>
-        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.HeatingDensityExponent">
-            <summary>
-            Exponent applied to (Clamp01'd) air density in the heating proxy. Below 1 slows the altitude fade so the
-            effect tracks the full atmosphere (~80 km) instead of dying ~45 km; density &lt;= 1 means it never changes the sea-level Mach onset.
-            </summary>
-        </member>
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.PlasmaDensityFalloffExponent">
             <summary>
             Exponent on (Clamp01'd) density for the plasma intensity falloff: full at sea level (density 1), tapering with
             altitude so high-Mach plasma ramps down gradually instead of staying saturated to the edge of space. Higher = faster ramp.
             </summary>
         </member>
-        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.TrailLifetimeMin">
-            <summary>
-            Per-particle lifetime (s) at the bottom of the plasma ramp.
-            </summary>
-        </member>
-        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.TrailLifetimeMax">
-            <summary>
-            Per-particle lifetime (s) at the top of the plasma ramp.
-            </summary>
-        </member>
-        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.TrailLifetimeJitterMin">
-            <summary>
-            Per-particle lifetime jitter floor (multiplied into lifetimeMid).
-            </summary>
-        </member>
-        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.TrailLifetimeJitterMax">
-            <summary>
-            Per-particle lifetime jitter ceiling (multiplied into lifetimeMid).
-            </summary>
-        </member>
-        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.TrailParticleSizeMultiplier">
-            <summary>
-            Per-particle puff size as a multiple of the craft's frontal extent (sqrt of its frontal area).
-            </summary>
-        </member>
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.UpReferenceParallelThreshold">
             <summary>
             Dot magnitude above which a craft axis is too parallel to a look direction to seed a LookRotation up reference, so the next axis is used.
-            </summary>
-        </member>
-        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.TrailRotationWiggle">
-            <summary>
-            Per-particle random billboard-roll wiggle (deg, +/-) on top of the craft's flow-axis roll.
-            </summary>
-        </member>
-        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.TrailEmissionSizeNominal">
-            <summary>
-            Reference craft size (m) at which the emission rate is at 1x.
-            </summary>
-        </member>
-        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.TrailEmissionScaleMin">
-            <summary>
-            Lower clamp on the size-driven emission rate scale.
-            </summary>
-        </member>
-        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.TrailEmissionScaleMax">
-            <summary>
-            Upper clamp on the size-driven emission rate scale.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.PlasmaMachStart">
@@ -102294,23 +102265,6 @@
             <param name="craftRotation">The craft's world rotation.</param>
             <returns>The craft rotation in the velocity frame.</returns>
         </member>
-        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.ComputeCraftFlowRollDegrees(UnityEngine.Quaternion,UnityEngine.Vector3)">
-            <summary>
-            Returns the craft's roll about the flow axis (deg): its twist in the plane normal to the flow.
-            </summary>
-            <param name="craftRotation">The craft's world rotation.</param>
-            <param name="flowDir">The prograde (flow) direction in world space.</param>
-            <returns>The signed roll angle in degrees.</returns>
-        </member>
-        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.ComputeFrontalArea(UnityEngine.Quaternion,UnityEngine.Vector3,UnityEngine.Vector3)">
-            <summary>
-            Returns the frontal area (m^2) an axis-aligned box presents to <paramref name="flowDir"/> (the projected-box-area sum).
-            </summary>
-            <param name="boxRotation">The box's world rotation.</param>
-            <param name="boxSize">The box extents along its own axes.</param>
-            <param name="flowDir">The prograde (flow) direction in world space.</param>
-            <returns>The frontal area in square metres.</returns>
-        </member>
         <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.PickNonParallelUpAxis(UnityEngine.Quaternion,UnityEngine.Vector3,Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.UpRefAxis@)">
             <summary>
             Picks a craft axis (up, else forward, else right) not too parallel to <paramref name="dirWorld"/> to seed a LookRotation.
@@ -102319,12 +102273,6 @@
             <param name="dirWorld">The look direction in world space.</param>
             <param name="axis">The axis that was picked.</param>
             <returns>The chosen up reference in world space.</returns>
-        </member>
-        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.TrailEmissionRateForCurrentQuality">
-            <summary>
-            Reentry trail emission rate (particles/sec at full plasma intensity) from the terrain particle quality setting; read once at Awake.
-            </summary>
-            <returns>The emission rate in particles per second.</returns>
         </member>
         <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.TryGetPlanetReentryTint(ModApi.Craft.ICraftScript,UnityEngine.Color@)">
             <summary>
@@ -104403,6 +104351,288 @@
         <member name="M:Assets.Scripts.Flight.GameView.ReEntry.ReEntryGlowImageEffect.ShaderPropertyIds.Init">
             <summary>
             Initializes the shader property IDs.
+            </summary>
+        </member>
+        <member name="T:Assets.Scripts.Flight.GameView.ReentryTrailEmission">
+            <summary>
+            Shared reentry-trail tuning and emission core, used by the player's <see cref="T:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer"/> and by <see cref="T:Assets.Scripts.Flight.GameView.ReentryTrailManager"/> for every other craft and debris body.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailEmission.TrailMachStart">
+            <summary>
+            Mach number at which the particle trail starts ramping up from 0.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailEmission.TrailMachFull">
+            <summary>
+            Mach number at which the particle trail reaches full intensity.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailEmission.HeatingDensityExponent">
+            <summary>
+            Exponent applied to (Clamp01'd) air density in the heating proxy; below 1 slows the altitude fade so the trail tracks the full atmosphere.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailEmission.HeatingGateThreshold">
+            <summary>
+            density^exp * Mach² threshold below which the trail stays dark (matches the mesh gate).
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailEmission.HeatingGateRange">
+            <summary>
+            Range above <see cref="F:Assets.Scripts.Flight.GameView.ReentryTrailEmission.HeatingGateThreshold"/> over which the trail ramps to full intensity.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailEmission.TrailLifetimeMin">
+            <summary>
+            Per-particle lifetime (s) at the bottom of the plasma ramp.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailEmission.TrailLifetimeMax">
+            <summary>
+            Per-particle lifetime (s) at the top of the plasma ramp.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailEmission.TrailLifetimeJitterMin">
+            <summary>
+            Per-particle lifetime jitter floor (multiplied into lifetimeMid).
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailEmission.TrailLifetimeJitterMax">
+            <summary>
+            Per-particle lifetime jitter ceiling (multiplied into lifetimeMid).
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailEmission.TrailParticleSizeMultiplier">
+            <summary>
+            Per-particle puff size as a multiple of the source's frontal extent (sqrt of its frontal area).
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailEmission.TrailRotationWiggle">
+            <summary>
+            Per-particle random billboard-roll wiggle (deg, +/-) on top of the source's flow-axis roll.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailEmission.TrailEmissionSizeNominal">
+            <summary>
+            Reference source size (m) at which the emission rate is at 1x.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailEmission.TrailEmissionScaleMin">
+            <summary>
+            Lower clamp on the size-driven emission rate scale.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailEmission.TrailEmissionScaleMax">
+            <summary>
+            Upper clamp on the size-driven emission rate scale.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailEmission.FlowParallelThreshold">
+            <summary>
+            Dot magnitude above which a flow direction is too parallel to the world up to seed a LookRotation, so a fallback up is used.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.ReentryTrailEmission.EmissionRateForCurrentQuality">
+            <summary>
+            Reentry trail emission rate (particles/sec at full plasma intensity) from the terrain particle quality setting.
+            </summary>
+            <returns>The emission rate in particles per second.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.ReentryTrailEmission.ComputeIntensity(System.Single,System.Single,System.Single@)">
+            <summary>
+            Returns the trail intensity (0..1) for a Mach number and air density, gated on the same density^exp * Mach² heating proxy the mesh uses.
+            </summary>
+            <param name="mach">The source's Mach number.</param>
+            <param name="airDensity">The source's air density.</param>
+            <param name="plasma">The Mach-driven plasma ramp (0..1), used for lifetime and colour.</param>
+            <returns>The trail intensity (plasma * heating gate).</returns>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.ReentryTrailEmission.ComputeFrontalArea(UnityEngine.Quaternion,UnityEngine.Vector3,UnityEngine.Vector3)">
+            <summary>
+            Returns the frontal area (m^2) an axis-aligned box presents to <paramref name="flowDir"/> (the projected-box-area sum).
+            </summary>
+            <param name="boxRotation">The box's world rotation.</param>
+            <param name="boxSize">The box extents along its own axes.</param>
+            <param name="flowDir">The prograde (flow) direction in world space.</param>
+            <returns>The frontal area in square metres.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.ReentryTrailEmission.ComputeFlowRollDegrees(UnityEngine.Quaternion,UnityEngine.Vector3)">
+            <summary>
+            Returns the source's roll about the flow axis (deg): its twist in the plane normal to the flow.
+            </summary>
+            <param name="rotation">The source's world rotation.</param>
+            <param name="flowDir">The prograde (flow) direction in world space.</param>
+            <returns>The signed roll angle in degrees.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.ReentryTrailEmission.Emit(Assets.Scripts.Flight.FlightSceneScript,System.Single@,System.Single,UnityEngine.Vector3,UnityEngine.Vector3,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Emits a frame's worth of reentry trail particles behind a source, accumulating sub-particle rates against <paramref name="carry"/>.
+            </summary>
+            <param name="flightScene">The flight scene that hosts the particle manager.</param>
+            <param name="carry">The source's fractional emission-rate carry, advanced across frames.</param>
+            <param name="emissionRate">The base emission rate (particles/sec at full intensity) from the quality setting.</param>
+            <param name="emitPosition">The trail head: the source's flow-anchor centre offset back along the trail.</param>
+            <param name="surfaceVelocity">The source's surface velocity; sets the trail direction and batch-spread speed.</param>
+            <param name="crossSize">The source's frontal extent (m); drives particle size and the size-based rate scale.</param>
+            <param name="baseRollDeg">The source's flow-axis billboard roll (deg) so puffs streak coherently.</param>
+            <param name="intensity">The trail intensity (0..1) from <see cref="M:Assets.Scripts.Flight.GameView.ReentryTrailEmission.ComputeIntensity(System.Single,System.Single,System.Single@)"/>.</param>
+            <param name="plasma">The plasma ramp (0..1) from <see cref="M:Assets.Scripts.Flight.GameView.ReentryTrailEmission.ComputeIntensity(System.Single,System.Single,System.Single@)"/>.</param>
+            <param name="dt">The frame time (s) the batch is accumulated and spread over.</param>
+        </member>
+        <member name="T:Assets.Scripts.Flight.GameView.ReentryTrailManager">
+            <summary>
+            Emits reentry particle trails for non-player craft and debris; the player's connected hull is trailed by <see cref="T:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer"/>.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailManager._craftStates">
+            <summary>
+            Per-craft whole-hull trail state, keyed by craft script.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailManager._bodyStates">
+            <summary>
+            Per-body debris trail state, keyed by body script.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailManager._craftPruneScratch">
+            <summary>
+            Reusable scratch list of stale craft keys to prune, so removal doesn't allocate or mutate during iteration.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailManager._bodyPruneScratch">
+            <summary>
+            Reusable scratch list of stale body keys to prune, so removal doesn't allocate or mutate during iteration.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailManager._rendererScratch">
+            <summary>
+            Reusable buffer for a body's mesh renderers during a radius rebuild, to avoid per-rebuild allocation.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailManager._trailEmissionRate">
+            <summary>
+            Trail emission rate (particles/sec at full plasma intensity), cached at Awake from the terrain particle quality.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailManager._frameTick">
+            <summary>
+            Monotonic per-frame tick stamped onto each visited source so stale entries can be pruned.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.ReentryTrailManager.CreateIn(UnityEngine.Transform)">
+            <summary>
+            Creates a new reentry trail manager as a child of the given transform.
+            </summary>
+            <param name="parent">The parent transform.</param>
+            <returns>The instantiated manager.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.ReentryTrailManager.SphereCrossSize(System.Single)">
+            <summary>
+            Approximates the frontal extent of a bounding sphere of the given radius (sqrt of its circular frontal area).
+            </summary>
+            <param name="radius">The source's bounding-sphere radius.</param>
+            <returns>The frontal cross size in metres.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.ReentryTrailManager.GetOrCreateState``1(System.Collections.Generic.Dictionary{``0,Assets.Scripts.Flight.GameView.ReentryTrailManager.TrailState},``0)">
+            <summary>
+            Gets the trail state for a source, creating it on first sight.
+            </summary>
+            <typeparam name="TKey">The source key type (craft or body script).</typeparam>
+            <param name="states">The state map to look the source up in.</param>
+            <param name="key">The source key.</param>
+            <returns>The source's trail state.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.ReentryTrailManager.PruneStaleStates``1(System.Collections.Generic.Dictionary{``0,Assets.Scripts.Flight.GameView.ReentryTrailManager.TrailState},System.Collections.Generic.List{``0},System.Int32)">
+            <summary>
+            Removes states for sources not visited this frame (unloaded craft, debris that despawned or rejoined).
+            </summary>
+            <typeparam name="TKey">The source key type.</typeparam>
+            <param name="states">The state map to prune.</param>
+            <param name="scratch">A reusable key buffer to collect stale keys into.</param>
+            <param name="frameTick">The current frame tick; states stamped with an older tick are pruned.</param>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.ReentryTrailManager.Awake">
+            <summary>
+            Unity Awake method.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.ReentryTrailManager.LateUpdate">
+            <summary>
+            Unity LateUpdate method.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.ReentryTrailManager.EmitCraftTrail(Assets.Scripts.Flight.FlightSceneScript,ModApi.Craft.ICraftScript,System.Int32,System.Single)">
+            <summary>
+            Emits a whole-hull trail for a craft from its connected-body bounding sphere.
+            </summary>
+            <param name="flightScene">The flight scene that hosts the particle manager.</param>
+            <param name="craft">The craft to trail.</param>
+            <param name="connectedCount">The craft's connected body count, used to detect a structural change since the radius was cached.</param>
+            <param name="dt">The frame time in seconds.</param>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.ReentryTrailManager.EmitBodyTrail(Assets.Scripts.Flight.FlightSceneScript,ModApi.Craft.ICraftScript,ModApi.Craft.IBodyScript,System.Single)">
+            <summary>
+            Emits a trail for a single debris/disconnected body from its own bounding sphere; air density is borrowed from the owning craft's sample.
+            </summary>
+            <param name="flightScene">The flight scene that hosts the particle manager.</param>
+            <param name="ownerCraft">The craft whose assembly the body belongs to, used for the shared atmosphere sample.</param>
+            <param name="body">The debris body to trail.</param>
+            <param name="dt">The frame time in seconds.</param>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.ReentryTrailManager.GetCraftRadius(ModApi.Craft.ICraftScript,Assets.Scripts.Flight.GameView.ReentryTrailManager.TrailState,System.Int32)">
+            <summary>
+            Returns the craft's connected-hull bounding-sphere radius, recomputed only when its connected body count changes (staging, breakup).
+            </summary>
+            <param name="craft">The craft.</param>
+            <param name="state">The craft's trail state, holding the cached radius.</param>
+            <param name="connectedCount">The craft's current connected body count.</param>
+            <returns>The bounding-sphere radius in metres.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.ReentryTrailManager.GetBodyRadius(ModApi.Craft.IBodyScript,Assets.Scripts.Flight.GameView.ReentryTrailManager.TrailState)">
+            <summary>
+            Returns a debris body's bounding-sphere radius, computed once and cached (a chunk's renderer set is fixed).
+            </summary>
+            <param name="body">The debris body.</param>
+            <param name="state">The body's trail state, holding the cached radius.</param>
+            <returns>The bounding-sphere radius in metres.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.ReentryTrailManager.EncapsulateBodyRenderers(ModApi.Craft.IBodyScript,UnityEngine.Bounds@,System.Boolean@)">
+            <summary>
+            Expands <paramref name="bounds"/> to include a body's mesh-renderer world bounds, seeding it on the first renderer.
+            </summary>
+            <param name="body">The body whose renderers to fold in.</param>
+            <param name="bounds">The bounds to expand.</param>
+            <param name="initialized">Whether <paramref name="bounds"/> has been seeded.</param>
+        </member>
+        <member name="T:Assets.Scripts.Flight.GameView.ReentryTrailManager.TrailState">
+            <summary>
+            Per-source reentry trail state: the sub-particle emission carry and a cached bounding-sphere radius.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailManager.TrailState.Carry">
+            <summary>
+            Fractional emission-rate carry for sub-particle-per-frame rates.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailManager.TrailState.Radius">
+            <summary>
+            The cached bounding-sphere radius (m); valid only when <see cref="F:Assets.Scripts.Flight.GameView.ReentryTrailManager.TrailState.RadiusValid"/> is set.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailManager.TrailState.RadiusValid">
+            <summary>
+            Whether <see cref="F:Assets.Scripts.Flight.GameView.ReentryTrailManager.TrailState.Radius"/> holds a usable value.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailManager.TrailState.RadiusBodyCount">
+            <summary>
+            The connected body count <see cref="F:Assets.Scripts.Flight.GameView.ReentryTrailManager.TrailState.Radius"/> was computed for; a change forces a recompute (unused for single bodies).
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailManager.TrailState.LastSeenTick">
+            <summary>
+            The frame tick this source was last visited, used to prune stale states.
             </summary>
         </member>
         <member name="T:Assets.Scripts.Flight.GameView.ReferenceFrame">
