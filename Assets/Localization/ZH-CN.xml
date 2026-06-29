@@ -24,6 +24,10 @@
     <s id="Droodism.CraftPerformanceAnalysisPatch.DroodCount">Drood 数量</s>
     <s id="Droodism.CraftPerformanceAnalysisPatch.LifeSupportResourcesInfo">维生资源信息</s>
     <s id="Droodism.CraftPerformanceAnalysisPatch.Water">水</s>
+    <s id="Droodism.CraftPerformanceAnalysisPatch.Oxygen">氧气</s>
+    <s id="Droodism.CraftPerformanceAnalysisPatch.WastedWater">废水</s>
+    <s id="Droodism.CraftPerformanceAnalysisPatch.Food">食物</s>
+    <s id="Droodism.CraftPerformanceAnalysisPatch.SolidWaste">固体废物</s>
 
     <!-- CrewCabinScript -->
     <s id="Droodism.CrewCabinScript.RadiationDuration">辐射屏蔽层耐久</s>
@@ -60,6 +64,7 @@
     <s id="Droodism.DroodismUIManager.ResourcesDrainWasteFill">资源消耗，废物填充</s>
     <s id="Droodism.DroodismUIManager.ResourcesFillWasteDrain">资源排出，废物填充</s>
     <s id="Droodism.DroodismUIManager.SolidWasteLevel">固体废物浓度</s>
+    <s id="Droodism.DroodismUIManager.SelectDrood">选中此航天员</s>
     <s id="Droodism.DroodismUIManager.ToggleDroodismUI">开启 Droodism UI</s>
     <s id="Droodism.DroodismUIManager.ToggleSingleTypeTransferMode">切换单种资源传输模式</s>
     <s id="Droodism.DroodismUIManager.TouristCount">游客数量</s>

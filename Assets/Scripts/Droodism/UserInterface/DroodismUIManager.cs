@@ -432,10 +432,15 @@ namespace Assets.Scripts.Droodism.UserInterface
                     CrewInspectorGroup.Add<TextModel>(new TextModel(Locale.GetString("Droodism.DroodismUIManager.RadiationRateStats"),
                         (Func<string>)(() => $"{supportLifeScript.CurrentRadiationRateStats}"),
                         tooltip: string.Format(Locale.GetString("Droodism.DroodismUIManager.RadiationRateStatsTooltip"), eva.Data.CrewName),determineVisibility:() => supportLifeScript.RadiationDoseRateRadPerHour>0f));
-                    TextButtonModel textButtonModel2 = new TextButtonModel(Locale.GetString("Parts.EvaScript.Eva"), (Action<TextButtonModel>) (b => eva.CrewCompartment.UnloadCrewMember(eva,true)), determineVisiblity:  (() =>  eva.CrewCompartment !=  null));
-                    textButtonModel2.Style = ButtonModel.ButtonStyle.Primary;
-                    CrewInspectorGroup.Add<TextButtonModel>(textButtonModel2);
+                    TextButtonModel evaButtonModel = new TextButtonModel(Locale.GetString("Parts.EvaScript.Eva"), (Action<TextButtonModel>) (b => eva.CrewCompartment.UnloadCrewMember(eva,true)), determineVisiblity:  (() =>  eva.CrewCompartment !=  null));
+                    evaButtonModel.Style = ButtonModel.ButtonStyle.Primary;
+                    CrewInspectorGroup.Add<TextButtonModel>(evaButtonModel);
+                    TextButtonModel selectPartButtonModel = new TextButtonModel(Locale.GetString("Droodism.DroodismUIManager.SelectDrood"), (Action<TextButtonModel>) (b =>
+                    {
+                        Game.Instance.FlightScene.ViewManager.GameView.SelectedPart = eva.PartScript;
 
+                    }), determineVisiblity:  (() =>  eva.CrewCompartment !=  null));
+                    CrewInspectorGroup.Add<TextButtonModel>(selectPartButtonModel);
                     //分割线!
                     CrewInspectorGroup.Add<TextModel>(new TextModel("", () => ""));
                 }

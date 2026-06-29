@@ -55,11 +55,23 @@ namespace Assets.Scripts
                         string name;
                         switch (fuelType)
                         {
+                            case "Oxygen":
+                                name= Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.Oxygen");
+                                break;
                             case "H2O":
                                 name = Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.Water");
                                 break;
+                            case "Food":
+                                name = Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.Food");
+                                break;
                             case "CO2":
                                 name = Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.CarbonDioxide");
+                                break;
+                            case "Wasted Water":
+                                name = Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.WastedWater");
+                                break;
+                            case "Solid Waste":
+                                name = Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.SolidWaste");
                                 break;
 
                             default:
@@ -72,7 +84,7 @@ namespace Assets.Scripts
                             ? " " + Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.Capacity")
                             : " " + Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.Amount");
                         textGroup.Add<TextModel>(new TextModel(name + suffix,
-                            () => GetFuelAmountInDesigner(fuelType, isWaste)));
+                            () => GetFuelAmountInDesigner(fuelType)));
                     }
 
                     // 将新组添加到 InspectorModel

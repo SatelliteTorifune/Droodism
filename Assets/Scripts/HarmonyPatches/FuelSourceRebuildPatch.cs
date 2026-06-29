@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Assets.Scripts.Craft.Fuel;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using HarmonyLib;
@@ -19,18 +20,24 @@ namespace Assets.Scripts
         [HarmonyPatch(typeof(CraftFuelSources), "Rebuild")]
         class FuelSourceRebuildPatch
         {
-            static bool Prefix(CraftFuelSources __instance,
-                ref List<CrossFeedScript> ____crossFeeds,
-                ref List<Tuple<IFuelSource, IFuelSource>> ____equalizeCrossFeeds,
-                ref List<CraftFuelSource> ____fuelSources,
-                IFuelTransferManager ____fuelTransferManager,
-                ICraftScript craftScript)
+            private static readonly Dictionary<CraftFuelSources, SRCraftFuelSources> _fuelSourcesMap = new Dictionary<CraftFuelSources, SRCraftFuelSources>();
+
+            static bool Prefix(ref CraftFuelSources __instance, ICraftScript craftScript)
             {
-                SRCraftFuelSources sources = new SRCraftFuelSources(____fuelTransferManager);
-                sources.Rebuild(craftScript);
-                ____crossFeeds = sources.CrossFeeds;
-                ____equalizeCrossFeeds = sources.EqualizeCrossFeeds;
-                ____fuelSources = sources.FuelSources;
+                try
+                {
+                    if (!_fuelSourcesMap.TryGetValue(__instance, out var srcFuelSources))
+                    {
+                        var fuelTransferManager = (IFuelTransferManager)typeof(CraftFuelSources).GetField("_fuelTransferManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
+                        srcFuelSources = new SRCraftFuelSources(fuelTransferManager);
+                        _fuelSourcesMap[__instance] = srcFuelSources;
+                    }
+                    srcFuelSources.Rebuild(craftScript);
+                }
+                catch (Exception ex)
+                {
+                    Log($"FuelSourceRebuildPatch.Prefix failed: {ex}");
+                }
                 return false;
             }
         }

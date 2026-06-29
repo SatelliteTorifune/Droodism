@@ -24,6 +24,10 @@
     <s id="Droodism.CraftPerformanceAnalysisPatch.DroodCount">Drood Count</s>
     <s id="Droodism.CraftPerformanceAnalysisPatch.LifeSupportResourcesInfo">Life Support Resources Info</s>
     <s id="Droodism.CraftPerformanceAnalysisPatch.Water">Water</s>
+    <s id="Droodism.CraftPerformanceAnalysisPatch.Oxygen">Oxygen</s>
+    <s id="Droodism.CraftPerformanceAnalysisPatch.WastedWater">Wasted Water</s>
+    <s id="Droodism.CraftPerformanceAnalysisPatch.Food">Food</s>
+    <s id="Droodism.CraftPerformanceAnalysisPatch.SolidWaste">Solid Waste</s>
 
     <!-- CrewCabinScript -->
     <s id="Droodism.CrewCabinScript.RadiationDuration">Radiation Duration</s>
@@ -60,6 +64,7 @@
     <s id="Droodism.DroodismUIManager.ResourcesDrainWasteFill">Resources Drain, Waste Fill</s>
     <s id="Droodism.DroodismUIManager.ResourcesFillWasteDrain">Resources Fill, Waste Drain</s>
     <s id="Droodism.DroodismUIManager.SolidWasteLevel">Solid Waste Level</s>
+    <s id="Droodism.DroodismUIManager.SelectDrood">Select Drood</s>
     <s id="Droodism.DroodismUIManager.ToggleDroodismUI">Toggle Droodism UI.</s>
     <s id="Droodism.DroodismUIManager.ToggleSingleTypeTransferMode">Toggle Single Type Transfer Mode</s>
     <s id="Droodism.DroodismUIManager.TouristCount">Tourist Count</s>
