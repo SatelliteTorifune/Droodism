@@ -1325,29 +1325,29 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             IFlightSceneUI ui = ModApi.Common.Game.Instance.FlightScene.FlightSceneUI;
             if (!(craftScript.Data.Assembly.Parts.Count == 1 &&craftScript.RootPart.Data.PartType.Name.Contains("Eva"))&&evaScript.ActiveWhileInCrewCompartment)
             {
-                ui.ShowMessage(Locale.GetString("Droodism.SupportLifeScript.CannotPlantFlagNotInEva"),false,10);
+                ui.ShowMessage(string.Format(Locale.GetString("Droodism.SupportLifeScript.CannotPlantFlagNotInEva"),false,10));
                 return;
             }
             if (craftScript.FlightData.Grounded==false)
             {
-                ui.ShowMessage(Locale.GetString("Droodism.SupportLifeScript.CannotPlantFlagNotGrounded"),false,10);
+                ui.ShowMessage(string.Format(Locale.GetString("Droodism.SupportLifeScript.CannotPlantFlagNotGrounded"),false,10));
                 return;
             }
             if (craftScript.FlightData.SurfaceVelocityMagnitude>=1)
             {
-                ui.ShowMessage(Locale.GetString("Droodism.SupportLifeScript.CannotPlantFlagVelocityHigh"),false,10);
+                ui.ShowMessage(string.Format(Locale.GetString("Droodism.SupportLifeScript.CannotPlantFlagVelocityHigh"),false,10));
                 return;
             }
 
             if (evaScript.IsInWater)
             {
-                ui.ShowMessage(Locale.GetString("Droodism.SupportLifeScript.CannotPlantFlagInWater"),false,10);
+                ui.ShowMessage(string.Format(Locale.GetString("Droodism.SupportLifeScript.CannotPlantFlagInWater"),false,10));
                 return;
             }
 
             if (this.Data.UtilizationFactor<300)
             {
-                ui.ShowMessage(Locale.GetString("Droodism.SupportLifeScript.CannotPlantFlagAlreadyPlanted"),false,10);
+                ui.ShowMessage(string.Format(Locale.GetString("Droodism.SupportLifeScript.CannotPlantFlagAlreadyPlanted"),false,10));
                 return;
             }
 
@@ -1371,36 +1371,36 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             if (!isEva())
             {
-                ui.ShowMessage(Locale.GetString("Droodism.SupportLifeScript.CannotDeployParachuteNotInEva"),false,10);
+                ui.ShowMessage(string.Format(Locale.GetString("Droodism.SupportLifeScript.CannotDeployParachuteNotInEva"),false,10));
                 return;
             }
             if (evaScript.IsGrounded)
             {
-                ui.ShowMessage(Locale.GetString("Droodism.SupportLifeScript.CannotDeployParachuteGrounded"),false,10);
+                ui.ShowMessage(string.Format(Locale.GetString("Droodism.SupportLifeScript.CannotDeployParachuteGrounded"),false,10));
                 return;
             }
 
             if (craftScript.FlightData.AltitudeAboveGroundLevel<=10)
             {
-                ui.ShowMessage(Locale.GetString("Droodism.SupportLifeScript.CannotDeployParachuteHere"),false,10);
+                ui.ShowMessage(string.Format(Locale.GetString("Droodism.SupportLifeScript.CannotDeployParachuteHere"),false,10));
                 return;
             }
             if (craftScript.FlightData.AtmosphereSample.AirDensity<=0.01)
             {
-                ui.ShowMessage(Locale.GetString("Droodism.SupportLifeScript.CannotDeployParachuteAirThin"),false,10);
+                ui.ShowMessage(string.Format(Locale.GetString("Droodism.SupportLifeScript.CannotDeployParachuteAirThin"),false,10));
                 return;
             }
 
             if (craftScript.FlightData.SurfaceVelocityMagnitude >=
                 craftScript.FlightData.AtmosphereSample.SpeedOfSound)
             {
-                ui.ShowMessage(Locale.GetString("Droodism.SupportLifeScript.CannotDeployParachuteSpeedHigh"),false,10);
+                ui.ShowMessage(string.Format(Locale.GetString("Droodism.SupportLifeScript.CannotDeployParachuteSpeedHigh"),false,10));
                 return;
             }
             
             if (evaScript.IsInWater)
             {
-                ui.ShowMessage(Locale.GetString("Droodism.SupportLifeScript.CannotDeployParachuteInWater"),false,10);
+                ui.ShowMessage(string.Format(Locale.GetString("Droodism.SupportLifeScript.CannotDeployParachuteInWater"),false,10));
                 return;
             }
             
