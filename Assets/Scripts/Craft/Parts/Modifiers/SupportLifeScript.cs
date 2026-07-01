@@ -15,7 +15,7 @@ using Assets.Scripts.Droodism;
 using Assets.Scripts.Droodism.Crew;
 using Assets.Scripts.Droodism.ResourceWarning;
 using Droodism.RadiationBelt;
-using ModApi.Craft.Propulsion;
+using ModApi;
 using ModApi.Flight.Events;
 using ModApi.Flight.GameView;
 using UnityEngine;
@@ -1006,8 +1006,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 this.PartScript.TakeDamage(num2 * Game.Instance.Settings.Game.Flight.ImpactDamageScale, PartDamageType.Basic);
                 Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
-                    $"<color=red>Crew Member {evaScript.Data.CrewName}(id:{this.PartScript.Data.Id}) is taking damage because running out of {fuelType}, " +
-                    $"he/she has {Units.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / ((IsRunning ? 1.75 : 1) * (IsTourist ? 1.05 : 1) * DamageScale))} left",
+                    $"<color=red>" + string.Format(Locale.GetString("Droodism.SupportLifeScript.CrewMemberDamage"),
+                        evaScript.Data.CrewName, this.PartScript.Data.Id, fuelType,
+                        Units.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / ((IsRunning ? 1.75 : 1) * (IsTourist ? 1.05 : 1) * DamageScale))),
                     false, 2f);
             }
         }
@@ -1032,8 +1033,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 this.PartScript.TakeDamage(num2 * Game.Instance.Settings.Game.Flight.ImpactDamageScale, PartDamageType.Basic);
                 Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
-                    $"<color=red>Crew Member {evaScript.Data.CrewName}(id:{this.PartScript.Data.Id}) is taking damage because {resourceName} level is too high, " +
-                    $"he/she has {Units.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / ((IsRunning ? 1.75 : 1) * (IsTourist ? 1.05 : 1) * DamageScale))} left",
+                    $"<color=red>" + string.Format(Locale.GetString("Droodism.SupportLifeScript.CrewMemberWasteDamage"),
+                        evaScript.Data.CrewName, this.PartScript.Data.Id, resourceName,
+                        Units.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / ((IsRunning ? 1.75 : 1) * (IsTourist ? 1.05 : 1) * DamageScale))),
                     false, 2f);
             }
         }
@@ -1138,14 +1140,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             //单独看任务时间的
             if (!this.IsTourist)
             {
-                //ModApi.Locale.GetString("");
-                model.Add<TextModel>(new TextModel("<color=yellow>Crew Role", (Func<string>) (() =>Data.DroodismCrewData==null?"Unknow":Data.DroodismCrewData.CrewRole.ToString())));
+                model.Add<TextModel>(new TextModel("<color=yellow>" + Locale.GetString("Droodism.SupportLifeScript.CrewRole"), (Func<string>) (() =>Data.DroodismCrewData==null?Locale.GetString("Droodism.SupportLifeScript.Unknown"):Data.DroodismCrewData.CrewRole.ToString())));
             }
-            model.Add<TextModel>(new TextModel("<color=yellow>Mission Time", (Func<string>) (() =>Units.GetStopwatchTimeString(MissionDurationTime))));
+            model.Add<TextModel>(new TextModel("<color=yellow>" + Locale.GetString("Droodism.SupportLifeScript.MissionTime"), (Func<string>) (() =>Units.GetStopwatchTimeString(MissionDurationTime))));
             //维生资源
-            GroupModel lifeSupportGroupModel = new GroupModel("<color=green><size=115%>Life Support Info");
+            GroupModel lifeSupportGroupModel = new GroupModel("<color=green><size=115%>" + Locale.GetString("Droodism.SupportLifeScript.LifeSupportInfo"));
             
-            lifeSupportGroupModel.Add<TextModel>(new TextModel("Remain Oxygen", (Func<string>) (() =>
+            lifeSupportGroupModel.Add<TextModel>(new TextModel(Locale.GetString("Droodism.SupportLifeScript.RemainOxygen"), (Func<string>) (() =>
             {
                 if (UsingInternalOxygen())
                 {
@@ -1155,12 +1156,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
                 else if (!UsingInternalOxygen())
                 {
-                    return "<color=green>Using External Oxygen</color>";
+                    return "<color=green>" + Locale.GetString("Droodism.SupportLifeScript.UsingExternalOxygen") + "</color>";
                 }
-                return "<color=purple>N/A</color>";
+                return "<color=purple>" + Locale.GetString("Droodism.SupportLifeScript.NotAvailable") + "</color>";
             })));
             
-            lifeSupportGroupModel.Add<TextModel>(new TextModel("Oxygen Supply Time", (Func<string>) (() =>
+            lifeSupportGroupModel.Add<TextModel>(new TextModel(Locale.GetString("Droodism.SupportLifeScript.OxygenSupplyTime"), (Func<string>) (() =>
             {
                 if (UsingInternalOxygen())
                 {
@@ -1170,40 +1171,40 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
                 else if (!UsingInternalOxygen())
                 {
-                    return "<color=green>Infinity</color>";
+                    return "<color=green>" + Locale.GetString("Droodism.SupportLifeScript.Infinity") + "</color>";
                 }
-                return "N/A";
+                return Locale.GetString("Droodism.SupportLifeScript.NotAvailable");
             })));
             
-            lifeSupportGroupModel.Add<TextModel>(new TextModel("Remain Water", (Func<string>) (() =>
+            lifeSupportGroupModel.Add<TextModel>(new TextModel(Locale.GetString("Droodism.SupportLifeScript.RemainWater"), (Func<string>) (() =>
             {
                 float waterPercentage = (float)(Data._waterAmountBuffer / Data.DesireWaterCapacity);
                 string waterTextColor = waterPercentage > 0.5 ? "green" : waterPercentage >= 0.25 ? "yellow" : "red";
                 return $"<color={waterTextColor}>{Units.GetPercentageString(waterPercentage)}</color>";
             })));
             
-            lifeSupportGroupModel.Add<TextModel>(new TextModel("Water Supply Time", (Func<string>) (() =>
+            lifeSupportGroupModel.Add<TextModel>(new TextModel(Locale.GetString("Droodism.SupportLifeScript.WaterSupplyTime"), (Func<string>) (() =>
             {
                 float waterPercentage = (float)(Data._waterAmountBuffer / Data.DesireWaterCapacity);
                 string waterTextColor = waterPercentage > 0.5 ? "green" : waterPercentage >= 0.25 ? "yellow" : "red";
                 return $"<color={waterTextColor}>"+Units.GetStopwatchTimeString(Data._waterAmountBuffer / (Data.WaterConsumeRate * (IsRunning ? 1.75 : 1) * (IsTourist ? 1.05 : 1)));
             })));
             
-            lifeSupportGroupModel.Add<TextModel>(new TextModel("Remain Food", (Func<string>) (() =>
+            lifeSupportGroupModel.Add<TextModel>(new TextModel(Locale.GetString("Droodism.SupportLifeScript.RemainFood"), (Func<string>) (() =>
             {
                 float foodPercentage = (float)(Data._foodAmountBuffer / Data.DesireFoodCapacity);
                 string foodTextColor = foodPercentage > 0.5 ? "green" : foodPercentage >= 0.25 ? "yellow" : "red";
                 return $"<color={foodTextColor}>{Units.GetPercentageString(foodPercentage)}</color>";
             })));
         
-            lifeSupportGroupModel.Add<TextModel>(new TextModel("Food Supply Time", (Func<string>) (() =>
+            lifeSupportGroupModel.Add<TextModel>(new TextModel(Locale.GetString("Droodism.SupportLifeScript.FoodSupplyTime"), (Func<string>) (() =>
             {
                 float foodPercentage = (float)(Data._foodAmountBuffer / Data.DesireFoodCapacity);
                 string foodTextColor = foodPercentage > 0.5 ? "green" : foodPercentage >= 0.25 ? "yellow" : "red";
                 return $"<color={foodTextColor}>"+Units.GetStopwatchTimeString(Data._foodAmountBuffer / (Data.FoodConsumeRate * (IsRunning ? 1.75 : 1) * (IsTourist ? 1.05 : 1)));
             })));
             
-            lifeSupportGroupModel.Add<TextModel>(new TextModel("CO2 Level", (Func<string>) (() =>
+            lifeSupportGroupModel.Add<TextModel>(new TextModel(Locale.GetString("Droodism.SupportLifeScript.CO2Level"), (Func<string>) (() =>
             {
                 if (UsingInternalOxygen())
                 {
@@ -1213,17 +1214,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
                 else
                 {
-                    return "<color=green>Using External Oxygen</color>";
+                    return "<color=green>" + Locale.GetString("Droodism.SupportLifeScript.UsingExternalOxygen") + "</color>";
                 }
                 
             })));
-            lifeSupportGroupModel.Add<TextModel>(new TextModel("Wasted Water Level", (Func<string>) (() =>
+            lifeSupportGroupModel.Add<TextModel>(new TextModel(Locale.GetString("Droodism.SupportLifeScript.WastedWaterLevel"), (Func<string>) (() =>
             {
                 float Percentage = (float)(Data._wastedWaterAmountBuffer / Data.DesireWastedWaterCapacity);
                 string color = Percentage > 0.85 ? "red" : Percentage >= 0.6 ? "yellow" : "green";
                 return $"<color={color}>{Units.GetPercentageString(Percentage)}</color>";
             })));
-            lifeSupportGroupModel.Add<TextModel>(new TextModel("Solid Waste Level", (Func<string>) (() =>
+            lifeSupportGroupModel.Add<TextModel>(new TextModel(Locale.GetString("Droodism.SupportLifeScript.SolidWasteLevel"), (Func<string>) (() =>
             {
                 float Percentage = (float)(Data._solidWasteAmountBuffer / Data.DesireSolidWasteCapacity);
                 string color = Percentage > 0.85 ? "red" : Percentage >= 0.6 ? "yellow" : "green";
@@ -1233,11 +1234,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             model.AddGroup(lifeSupportGroupModel);
 
             //辐射强度
-            GroupModel RadiationInspector = new GroupModel("<color=yellow><size=115%>Radiation Inspector");
-            RadiationInspector.Add<TextModel>(new TextModel("Current Radiation Dose", (Func<string>) (() => $"{this.Data.CumulativeRad:F4} rad"),determineVisibility:() => this.Data.CumulativeRad >0));
-            RadiationInspector.Add<TextModel>(new TextModel("Current Radiation Dose Stats", (Func<string>) (() => CurrentCumulativeRadiationStats),determineVisibility:() => this.Data.CumulativeRad >0));
-            RadiationInspector.Add<TextModel>(new TextModel("Current Radiation Dose Rate Per Hour", (Func<string>) (() => $"{this.RadiationDoseRateRadPerHour:F2} rad/h"),determineVisibility:() => this.RadiationDoseRateRadPerHour >0));
-            RadiationInspector.Add<TextModel>(new TextModel("Current Radiation Level", (Func<string>) (() => $"{CurrentRadiationRateStats}"),determineVisibility:() => this.RadiationDoseRateRadPerHour >0));
+            GroupModel RadiationInspector = new GroupModel("<color=yellow><size=115%>" + Locale.GetString("Droodism.SupportLifeScript.RadiationInspector"));
+            RadiationInspector.Add<TextModel>(new TextModel(Locale.GetString("Droodism.SupportLifeScript.CurrentRadiationDose"), (Func<string>) (() => $"{this.Data.CumulativeRad:F4} rad"),determineVisibility:() => this.Data.CumulativeRad >0));
+            RadiationInspector.Add<TextModel>(new TextModel(Locale.GetString("Droodism.SupportLifeScript.CurrentRadiationDoseStats"), (Func<string>) (() => CurrentCumulativeRadiationStats),determineVisibility:() => this.Data.CumulativeRad >0));
+            RadiationInspector.Add<TextModel>(new TextModel(Locale.GetString("Droodism.SupportLifeScript.CurrentRadiationDoseRatePerHour"), (Func<string>) (() => $"{this.RadiationDoseRateRadPerHour:F2} rad/h"),determineVisibility:() => this.RadiationDoseRateRadPerHour >0));
+            RadiationInspector.Add<TextModel>(new TextModel(Locale.GetString("Droodism.SupportLifeScript.CurrentRadiationLevel"), (Func<string>) (() => $"{CurrentRadiationRateStats}"),determineVisibility:() => this.RadiationDoseRateRadPerHour >0));
             
             model.AddGroup(RadiationInspector);
 
@@ -1247,28 +1248,28 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 
                 if (Data.ParachuteTypes=="ParaGlider")
                 {
-                    model.Add(new ToggleModel("Auto Deploy ParaGlider",()=>Data.AutoDeployEnabled,b=>
+                    model.Add(new ToggleModel(Locale.GetString("Droodism.SupportLifeScript.AutoDeployParaGlider"),()=>Data.AutoDeployEnabled,b=>
                     {
                         Data.AutoDeployEnabled=b;
-                    },"Enable Auto Deployment"));
-                    model.Add(new SliderModel("Auto Deploy Height", (Func<float>) (() => this.Data.AutoDeployHeight), (Action<float>) (s => this.Data.AutoDeployHeight = s), 100, 3000, true,true)).ValueFormatter = (Func<float, string>) (x => Units.GetDistanceString(x));
+                    },Locale.GetString("Droodism.SupportLifeScript.EnableAutoDeployment")));
+                    model.Add(new SliderModel(Locale.GetString("Droodism.SupportLifeScript.AutoDeployHeight"), (Func<float>) (() => this.Data.AutoDeployHeight), (Action<float>) (s => this.Data.AutoDeployHeight = s), 100, 3000, true,true)).ValueFormatter = (Func<float, string>) (x => Units.GetDistanceString(x));
                   
-                    model.Add(new SliderModel("Fully Deploy Height", (Func<float>) (() => Mathf.Min(Data.MinDeployHeight, Data.AutoDeployHeight)), (Action<float>) (s =>
+                    model.Add(new SliderModel(Locale.GetString("Droodism.SupportLifeScript.FullyDeployHeight"), (Func<float>) (() => Mathf.Min(Data.MinDeployHeight, Data.AutoDeployHeight)), (Action<float>) (s =>
                     {
                         this.Data.MinDeployHeight = Mathf.Min(s, Data.AutoDeployHeight);
                     }), 100, 3000, true,true)).ValueFormatter = (Func<float, string>) (x => Units.GetDistanceString(x));
-                    model.Add<TextButtonModel>(new TextButtonModel("<color=red>Manual Deploy ParaGlider", (Action<TextButtonModel>)(b => this.DeployParaglider())));
+                    model.Add<TextButtonModel>(new TextButtonModel("<color=red>" + Locale.GetString("Droodism.SupportLifeScript.ManualDeployParaGlider"), (Action<TextButtonModel>)(b => this.DeployParaglider())));
                 }
 
                 if (Data.ParachuteTypes=="Parachute")
                 {
-                    model.Add(new ToggleModel("Auto Deploy Parachute",()=>Data.AutoDeployEnabled,b=>
+                    model.Add(new ToggleModel(Locale.GetString("Droodism.SupportLifeScript.AutoDeployParachute"),()=>Data.AutoDeployEnabled,b=>
                     {
                         Data.AutoDeployEnabled=b;
-                    },"Enable Auto Deployment"));
-                    model.Add(new SliderModel("Auto Deploy Height", (Func<float>) (() => this.Data.AutoDeployHeight), (Action<float>) (s => this.Data.AutoDeployHeight = s), 100, 3000, true,true)).ValueFormatter = (Func<float, string>) (x => Units.GetDistanceString(x));
-                    model.Add<TextButtonModel>(new TextButtonModel("<color=red>Manual Deploy Parachute", (Action<TextButtonModel>)(b => this.DeployParaglider())));
-                    model.Add(new SliderModel("Fully Deploy Height", (Func<float>) (() => Mathf.Min(Data.MinDeployHeight, Data.AutoDeployHeight)), (Action<float>) (s =>
+                    },Locale.GetString("Droodism.SupportLifeScript.EnableAutoDeployment")));
+                    model.Add(new SliderModel(Locale.GetString("Droodism.SupportLifeScript.AutoDeployHeight"), (Func<float>) (() => this.Data.AutoDeployHeight), (Action<float>) (s => this.Data.AutoDeployHeight = s), 100, 3000, true,true)).ValueFormatter = (Func<float, string>) (x => Units.GetDistanceString(x));
+                    model.Add<TextButtonModel>(new TextButtonModel("<color=red>" + Locale.GetString("Droodism.SupportLifeScript.ManualDeployParachute"), (Action<TextButtonModel>)(b => this.DeployParaglider())));
+                    model.Add(new SliderModel(Locale.GetString("Droodism.SupportLifeScript.FullyDeployHeight"), (Func<float>) (() => Mathf.Min(Data.MinDeployHeight, Data.AutoDeployHeight)), (Action<float>) (s =>
                     {
                         
                         this.Data.MinDeployHeight = Mathf.Min(s, Data.AutoDeployHeight);
@@ -1284,13 +1285,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
             if (this.Data.DroodismCrewData.CrewRole == DroodType.Pilot)
             {
-                model.Add<TextButtonModel>(new TextButtonModel("Plant Flag", (Action<TextButtonModel>)(b => this.PlantFlagClick())));
+                model.Add<TextButtonModel>(new TextButtonModel(Locale.GetString("Droodism.SupportLifeScript.PlantFlag"), (Action<TextButtonModel>)(b => this.PlantFlagClick())));
             }
 
             if (this.Data.DroodismCrewData.CrewRole == DroodType.Engineer)
             {
-                model.Add(new TextModel("Remain Repairing Tools",(Func<string>) (() => $"{this.Data.UtilizationFactor:F1}")));
-                model.Add(new TextButtonModel("Repair", (Action<TextButtonModel>)(b => { this.RepairPart(); })));
+                model.Add(new TextModel(Locale.GetString("Droodism.SupportLifeScript.RemainRepairingTools"),(Func<string>) (() => $"{this.Data.UtilizationFactor:F1}")));
+                model.Add(new TextButtonModel(Locale.GetString("Droodism.SupportLifeScript.Repair"), (Action<TextButtonModel>)(b => { this.RepairPart(); })));
             }
             
         }
@@ -1324,29 +1325,29 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             IFlightSceneUI ui = ModApi.Common.Game.Instance.FlightScene.FlightSceneUI;
             if (!(craftScript.Data.Assembly.Parts.Count == 1 &&craftScript.RootPart.Data.PartType.Name.Contains("Eva"))&&evaScript.ActiveWhileInCrewCompartment)
             {
-                ui.ShowMessage("Can Not Plant Flag,Not in Eva",false,10);
+                ui.ShowMessage(string.Format(Locale.GetString("Droodism.SupportLifeScript.CannotPlantFlagNotInEva"),false,10));
                 return;
             }
             if (craftScript.FlightData.Grounded==false)
             {
-                ui.ShowMessage("Can Not Plant Flag,Not Grounded",false,10);
+                ui.ShowMessage(string.Format(Locale.GetString("Droodism.SupportLifeScript.CannotPlantFlagNotGrounded"),false,10));
                 return;
             }
             if (craftScript.FlightData.SurfaceVelocityMagnitude>=1)
             {
-                ui.ShowMessage("Can Not Plant Flag,Velocity is too high",false,10);
+                ui.ShowMessage(string.Format(Locale.GetString("Droodism.SupportLifeScript.CannotPlantFlagVelocityHigh"),false,10));
                 return;
             }
 
             if (evaScript.IsInWater)
             {
-                ui.ShowMessage("Can Not Plant Flag,Drood is in water",false,10);
+                ui.ShowMessage(string.Format(Locale.GetString("Droodism.SupportLifeScript.CannotPlantFlagInWater"),false,10));
                 return;
             }
 
             if (this.Data.UtilizationFactor<300)
             {
-                ui.ShowMessage("Can Not Plant Flag,This Drood had already plant one!",false,10);
+                ui.ShowMessage(string.Format(Locale.GetString("Droodism.SupportLifeScript.CannotPlantFlagAlreadyPlanted"),false,10));
                 return;
             }
 
@@ -1370,36 +1371,36 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             if (!isEva())
             {
-                ui.ShowMessage("Can Not Deploy Parachute,Not in Eva",false,10);
+                ui.ShowMessage(string.Format(Locale.GetString("Droodism.SupportLifeScript.CannotDeployParachuteNotInEva"),false,10));
                 return;
             }
             if (evaScript.IsGrounded)
             {
-                ui.ShowMessage("Can Not Deploy Parachute,Drood is Grounded",false,10);
+                ui.ShowMessage(string.Format(Locale.GetString("Droodism.SupportLifeScript.CannotDeployParachuteGrounded"),false,10));
                 return;
             }
 
             if (craftScript.FlightData.AltitudeAboveGroundLevel<=10)
             {
-                ui.ShowMessage("Can Not Deploy Parachute Here",false,10);
+                ui.ShowMessage(string.Format(Locale.GetString("Droodism.SupportLifeScript.CannotDeployParachuteHere"),false,10));
                 return;
             }
             if (craftScript.FlightData.AtmosphereSample.AirDensity<=0.01)
             {
-                ui.ShowMessage("Can Not Deploy Parachute,Air Density is too thin",false,10);
+                ui.ShowMessage(string.Format(Locale.GetString("Droodism.SupportLifeScript.CannotDeployParachuteAirThin"),false,10));
                 return;
             }
 
             if (craftScript.FlightData.SurfaceVelocityMagnitude >=
                 craftScript.FlightData.AtmosphereSample.SpeedOfSound)
             {
-                ui.ShowMessage("Can Not Deploy Parachute,Speed is too high",false,10);
+                ui.ShowMessage(string.Format(Locale.GetString("Droodism.SupportLifeScript.CannotDeployParachuteSpeedHigh"),false,10));
                 return;
             }
             
             if (evaScript.IsInWater)
             {
-                ui.ShowMessage("Can Not Deploy Parachute,Drood is in water",false,10);
+                ui.ShowMessage(string.Format(Locale.GetString("Droodism.SupportLifeScript.CannotDeployParachuteInWater"),false,10));
                 return;
             }
             
@@ -1518,6 +1519,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             catch (Exception e)
             {
+                Scripts.Mod.Log("Droodism.SupportLifeScript.SaveDroodismCrewData"+e);
             }
             
         }
@@ -1673,27 +1675,27 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             var part = Game.Instance.FlightScene.ViewManager.GameView.SelectedPart;
             if (part==null)
             {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage("No part selected", false, 3f);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(Locale.GetString("Droodism.SupportLifeScript.NoPartSelected"), false, 3f);
                 isRepairing = false;
                 return;
             }
             
             if (part.Data.PartType.Name==("Eva")||part.Data.PartType.Name==("Eva-Tourist"))
             {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage("Can't Repair Drood", false, 3f);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(Locale.GetString("Droodism.SupportLifeScript.CannotRepairDrood"), false, 3f);
                 isRepairing = false;
                 return;
             }
             if ((part.GameObject.transform.position - this.PartScript.GameObject.transform.position).magnitude > 5f)
             {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Selected {part.Data.PartType.Name} is too far away to repair.", false, 3f);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(string.Format(Locale.GetString("Droodism.SupportLifeScript.PartTooFarToRepair"), part.Data.PartType.Name), false, 3f);
                 isRepairing = false;
                 return;
             }
 
             if (part.Data.Damage <= 0)
             {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Selected {part.Data.PartType.Name} doesn't need to be repaired.", false, 3f);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(string.Format(Locale.GetString("Droodism.SupportLifeScript.PartDoesNotNeedRepair"), part.Data.PartType.Name), false, 3f);
                 isRepairing = false;
                 return;
             }
@@ -1712,34 +1714,34 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             if (pd.PartType.Name==("Eva")||pd.PartType.Name==("Eva-Tourist"))
             {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Can not heal a drood", false, 3f);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(Locale.GetString("Droodism.SupportLifeScript.CannotHealDrood"), false, 3f);
                 isRepairing = false;
                 return;
             }
             if ((pd.PartScript.GameObject.transform.position - this.PartScript.GameObject.transform.position).magnitude > 5f)
             {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Repairing Process Is Interrupted: {pd.PartType.Name} is too far away from engineer", false, 3f);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(string.Format(Locale.GetString("Droodism.SupportLifeScript.RepairInterruptedTooFar"), pd.PartType.Name), false, 3f);
                 isRepairing = false;
                 return;
             }
             
             if (pd.Damage<=0)
             {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Repairing Process Completed for {pd.PartType.Name}.", false, 3f);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(string.Format(Locale.GetString("Droodism.SupportLifeScript.RepairCompleted"), pd.PartType.Name), false, 3f);
                 isRepairing = false;
                 return;
             }
 
             if (Data.UtilizationFactor<=0)
             {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Repairing Process Is Interrupted:Not Enough Repairing Tools for {pd.PartType.Name}", false, 4f);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(string.Format(Locale.GetString("Droodism.SupportLifeScript.RepairInterruptedNoTools"), pd.PartType.Name), false, 4f);
                 isRepairing = false;
                 return;
             }
             
             if (Data.UtilizationFactor>0)
             {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Repairing {pd.PartType.Name}:Progress {Units.GetPercentageString(Mathf.Clamp01((100f - pd.Damage) / 100f))}", false, 3f);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(string.Format(Locale.GetString("Droodism.SupportLifeScript.RepairProgress"), pd.PartType.Name, Units.GetPercentageString(Mathf.Clamp01((100f - pd.Damage) / 100f))), false, 3f);
                 float num = (float)data.DeltaTimeWorld * 2f;
                 Data.UtilizationFactor -=num ;
                 pd.Damage -= num;

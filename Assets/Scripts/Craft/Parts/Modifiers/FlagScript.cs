@@ -211,7 +211,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public override void OnGenerateInspectorModel(PartInspectorModel model)
         {
             base.OnGenerateInspectorModel(model);
-            model.Add(new TextButtonModel("Load Image",(b)=>SetFlagPhoto()));
+            model.Add(new TextButtonModel(Locale.GetString("Droodism.FlagScript.LoadImage"),(b)=>SetFlagPhoto()));
         }
 
         #region PrefabSetup Methods

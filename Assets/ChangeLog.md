@@ -1,5 +1,17 @@
+## 2026 6 29
+> 修改了SRCraftFuelSources中的部分函数以修复JetFuel和Mono无法被读取的错误
+> 
+> 增加部分本地化信息
+> 
+> UI中加入了新的按钮,可以直接选中Drood
+## 2026 6 27
+> 修复了IsRagdollActive的判定问题
+> 
+> 给工具箱新增了连接点
 ## 2026 6 27
 > 修复了_crewCompartment.UnloadCrewMember的参数判定
+> 
+> 增加初步本地化选项
 
 ## 2026 6 26
 > 更新modTool到 1.4版本

@@ -1,5 +1,6 @@
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using Assets.Scripts.Droodism.Crew;
+using ModApi;
 using ModApi.GameLoop;
 using ModApi.Math;
 using ModApi.Ui.Inspector;
@@ -33,35 +34,35 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             if (!(pd.PartType.Name==("Eva")||pd.PartType.Name==("Eva-Tourist")))
             {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage("Select Part is not a Drood", false, 3f);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(Locale.GetString("Droodism.ToolBox.SelectNotDrood"), false, 3f);
                 isDoing = false;
                 return;
             }
-            
+
             if ((pd.PartScript.GameObject.transform.position - this.PartScript.GameObject.transform.position).magnitude > 5f)
             {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Resupply Process Is Interrupted: {pd.GetModifier<EvaData>().CrewName} is too far away from this Tool box", false, 3f);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(string.Format(Locale.GetString("Droodism.ToolBox.ResupplyInterruptedTooFar"), pd.GetModifier<EvaData>().CrewName), false, 3f);
                 isDoing = false;
                 return;
             }
-            
+
             if (pd.GetModifier<SupportLifeData>().UtilizationFactor>300)
             {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Resupply Process Completed for {pd.GetModifier<EvaData>().CrewName}.", false, 3f);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(string.Format(Locale.GetString("Droodism.ToolBox.ResupplyCompleted"), pd.GetModifier<EvaData>().CrewName), false, 3f);
                 isDoing = false;
                 return;
             }
 
             if (Data.ToolPoint<0)
             {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Resupply Process Is Interrupted:Not Enough Healing Tools for {pd.GetModifier<EvaData>().CrewName}", false, 4f);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(string.Format(Locale.GetString("Droodism.ToolBox.ResupplyInterruptedNoTools"), pd.GetModifier<EvaData>().CrewName), false, 4f);
                 isDoing = false;
                 return;
             }
-            
+
             if (Data.ToolPoint>0)
             {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Resupply {pd.GetModifier<EvaData>().CrewName} : Progress {Units.GetPercentageString(Mathf.Clamp01(pd.GetModifier<SupportLifeData>().UtilizationFactor / 300f))}", false, 3f);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(string.Format(Locale.GetString("Droodism.ToolBox.ResupplyProgress"), pd.GetModifier<EvaData>().CrewName, Units.GetPercentageString(Mathf.Clamp01(pd.GetModifier<SupportLifeData>().UtilizationFactor / 300f))), false, 3f);
                 float num = (float)data.DeltaTimeWorld * 3;
                 Data.ToolPoint -=num ;
                 pd.GetModifier<SupportLifeData>().UtilizationFactor += num;
@@ -72,8 +73,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public override void OnGenerateInspectorModel(PartInspectorModel model)
         {
             base.OnGenerateInspectorModel(model);
-            model.Add(new TextModel("<color=yellow>Remain Tool Kits",(Func<string>) (() => $"{this.Data.ToolPoint:F1}")));
-            model.Add(new TextButtonModel("<color=green>Refill Engineer Tool Kits", (Action<TextButtonModel>)(b => { this.OnFixingClick(); })));
+            model.Add(new TextModel(Locale.GetString("Droodism.ToolBox.RemainToolKits"),(Func<string>) (() => $"{this.Data.ToolPoint:F1}")));
+            model.Add(new TextButtonModel(Locale.GetString("Droodism.ToolBox.RefillToolKits"), (Action<TextButtonModel>)(b => { this.OnFixingClick(); })));
         }
 
         private void OnFixingClick()
@@ -81,39 +82,39 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             var part = Game.Instance.FlightScene.ViewManager.GameView.SelectedPart;
             if (part==null)
             {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage("No Drood selected", false, 3f);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(Locale.GetString("Droodism.ToolBox.NoDroodSelected"), false, 3f);
                 isDoing = false;
                 return;
             }
             if ((part.GameObject.transform.position - this.PartScript.GameObject.transform.position).magnitude > 5f)
             {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Selected Crew {part.GetModifier<EvaScript>().Data.CrewName} is too far away to resupply.", false, 3f);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(string.Format(Locale.GetString("Droodism.ToolBox.CrewTooFarToResupply"), part.GetModifier<EvaScript>().Data.CrewName), false, 3f);
                 isDoing = false;
                 return;
             }
             if (!(part.Data.PartType.Name==("Eva")||part.Data.PartType.Name==("Eva-Tourist")))
             {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage("Select Part is not a Drood", false, 3f);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(Locale.GetString("Droodism.ToolBox.SelectNotDrood"), false, 3f);
                 isDoing = false;
                 return;
             }
 
             if (part.GetModifier<SupportLifeScript>().Data.DroodismCrewData==null)
             {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Select Crew {part.GetModifier<EvaScript>().Data.CrewName} is not an Enginner", false, 3f);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(string.Format(Locale.GetString("Droodism.ToolBox.CrewNotEngineer"), part.GetModifier<EvaScript>().Data.CrewName), false, 3f);
                 isDoing = false;
-                return; 
+                return;
             }
 
             if (part.GetModifier<SupportLifeScript>().Data.DroodismCrewData.CrewRole!=DroodType.Engineer)
             {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Select Crew {part.GetModifier<EvaScript>().Data.CrewName} is not an Enginner", false, 3f);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(string.Format(Locale.GetString("Droodism.ToolBox.CrewNotEngineer"), part.GetModifier<EvaScript>().Data.CrewName), false, 3f);
                 isDoing = false;
                 return;
             }
             if (part.GetModifier<SupportLifeScript>().Data.UtilizationFactor >= 300)
             {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Selected Engineer {part.GetModifier<EvaScript>().Data.CrewName} has full set of tool.", false, 3f);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(string.Format(Locale.GetString("Droodism.ToolBox.EngineerHasFullTools"), part.GetModifier<EvaScript>().Data.CrewName), false, 3f);
                 isDoing = false;
                 return;
             }

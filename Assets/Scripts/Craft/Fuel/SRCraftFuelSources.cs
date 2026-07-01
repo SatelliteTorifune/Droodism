@@ -143,7 +143,7 @@ namespace Assets.Scripts.Craft.Fuel
 
                 foreach (FuelTankData fuelTankData in modifiers)
                 {
-                    var patch = fuelTankData?.Part.PartScript?.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+                    var patch = fuelTankData?.Part?.PartScript?.CommandPod?.Part?.PartScript?.GetModifier<STCommandPodPatchScript>();
                     CraftFuelSource craftFuelSource = null;
                     if (fuelTankData != null && !fuelTankData.Script.PartScript.Disconnected)
                     {
@@ -155,10 +155,18 @@ namespace Assets.Scripts.Craft.Fuel
                         else if (fuelTankData.FuelType != null && fuelTankData.FuelType.CraftWidePool)
                         {
                             CommandPodScript commandPod = fuelTankData.Part.PartScript.CommandPod as CommandPodScript;
-                            if ((UnityEngine.Object) commandPod != (UnityEngine.Object) null && !(commandPod.GetPooledFuelSource(fuelTankData.FuelType.Id) is CraftFuelSource source1))
+                            if (commandPod != null)
                             {
-                                source1 = this.CreateFuelSource(fuelTankData.FuelType, true);
-                                commandPod.AddPooledFuelSource(fuelTankData.FuelType.Id, (IFuelSource) source1);
+                                IFuelSource pooled = commandPod.GetPooledFuelSource(fuelTankData.FuelType.Id);
+                                if (pooled is CraftFuelSource cfs)
+                                {
+                                    craftFuelSource = cfs;
+                                }
+                                else
+                                {
+                                    craftFuelSource = this.CreateFuelSource(fuelTankData.FuelType, true);
+                                    commandPod.AddPooledFuelSource(fuelTankData.FuelType.Id, (IFuelSource) craftFuelSource);
+                                }
                             }
                         }
                         else if (fuelTankData.FuelType == FuelType.Monopropellant)
@@ -167,7 +175,7 @@ namespace Assets.Scripts.Craft.Fuel
                         }
                         else if (fuelTankData.FuelType == FuelType.Jet)
                         {
-                            craftFuelSource = fuelTankData.Part.PartScript.CommandPod?.JetFuelSource as CraftFuelSource;
+                            craftFuelSource = fuelTankData.Part.PartScript.CommandPod.JetFuelSource as CraftFuelSource;
                         }
                         else if (fuelTankData.FuelType.Id =="Oxygen")
                         {
@@ -197,20 +205,19 @@ namespace Assets.Scripts.Craft.Fuel
                     
                     if (craftFuelSource != null)
                     {
-                        craftFuelSource?.AddFuelTank(fuelTankData.Script);
+                        craftFuelSource.AddFuelTank(fuelTankData.Script);
                     }
                     else
                     {
                         lookup[fuelTankData.Part.Id] = fuelTankData.Script;
                     }
                 }
-    
-                //这里
+                
                
                 foreach (int key in lookup.Keys.ToArray<int>())
                 {
                     FuelTankScript fuelTankScript1 = lookup[key];
-                    if ((UnityEngine.Object) fuelTankScript1 != (UnityEngine.Object) null)
+                    if (fuelTankScript1 != null)
                     {
                         FuelTankScript fuelTankScript2 = fuelTankScript1;
                         CraftFuelSource fuelSource = this.CreateFuelSource(fuelTankScript2.Data.FuelType);
@@ -222,10 +229,8 @@ namespace Assets.Scripts.Craft.Fuel
             }
             catch (Exception e)
             {
-               // Mod.LogError("CreateFuelSourceForConnectedParts歇逼了: {0}",e.StackTrace);
+                Mod.LogError($"Droodism:[SRCraftFuelSources] CreateFuelSourceForConnectedParts failed: {e}");
             }
-            
-            //Mod.LOG("Modded CreateFuelSourceForConnectedParts called");
             
         }
 
@@ -238,21 +243,27 @@ namespace Assets.Scripts.Craft.Fuel
         //     The craft script.
         public void Rebuild(ICraftScript craftScript)
         {
-            //Mod.LOG("Patched Rebuild firing");
-            _fuelSources.Clear();
-            _crossFeeds.Clear();
+            this._fuelSources.Clear();
+            this._crossFeeds.Clear();
+            
+
             CraftFuelSource fuelSource1 = this.CreateFuelSource(FuelType.Battery);
             CraftFuelSource fuelSource2 = FuelType.Jet.CraftWidePool ? this.CreateFuelSource(FuelType.Jet, true) : (CraftFuelSource) null;
             CraftFuelSource fuelSource3 = FuelType.Monopropellant.CraftWidePool ? this.CreateFuelSource(FuelType.Monopropellant, true) : (CraftFuelSource) null;
+            
+
             Dictionary<string, IFuelSource> sources = new Dictionary<string, IFuelSource>();
+            int cpIndex = 0;
             foreach (ICommandPod commandPod in craftScript.CommandPods)
             {
+                cpIndex++;
                 CommandPodScript commandPodScript = commandPod as CommandPodScript;
-                STCommandPodPatchScript patchScript = commandPod.Part.PartScript?.GetModifier<STCommandPodPatchScript>();
+
                 commandPodScript.BatteryFuelSource = (IFuelSource) fuelSource1;
                 commandPodScript.JetFuelSource = (IFuelSource) fuelSource2;
                 commandPodScript.MonoFuelSource = (IFuelSource) fuelSource3;
                 commandPodScript.SetPooledFuelSources(sources);
+                STCommandPodPatchScript patchScript = commandPod.Part.PartScript?.GetModifier<STCommandPodPatchScript>();
                 if (patchScript != null)
                 {
                     try
@@ -269,11 +280,11 @@ namespace Assets.Scripts.Craft.Fuel
                         Mod.Log($"SRCCraftFuelSources.Rebuild: Error creating fuel sources: {e}");
                     }
                 }
+                
             }
 
-            IReadOnlyList<PartData> parts = craftScript.Data.Assembly.Parts;
+            this.CreateFuelSourceForConnectedParts((IEnumerable<PartData>) craftScript.Data.Assembly.Parts, false, (List<CraftFuelSource>) null);
             
-            CreateFuelSourceForConnectedParts(parts, removeDisconnectedCrossFeeds: false, null);
         }
         
         //

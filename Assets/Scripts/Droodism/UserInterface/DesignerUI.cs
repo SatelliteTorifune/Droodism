@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Assets.Scripts.Craft.Parts.Modifiers;
 using ModApi.Craft;
 using ModApi.Craft.Parts;
 using ModApi.Mods;
@@ -12,22 +13,26 @@ namespace Assets.Scripts
         public static readonly string[] _massTypes = { "g", "kg", "t", "kt" };
         private static List<string> fuelTypes = new List<string> { "Oxygen", "H2O", "Food", "CO2", "Wasted Water", "Solid Waste"};
 
-        private static string GetFuelAmountInDesigner(string fuelId,bool isWaste)
+        private static string GetFuelAmountInDesigner(string fuelId)
         {
-            try
+            var patch = Game.Instance.Designer.CraftScript.PrimaryCommandPod.Part.PartScript
+                .GetModifier<STCommandPodPatchScript>();
+            switch (fuelId)
             {
-                foreach (var fuelSource in Game.Instance.Designer.CraftScript.FuelSources.FuelSources)
-                {
-                    if (fuelSource.FuelType.Id == fuelId)
-                    {
-                        return isWaste?Instance.FormatFuel(fuelSource.TotalCapacity*fuelSource.FuelType.Density,_massTypes):Instance.FormatFuel(fuelSource.TotalFuel*fuelSource.FuelType.Density,_massTypes);
-                    }
-                }
-                return "NaN";
-            }
-            catch (Exception e)
-            {
-                return "NaN";
+                case "Oxygen":
+                    return Instance.FormatFuel(patch.OxygenFuelSource.TotalFuel * patch.OxygenFuelSource.FuelType.Density, _massTypes);
+                case "H2O":
+                    return Instance.FormatFuel(patch.WaterFuelSource.TotalFuel * patch.WaterFuelSource.FuelType.Density, _massTypes);
+                case "Food":
+                    return Instance.FormatFuel(patch.FoodFuelSource.TotalFuel * patch.FoodFuelSource.FuelType.Density, _massTypes);
+                case "CO2":
+                    return Instance.FormatFuel(patch.CO2FuelSource.TotalCapacity * patch.CO2FuelSource.FuelType.Density, _massTypes);
+                case "Wasted Water":
+                    return Instance.FormatFuel(patch.WastedWaterFuelSource.TotalCapacity * patch.WastedWaterFuelSource.FuelType.Density, _massTypes);
+                case "Solid Waste":
+                    return Instance.FormatFuel(patch.SolidWasteFuelSource.TotalCapacity * patch.SolidWasteFuelSource.FuelType.Density, _massTypes);
+                default:
+                    return "NaN";
             }
            
         }

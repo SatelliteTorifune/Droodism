@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using Assets.Scripts.Menu.ListView;
 using HarmonyLib;
+using ModApi;
 using ModApi.Craft.Propulsion;
 using UnityEngine;
 
@@ -135,8 +136,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             base.OnGenerateInspectorModel(model);
             if (FossilFuelTypeIndex != 0)
             {
-                var changePollution = new ToggleModel("Release CO2 Externally", () => Data.IsPollution, (Action<bool>)(b => { Data.IsPollution = b; }),
-                    "Determines whether release CO2 externally or internally to the craft. ");
+                var changePollution = new ToggleModel(Locale.GetString("Droodism.LifeSupportGeneratorScript.ReleaseCO2Externally"), () => Data.IsPollution, (Action<bool>)(b => { Data.IsPollution = b; }),
+                Locale.GetString("Droodism.LifeSupportGeneratorScript.ReleaseCO2ExternallyTooltip"));
                 model.Add(changePollution);
             }
         }

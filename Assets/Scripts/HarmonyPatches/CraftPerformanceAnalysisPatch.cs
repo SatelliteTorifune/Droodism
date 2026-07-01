@@ -1,6 +1,7 @@
 using System;
 using Assets.Scripts.Design;
 using HarmonyLib;
+using ModApi;
 using ModApi.Mods;
 using ModApi.Ui.Inspector;
 
@@ -39,9 +40,9 @@ namespace Assets.Scripts
                         return;
                     }
 
-                    GroupModel textGroup = new GroupModel("<color=green>Life Support Resources Info");
+                    GroupModel textGroup = new GroupModel("<color=green>" + Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.LifeSupportResourcesInfo"));
 
-                    textGroup.Add<TextModel>(new TextModel("Drood Count",
+                    textGroup.Add<TextModel>(new TextModel(Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.DroodCount"),
                         () => Scripts.Mod.Instance.GetDroodCountInDesigner()));
                     foreach (var var in fuelTypes)
                     {
@@ -51,14 +52,26 @@ namespace Assets.Scripts
                     void AddStuff(String fuelType)
                     {
                         bool isWaste = fuelType.Contains("Waste") || fuelType == "CO2";
-                        string name = "";
+                        string name;
                         switch (fuelType)
                         {
+                            case "Oxygen":
+                                name= Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.Oxygen");
+                                break;
                             case "H2O":
-                                name = "Water";
+                                name = Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.Water");
+                                break;
+                            case "Food":
+                                name = Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.Food");
                                 break;
                             case "CO2":
-                                name = "Carbon Dioxide";
+                                name = Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.CarbonDioxide");
+                                break;
+                            case "Wasted Water":
+                                name = Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.WastedWater");
+                                break;
+                            case "Solid Waste":
+                                name = Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.SolidWaste");
                                 break;
 
                             default:
@@ -67,8 +80,11 @@ namespace Assets.Scripts
 
                         }
 
-                        textGroup.Add<TextModel>(new TextModel(name + (isWaste ? " Capacity" : " Amount"),
-                            () => GetFuelAmountInDesigner(fuelType, isWaste)));
+                        string suffix = isWaste
+                            ? " " + Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.Capacity")
+                            : " " + Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.Amount");
+                        textGroup.Add<TextModel>(new TextModel(name + suffix,
+                            () => GetFuelAmountInDesigner(fuelType)));
                     }
 
                     // 将新组添加到 InspectorModel

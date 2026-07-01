@@ -104,12 +104,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             base.OnGenerateInspectorModel(model);
 
-            var group = new GroupModel("Ragdoll");
+            var group = new GroupModel(Locale.GetString("Droodism.RagdollModifier.Ragdoll"));
             model.AddGroup(group);
 
-            group.Add(new TextButtonModel("启用", b => EnableRagdollMode()));
-            group.Add(new TextButtonModel("禁用", b => DisableRagdollMode()));
-            group.Add(new TextModel("Status", () => Data.EnableRagdoll ? "Active" : "Inactive"));
+            group.Add(new TextButtonModel(Locale.GetString("Droodism.RagdollModifier.Enable"), b => EnableRagdollMode()));
+            group.Add(new TextButtonModel(Locale.GetString("Droodism.RagdollModifier.Disable"), b => DisableRagdollMode()));
+            group.Add(new TextModel(Locale.GetString("Droodism.RagdollModifier.Status"), () => Data.EnableRagdoll ? Locale.GetString("Droodism.RagdollModifier.Active") : Locale.GetString("Droodism.RagdollModifier.Inactive")));
             //group.Add(new ToggleModel("操",()=>cnm,(b)=>cnm=b));
             group.Add(new SliderModel("操你妈",()=>sm,(f)=>sm=f,-2,2f));
             

@@ -81,45 +81,59 @@ namespace Droodism.RadiationBelt
         //这个其实很蠢,我手动写了一个切换时更新的
         void Update()
         {
-            if (!Game.InFlightScene)
-            {  
-                return;
-            }
-            if (!Game.Instance.FlightScene.ViewManager.MapViewManager.MapView.Visible)
+            //我在思考要不要新增一个class
+            if (Game.InFlightScene)
             {
-                return;
-            }
-            var currentName = GetCurrentFocusPlanet();
 
-            if (this.CurrentConfig==null)
-            {
-                Mod.Log("currentConfig is null");
-                CurrentConfig = RadiationBeltConfig.LoadFromFile(currentName);
-                return;
-            }
-            
-            
-         
-            if (currentRadiationBeltObject==null)
-            {
-                Mod.Log("CurrentRadiationBeltObject is null.");
-                return;
-            }
-            try
-            {
-                // Keep belt scale neutral so visual boundary matches physics query.
-                this.currentRadiationBeltObject.transform.localScale = Vector3.one;
-                if (CurrentFocusPlanet != currentName)
+                if (!Game.Instance.FlightScene.ViewManager.MapViewManager.MapView.Visible)
                 {
-                    OnFocusPlanetChanged(currentName);
+                    return ;
                 }
-                CurrentFocusPlanet =currentName;
+
+                var currentName = GetCurrentFocusPlanet();
+
+                if (this.CurrentConfig == null)
+                {
+                    Mod.Log("currentConfig is null");
+                    CurrentConfig = RadiationBeltConfig.LoadFromFile(currentName);
+                    return;
+                }
+
+
+
+                if (currentRadiationBeltObject == null)
+                {
+                    Mod.Log("CurrentRadiationBeltObject is null.");
+                    return;
+                }
+
+                try
+                {
+                    // Keep belt scale neutral so visual boundary matches physics query.
+                    this.currentRadiationBeltObject.transform.localScale = Vector3.one;
+                    if (CurrentFocusPlanet != currentName)
+                    {
+                        OnFocusPlanetChanged(currentName);
+                    }
+
+                    CurrentFocusPlanet = currentName;
+                }
+
+
+                catch (Exception e)
+                {
+                    Mod.LogError("fucked1111 " + e.StackTrace);
+                }
             }
 
-          
-            catch (Exception e)
+            if (Game.InMenuScene)
             {
-               Mod.LogError("fucked1111 "+e.StackTrace);
+                //TODO 
+                /*
+                if (map in menu stuff active)
+                {
+                    
+                }*/
             }
         }
        
@@ -226,6 +240,7 @@ namespace Droodism.RadiationBelt
             }
             catch (Exception e)
             {
+                
             }
             return null;
             

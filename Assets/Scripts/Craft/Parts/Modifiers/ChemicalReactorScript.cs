@@ -1,3 +1,4 @@
+using ModApi;
 using ModApi.GameLoop;
 using ModApi.Math;
 using ModApi.Ui.Inspector;
@@ -179,47 +180,47 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             switch (this.WorkingType)
             {
                 case "H2O+CO2=Methanelox":
-                    model.Add<TextModel>(new TextModel("<color=green>Methanelox Mass Flow", (Func<string>)(() =>
+                    model.Add<TextModel>(new TextModel(Locale.GetString("Droodism.ChemicalReactorScript.MethaneloxMassFlow"), (Func<string>)(() =>
                     {
                         return Units.GetMassFlowRateString(this.PartScript.Data.Activated?Data.GenerationRate*0.85f * methaneloxSource.FuelType.Density:0);
-                    }), tooltip: "The kilograms of Methanelox being generated per second."));
-                    model.Add<TextModel>(new TextModel("<color=yellow>Water Mass Flow", (Func<string>)(() =>
+                    }), tooltip: Locale.GetString("Droodism.ChemicalReactorScript.MethaneloxMassFlowTooltip")));
+                    model.Add<TextModel>(new TextModel(Locale.GetString("Droodism.ChemicalReactorScript.WaterMassFlow"), (Func<string>)(() =>
                     {
                         return Units.GetMassFlowRateString(this.PartScript.Data.Activated?Data.GenerationRate*0.45f * waterSource.FuelType.Density:0);
-                    }), tooltip: "The kilograms of water being reacted per second."));
-                    
-                    model.Add<TextModel>((new TextModel("<color=yellow>CO2 Mass Flow", (Func<string>)(() =>
+                    }), tooltip: Locale.GetString("Droodism.ChemicalReactorScript.WaterMassFlowTooltip")));
+
+                    model.Add<TextModel>((new TextModel(Locale.GetString("Droodism.ChemicalReactorScript.CO2MassFlow"), (Func<string>)(() =>
                     {
                         return Units.GetMassFlowRateString(this.PartScript.Data.Activated?Data.GenerationRate*3.6f * HPco2Source.FuelType.Density:0);
-                    }), tooltip: "The kilograms of CO2 being reacted per second.")));
+                    }), tooltip: Locale.GetString("Droodism.ChemicalReactorScript.CO2MassFlowTooltip"))));
                     break;
                 case ("N2+LH2=N2H4"):
-                    model.Add(new TextModel("<color=green>Monopropellant Mass Flow", (Func<string>)(() =>
+                    model.Add(new TextModel(Locale.GetString("Droodism.ChemicalReactorScript.MonopropellantMassFlow"), (Func<string>)(() =>
                     {
                         return Units.GetMassFlowRateString(this.PartScript.Data.Activated?Data.GenerationRate*0.07f * monoSource.FuelType.Density:0);
-                    }), tooltip: "The kilograms of Monopropellant being generated per second."));
-                    model.Add(new TextModel("<color=yellow>Hydrolox Mass Flow", (Func<string>)(() =>
+                    }), tooltip: Locale.GetString("Droodism.ChemicalReactorScript.MonopropellantMassFlowTooltip")));
+                    model.Add(new TextModel(Locale.GetString("Droodism.ChemicalReactorScript.HydroloxMassFlow"), (Func<string>)(() =>
                     {
                         return Units.GetMassFlowRateString(this.PartScript.Data.Activated?Data.GenerationRate*0.2f * hydroloxSource.FuelType.Density:0);
-                    }), tooltip: "The kilograms of Hydrolox being reacted per second."));
-                    model.Add(new TextModel("<color=yellow>Nitrogen Mass Flow", (Func<string>)(() =>
+                    }), tooltip: Locale.GetString("Droodism.ChemicalReactorScript.HydroloxMassFlowTooltip")));
+                    model.Add(new TextModel(Locale.GetString("Droodism.ChemicalReactorScript.NitrogenMassFlow"), (Func<string>)(() =>
                     {
                         return Units.GetMassFlowRateString(this.PartScript.Data.Activated?Data.GenerationRate*2.1f * HPNitrogenSource.FuelType.Density:0);
-                    }), tooltip: "The kilograms of High Pressure Nitrogen being reacted per second."));
+                    }), tooltip: Locale.GetString("Droodism.ChemicalReactorScript.NitrogenMassFlowTooltip")));
                     break;
                 case ("LH2+LOX=Hydrolox"):
-                    model.Add(new TextModel("<color=green>Hydrolox Mass Flow", (Func<string>)(() =>
+                    model.Add(new TextModel(Locale.GetString("Droodism.ChemicalReactorScript.HydroloxMassFlow"), (Func<string>)(() =>
                     {
                         return Units.GetMassFlowRateString(this.PartScript.Data.Activated?Data.GenerationRate*0.972f * hydroloxSource.FuelType.Density:0);
-                    }), tooltip: "The kilograms of Hydrolox being generated per second."));
-                    model.Add(new TextModel("<color=yellow>LH2 Mass Flow", (Func<string>)(() =>
+                    }), tooltip: Locale.GetString("Droodism.ChemicalReactorScript.HydroloxMassFlowTooltip")));
+                    model.Add(new TextModel(Locale.GetString("Droodism.ChemicalReactorScript.LH2MassFlow"), (Func<string>)(() =>
                     {
                         return Units.GetMassFlowRateString(this.PartScript.Data.Activated?Data.GenerationRate*12f * lH2Source.FuelType.Density:0);
-                    }), tooltip: "The kilograms of Liquid Hydrogen being reacted per second."));
-                    model.Add(new TextModel("<color=yellow>Oxygen Mass Flow", (Func<string>)(() =>
+                    }), tooltip: Locale.GetString("Droodism.ChemicalReactorScript.LH2MassFlowTooltip")));
+                    model.Add(new TextModel(Locale.GetString("Droodism.ChemicalReactorScript.OxygenMassFlow"), (Func<string>)(() =>
                     {
                         return Units.GetMassFlowRateString(this.PartScript.Data.Activated?Data.GenerationRate*3f * LqdOxygenSource.FuelType.Density:0);
-                    }), tooltip: "The kilograms of Liquid Oxygen being reacted per second."));
+                    }), tooltip: Locale.GetString("Droodism.ChemicalReactorScript.OxygenMassFlowTooltip")));
                     break;
             }
         }

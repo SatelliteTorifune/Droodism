@@ -24,9 +24,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         [PartModifierProperty(true, false)]
         private float wastedWaterComsumeRate = 1;
         [SerializeField]
-        [PartModifierProperty(true, false)]
-        private float waterComsumeRate = 1;
-        [SerializeField]
         [PartModifierProperty(true, false)] 
         public float co2LevelInfluence = 5;
         [SerializeField]

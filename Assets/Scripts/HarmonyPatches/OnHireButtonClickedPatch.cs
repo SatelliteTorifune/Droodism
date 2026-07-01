@@ -8,6 +8,7 @@ using Assets.Scripts.Flight.UI;
 using Assets.Scripts.State;
 using Assets.Scripts.Ui.Crew;
 using HarmonyLib;
+using ModApi;
 using ModApi.Math;
 using ModApi.Mods;
 using ModApi.Scripts.State.Validation;
@@ -32,19 +33,22 @@ namespace Assets.Scripts
                 int hireCostScaled = 6000000 * Game.Instance.GameState.Crew.Members.Count<CrewMember>() * Game.Instance.GameState.Crew.Members.Count<CrewMember>();
                 IGameStateValidator validator = Game.Instance.GameState.Validator;
                 if (Game.IsCareer && !CareerState.IsDebugMode && !Game.Instance.GameState.Validator.IsItemAvailable("Cheats.SkipValidation") && Game.Instance.GameState.AvailableFunds < (long) hireCostScaled)
-                    Game.Instance.UserInterface.CreateMessageDialog().MessageText = $"You do not have enough money to hire a new astronaut. You currently have {Units.GetMoneyString(Game.Instance.GameState.AvailableFunds)} and it costs {Units.GetMoneyString((long) hireCostScaled)} to hire a new astronaut.";
+                    Game.Instance.UserInterface.CreateMessageDialog().MessageText = string.Format(
+                        Locale.GetString("Crew.Assignment.InsufficientFunds"),
+                        Units.GetMoneyString(Game.Instance.GameState.AvailableFunds),
+                        Units.GetMoneyString((long) hireCostScaled));
                 else if (Game.IsCareer && !CareerState.IsDebugMode &&  (int)_sourcesCountProp.GetValue(_sourcesField.GetValue(__instance)) >=  validator.ItemValue("Crew"))
                 {
-                    Game.Instance.UserInterface.CreateMessageDialog().MessageText = "Your crew is already as large as it can get. You can unlock larger crews in the Tech Tree.";
+                    Game.Instance.UserInterface.CreateMessageDialog().MessageText = Locale.GetString("Crew.Assignment.CrewFull");
                 }
                 //目前为止一切正常,下面开始
                 else
                 {
                     var dialog = Game.Instance.UserInterface.CreateMessageDialog(MessageDialogType.ThreeButtons);
-                    dialog.MessageText = "<size=125%>Choose the what kind of Drood you want to hire:</size>";
-                    dialog.OkayButtonText = "Pilot";
-                    dialog.MiddleButtonText = "Engineer";
-                    dialog.CancelButtonText = "Scientist";
+                    dialog.MessageText = $"<size=125%>{Locale.GetString("Droodism.OnHireButtonClickedPatch.ChooseDroodType")}</size>";
+                    dialog.OkayButtonText = Locale.GetString("Droodism.OnHireButtonClickedPatch.Pilot");
+                    dialog.MiddleButtonText = Locale.GetString("Droodism.OnHireButtonClickedPatch.Engineer");
+                    dialog.CancelButtonText = Locale.GetString("Droodism.OnHireButtonClickedPatch.Scientist");
                     dialog.OkayClicked += d => OnRoleSelected(__instance, d, DroodType.Pilot, hireCostScaled);
                     dialog.MiddleClicked += d => OnRoleSelected(__instance, d, DroodType.Engineer, hireCostScaled);
                     dialog.CancelClicked += d => OnRoleSelected(__instance, d, DroodType.Scientist, hireCostScaled);

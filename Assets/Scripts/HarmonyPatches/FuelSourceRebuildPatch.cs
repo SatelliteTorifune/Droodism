@@ -15,7 +15,6 @@ namespace Assets.Scripts
         /// <summary>
         /// 重要!!核心组件之一,仿照Mono/jet/battery,使用添加的patch modifier(STCommandPodPatch)中的六个IFuelSource接口,然后用这个patch调用SRCraftFuelSources中的方设置FuelSource
         /// </summary>
-        
         [HarmonyPatch(typeof(CraftFuelSources), "Rebuild")]
         class FuelSourceRebuildPatch
         {

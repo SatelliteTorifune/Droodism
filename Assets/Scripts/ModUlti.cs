@@ -2,6 +2,7 @@ using System;
 using System.Xml.Linq;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Flight;
+using ModApi;
 using ModApi.Craft.Parts;
 using ModApi.Flight.Sim;
 using ModApi.Math;
@@ -32,7 +33,12 @@ namespace Assets.Scripts
                 0.2);
             var flag = ((FlightSceneScript)Game.Instance.FlightScene).SpawnCraft($"Flag at {Game.Instance.FlightScene.CraftNode.Parent.Name},{(ConvertPlanetPositionToLatLongAgl(position).x)} ,{(ConvertPlanetPositionToLatLongAgl(position).y)}", craftData, location, xml);
             flag.AllowPlayerControl = true;
-            Game.Instance.FlightScene.FlightSceneUI.ShowMessage($"Planted Flag at <color=green> {Game.Instance.FlightScene.CraftNode.Parent.Name} </color>'s surface,at {(ConvertPlanetPositionToLatLongAgl(position).x)}° , {(ConvertPlanetPositionToLatLongAgl(position).y)}° ",true,120f);
+            Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
+                string.Format(Locale.GetString("Droodism.ModUlti.FlagPlanted"),
+                    Game.Instance.FlightScene.CraftNode.Parent.Name,
+                    ConvertPlanetPositionToLatLongAgl(position).x,
+                    ConvertPlanetPositionToLatLongAgl(position).y),
+                true, 120f);
         }
         public Vector3d ConvertPlanetPositionToLatLongAgl(Vector3d position)
         {

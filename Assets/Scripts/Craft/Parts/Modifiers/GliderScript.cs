@@ -98,7 +98,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     
                         _crewCompartment.UnloadCrewMember(eva,this.PartScript.CraftScript.CraftNode.IsPlayer);
                         eva.PartScript.GetModifier<SupportLifeScript>().Data.AutoDeployEnabled = false;
-                        ui.ShowMessage($"{eva.Data.CrewMember.Name} has landed on the ground");
+                        ui.ShowMessage($"{eva.Data.CrewMember.Name} {Locale.GetString("Droodism.Glider.HasLanded")}");
                     }
                     FuckOff2 = false;
                     return;
