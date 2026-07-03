@@ -25,6 +25,7 @@ namespace Assets.Scripts
         private static readonly string Cockpit = "Cockpit1";
         private static readonly string SupportLifeDataModifierName = "SupportLifeData";
         private static readonly string RagdollModifierName = "RagdollModifier";
+        private static readonly string DockingPortModifierName = "Docking Port";
 
         
 
@@ -84,7 +85,7 @@ namespace Assets.Scripts
         {
             var part = e.Part;
             if (part == null) return;
-            if (part.PartType.Name=="Docking Port")
+            if (part.PartType.Name==DockingPortModifierName)
             {
                 try
                 {

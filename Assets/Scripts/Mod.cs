@@ -18,6 +18,7 @@ using Droodism.RadiationBelt;
 using ModApi.Ui.Inspector;
 using System.Xml.Serialization;
 using Assets.Scripts.Craft.Fuel;
+using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using Assets.Scripts.Droodism.Crew;
 using Assets.Scripts.Droodism.ResourceWarning;
 using UnityEngine.UI;
@@ -170,6 +171,23 @@ namespace Assets.Scripts
                     Log($"大气组分占比{atmosphereComponent.MassFraction}");
 
                 }
+            });
+            
+            DevConsoleApi.RegisterCommand("TryGetHookStuff", () =>
+            {
+                foreach (var pd in Game.Instance.FlightScene.CraftNode.CraftScript.Data.Assembly.Parts)
+                {
+                    if (pd.PartType.Name=="Eva"||pd.PartType.Name=="Eva-Tourist")
+                    {
+                        var zhesha = pd.PartScript.GameObject.GetComponent<GrapplingHookScript>();
+                        if (zhesha != null)
+                        {
+                            Log($"Eva挂钩状态{zhesha.CraftGrappled}");
+                            Log($"Eva挂钩目标{zhesha.CraftTo}");
+                        }
+                    }
+                }
+                
             });
 
         }

@@ -9,7 +9,7 @@
         <Image id="progress" color="Primary" fillMethod="Horizontal" pivot="0 0.5" scale="0.0 1 1" />
       </Panel>
       <Button id="cancel-button" class="btn" rectAlignment="LowerLeft" width="150" offsetXY="20 20" onClick="OnCancelButtonClicked();">
-        <TextMeshPro text="CANCEL" />
+        <TextMeshPro text="{Dialog.Cancel}" />
       </Button>
     </Panel>
   </Panel>

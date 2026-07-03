@@ -7,11 +7,11 @@
 float4 _MaterialColors[50];
 float4 _MaterialData[50];
 float4 _PartData[25];
-// Per-part nozzle glow. x: nozzle wall temperature in Kelvin (0 = no glow). y: Trim 4 material index. z: inner-wall temperature in Kelvin.
+// Per-part nozzle glow. x: nozzle wall temperature in Kelvin (0 = no glow). y: unused. z: inner-wall temperature in Kelvin.
 float4 _PartNozzleData[25];
 // Per-renderer nozzle data. xy: axial bounds; z: 1 on nozzle renderers.
 float4 _NozzleAxis;
-float  _EmissiveOverride;
+float  _EmissiveOverride = -1;
 float  _AlphaOverride = -1;
 float  _IsFlightScene;
 UNITY_DECLARE_TEX2DARRAY(_DetailTextures);
@@ -147,10 +147,11 @@ FragmentOutput frag(v2f INPUT)
     float heat = max(0, partData.y - 700.0) / 1500.0;
     emission += BlackbodyEmission(partData.y) * BlackbodyIntensity(heat);
 
-    // Glow only on nozzle renderers (_NozzleAxis.z); the Trim 4 index alone leaks onto the body.
+    // Glow only on nozzle renderers (_NozzleAxis.z) and only on authored nozzle-interior (Trim4) geometry.
+    // That geometry is tagged paint-independently in uv1.w, surfacing here as frac(ids.x) ~0.7 (vs ~0.3 otherwise).
     float4 partNozzle = _PartNozzleData[INPUT.ids.w];
     UNITY_BRANCH
-    if ((partNozzle.x > 670.0 || partNozzle.z > 670.0) && _NozzleAxis.z > 0.5 && abs(floor(INPUT.ids.x) - partNozzle.y) < 0.5)
+    if ((partNozzle.x > 670.0 || partNozzle.z > 670.0) && _NozzleAxis.z > 0.5 && frac(INPUT.ids.x) > 0.5)
     {
         float3 nozzleObjPos = mul(unity_WorldToObject, float4(INPUT.worldPosition.xyz, 1.0)).xyz;
         float along = saturate((nozzleObjPos.y - _NozzleAxis.x) / max(1e-4, _NozzleAxis.y - _NozzleAxis.x));

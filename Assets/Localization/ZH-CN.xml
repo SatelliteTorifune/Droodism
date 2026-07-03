@@ -68,7 +68,7 @@
     <s id="Droodism.DroodismUIManager.ToggleDroodismUI">开启 Droodism UI</s>
     <s id="Droodism.DroodismUIManager.ToggleSingleTypeTransferMode">切换单种资源传输模式</s>
     <s id="Droodism.DroodismUIManager.TouristCount">游客数量</s>
-    <s id="Droodism.DroodismUIManager.UnknownRole">未知</s>
+    <s id="Droodism.DroodismUIManager.UnknownRole">未知类型</s>
     <s id="Droodism.DroodismUIManager.UsingExternalOxygen">使用外部氧气</s>
     <s id="Droodism.DroodismUIManager.WastedWaterLevel">废水浓度</s>
 

@@ -19,6 +19,7 @@ Shader "Jundroo/SR Standard/SrStandardPartShader"
         _DecalTextureMaterialIds("Decal Materials", Vector) = (0,0,1,1)
         _UseDecalTexture("Use Decal Texture", float) = 0
         _AlphaOverride("Alpha Override", float) = -1
+        _EmissiveOverride("Emissive Override", float) = -1
 
         [Space(20)][Header(Texture Options)]
         [KeywordEnum(OFF, ON)] DETAIL_TEXTURES("Detail Textures", Float) = 0

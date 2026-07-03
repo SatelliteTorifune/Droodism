@@ -15,6 +15,9 @@
         [Space(20)][Header(Atmosphere Options)]
         [KeywordEnum(None, LOW, HIGH)] OBJECT_ATMOSPHERE("Atmosphere Quality", Float) = 0
 
+        [Space(20)][Header(Part Material Overrides)]
+        _EmissiveOverride("Emissive Override", float) = -1
+
         // Text Mesh Pro
         [Space(20)][Header(Text Mesh Pro)]
         _FaceTex("Fill Texture", 2D) = "white" {}

@@ -223,6 +223,45 @@
         return exp(scaleDepthLn + invAtmosSizeScale * (-0.00287 + x * (0.459 + x * (3.83 + x * (-6.80 + x * 5.25)))));
     }
 
+    // Chapman grazing-incidence function, normalized to 1 at the zenith (X = r/H, cosChi = zenith
+    // cosine). Schuler's approximation (GPU Pro 3); accurate near the horizon, unlike ExpScale.
+    float Chapman(float X, float cosChi)
+    {
+        float c = sqrt(1.5707963267948966 * X); // sqrt(pi/2 * X) == horizon air mass
+        float chUp = c / ((c - 1.0) * abs(cosChi) + 1.0);
+        if (cosChi < 0.0)
+        {
+            // Past sunset: reflect across the horizon, clamping the exponent so deep night stays finite.
+            float sinChi = sqrt(saturate(1.0 - cosChi * cosChi));
+            chUp = 2.0 * c * exp(min(X * (1.0 - sinChi), 80.0)) - chUp;
+        }
+        return chUp;
+    }
+
+    // Slant optical depth via Chapman; the air-mass ratio takes the same invAtmosSizeScale
+    // compression as ExpScale so magnitudes match across planet sizes, not just at the zenith.
+    float OpticalDepthScale(float cosAngle, float height, float scaleDepthLn, float scaleOverScaleDepth, float invAtmosSizeScale)
+    {
+        float X = max(height * scaleOverScaleDepth, 1.0); // r / H
+        return exp(scaleDepthLn) * pow(Chapman(X, cosAngle), invAtmosSizeScale);
+    }
+
+    // > 0.5 → Chapman (accurate near horizon); otherwise → legacy ExpScale polynomial.
+    float OpticalDepthScaleAdaptive(float cosAngle, float height, float scaleDepthLn, float scaleOverScaleDepth, float invAtmosSizeScale)
+    {
+        if (_chapmanEnabled > 0.5)
+            return OpticalDepthScale(cosAngle, height, scaleDepthLn, scaleOverScaleDepth, invAtmosSizeScale);
+        else
+            return ExpScale(cosAngle, scaleDepthLn, invAtmosSizeScale);
+    }
+
+    // Per-channel transmittance: Rayleigh (wavelength^-4) + Mie + optional ozone (added absorption,
+    // strongest at dusk via the long light path).
+    float3 AtmosphereExtinction(float scatter, float3 invWaveLength, float kr4PI, float km4PI, float3 ozoneCoeff)
+    {
+        return exp(-scatter * (invWaveLength * kr4PI + km4PI + ozoneCoeff));
+    }
+
     float4 GetSample(sampler2D map, float2 uv, float2 mapTiling, float2 mapOffset)
     {
         return tex2D(map, uv.xy * mapTiling.xy + mapOffset.xy);

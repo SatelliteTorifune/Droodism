@@ -17,6 +17,10 @@ namespace Assets.Scripts
         {
             var patch = Game.Instance.Designer.CraftScript.PrimaryCommandPod.Part.PartScript
                 .GetModifier<STCommandPodPatchScript>();
+            if (patch==null)
+            {
+                return "NaN";
+            }
             switch (fuelId)
             {
                 case "Oxygen":

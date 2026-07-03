@@ -7,7 +7,7 @@
 float4 _MaterialColors[50];
 float4 _MaterialData[50];
 float4 _PartData[25];
-float  _EmissiveOverride;
+float  _EmissiveOverride = -1;
 
 // UI Editable properties
 uniform float		_FaceDilate;				// v[ 0, 1]

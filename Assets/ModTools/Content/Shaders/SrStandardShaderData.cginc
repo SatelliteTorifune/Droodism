@@ -58,6 +58,8 @@
     half _lightingFresnelBias;
     float _maxColorValue;
     float3 _directionalLightAdditive_Direction;
+    float3 _ozoneCoefficient;
+    float _chapmanEnabled;
 
     // Setup common defines
     #if !UNITY_PASS_FORWARDADD
