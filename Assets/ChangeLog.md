@@ -1,3 +1,10 @@
+## 2026 7 4
+> 更新了SRCraftFuelSources.cs中的部分函数以适配新版本的CraftFuelSources和全局资源系统
+> 
+> 修复DesignerUI中部分空引用导致的数据显示异常
+> 
+> 增加自动本地化文件功能
+
 ## 2026 6 29
 > 修改了SRCraftFuelSources中的部分函数以修复JetFuel和Mono无法被读取的错误
 > 

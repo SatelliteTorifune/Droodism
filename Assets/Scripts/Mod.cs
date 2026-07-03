@@ -57,10 +57,9 @@ namespace Assets.Scripts
             return InFlightScene ?ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript as CraftScript:Game.Instance.Designer.CraftScript as CraftScript;
 
         } 
-
-        public override void OnModLoaded()
+        protected override void OnModInitialized()
         {
-          
+            base.OnModInitialized();
             try
             {
                 base.OnModLoaded();
@@ -74,6 +73,25 @@ namespace Assets.Scripts
                 Game.Instance.UserInterface.CreateMessageDialog(s);
                 throw new FileNotFoundException(s);
             }
+            Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
+            Game.Instance.SceneManager.SceneTransitionCompleted+=OnSceneTransitionCompleted;
+            RegisterCommands();
+            CheckDefaultPlanetRadiationBeltConfig();
+            CheckDefaultBreathablePlanetConfig();
+            CheckDefaultFlagImage();
+            
+            CheckLocalizationFiles("ZH-CN");
+            CheckLocalizationFiles("EN-US");
+        }
+
+        /// <summary>
+        /// Called when the mod is fully loaded.
+        /// This occurs after the mod is initialized and after mod data is loaded (like part and propulsion data, UI resources, etc.)
+        /// </summary>
+        public override void OnModLoaded()
+        {
+          
+           
             GameObject DroodismGO=new GameObject("DroodismUI");
             DroodismGO.AddComponent<DroodismUIManager>();
             DroodismGO.AddComponent<RadiationBeltManager>();
@@ -83,10 +101,8 @@ namespace Assets.Scripts
             GameObject.DontDestroyOnLoad(DroodismGO);
             DroodismGO.SetActive(true);
             Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.MapView, OnBuildMapViewInspectorPanel);
-            CheckDefaultPlanetRadiationBeltConfig();
-            CheckDefaultBreathablePlanetConfig();
-            CheckDefaultFlagImage();
             
+
         }
         
 
@@ -128,13 +144,7 @@ namespace Assets.Scripts
             GetDroodCountInDesigner();
         }
 
-        protected override void OnModInitialized()
-        {
-            base.OnModInitialized();
-            Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
-            Game.Instance.SceneManager.SceneTransitionCompleted+=OnSceneTransitionCompleted;
-            RegisterCommands();
-        }
+        
 
         /// <summary>
         /// 注册Droodism的自定义指令

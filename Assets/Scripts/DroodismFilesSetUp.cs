@@ -60,10 +60,6 @@ namespace Assets.Scripts
                     File.WriteAllText(targetPath, asset.text, Encoding.UTF8);
                      Log($"[Droodism] Copied BreathablePlanets.xml to: {targetPath}");
                 }
-                else
-                {
-                     Log($"[Droodism] BreathablePlanets.xml already exists at: {targetPath}");
-                }
             }
             else
             {
@@ -126,6 +122,26 @@ namespace Assets.Scripts
             catch (Exception e)
             {
                 LogError($"[Droodism] Failed to write default flag image to '{targetPath}': {e}");
+            }
+        }
+
+        private void CheckLocalizationFiles(string targetLanguage)
+        {
+            var targetPath = Path.Combine(Application.persistentDataPath, "Languages", targetLanguage, "StringsDroodism.xml");
+            if (File.Exists(targetPath))
+            {
+                return; 
+            }
+            
+            var localizationFile = Mod.ResourceLoader.LoadAsset<TextAsset>("Assets/Resources/LocalizationFile/"+targetLanguage+"/StringsDroodism.xml");
+            try
+            {
+                File.WriteAllBytes(targetPath, localizationFile.bytes);
+                Log($"[Droodism] Wrote {targetLanguage} localization file to: {targetPath}");
+            }
+            catch (Exception e)
+            {
+                LogError($"[Droodism] Failed to write {targetLanguage} localization file to '{targetPath}': {e}");
             }
         }
     }

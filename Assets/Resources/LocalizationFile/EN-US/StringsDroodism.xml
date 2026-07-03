@@ -247,13 +247,9 @@
     <s id="Droodism.SupportLifeScript.CannotDeployParachuteInWater">Can Not Deploy Parachute, Drood is in water</s>
     <s id="Droodism.SupportLifeScript.CannotDeployParachuteNotInEva">Can Not Deploy Parachute, Not in Eva</s>
     <s id="Droodism.SupportLifeScript.CannotDeployParachuteSpeedHigh">Can Not Deploy Parachute, Speed is too high</s>
-    <s id="Droodism.SupportLifeScript.CanNotPlantFlagAlreadyPlanted">Can Not Plant Flag, This Drood had already plant one!</s>
-    <s id="Droodism.SupportLifeScript.CanNotPlantFlagInWater">Can Not Plant Flag, Drood is in water</s>
-    <s id="Droodism.SupportLifeScript.CanNotPlantFlagNotGrounded">Can Not Plant Flag, Not Grounded</s>
-    <s id="Droodism.SupportLifeScript.CanNotPlantFlagVelocityHigh">Can Not Plant Flag, Velocity is too high</s>
+    
     <s id="Droodism.SupportLifeScript.CannotHealDrood">Can not heal a drood</s>
     <s id="Droodism.SupportLifeScript.CannotRepairDrood">Can't Repair Drood</s>
-    <s id="Droodism.SupportLifeScript.CannotPlantFlagNotInEva">Can Not Plant Flag, Not in Eva</s>
     <s id="Droodism.SupportLifeScript.CO2Level">CO2 Level</s>
     <s id="Droodism.SupportLifeScript.CrewMemberDamage">Crew Member {0} (id:{1}) is taking damage because running out of {2}, he/she has {3} left</s>
     <s id="Droodism.SupportLifeScript.CrewMemberWasteDamage">Crew Member {0} (id:{1}) is taking damage because {2} level is too high, he/she has {3} left</s>
@@ -294,6 +290,12 @@
     <s id="Droodism.SupportLifeScript.WastedWaterLevel">Wasted Water Level</s>
     <s id="Droodism.SupportLifeScript.WaterSupplyTime">Water Supply Time</s>
 
+    <!--FlagPlanting-->
+    <s id="Droodism.FlagPlanting.CannotPlantFlagAlreadyPlanted">Can Not Plant Flag, This Drood had already plant one!</s>
+    <s id="Droodism.FlagPlanting.CannotPlantFlagInWater">Can Not Plant Flag, Drood is in water</s>
+    <s id="Droodism.FlagPlanting.CannotPlantFlagNotGrounded">Can Not Plant Flag, Not Grounded</s>
+    <s id="Droodism.FlagPlanting.CannotPlantFlagVelocityHigh">Can Not Plant Flag, Velocity is too high</s>
+    <s id="Droodism.FlagPlanting.CannotPlantFlagNotInEva">Can Not Plant Flag, Not in Eva</s>
     <!-- ToolBoxScript -->
     <s id="Droodism.ToolBox.CrewNotEngineer">Selected Crew {0} is not an Engineer</s>
     <s id="Droodism.ToolBox.CrewTooFarToResupply">Selected Crew {0} is too far away to resupply.</s>
