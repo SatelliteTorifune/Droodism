@@ -5,9 +5,7 @@
 > > 
 > > 新增 IsBreathableByComposition() 和 ComputeBreathable() 方法，带缓存机制
 > > 
-> > 行星大气中 LOX/O2 质量分数 >= 0.1即可呼吸
-> > 
-> > 不再需要手动维护 BreathablePlanets.xml 白名单，任何富氧大气行星自动生效
+> > 行星大气中 LOX质量分数 >= 0.1即可呼吸
 > > 
 > > 保留原有 IsBreathablePlanet 名称白名单作为回退兼容
 > 

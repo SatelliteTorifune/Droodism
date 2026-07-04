@@ -50,7 +50,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         IFlightUpdate,
         IFlightFixedUpdate
     {
-        #region 引用属性字段
+        #region 字段与属性
+
         /// <summary>
         /// 引用EvaScript组件,来获取这个小蓝人的一些乱七八糟的狗屎鸡巴数据玩意
         /// Reference to the EvaScript component,get current part's eva data and other stuff
@@ -62,7 +63,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         public bool IsHibernating { get; private set; }
         
-
         public IFuelSource OxygenSource { get; private set; }
         public IFuelSource WaterSource { get; private set; }
         public IFuelSource FoodSource { get; private set; }
@@ -70,9 +70,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public IFuelSource WastedWaterSource { get; private set; }
         public IFuelSource SolidWasteSource { get; private set; }
 
-        
-       
-        
         /// <summary>
         /// 当前所在行星的名称。
         /// Name of the current planet the craft is on.
@@ -83,6 +80,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// 小蓝人目前的任务时长,从初次发射开始算的
         /// </summary>
         public long MissionDurationTime{get;private set;}
+        
         /// <summary>
         /// 指示小蓝人是否在跑或是否为游客。
         /// Flags indicating if the crew member is running or if they are a tourist.
@@ -90,7 +88,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public bool IsRunning { get; private set; }
         public bool IsTourist { get; private set; }
        
-
         /// <summary>
         /// 当前计算辐射值累计的配置模型
         /// Config Model for Calculating Radiation Level
@@ -146,12 +143,26 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// <summary>
         /// 可呼吸所需的最低氧气质量分数阈值
         /// </summary>
-        
         private const float MinBreathableOxygenFraction = 0.1f;
-        
+
+        /// <summary>
+        /// 来自craft内部的辐射源：RTG零件列表
+        /// </summary>
+        private List<PartData> RTGParts = new List<PartData>();
+        /// <summary>
+        /// 来自craft内部的辐射源：NTR引擎零件列表
+        /// </summary>
+        private List<PartData> NTRParts = new List<PartData>();
+
+        /// <summary>
+        /// 是否正在修复零件
+        /// </summary>
+        private bool isRepairing;
+
         #endregion
 
-        #region 逻辑循环啥的
+        #region 生命周期函数循环
+
         /// <summary>
         /// 在创建modifiers时调用，启用零件属性。
         /// Called when modifiers are created, enables part properties.
@@ -162,8 +173,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             this.Data.PartPropertiesEnabled = true;
             this.evaScript = PartScript.GetModifier<EvaScript>();
         }
-        
-        
         
         /// <summary>
         /// 不好意思因为我的代码水平就是一坨屎所以OnInitialLaunch和FlightStart里面的代码很奇异搞笑
@@ -181,6 +190,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             Data.LastLoadTime = (long)FlightSceneScript.Instance.FlightState.Time;
             
         }
+        
         /// <summary>
         /// 实现IFlightStart接口，在飞行场景开始时调用。
         /// Implements the IFlightStart interface, called at the start of the flight scene.
@@ -201,10 +211,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             UpdateCurrentPlanet();
             this.RadiationBeltConfig = RadiationBeltConfig.LoadFromFile(currentPlanetName);
             LoadRadiationData();
-           
         }
 
-        
         /// <summary>
         /// 实现IFlightUpdate接口，在飞行期间每帧调用。
         /// Implements the IFlightUpdate interface, called every frame during flight.
@@ -247,12 +255,103 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 AutoDeployParachute();
             }
-            
         }
+
+        /// <summary>
+        /// 在加载飞船时调用，触发飞船结构变化处理。
+        /// Called when the craft is loaded, triggers craft structure change handling.
+        /// </summary>
+        public override void OnCraftLoaded(ICraftScript craftScript, bool movedToNewCraft)
+        {   
+            base.OnCraftLoaded(craftScript, movedToNewCraft);
+            if(!Game.InFlightScene)
+                return;
+            Refresh();
+        }
+
+        /// <summary>
+        /// 在飞船结构变化时调用，如果在飞行场景中，则刷新燃料源。
+        /// Called when the craft structure changes, refreshes fuel sources if in flight scene.
+        /// </summary>
+        public override void OnCraftStructureChanged(ICraftScript craftScript)
+        {
+            if(!Game.InFlightScene)
+                return;
+            base.OnCraftStructureChanged(craftScript);
+            if (Game.InFlightScene)
+            {
+                Refresh();
+                Mod.Log("OnCraftStructureChanged调用RefreshFuelSource();");
+            }
+        }
+
+        /// <summary>
+        /// Called when the craft ends, removes extra fuel tanks.
+        /// </summary>
+        public override void FlightEnd()
+        {
+            OnCraftUnloaded();
+        }
+
+        private void OnFlightEnded(object sender, FlightEndedEventArgs e)
+        {
+            FlightEnd();
+        }
+
+        public void OnPhysicsEnabled(ICraftNode craftNode, PhysicsChangeReason reason)
+        {
+            if (reason == PhysicsChangeReason.Warp||reason == PhysicsChangeReason.LoadedIntoGameView)
+            {
+                return;
+            }
+            if (ModSettings.Instance.ConsumeResourceWhenUnloaded==true&&!IsHibernating)
+            {
+                RemoveFuelAmountInstantly();
+                AddWastedAmountInstantly();
+            }
+        }
+
+        private void OnPhysicsDisabled(ICraftNode craftNode, PhysicsChangeReason reason)
+        {
+            if (reason == PhysicsChangeReason.Warp||reason== PhysicsChangeReason.UnloadedFromGameView)
+            {
+                return;
+            }
+
+            OnCraftUnloaded();
+        }
+
+        /// <summary>
+        /// Called when a part this modifier is attached to is pulled out in the designer.  This is called before DesignerStart() and while the previous part is still selected.
+        /// </summary>
+        /// <param name="assembly">The assembly this modifier's part is within (will contain all parts if contained in a sub-assembly).</param>
+        public override void OnDesignerPullout(Assembly assembly)
+        {
+            base.OnDesignerPullout(assembly);
+            var eva = this.PartScript.GetModifier<EvaScript>();
+            if (!eva.Data.RequiresCrewMember)
+            {
+              return;
+            }
+
+            Data.SetDroodismCrewData();
+        }
+
+        public override void OnCloned()
+        {
+            base.OnCloned();
+            var eva = this.PartScript.GetModifier<EvaScript>();
+            if (!eva.Data.RequiresCrewMember)
+            {
+                return;
+            }
+            Data.SetDroodismCrewData();
+        }
+
         #endregion
-        
-        #region 休眠跑步状态更新
-        
+
+        #region 状态更新
+
         /// <summary>
         /// 这b玩意看不懂那你去吃我屎吧,你不会百度翻译吗?
         /// </summary>
@@ -270,8 +369,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         private void UpdateHealingStatus()
         {
-
-
             bool lackInput = Data._oxygenAmountBuffer <= 0 || Data._foodAmountBuffer <= 0 ||
                              Data._waterAmountBuffer <= 0;
             bool wasteIsFull = Data.DesireCO2Capacity - Data._co2AmountBuffer <= 0.00001 ||
@@ -291,20 +388,190 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             IsHibernating = hibernatingState;
         }
+
+        /// <summary>
+        /// 根据大气条件和行星确定是否使用内部氧气。
+        /// Determines if internal oxygen is being used based on atmospheric conditions and planet.
+        /// </summary>
+        /// <returns>如果使用内部氧气则返回true，否则返回false。True if using internal oxygen, false otherwise.</returns>
+        public bool UsingInternalOxygen()
+        {
+            float airDensity = PartScript.CraftScript.AtmosphereSample.AirDensity;
+            if (airDensity <= 0.4)
+            {
+                return true;
+            }
+            
+            if (IsBreathablePlanet(currentPlanetName) || IsBreathableByComposition())
+            {
+                if(evaScript.IsInWater && PartScript.CraftScript.FlightData.AltitudeAboveSeaLevel < 0.1)
+                {
+                    return true;
+                }
+                return false;
+            }
+            return true;
+        }
+
         #endregion
+
+        #region 燃料源管理
+
+        /// <summary>
+        /// 根据当前场景和EVA状态刷新燃料源。
+        /// Refreshes the fuel sources based on the current scene and EVA status.
+        /// </summary>
+        public void Refresh()
+        {
+            if (PartScript == null || PartScript.Modifiers == null)
+            {
+                return;
+            }
+            
+            if (Game.InFlightScene)
+            {
+                try
+                {
+                    RefreshFuelSource();
+                    CheckInCraftRadiationSource();
+                    RefreshRadiationCompartment();
+                }
+                catch (Exception e)
+                {
+                }
+            }
+        }
         
-        #region 资源查找消耗补充相关函数
+        /// <summary>
+        /// 在非EVA模式下刷新燃料源。
+        /// Refreshes fuel sources when not in EVA mode.
+        /// </summary>
+        /// 这破玩意我给重构了,我操,牛逼
+        private void RefreshFuelSource()
+        {
+            bool isEva = IsActiveEvaOutsideCompartment();
+            
+            if (isEva)
+            {
+                IsHibernating = false;
+                OxygenSource = WaterSource = FoodSource = WastedWaterSource = Co2Source = SolidWasteSource = null;
+            }
+            else
+            {
+                RefreshCraftFuelSources();
+            }
+            
+            SyncCraftAndLocalFuelSources();
+            ResourceWarningScript.Instance.ResetSessionFlags();
+
+            bool IsActiveEvaOutsideCompartment()
+            {
+                return PartScript?.CraftScript?.ActiveCommandPod?.Part?.PartScript == PartScript && !evaScript.ActiveWhileInCrewCompartment;
+            }
+    
+            void RefreshCraftFuelSources()
+            { 
+                var patch = PartScript.GetModifier<EvaScript>().CrewCompartment?.PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+                if (patch==null)
+                {
+                    Mod.Log("NULl DEtected in SupportLifeScript.RefreshFuelSource.RefreshCraftFuelSources");
+                    return;
+                }
+                try
+                {
+                    OxygenSource = patch?.OxygenFuelSource;
+                    FoodSource = patch?.FoodFuelSource;
+                    WaterSource = patch?.WaterFuelSource;
+                    Co2Source = patch?.CO2FuelSource;
+                    WastedWaterSource = patch?.WastedWaterFuelSource;
+                    SolidWasteSource = patch?.SolidWasteFuelSource;
+                }
+                catch (Exception e)
+                {
+                    Mod.Log("CraftRefreshSource::{0}", e);
+                }
+            }
+    
+            void SyncCraftAndLocalFuelSources()
+            {
+                TrySyncPair(OxygenSource,ref Data._oxygenAmountBuffer,Data.DesireOxygenCapacity, false);
+                TrySyncPair(FoodSource,ref Data._foodAmountBuffer,Data.DesireFoodCapacity, false);
+                TrySyncPair(WaterSource,ref Data._waterAmountBuffer,Data.DesireWaterCapacity, false);
+                TrySyncPair(Co2Source,ref Data._co2AmountBuffer,Data.DesireCO2Capacity, true);
+                TrySyncPair(WastedWaterSource,ref Data._wastedWaterAmountBuffer,Data.DesireWastedWaterCapacity, true);
+                TrySyncPair(SolidWasteSource,ref Data._solidWasteAmountBuffer,Data.DesireSolidWasteCapacity, true);
+            }
+            
+            void TrySyncPair(IFuelSource craftSource,ref double amount,float capacity, bool wasteMode)
+            {
+                if (craftSource == null)
+                {
+                    return;
+                }
+    
+                if (wasteMode)
+                {
+                    if (craftSource.TotalCapacity - craftSource.TotalFuel > 0.00001 && amount > 0.00001)
+                    {
+                        RemoveWaste(craftSource, ref amount);
+                    }
+                    return;
+                }
+                if (!craftSource.IsEmpty && capacity - amount > 0.00001)
+                {
+                    ReFill(craftSource, ref amount, capacity);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 从Craft补充维生资源
+        /// </summary>
+        private void ReFill(IFuelSource craft,ref double amount,float capacity)
+        {
+            if (craft.TotalFuel >= capacity - amount)
+            {
+                craft.RemoveFuel(capacity - amount);
+                amount = capacity;
+            }
+            else
+            {
+                craft.RemoveFuel(craft.TotalFuel);
+                amount+=(craft.TotalFuel);
+            }
+        }
         
+        /// <summary>
+        /// 给Drood移除产生的废物
+        /// </summary>
+        private void RemoveWaste(IFuelSource Craft,ref double drood)
+        {
+            if (Craft.TotalCapacity-Craft.TotalFuel>drood)
+            {
+                Craft.AddFuel(drood);
+                drood = 0;
+                Mod.Log($"Remove{Craft.FuelType.Name} 成功:{0}实际{1}",drood,Craft.TotalFuel);
+            }
+            else
+            {
+                drood-=(Craft.TotalCapacity - Craft.TotalFuel);
+                Craft.AddFuel(Craft.TotalCapacity - Craft.TotalFuel);
+                Mod.Log($"Remove{Craft.FuelType.Name} 满了成功:{0}实际{1}", drood, Craft.TotalFuel);
+            }
+        }
+
+        #endregion
+
+        #region 资源消耗与废物处理
 
         /// <summary>
         /// 处理氧气、食物和水的消耗逻辑。
         /// Handles the consumption logic for oxygen, food, and water.
         /// 你可能觉得这个函数也太不优雅了,对,因为氧气这个b玩意比较特殊我要单独处理
-        /// /// </summary>
+        /// </summary>
         /// <param name="frame">飞行帧数据。Flight frame data.</param>
         private void ConsumptionLogic(in FlightFrameData frame)
         {
-
             bool usingInternalOxygen = UsingInternalOxygen();
             double baseRate = frame.DeltaTimeWorld * (IsRunning ? 1.75 : 1) * (IsTourist ? 1.05 : 1);
             
@@ -336,17 +603,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
         }
         
-        
         /// <summary>
         /// 具体维生资源消耗函数
         /// </summary>
-        /// <param name="craftSource"></param>
-        /// <param name="localSourceAmount"></param>
-        /// <param name="amount"></param>
-        /// <param name="frame"></param>
-        /// <param name="damageScale"></param>
-        /// <param name="fuelTypeName"></param>
-        /// <returns></returns>
         private bool ConsumeInputResource(IFuelSource craftSource,ref double localSourceAmount, double amount, in FlightFrameData frame, float damageScale,string fuelTypeName)
         {
             if (amount <= 0)
@@ -371,20 +630,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
 
             return false;
-
         }
         
-
         /// <summary>
         /// 具体维生废物生成函数
         /// </summary>
-        /// <param name="craftSource"></param>
-        /// <param name="localSourceAmount"></param>
-        /// <param name="localCapacity"></param>
-        /// <param name="amount"></param>
-        /// <param name="frame"></param>
-        /// <param name="damageScale"></param>
-        /// <param name="fuelTypeName"></param>
         private void ProduceWasteResource(IFuelSource craftSource,ref double localSourceAmount,float localCapacity, double amount, in FlightFrameData frame, float damageScale,string fuelTypeName)
         {
             if (amount <= 0)
@@ -406,15 +656,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 craftSource.AddFuel(amount);
             }
-         
-            
         }
 
         /// <summary>
         /// 处理不使用自带氧气时的氧气自动补充逻辑。
         /// Handles the auto-refill logic for oxygen when not using internal oxygen.
         /// </summary>
-        /// <param name="frame">飞行帧数据。Flight frame data.</param>
         private void AutoRefillLogic(in FlightFrameData frame)
         {
             if (Data.DesireOxygenCapacity-Data._oxygenAmountBuffer >= 0.00001)
@@ -423,283 +670,25 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
         }
 
-        /// <summary>
-        /// 根据当前场景和EVA状态刷新燃料源。
-        /// Refreshes the fuel sources based on the current scene and EVA status.
-        /// </summary>
-        public void Refresh()
-        {
-            if (PartScript == null || PartScript.Modifiers == null)
-            {
-                return;
-            }
-            
-            if (Game.InFlightScene)
-            {
-                try
-                {
-                    RefreshFuelSource();
-                    CheckInCraftRadiationSource();
-                    RefreshRadiationCompartment();
-                }
-                catch (Exception e)
-                {
-                }
-                
-            }
-        }
-        
-        /// <summary>
-        /// 在非EVA模式下刷新燃料源。
-        /// Refreshes fuel sources when not in EVA mode.
-        /// </summary>
-        /// 这破玩意我给重构了,我操,牛逼
-        private void RefreshFuelSource()
-        {
-            bool isEva = IsActiveEvaOutsideCompartment();
-            
-            if (isEva)
-            {
-                IsHibernating = false;
-                OxygenSource = WaterSource = FoodSource = WastedWaterSource = Co2Source = SolidWasteSource = null;
-            }
-            else
-            {
-                RefreshCraftFuelSources();
-            }
-            
-            SyncCraftAndLocalFuelSources();
-            ResourceWarningScript.Instance.ResetSessionFlags();
-            
-
-            
-            bool IsActiveEvaOutsideCompartment()
-            {
-                return PartScript?.CraftScript?.ActiveCommandPod?.Part?.PartScript == PartScript && !evaScript.ActiveWhileInCrewCompartment;
-            }
-    
-            
-    
-            void RefreshCraftFuelSources()
-            { 
-                var patch = PartScript.GetModifier<EvaScript>().CrewCompartment?.PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
-                if (patch==null)
-                {
-                    
-                    Mod.Log("NULl DEtected in SupportLifeScript.RefreshFuelSource.RefreshCraftFuelSources");
-                    return;
-                }
-                try
-                {
-                   
-                    OxygenSource = patch?.OxygenFuelSource;
-                    FoodSource = patch?.FoodFuelSource;
-                    WaterSource = patch?.WaterFuelSource;
-                    Co2Source = patch?.CO2FuelSource;
-                    WastedWaterSource = patch?.WastedWaterFuelSource;
-                    SolidWasteSource = patch?.SolidWasteFuelSource;
-                }
-                catch (Exception e)
-                {
-                    Mod.Log("CraftRefreshSource::{0}", e);
-                }
-            }
-    
-           
-            
-            void SyncCraftAndLocalFuelSources()
-            {
-                TrySyncPair(OxygenSource,ref Data._oxygenAmountBuffer,Data.DesireOxygenCapacity, false);
-                TrySyncPair(FoodSource,ref Data._foodAmountBuffer,Data.DesireFoodCapacity, false);
-                TrySyncPair(WaterSource,ref Data._waterAmountBuffer,Data.DesireWaterCapacity, false);
-                TrySyncPair(Co2Source,ref Data._co2AmountBuffer,Data.DesireCO2Capacity, true);
-                TrySyncPair(WastedWaterSource,ref Data._wastedWaterAmountBuffer,Data.DesireWastedWaterCapacity, true);
-                TrySyncPair(SolidWasteSource,ref Data._solidWasteAmountBuffer,Data.DesireSolidWasteCapacity, true);
-            }
-            
-            void TrySyncPair(IFuelSource craftSource,ref double amount,float capacity, bool wasteMode)
-            {
-                if (craftSource == null)
-                {
-                    return;
-                }
-    
-                if (wasteMode)
-                {
-                    if (craftSource.TotalCapacity - craftSource.TotalFuel > 0.00001 && amount > 0.00001)
-                    {
-                        RemoveWaste(craftSource, ref amount);
-                    }
-                    return;
-                }
-                if (!craftSource.IsEmpty && capacity - amount > 0.00001)
-                {
-                    ReFill(craftSource, ref amount, capacity);
-                }
-    
-               
-            }
-            
-        }
-
-        
-
-        
-        /// <summary>
-        /// 从Craft补充维生资源
-        /// </summary>
-        /// <param name="craft"></param>
-        /// <param name="amount"></param>
-        /// <param name="capacity"></param>
-        private void ReFill(IFuelSource craft,ref double amount,float capacity)
-        {
-            if (craft.TotalFuel >= capacity - amount)
-            {
-                craft.RemoveFuel(capacity - amount);
-                amount = capacity;
-            }
-            else
-            {
-                craft.RemoveFuel(craft.TotalFuel);
-                amount+=(craft.TotalFuel);
-            }
-        }
-        
-        /// <summary>
-        /// 给Drood移除产生的废物
-        /// </summary>
-        /// <param name="Craft"></param>
-        /// <param name="drood"></param>
-        private void RemoveWaste(IFuelSource Craft,ref double drood)
-        {
-            if (Craft.TotalCapacity-Craft.TotalFuel>drood)
-            {
-                Craft.AddFuel(drood);
-                drood = 0;
-                Mod.Log($"Remove{Craft.FuelType.Name} 成功:{0}实际{1}",drood,Craft.TotalFuel);
-            }
-            else
-            {
-                drood-=(Craft.TotalCapacity - Craft.TotalFuel);
-                Craft.AddFuel(Craft.TotalCapacity - Craft.TotalFuel);
-                Mod.Log($"Remove{Craft.FuelType.Name} 满了成功:{0}实际{1}", drood, Craft.TotalFuel);
-            }
-        }
-        #endregion
-        
-        #region 处理"那个"玩意用到的
-        /// <summary>
-        /// 在加载飞船时调用，触发飞船结构变化处理。
-        /// Called when the craft is loaded, triggers craft structure change handling.
-        /// </summary>
-        public override void OnCraftLoaded(ICraftScript craftScript, bool movedToNewCraft)
-        {   
-            base.OnCraftLoaded(craftScript, movedToNewCraft);
-            if(!Game.InFlightScene)
-                return;
-            Refresh();
-        }
-        
-        
-        
-        private void OnFlightEnded(object sender, FlightEndedEventArgs e)
-        {
-            FlightEnd();
-        }
-        /// <summary>
-        /// Called when the craft ends, removes extra fuel tanks.
-        public override void FlightEnd()
-        {
-            OnCraftUnloaded();
-        }
-        public void OnPhysicsEnabled(ICraftNode craftNode, PhysicsChangeReason reason)
-        {
-            if (reason == PhysicsChangeReason.Warp||reason == PhysicsChangeReason.LoadedIntoGameView)
-            {
-                return;
-            }
-            if (ModSettings.Instance.ConsumeResourceWhenUnloaded==true&&!IsHibernating)
-            {
-                
-                RemoveFuelAmountInstantly();
-                AddWastedAmountInstantly();
-            }
-            
-        }
-        private void OnPhysicsDisabled(ICraftNode craftNode, PhysicsChangeReason reason)
-        {
-            if (reason == PhysicsChangeReason.Warp||reason== PhysicsChangeReason.UnloadedFromGameView)
-            {
-                return;
-            }
-
-            OnCraftUnloaded();
-        }
-        
-        /// <summary>
-        /// 防止以前遗留的FuelTank发癫,移除
-        /// </summary>
-        /// <param name="partElement"></param>
-        /// <returns></returns>
-        private static XElement RemoveFuelTankXML(XElement partElement)
-        {
-            if (partElement == null)
-            {
-               Mod.Log("Part element is null.");
-                return null;
-            }
-
-            try
-            {
-                string[] fuelTypesToRemove = { "Oxygen", "Food", "H2O","CO2","Wasted Water","Solid Waste" };
-                var tanksToRemove = partElement.Elements("FuelTank")
-                    .Where(fuelTank => fuelTypesToRemove.Contains(fuelTank.Attribute("fuelType")?.Value))
-                    .ToList();
-
-                if (tanksToRemove.Any())
-                {
-                    foreach (var tank in tanksToRemove)
-                    {
-                       Mod.Log($"Removing FuelTank with fuelType={tank.Attribute("fuelType")?.Value}");
-                        tank.Remove();
-                    }
-                }
-                else
-                {
-                 
-                }
-
-                return partElement;
-            }
-            catch (Exception ex)
-            {
-               Mod.Log($"Error removing FuelTank nodes: {ex.Message}");
-                return null;
-            }
-        }
         #endregion
 
-        #region 燃料值保存缓冲
+        #region 非加载时资源处理
+
         private void OnCraftUnloaded()
         {
-            
             try
             {
                 Data.LastLoadTime = (long)FlightSceneScript.Instance.FlightState.Time;
                 PartScript.Data.LoadXML(RemoveFuelTankXML(this.PartScript.Data.GenerateXml(this.PartScript.CraftScript.Transform,false)),15);
-                
             }
             catch (Exception e)
             {
                 Mod.Log("RemoveExtraTanks调用RemoveFuelTankXML出问题了{0}", e);
             }
-            
-
         }
         
         private void RemoveFuelAmountInstantly()
         {
-            
             Mod.Log("调用RemoveFuelAmountInstantly ,间隔{0}", Game.Instance.FlightScene.FlightState.Time-Data.LastLoadTime);
 
             double amount = (Game.Instance.FlightScene.FlightState.Time - Data.LastLoadTime) / 1;
@@ -717,7 +706,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 if(OxygenSource==null||OxygenSource.IsEmpty)
                 {
                     Data.AddLifeSupportFuel("Oxygen", amount*Data.OxygenConsumeRate>Data.DesireOxygenCapacity?-Data._oxygenAmountBuffer:-amount*Data.OxygenConsumeRate);
-                   
                 }
             }
             if (WaterSource!=null)
@@ -737,7 +725,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (WaterSource==null||WaterSource.IsEmpty)
             {
                 Data.AddLifeSupportFuel("H2O", amount*Data.WaterConsumeRate>Data.DesireWaterCapacity?-Data._waterAmountBuffer:-amount*Data.WaterConsumeRate);
-                   
             }
             
             if (FoodSource!=null)
@@ -757,10 +744,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (FoodSource==null||FoodSource.IsEmpty)
             {
                 Data.AddLifeSupportFuel("Food", amount*Data.FoodConsumeRate>Data.DesireFoodCapacity?-Data._foodAmountBuffer:-amount*Data.FoodConsumeRate);
-                   
             }
-            
-            
         }
         
         private void AddWastedAmountInstantly()
@@ -772,10 +756,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             double solidWasteToAdd = Data.FoodConsumeRate * Data.evaConsumeEfficiency * 1.1 * amount;
             if (UsingInternalOxygen())
             {
-                
                 if (Co2Source != null)
                 {
-                   
                     if ( co2ToAdd>= this.Co2Source.TotalCapacity - Co2Source.TotalFuel)
                     {
                         Co2Source.AddFuel(Co2Source.TotalCapacity - Co2Source.TotalFuel);
@@ -795,10 +777,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
             }
             if (WastedWaterSource != null)
-            {
-                   
-                if ( wastedWaterToAdd>=
-                     this.WastedWaterSource.TotalCapacity - WastedWaterSource.TotalFuel)
+            {   
+                if ( wastedWaterToAdd>= this.WastedWaterSource.TotalCapacity - WastedWaterSource.TotalFuel)
                 {
                     WastedWaterSource.AddFuel(WastedWaterSource.TotalCapacity - WastedWaterSource.TotalFuel);
                     double remain = amount - (WastedWaterSource.TotalCapacity - WastedWaterSource.TotalFuel);
@@ -815,10 +795,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             
             if (SolidWasteSource != null)
-            {
-                   
-                if ( solidWasteToAdd>=
-                     this.SolidWasteSource.TotalCapacity - SolidWasteSource.TotalFuel)
+            {   
+                if ( solidWasteToAdd>= this.SolidWasteSource.TotalCapacity - SolidWasteSource.TotalFuel)
                 {
                     SolidWasteSource.AddFuel(SolidWasteSource.TotalCapacity - SolidWasteSource.TotalFuel);
                     double remain = amount - (SolidWasteSource.TotalCapacity - SolidWasteSource.TotalFuel);
@@ -834,9 +812,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 Data.AddLifeSupportFuel("Solid Waste",solidWasteToAdd>Data.DesireSolidWasteCapacity-Data._solidWasteAmountBuffer?Data.DesireSolidWasteCapacity-Data._solidWasteAmountBuffer:solidWasteToAdd);
             }
         }
+
         #endregion
 
-        #region 可呼吸星球判断
+        #region 可呼吸星球检测
+
         private static BreathablePlanets GetBreathablePlanets()
         {
             if (!_breathablePlanetsCacheLoaded)
@@ -859,7 +839,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private static bool IsBreathablePlanet(string planetName)
         {
-            
             var config = GetBreathablePlanets();
             if (config?.BreathablePlanet == null)
             {
@@ -910,47 +889,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
 
         #endregion
-        
-        #region SOI,结构变化相关函数
-        /// <summary>
-        /// 在飞船结构变化时调用，如果在飞行场景中，则刷新燃料源。
-        /// Called when the craft structure changes, refreshes fuel sources if in flight scene.
-        /// </summary>
-        public override void OnCraftStructureChanged(ICraftScript craftScript)
-        {
-            if(!Game.InFlightScene)
-                return;
-            base.OnCraftStructureChanged(craftScript);
-            if (Game.InFlightScene)
-            {
-                Refresh();
-                Mod.Log("OnCraftStructureChanged调用RefreshFuelSource();");
-            }
-        }
 
-        /// <summary>
-        /// 根据大气条件和行星确定是否使用内部氧气。
-        /// Determines if internal oxygen is being used based on atmospheric conditions and planet.
-        /// </summary>
-        /// <returns>如果使用内部氧气则返回true，否则返回false。True if using internal oxygen, false otherwise.</returns>
-        public bool UsingInternalOxygen()
-        {
-            float airDensity = PartScript.CraftScript.AtmosphereSample.AirDensity;
-            if (airDensity <= 0.4)
-            {
-                return true;
-            }
-            
-            if (IsBreathablePlanet(currentPlanetName) || IsBreathableByComposition())
-            {
-                if(evaScript.IsInWater && PartScript.CraftScript.FlightData.AltitudeAboveSeaLevel < 0.1)
-                {
-                    return true;
-                }
-                return false;
-            }
-            return true;
-        }
+        #region 行星与SOI更新
 
         /// <summary>
         /// 根据飞行场景数据更新当前行星名称。
@@ -974,13 +914,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 Mod.Log("UpdateCurrentPlanet调用出问题了{0}", e);
             }
             this.RadiationBeltConfig = RadiationBeltConfig.LoadFromFile(currentPlanetName);
-
         }
         
         /// <summary>
         /// 重载,手动输入名称
         /// </summary>
-        /// <param name="name"></param>
         private void UpdateCurrentPlanet(string name)
         {
             if (!Game.InFlightScene)
@@ -1003,37 +941,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             UpdateCurrentPlanet(orbitNode.Name);
         }
 
-        /// <summary>
-        /// Called when a part this modifier is attached to is pulled out in the designer.  This is called before DesignerStart() and while the previous part is still selected.
-        /// </summary>
-        /// <param name="assembly">The assembly this modifier's part is within (will contain all parts if contained in a sub-assembly).</param>
-        public override void OnDesignerPullout(Assembly assembly)
-        {
-            base.OnDesignerPullout(assembly);
-            var eva = this.PartScript.GetModifier<EvaScript>();
-            if (!eva.Data.RequiresCrewMember)
-            {
-              return;
-            }
-
-            Data.SetDroodismCrewData();
-        }
-
-        public override void OnCloned()
-        {
-            base.OnCloned();
-            var eva = this.PartScript.GetModifier<EvaScript>();
-            if (!eva.Data.RequiresCrewMember)
-            {
-                return;
-            }
-            Data.SetDroodismCrewData();
-        }
-
-
         #endregion
 
         #region 伤害处理
+
         private void DamageDrood(string fuelType, FlightFrameData frame, float DamageScale)
         {
             if (evaScript == null || PartScript == null || 
@@ -1135,7 +1046,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     {
                         damageMultiplier = 0.05f * rateFactor; // Minor damage from high rate alone
                         damageReason = "<color=purple>high radiation rate exposure</color>";
-                       
                     }
                 }
             }
@@ -1144,7 +1054,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 damageMultiplier = 0.05f;
                 damageReason = "<color=red><size=120%>severe cumulative radiation exposure</color></size>";
-               
             }
 
             if (damageMultiplier > 0f)
@@ -1171,15 +1080,182 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (evaScript.Data.GTolerance > 0.0 && evaScript.Data.GDamageScale > 0.0 &&
                 (float)(Setting<float>)Game.Instance.Settings.Game.Flight.ImpactDamageScale > 0.0)
             {
-                
                 this.PartScript.TakeDamage((Mathf.Max(0.0f, this.evaScript.Gs - this.evaScript.Data.GTolerance) * frame.DeltaTime * this.evaScript.Data.GDamageScale * (float) (Setting<float>) Game.Instance.Settings.Game.Flight.ImpactDamageScale)*-0.4f, PartDamageType.GForce);
             }
-             
-            
         }
+
+        #endregion
+
+        #region 辐射计算
+
+        private void LoadRadiationData()
+        {
+            if (Data.DroodismCrewData==null)
+            {
+                this.Data.CumulativeRad = 0;
+                Mod.Log("Current Drood's DroodismCrewData is null ,return 0");
+                return;
+            }
+
+            this.Data.CumulativeRad = this.Data.DroodismCrewData.RadiationRate;
+        }
+
+        internal void SaveDroodismCrewData(bool saveImmediately = true)
+        {
+            if (Data.DroodismCrewData==null)
+            {
+                return;
+            }
+
+            try
+            {
+                DroodismCrewDataManager.Instance.SetLifetimeRadiation(evaScript.Data.CrewId, this.Data.CumulativeRad,saveImmediately);
+                DroodismCrewDataManager.Instance.AddMissionTime(evaScript.Data.CrewId, MissionDurationTime,saveImmediately);
+            }
+            catch (Exception e)
+            {
+                Scripts.Mod.Log("Droodism.SupportLifeScript.SaveDroodismCrewData"+e);
+            }
+        }
+
+        /// <summary>
+        /// 计算来自craft内部的辐射源
+        /// </summary>
+        private void CheckInCraftRadiationSource()
+        {
+            if (!ModSettings.Instance.ReceiveCraftRadiation)
+            {
+                return;
+            }
+            RTGParts.Clear();
+            NTRParts.Clear();
+            foreach (var partData in PartScript.CraftScript.Data.Assembly.Parts)
+            {
+                if (partData.PartType.Name == "Generator2")
+                {
+                    RTGParts.Add(partData);
+                }
+                if (partData.PartType.Name == "Rocket Engine")
+                {
+                    var rocketEngineScript = partData.PartScript.GetModifier<RocketEngineScript>();
+                    if (rocketEngineScript!=null)
+                    {
+                        if ( rocketEngineScript.Data.EngineType.Name == "Nuclear Thermal")
+                        {
+                            NTRParts.Add(partData);
+                        }
+                    }
+                }
+            }
+        }
+
+        private float GetRTGRadiationDoseRate()
+        {
+            if (!ModSettings.Instance.ReceiveCraftRadiation||RTGParts.Count==0)
+            {
+                return 0;
+            }
+
+            float finalResult = 0;
+            foreach (var partData in RTGParts)
+            {
+                float distance = Mathf.Clamp(Vector3.Distance(partData.PartScript.GameObject.transform.position, this.PartScript.GameObject.transform.position), 0.1f, 10f);
+                finalResult +=(1/ (distance*distance))*0.2f;
+            }
+            return finalResult;
+        }
+
+        private float GetNTRRadiationDoseRate()
+        {
+            if (!ModSettings.Instance.ReceiveCraftRadiation||NTRParts.Count==0)
+            {
+                return 0;
+            }
+            float finalResult = 0;
+            foreach (var partData in NTRParts)
+            {
+                if (partData.Activated)
+                {
+                    float distance = Mathf.Clamp(Vector3.Distance(partData.PartScript.GameObject.transform.position, this.PartScript.GameObject.transform.position), 0.1f, 10f);
+                    finalResult +=(1/ (distance*distance))*0.2f;
+                }
+            }
+            return finalResult;
+        }
+
+        private void RefreshRadiationCompartment()
+        {
+            var eva = this.PartScript?.GetModifier<EvaScript>();
+            
+            if (eva.EvaActive||eva.ActiveWhileInCrewCompartment)
+            {
+                innerRadiationProtection= outerRadiationProtection =craftRadiationProtection = 0;
+                return;
+            }
+          
+            var crewCabin = eva.CrewCompartment?.PartScript.GetModifier<CrewCabinScript>();
+            if (crewCabin!=null)
+            {
+                outerRadiationProtection =crewCabin.Data.RadiationShieldDuration>0? crewCabin.GetOuterRadiationProtection():0;
+                innerRadiationProtection=crewCabin.Data.RadiationShieldDuration>0? crewCabin.GetInnerRadiationProtection():0;
+                craftRadiationProtection = crewCabin.Data.RadiationShieldDuration > 0 ? crewCabin.GetCraftRadiationProtection() : 0;
+            }
+
+            if (crewCabin==null)
+            {
+                innerRadiationProtection= outerRadiationProtection =craftRadiationProtection = 0;
+            }
+        }
+        
+        /// <summary>
+        /// 对辐射剂量计算
+        /// </summary>
+        private void CheckRadiationState(in FlightFrameData data)
+        {
+            RadiationBeltManager.Instance.TryGetDoseRateRadPerHour(this.RadiationBeltConfig,
+                currentPlanetName,
+                PartScript.CraftScript.FlightData.Position.ToVector3(),
+                out var totalRadiationDoseRateRadPerHour,
+                out var innerDoseRateRadPerHour,
+                out var outerDoseRateRadPerHour);
+            float deltaHours = Mathf.Max(0f, (float)data.DeltaTimeWorld) / 3600f;
+            if (deltaHours <= 1e-9f)
+            {
+                deltaHours = Mod.GetDeltaTimeHours();
+            }
+            
+            this.RadiationDoseRateRadPerHour = innerDoseRateRadPerHour*(1-innerRadiationProtection)+outerDoseRateRadPerHour*(1-outerRadiationProtection)+GetNTRRadiationDoseRate()*(1-craftRadiationProtection)+GetRTGRadiationDoseRate()*(1-craftRadiationProtection);
+            this.Data.CumulativeRad += RadiationDoseRateRadPerHour * deltaHours;
+            CurrentCumulativeRadiationStats = GetAcuteBand((float)this.Data.CumulativeRad);
+            CurrentRadiationRateStats = GetRadiationRateStats(RadiationDoseRateRadPerHour);
+        }
+       
+        private static string GetAcuteBand(float cumulativeDoseRad)
+        {
+            if (cumulativeDoseRad >= 500f)
+                return"<color=red>Critical";
+            if (cumulativeDoseRad >= 200f)
+                return"<color=orange>Severe";
+            if (cumulativeDoseRad >= 100f)
+                return"<color=yellow>Mild";
+            return"<color=green>nominal";
+        }
+
+        private static string GetRadiationRateStats(float rate)
+        {
+            if (rate > 10f)
+                return"<color=red>Critical";
+            if (rate > 5f)
+                return"<color=orange>Severe"; 
+            if (rate > 1f)
+                return"<color=yellow>Mild";
+            return"<color=green>nominal";
+        }
+
         #endregion
 
         #region UI
+
         /// <summary>
         /// 为零件生成inspector model，添加生命支持信息。
         /// Generates the inspector model for the part, adding life support information.
@@ -1266,7 +1342,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 {
                     return "<color=green>" + Locale.GetString("Droodism.SupportLifeScript.UsingExternalOxygen") + "</color>";
                 }
-                
             })));
             lifeSupportGroupModel.Add<TextModel>(new TextModel(Locale.GetString("Droodism.SupportLifeScript.WastedWaterLevel"), (Func<string>) (() =>
             {
@@ -1295,7 +1370,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             //插旗与开伞
             if (!IsTourist)
             {
-                
                 if (Data.ParachuteTypes=="ParaGlider")
                 {
                     model.Add(new ToggleModel(Locale.GetString("Droodism.SupportLifeScript.AutoDeployParaGlider"),()=>Data.AutoDeployEnabled,b=>
@@ -1321,7 +1395,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     model.Add<TextButtonModel>(new TextButtonModel("<color=red>" + Locale.GetString("Droodism.SupportLifeScript.ManualDeployParachute"), (Action<TextButtonModel>)(b => this.DeployParaglider())));
                     model.Add(new SliderModel(Locale.GetString("Droodism.SupportLifeScript.FullyDeployHeight"), (Func<float>) (() => Mathf.Min(Data.MinDeployHeight, Data.AutoDeployHeight)), (Action<float>) (s =>
                     {
-                        
                         this.Data.MinDeployHeight = Mathf.Min(s, Data.AutoDeployHeight);
                     }), 100, 3000, true,true)).ValueFormatter = (Func<float, string>) (x => Units.GetDistanceString(x));
                 }
@@ -1343,14 +1416,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 model.Add(new TextModel(Locale.GetString("Droodism.SupportLifeScript.RemainRepairingTools"),(Func<string>) (() => $"{this.Data.UtilizationFactor:F1}")));
                 model.Add(new TextButtonModel(Locale.GetString("Droodism.SupportLifeScript.Repair"), (Action<TextButtonModel>)(b => { this.RepairPart(); })));
             }
-            
         }
+
         #endregion
-        
-        #region 插旗和开伞
+
+        #region 插旗与开伞
+
         private void AutoDeployParachute()
         {
-           
             bool isEva()
             {
                 if (evaScript.EvaActive)
@@ -1369,6 +1442,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             DeployParaglider();
         }
+
         private void PlantFlagClick()
         {
             ICraftScript craftScript = this.PartScript.CraftScript;
@@ -1416,8 +1490,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 {
                     return !evaScript.ActiveWhileInCrewCompartment;
                 }return craftScript.Data.Assembly.Parts.Count == 1 && craftScript.RootPart.Data.PartType.Name.Contains("Eva");
-                
-                
             }
             if (!isEva())
             {
@@ -1456,26 +1528,21 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             CraftScript craftScript1 = this.PartScript.CraftScript as CraftScript;
             craftScript1.RecenterTransformOnCoM(true);
-            //this.PartScript.CommandPod.SetPilotSeatRotation(this.PartScript.Data.Rotation,true);
-            你去吃粑粑去吧();
-
+            SpawnParachuteAndRide();
         }
 
         /// <summary>
         /// 情况太鸡巴诡异了你知道吗?
         /// </summary>
-        private void 你去吃粑粑去吧()
+        private void SpawnParachuteAndRide()
         {
-           
             Vector3 orgVelocity = this.PartScript.BodyScript.RigidBody.velocity;
-            Vector3 orgAngularVelocity = this.PartScript.BodyScript.RigidBody.angularVelocity; // 修正这里！
+            Vector3 orgAngularVelocity = this.PartScript.BodyScript.RigidBody.angularVelocity;
             
             Vector3 orgEularAngle=this.PartScript.Transform.eulerAngles;
-            //看看这里
             var parachutePartScript = CreateParachutePartScript();
             #region 我不想看
-        
-            
+         
             BodyData body = CraftBuilder.CreateBodyData(new List<PartData>(){parachutePartScript.Data}, PartScript.CraftScript.Transform);
             CraftScript craftScript = PartScript.CraftScript as CraftScript;
             craftScript?.Data.Assembly.AddBody(body);
@@ -1487,19 +1554,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             PartGroupScript groupScript = CreatePopPartGroup(bodyScript, parachutePartScript, this.PartScript.Data.Id + 1);
             #endregion
 
-            //看这
             CraftBuilder.CalculateInertiaTensors(bodyScript, false);
-            //evaScript.OnNodeLoaded();
             evaScript.OnPreNodeLoaded();
             
             parachutePartScript.BodyScript.RigidBody.velocity = orgVelocity;
-            //parachutePartScript.BodyScript.RigidBody.rotation = orgRotation;
             parachutePartScript.Transform.eulerAngles = orgEularAngle;
             parachutePartScript.BodyScript.RigidBody.angularVelocity = orgAngularVelocity;
             evaScript.LoadIntoCrewCompartment(parachutePartScript.GetModifier<CrewCompartmentScript>(), null, announceBoarding: false);
-            
         }
-        #region Paraglider
+
         private PartScript CreateParachutePartScript()
         {
             Assembly assembly=new Assembly(ParachutePartElement(), 15, Game.Instance.PartTypes);
@@ -1508,16 +1571,16 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             PartScript partScript = part.PartScript as PartScript;
             partScript?.UpdateAttachPoints();
             PartScript.CraftScript.Data.Assembly.Absorb(assembly);
-            //pop.Attach(partScript.GetModifier<PopulationScript>());
             return partScript;
         }
+
         private XElement ParachutePartElement()
         {
-            
             DesignerPart designerpart = Game.Instance.CachedDesignerParts.Parts.First(d => d.Name == (Data.ParachuteTypes=="ParaGlider"?"Glider":"DroodParachute"));
             XElement assembly = new XElement("Assembly", designerpart.AssemblyElement.Element("Parts"));
             return assembly;
         }
+
         private PartGroupScript CreatePopPartGroup(BodyScript bodyScript, PartScript partScript, int id)
         {
             GameObject gameObject = new GameObject("PartGroup");
@@ -1526,200 +1589,19 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             partGroupScript.Id = id;
             partGroupScript.BodyScript = bodyScript;
             partGroupScript.transform.parent = bodyScript.transform;
-            //partGroupScript.transform.localPosition = Vector3.zero;
             partGroupScript.transform.localPosition = bodyScript.transform.localPosition;
             partGroupScript.transform.localScale = Vector3.one;
             partGroupScript.transform.rotation = Quaternion.identity;
-            //worldPositionStays: true before 
             partScript.transform.SetParent(partGroupScript.transform, worldPositionStays: false);
             partScript.AssignToPartGroup(partGroupScript);
             partGroupScript.Data.Parts.Add(partScript.Data);
             return partGroupScript;
         }
-        #endregion
-        #endregion
-        
-        #region 辐射计算
-        
-        private void LoadRadiationData()
-        {
-            if (Data.DroodismCrewData==null)
-            {
-                this.Data.CumulativeRad = 0;
-                Mod.Log("Current Drood's DroodismCrewData is null ,return 0");
-                return;
-            }
 
-            this.Data.CumulativeRad = this.Data.DroodismCrewData.RadiationRate;
-
-        }
-
-        internal void SaveDroodismCrewData(bool saveImmediately = true)
-        {
-            if (Data.DroodismCrewData==null)
-            {
-                return;
-            }
-
-            try
-            {
-                DroodismCrewDataManager.Instance.SetLifetimeRadiation(evaScript.Data.CrewId, this.Data.CumulativeRad,saveImmediately);
-                DroodismCrewDataManager.Instance.AddMissionTime(evaScript.Data.CrewId, MissionDurationTime,saveImmediately);
-                
-            }
-            catch (Exception e)
-            {
-                Scripts.Mod.Log("Droodism.SupportLifeScript.SaveDroodismCrewData"+e);
-            }
-            
-        }
-
-        /// <summary>
-        /// 计算来自craft内部的辐射源
-        /// </summary>
-        private List<PartData> RTGParts=new List<PartData>();
-        private List<PartData> NTRParts = new List<PartData>();
-        private void CheckInCraftRadiationSource()
-        {
-            if (!ModSettings.Instance.ReceiveCraftRadiation)
-            {
-                return;
-            }
-            RTGParts.Clear();
-            NTRParts.Clear();
-            foreach (var partData in PartScript.CraftScript.Data.Assembly.Parts)
-            {
-                if (partData.PartType.Name == "Generator2")
-                {
-                    RTGParts.Add(partData);
-                }
-                if (partData.PartType.Name == "Rocket Engine")
-                {
-                    var rocketEngineScript = partData.PartScript.GetModifier<RocketEngineScript>();
-                    if (rocketEngineScript!=null)
-                    {
-                        if ( rocketEngineScript.Data.EngineType.Name == "Nuclear Thermal")
-                        {
-                            NTRParts.Add(partData);
-                        }
-                    }
-                }
-            }
-        }
-
-        private float GetRTGRadiationDoseRate()
-        {
-            if (!ModSettings.Instance.ReceiveCraftRadiation||RTGParts.Count==0)
-            {
-                return 0;
-            }
-
-            float finalResult = 0;
-            foreach (var partData in RTGParts)
-            {
-                float distance = Mathf.Clamp(Vector3.Distance(partData.PartScript.GameObject.transform.position, this.PartScript.GameObject.transform.position), 0.1f, 10f);
-                finalResult +=(1/ (distance*distance))*0.2f;
-            }
-            return finalResult;
-        }
-        private float GetNTRRadiationDoseRate()
-        {
-            if (!ModSettings.Instance.ReceiveCraftRadiation||NTRParts.Count==0)
-            {
-                return 0;
-            }
-            float finalResult = 0;
-            foreach (var partData in NTRParts)
-            {
-                if (partData.Activated)
-                {
-                    float distance = Mathf.Clamp(Vector3.Distance(partData.PartScript.GameObject.transform.position, this.PartScript.GameObject.transform.position), 0.1f, 10f);
-                    finalResult +=(1/ (distance*distance))*0.2f;
-                }
-                
-            }
-            return finalResult;
-            
-        }
-
-        private void RefreshRadiationCompartment()
-        {
-            var eva = this.PartScript?.GetModifier<EvaScript>();
-            
-            if (eva.EvaActive||eva.ActiveWhileInCrewCompartment)
-            {
-                innerRadiationProtection= outerRadiationProtection =craftRadiationProtection = 0;
-                return;
-            }
-          
-            var crewCabin = eva.CrewCompartment?.PartScript.GetModifier<CrewCabinScript>();
-            if (crewCabin!=null)
-            {
-                outerRadiationProtection =crewCabin.Data.RadiationShieldDuration>0? crewCabin.GetOuterRadiationProtection():0;
-                innerRadiationProtection=crewCabin.Data.RadiationShieldDuration>0? crewCabin.GetInnerRadiationProtection():0;
-                craftRadiationProtection = crewCabin.Data.RadiationShieldDuration > 0 ? crewCabin.GetCraftRadiationProtection() : 0;
-            }
-
-            if (crewCabin==null)
-            {
-                innerRadiationProtection= outerRadiationProtection =craftRadiationProtection = 0;
-            }
-           
-        }
-        
-        /// <summary>
-        /// 对辐射剂量计算
-        /// </summary>
-        /// <param name="data"></param>
-        private void CheckRadiationState(in FlightFrameData data)
-        {
-
-            RadiationBeltManager.Instance.TryGetDoseRateRadPerHour(this.RadiationBeltConfig,
-                currentPlanetName,
-                PartScript.CraftScript.FlightData.Position.ToVector3(),
-                out var totalRadiationDoseRateRadPerHour,
-                out var innerDoseRateRadPerHour,
-                out var outerDoseRateRadPerHour);
-            float deltaHours = Mathf.Max(0f, (float)data.DeltaTimeWorld) / 3600f;
-            if (deltaHours <= 1e-9f)
-            {
-                deltaHours = Mod.GetDeltaTimeHours();
-            }
-            
-            this.RadiationDoseRateRadPerHour = innerDoseRateRadPerHour*(1-innerRadiationProtection)+outerDoseRateRadPerHour*(1-outerRadiationProtection)+GetNTRRadiationDoseRate()*(1-craftRadiationProtection)+GetRTGRadiationDoseRate()*(1-craftRadiationProtection);
-            this.Data.CumulativeRad += RadiationDoseRateRadPerHour * deltaHours;
-            CurrentCumulativeRadiationStats = GetAcuteBand((float)this.Data.CumulativeRad);
-            CurrentRadiationRateStats = GetRadiationRateStats(RadiationDoseRateRadPerHour);
-
-        }
-       
-        
-        private static string GetAcuteBand(float cumulativeDoseRad)
-        {
-            if (cumulativeDoseRad >= 500f)
-                return"<color=red>Critical";
-            if (cumulativeDoseRad >= 200f)
-                return"<color=orange>Severe";
-            if (cumulativeDoseRad >= 100f)
-                return"<color=yellow>Mild";
-            return"<color=green>nominal";
-            
-        }
-
-        private static string GetRadiationRateStats(float rate)
-        {
-            if (rate > 10f)
-                return"<color=red>Critical";
-            if (rate > 5f)
-                return"<color=orange>Severe"; 
-            if (rate > 1f)
-                return"<color=yellow>Mild";
-            return"<color=green>nominal";
-        }
         #endregion
 
-        #region 修复零件
-        private bool isRepairing;
+        #region 零件修复
+
         private void RepairPart()
         {
             var part = Game.Instance.FlightScene.ViewManager.GameView.SelectedPart;
@@ -1751,10 +1633,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
 
             isRepairing = true;
-
-
-
         }
+
         private void RepairPartWorkingLogic(in FlightFrameData data,PartData pd)
         {
             if (pd==null)
@@ -1796,16 +1676,52 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 Data.UtilizationFactor -=num ;
                 pd.Damage -= num;
             }
-           
         }
-        #endregion
-
-        #region 杂项
-        
 
         #endregion
 
+        #region XML工具
 
+        /// <summary>
+        /// 防止以前遗留的FuelTank发癫,移除
+        /// </summary>
+        private static XElement RemoveFuelTankXML(XElement partElement)
+        {
+            if (partElement == null)
+            {
+               Mod.Log("Part element is null.");
+                return null;
+            }
+
+            try
+            {
+                string[] fuelTypesToRemove = { "Oxygen", "Food", "H2O","CO2","Wasted Water","Solid Waste" };
+                var tanksToRemove = partElement.Elements("FuelTank")
+                    .Where(fuelTank => fuelTypesToRemove.Contains(fuelTank.Attribute("fuelType")?.Value))
+                    .ToList();
+
+                if (tanksToRemove.Any())
+                {
+                    foreach (var tank in tanksToRemove)
+                    {
+                       Mod.Log($"Removing FuelTank with fuelType={tank.Attribute("fuelType")?.Value}");
+                        tank.Remove();
+                    }
+                }
+                else
+                {
+                 
+                }
+
+                return partElement;
+            }
+            catch (Exception ex)
+            {
+               Mod.Log($"Error removing FuelTank nodes: {ex.Message}");
+                return null;
+            }
+        }
+
+        #endregion
     }
-   
 }
