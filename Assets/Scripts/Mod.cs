@@ -56,13 +56,16 @@ namespace Assets.Scripts
         {
             return InFlightScene ?ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript as CraftScript:Game.Instance.Designer.CraftScript as CraftScript;
 
-        } 
+        } // 反射调用 private 方法
+       
         protected override void OnModInitialized()
         {
+            
+            CheckLocalizationFiles("ZH-CN");
+            CheckLocalizationFiles("EN-US");
             base.OnModInitialized();
             try
             {
-                base.OnModLoaded();
                 var harmony = new Harmony("com.SatelliteTorifune.Droodism");
                 CrewManagerSyncPatches.Apply(harmony);
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
@@ -75,13 +78,7 @@ namespace Assets.Scripts
             }
             Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
             Game.Instance.SceneManager.SceneTransitionCompleted+=OnSceneTransitionCompleted;
-            RegisterCommands();
-            CheckDefaultPlanetRadiationBeltConfig();
-            CheckDefaultBreathablePlanetConfig();
-            CheckDefaultFlagImage();
             
-            CheckLocalizationFiles("ZH-CN");
-            CheckLocalizationFiles("EN-US");
         }
 
         /// <summary>
@@ -101,6 +98,11 @@ namespace Assets.Scripts
             GameObject.DontDestroyOnLoad(DroodismGO);
             DroodismGO.SetActive(true);
             Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.MapView, OnBuildMapViewInspectorPanel);
+            RegisterCommands();
+            CheckDefaultPlanetRadiationBeltConfig();
+            CheckDefaultBreathablePlanetConfig();
+            CheckDefaultFlagImage();
+            
             
 
         }

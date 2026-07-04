@@ -51,19 +51,19 @@ namespace Assets.Scripts
                 Directory.CreateDirectory(folderPath);
             }
             var asset = Mod.ResourceLoader.LoadAsset<TextAsset>("Assets/Resources/BreathablePlanets.xml");
-            Log($"[Droodism] CheckDefaultBreathablePlanetConfig: asset={asset != null}, folderPath={folderPath}");
+            
             if (asset != null)
             {
                 var targetPath = Path.Combine(folderPath, "BreathablePlanets.xml");
                 if (!File.Exists(targetPath))
                 {
                     File.WriteAllText(targetPath, asset.text, Encoding.UTF8);
-                     Log($"[Droodism] Copied BreathablePlanets.xml to: {targetPath}");
+                     Debug.LogFormat($"[Droodism] Copied BreathablePlanets.xml to: {targetPath}");
                 }
             }
             else
             {
-                LogError("[Droodism] Failed to load BreathablePlanets.xml from Resources!");
+                Debug.LogErrorFormat("[Droodism] Failed to load BreathablePlanets.xml from Resources!");
             }
         }
         private  static string GetRadiationBeltConfigFolderPath()
@@ -137,11 +137,11 @@ namespace Assets.Scripts
             try
             {
                 File.WriteAllBytes(targetPath, localizationFile.bytes);
-                Log($"[Droodism] Wrote {targetLanguage} localization file to: {targetPath}");
+                Debug.LogFormat($"[Droodism] Wrote {targetLanguage} localization file to: {targetPath}");
             }
             catch (Exception e)
             {
-                LogError($"[Droodism] Failed to write {targetLanguage} localization file to '{targetPath}': {e}");
+                Debug.LogErrorFormat($"[Droodism] Failed to write {targetLanguage} localization file to '{targetPath}': {e}");
             }
         }
     }

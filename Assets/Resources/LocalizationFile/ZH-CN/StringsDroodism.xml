@@ -292,10 +292,10 @@
     <s id="Droodism.SupportLifeScript.WaterSupplyTime">水供应时间</s>
 
     <!--FlagPlanting-->
-    <s id="Droodism.CanNotPlantFlagAlreadyPlanted">无法插旗,此 Drood 已经插过旗了</s>
-    <s id="Droodism.FlagPlanting.CanNotPlantFlagInWater">无法插旗,Drood 在水中</s>
-    <s id="Droodism.FlagPlanting.CanNotPlantFlagNotGrounded">无法插旗,未落地</s>
-    <s id="Droodism.FlagPlanting.CanNotPlantFlagVelocityHigh">无法插旗,速度太快</s>
+    <s id="Droodism.FlagPlanting.CannotPlantFlagAlreadyPlanted">无法插旗,此 Drood 已经插过旗了</s>
+    <s id="Droodism.FlagPlanting.CannotPlantFlagInWater">无法插旗,Drood 在水中</s>
+    <s id="Droodism.FlagPlanting.CannotPlantFlagNotGrounded">无法插旗,未落地</s>
+    <s id="Droodism.FlagPlanting.CannotPlantFlagVelocityHigh">无法插旗,速度太快</s>
     <s id="Droodism.FlagPlanting.CannotPlantFlagNotInEva">无法插旗,未在出舱状态</s>
     
     <!-- ToolBoxScript -->
