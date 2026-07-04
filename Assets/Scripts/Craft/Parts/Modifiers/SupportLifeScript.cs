@@ -940,9 +940,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 return true;
             }
-
-            // 优先用大气组分分析判断是否可呼吸（移植自 JetEngineScript.ComputeOxygenMultiplier）
-            if (IsBreathableByComposition() || IsBreathablePlanet(currentPlanetName))
+            
+            if (IsBreathablePlanet(currentPlanetName) || IsBreathableByComposition())
             {
                 if(evaScript.IsInWater && PartScript.CraftScript.FlightData.AltitudeAboveSeaLevel < 0.1)
                 {
