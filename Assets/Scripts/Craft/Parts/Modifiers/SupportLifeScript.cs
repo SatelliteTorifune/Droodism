@@ -17,6 +17,7 @@ using Assets.Scripts.Droodism.ResourceWarning;
 using Droodism.RadiationBelt;
 using ModApi;
 using ModApi.Flight.Events;
+using ModApi.Planet;
 using ModApi.Flight.GameView;
 using UnityEngine;
 using ModApi.Flight.Sim;
@@ -39,6 +40,7 @@ using Assembly = ModApi.Craft.Assembly;
 //2026 4 13 不是,我怎么还在给这个b玩意加东西
 //2026 4 26 这个破fuelSource刷新的还在追我
 //2026 5 6 我讨厌你
+//2026 7 5 欲辩已忘言
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
@@ -133,6 +135,19 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private static BreathablePlanets _breathablePlanetsCache;
         private static bool _breathablePlanetsCacheLoaded;
 
+        /// <summary>
+        /// 大气组分呼吸检测缓存：当前缓存的父行星引用
+        /// </summary>
+        private IPlanetNode _cachedBreathableBody;
+        /// <summary>
+        /// 大气组分呼吸检测缓存：当前行星是否可呼吸
+        /// </summary>
+        private bool _cachedIsBreathable;
+        /// <summary>
+        /// 可呼吸所需的最低氧气质量分数阈值
+        /// </summary>
+        
+        private const float MinBreathableOxygenFraction = 0.1f;
         
         #endregion
 
@@ -852,7 +867,48 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             return config.BreathablePlanet.Contains(planetName);
         }
-        
+
+        /// <summary>
+        /// 通过扫描大气组分中的氧气质量分数来判断当前行星是否可呼吸。
+        /// 移植自 JetEngineScript.ComputeOxygenMultiplier 的 LOX 查找逻辑。
+        /// 带缓存，行星体不变时不重算。
+        /// </summary>
+        private bool IsBreathableByComposition()
+        {
+            var parent = PartScript.CraftScript?.CraftNode?.Parent;
+            if (parent == null) return false;
+
+            // 缓存：行星体不变就不重新计算
+            if (parent != _cachedBreathableBody)
+            {
+                _cachedBreathableBody = parent;
+                _cachedIsBreathable = ComputeBreathable(parent);
+            }
+            return _cachedIsBreathable;
+        }
+
+        /// <summary>
+        /// 扫描行星的大气组分列表，查找氧气（LOX/O2）并判断其质量分数
+        /// 是否达到可呼吸阈值
+        /// </summary>
+        private static bool ComputeBreathable(IPlanetNode parent)
+        {
+            var composition = parent?.PlanetData?.AtmosphereData?.Composition;
+            if (composition == null) return false;
+
+            foreach (var atmosphereComponent in composition)
+            {
+                if (atmosphereComponent == null) continue;
+
+                // 兼容 GasId 的两种可能命名
+                if (atmosphereComponent.GasId == "LOX" )//|| atmosphereComponent.GasId == "O2")
+                {
+                    return atmosphereComponent.MassFraction >= MinBreathableOxygenFraction;
+                }
+            }
+            return false;
+        }
+
         #endregion
         
         #region SOI,结构变化相关函数
@@ -879,25 +935,20 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// <returns>如果使用内部氧气则返回true，否则返回false。True if using internal oxygen, false otherwise.</returns>
         public bool UsingInternalOxygen()
         {
-            var airCom = PartScript.CraftScript.CraftNode.Parent.PlanetData.AtmosphereData.Composition;
-            //TODO 完善根据组分判断
             float airDensity = PartScript.CraftScript.AtmosphereSample.AirDensity;
-            if (airDensity == 0)
+            if (airDensity <= 0.4)
             {
                 return true;
             }
 
-            if (airDensity != 0)
+            // 优先用大气组分分析判断是否可呼吸（移植自 JetEngineScript.ComputeOxygenMultiplier）
+            if (IsBreathableByComposition() || IsBreathablePlanet(currentPlanetName))
             {
-                if (IsBreathablePlanet(currentPlanetName))
+                if(evaScript.IsInWater && PartScript.CraftScript.FlightData.AltitudeAboveSeaLevel < 0.1)
                 {
-                    if(evaScript.IsInWater && PartScript.CraftScript.FlightData.AltitudeAboveSeaLevel < 0.1)
-                    {
-                        return true;
-                    }
-                    return false;
+                    return true;
                 }
-
+                return false;
             }
             return true;
         }
