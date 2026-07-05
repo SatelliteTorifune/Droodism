@@ -54,31 +54,31 @@ namespace Assets.Scripts
         /// </summary>
         protected override void InitializeSettings()
         {
-            ConsumeResourceWhenUnloaded=CreateBool(Locale.GetString("Droodism.ModSettings.ConsumeResourceWhenUnloaded"))
+            ConsumeResourceWhenUnloaded=CreateBool("ConsumeResourceWhenUnloaded")
                 .SetDescription(Locale.GetString("Droodism.ModSettings.ConsumeResourceWhenUnloadedDesc"))
                 .SetDefault(false);
-            DebugMode=CreateBool(Locale.GetString("Droodism.ModSettings.ToggleDebugMode"))
+            DebugMode=CreateBool("ToggleDebugMode")
                 .SetDescription(Locale.GetString("Droodism.ModSettings.ToggleDebugModeDesc"))
                 .SetDefault(false);
-            AltNavBallColor=CreateBool(Locale.GetString("Droodism.ModSettings.AltNavBallColor"))
+            AltNavBallColor=CreateBool("AltNavBallColor")
                 .SetDescription(Locale.GetString("Droodism.ModSettings.AltNavBallColorDesc"))
                 .SetDefault(false);
-            ActiveUpdateRadiationBeltConfig=CreateBool(Locale.GetString("Droodism.ModSettings.ActiveUpdateRadiationBeltConfig"))
+            ActiveUpdateRadiationBeltConfig=CreateBool("ActiveUpdateRadiationBeltConfig")
                 .SetDescription(Locale.GetString("Droodism.ModSettings.ActiveUpdateRadiationBeltConfigDesc"))
                 .SetDefault(false);
-            ReceiveCraftRadiation=CreateBool(Locale.GetString("Droodism.ModSettings.ReceiveCraftRadiation"))
+            ReceiveCraftRadiation=CreateBool("ReceiveCraftRadiation")
                 .SetDescription(Locale.GetString("Droodism.ModSettings.ReceiveCraftRadiationDesc"))
                 .SetDefault(false);
-            RemoveDockingPortCamera=CreateBool(Locale.GetString("Droodism.ModSettings.DisableDockingPortCamera"))
+            RemoveDockingPortCamera=CreateBool("DisableDockingPortCamera")
                 .SetDescription(Locale.GetString("Droodism.ModSettings.DisableDockingPortCameraDesc"))
                 .SetDefault(false);
-            EnableResourceWarning = CreateBool(Locale.GetString("Droodism.ModSettings.EnableResourceWarning"))
+            EnableResourceWarning = CreateBool("EnableResourceWarning")
                 .SetDescription(Locale.GetString("Droodism.ModSettings.EnableResourceWarningDesc"))
                 .SetDefault(true);
-            ResourceWarningThreshold = CreateNumeric<float>(Locale.GetString("Droodism.ModSettings.WarningThreshold"),0.2f,0.5f,0.05f)
+            ResourceWarningThreshold = CreateNumeric<float>("WarningThreshold",0.2f,0.5f,0.05f)
                 .SetDescription(Locale.GetString("Droodism.ModSettings.WarningThresholdDesc"))
                 .SetDefault(0.25f);
-            ResourceCriticalThreshold = CreateNumeric<float>(Locale.GetString("Droodism.ModSettings.CriticalThreshold"),0.05f,0.2f,0.01f)
+            ResourceCriticalThreshold = CreateNumeric<float>("CriticalThreshold",0.05f,0.2f,0.01f)
                 .SetDescription(Locale.GetString("Droodism.ModSettings.CriticalThresholdDesc"))
                 .SetDefault(0.10f);
         }

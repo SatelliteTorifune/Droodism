@@ -144,7 +144,7 @@
         <TextMeshPro id="details-title-text" class="text-header details-header" />
       </Panel>
       <Panel class="no-image" offsetMin="10 10" offsetMax="10 -80">
-        <TextMeshPro id="no-selection-message" text="Select something on the left for more details." alignment="Top" />
+        <TextMeshPro id="no-selection-message" text="{Menu.ListView.SelectForDetails}" alignment="Top" />
         <VerticalScrollView id="scrollview" pivot="0 1" class="no-image">
           <VerticalLayout id="details" class="no-image" contentSizeFitter="vertical" childAlignment="UpperCenter" childForceExpandWidth="true" childForceExpandHeight="false" pivot="0 1" spacing="10" padding="5 10 0 70">
             <RectTransform active="false">

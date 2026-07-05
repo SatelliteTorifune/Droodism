@@ -2958,6 +2958,27 @@
             <param name="fallback">The English fallback text from the XML attribute.</param>
             <returns>The localized string if a translation exists, otherwise <paramref name="fallback"/>.</returns>
         </member>
+        <member name="M:Assets.Scripts.Career.CareerUtilities.GetLocalizedPlanetName(System.String)">
+            <summary>
+            Gets the localized display name for a stock celestial body, falling back to the raw name for user-created planets or bodies without a translation.
+            </summary>
+            <param name="planetName">The celestial body's raw (English) name.</param>
+            <returns>The localized planet name, or <paramref name="planetName"/> if none is authored.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Career.CareerUtilities.GetLocalizedSystemName(System.String)">
+            <summary>
+            Gets the localized display name for a stock planetary system, falling back to the raw name for user-created/downloaded systems or ones without a translation.
+            </summary>
+            <param name="systemName">The planetary system's raw (English) name.</param>
+            <returns>The localized system name, or <paramref name="systemName"/> if none is authored.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Career.CareerUtilities.GetLocalizedPayloadName(System.String)">
+            <summary>
+            Gets the localized display name for a stock contract payload, falling back to the raw name for payloads without a translation.
+            </summary>
+            <param name="payloadName">The payload's raw (English) name.</param>
+            <returns>The localized payload name, or <paramref name="payloadName"/> if none is authored.</returns>
+        </member>
         <member name="M:Assets.Scripts.Career.CareerUtilities.GetLocalizedAttributeTemplate(System.Xml.Linq.XElement,System.String,System.String)">
             <summary>
             Gets the localized template (still containing @token placeholders) for a localizable contract attribute, or null when the attribute is not localizable or has no translation.
@@ -3019,6 +3040,13 @@
             </summary>
             <param name="value">The raw attribute value.</param>
             <returns>The sanitized segment.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Career.CareerUtilities.SanitizeNameSegment(System.String)">
+            <summary>
+            Strips whitespace and punctuation from a display name so it can be used as a locale key segment (e.g. <c>T.T.</c> becomes <c>TT</c>).
+            </summary>
+            <param name="name">The raw display name.</param>
+            <returns>The sanitized key segment.</returns>
         </member>
         <member name="T:Assets.Scripts.Career.Contracts.ContractStatus">
             <summary>
@@ -6922,6 +6950,11 @@
         <member name="F:Assets.Scripts.Career.Contracts.Requirements.PlanetRequirement._currentParentName">
             <summary>
             The current parent name
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Career.Contracts.Requirements.PlanetRequirement._localizedParentName">
+            <summary>
+            The localized form of <see cref="F:Assets.Scripts.Career.Contracts.Requirements.PlanetRequirement._currentParentName"/>, cached so it is not recomputed on every display read.
             </summary>
         </member>
         <member name="M:Assets.Scripts.Career.Contracts.Requirements.PlanetRequirement.#ctor(System.Xml.Linq.XElement,Assets.Scripts.Career.Contracts.Contract)">
@@ -12043,6 +12076,11 @@
             The audio source
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Career.Research.UI.TechTreeUIScript._backgroundText">
+            <summary>
+            The background description text.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Career.Research.UI.TechTreeUIScript._bounds">
             <summary>
             The bounds of the nodes.
@@ -12857,7 +12895,7 @@
             </summary>
             <param name="disconnectedParts">The parts to be disconnected.</param>
         </member>
-        <member name="M:Assets.Scripts.Craft.BodyCollisionHandler.EmitImpactDisc(ModApi.Flight.IFlightScene,UnityEngine.Vector3,UnityEngine.Vector3,UnityEngine.Vector3,UnityEngine.Vector3,System.Single,System.Single,System.Single,UnityEngine.Color,System.Single,System.Single)">
+        <member name="M:Assets.Scripts.Craft.BodyCollisionHandler.EmitImpactDisc(ModApi.Flight.IFlightScene,UnityEngine.Vector3,UnityEngine.Vector3,UnityEngine.Vector3,UnityEngine.Vector3,System.Single,System.Single,System.Single,UnityEngine.Color,System.Single,System.Single,System.Boolean)">
             <summary>
             Emits the flat dust disc: particles fly radially outward in the surface plane at a speed set by the
             impact speed. Severity drives count, size and lifetime; sizeScale/lifetimeScale pull water foam down.
@@ -12912,7 +12950,7 @@
             </summary>
             <param name="joint">The joint.</param>
         </member>
-        <member name="M:Assets.Scripts.Craft.BodyCollisionHandler.SpawnEjecta(UnityEngine.Vector3,UnityEngine.Vector3,UnityEngine.Vector3,System.Single,System.Single,System.Single,System.Single,UnityEngine.Color,System.Single)">
+        <member name="M:Assets.Scripts.Craft.BodyCollisionHandler.SpawnEjecta(UnityEngine.Vector3,UnityEngine.Vector3,UnityEngine.Vector3,System.Single,System.Single,System.Single,System.Single,UnityEngine.Color,System.Single,System.Boolean)">
             <summary>
             Spawns the ejecta as a few invisible rigid bodies fired up the normal in a cone; each falls under
             gravity and trails dust along a ballistic arc (see <see cref="T:Assets.Scripts.Craft.EjectaProjectileScript"/>). Severity
@@ -12927,13 +12965,15 @@
             <param name="emissionScale">The quality/throttle scale applied to the projectile count.</param>
             <param name="terrainColor">The sampled biome dust tint.</param>
             <param name="lifetimeScale">Scales the trail-dust and projectile lifetimes down (shorter-lived water foam).</param>
+            <param name="isWater">Whether this is a water impact, whose foam carries no dust intensity in its alpha.</param>
         </member>
-        <member name="M:Assets.Scripts.Craft.BodyCollisionHandler.TryGetTerrainColor(UnityEngine.Vector3,UnityEngine.Color@)">
+        <member name="M:Assets.Scripts.Craft.BodyCollisionHandler.TryGetTerrainColor(UnityEngine.Vector3,UnityEngine.Vector3,UnityEngine.Color@)">
             <summary>
             Samples the sub-biome's particle color at the given frame-space point so impact and scrape dust
             pick up the local terrain tint, via the particle manager's shared sample cache.
             </summary>
             <param name="framePoint">The contact point in reference-frame space.</param>
+            <param name="frameNormal">The contact surface normal in reference-frame space, driving the flat/slope blend.</param>
             <param name="color">The sampled particle color, valid only when this returns <c>true</c>.</param>
             <returns><c>true</c> if a color could be sampled.</returns>
         </member>
@@ -16095,6 +16135,11 @@
             The dust tint sampled from the terrain at the impact point.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Craft.EjectaProjectileScript._isWater">
+            <summary>
+            Whether this plume is water foam, whose alpha carries no dust intensity to scale opacity by.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Craft.EjectaProjectileScript._dustSize">
             <summary>
             The base size of the trail dust particles.
@@ -16125,7 +16170,7 @@
             Seconds the projectile has been alive, used to avoid an instant ground-return despawn.
             </summary>
         </member>
-        <member name="M:Assets.Scripts.Craft.EjectaProjectileScript.Spawn(ModApi.Flight.IFlightScene,UnityEngine.SceneManagement.Scene,UnityEngine.Vector3,UnityEngine.Vector3,UnityEngine.Color,System.Single,System.Single,System.Single,System.Single)">
+        <member name="M:Assets.Scripts.Craft.EjectaProjectileScript.Spawn(ModApi.Flight.IFlightScene,UnityEngine.SceneManagement.Scene,UnityEngine.Vector3,UnityEngine.Vector3,UnityEngine.Color,System.Single,System.Single,System.Single,System.Single,System.Boolean)">
             <summary>
             Spawns an ejecta projectile that trails dust along a ballistic arc from the given point.
             </summary>
@@ -16138,8 +16183,9 @@
             <param name="dustLifetime">The base lifetime of the trail dust particles.</param>
             <param name="emitPerSecond">The number of trail particles to emit per second.</param>
             <param name="life">The projectile's maximum lifetime in seconds.</param>
+            <param name="isWater">Whether this is a water-foam plume, whose alpha carries no dust intensity.</param>
         </member>
-        <member name="M:Assets.Scripts.Craft.EjectaProjectileScript.Initialize(ModApi.Flight.IFlightScene,UnityEngine.Vector3,UnityEngine.Color,System.Single,System.Single,System.Single,System.Single)">
+        <member name="M:Assets.Scripts.Craft.EjectaProjectileScript.Initialize(ModApi.Flight.IFlightScene,UnityEngine.Vector3,UnityEngine.Color,System.Single,System.Single,System.Single,System.Single,System.Boolean)">
             <summary>
             Initializes the projectile's rigid body and trail parameters.
             </summary>
@@ -17186,6 +17232,11 @@
             </summary>
             <param name="navSphere">The nav sphere.</param>
         </member>
+        <member name="M:Assets.Scripts.Craft.FlightData.CraftFlightData.GetMonopropellantPercentage(ModApi.Craft.Parts.ICommandPod)">
+            <summary>
+            Gets the combined remaining-fuel percentage across all monopropellant fuel types.
+            </summary>
+        </member>
         <member name="M:Assets.Scripts.Craft.FlightData.CraftFlightData.CalculateParentPlanetOcclusion(ModApi.Craft.ICraftNode)">
             <summary>
             Calculates the parent planet occlusion and updates the flight data accordingly.
@@ -17806,6 +17857,11 @@
             Manages the the craft's fuel sources.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Craft.Fuel.CraftFuelSources.EmptyCraftWidePoolFuelSources">
+            <summary>
+            Shared empty map handed to parts whose region has no craft-wide-pool tanks.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Craft.Fuel.CraftFuelSources._crossFeeds">
             <summary>
             The cross feeds
@@ -17898,15 +17954,49 @@
             </summary>
             <param name="deltaTime">The delta time.</param>
         </member>
-        <member name="M:Assets.Scripts.Craft.Fuel.CraftFuelSources.FindConnectedTanks(ModApi.Craft.Parts.PartData,Assets.Scripts.Craft.Parts.Modifiers.FuelTankScript,Assets.Scripts.Craft.Fuel.CraftFuelSource,System.Collections.Generic.Dictionary{System.Int32,Assets.Scripts.Craft.Parts.Modifiers.FuelTankScript})">
+        <member name="M:Assets.Scripts.Craft.Fuel.CraftFuelSources.BorrowMissingPools(System.Collections.Generic.Dictionary{System.Int32,System.Collections.Generic.Dictionary{System.String,ModApi.Craft.Parts.IFuelSource}},System.Int32,System.Int32)">
             <summary>
-            Recursive method that finds the tanks connected to the specified fuel source and adds them to the fuel source. The fuel tanks
-            found along the way are removed from the lookup dictionary by setting their value to null.
+            Copies a source region's pools into a destination region for any fuel the destination lacks.
+            </summary>
+            <param name="regionPools">The region pools, keyed by region then fuel id.</param>
+            <param name="sourceRegion">The region to borrow pools from.</param>
+            <param name="destRegion">The region that borrows the missing pools.</param>
+            <returns>True if any pool was copied.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Fuel.CraftFuelSources.ComputeRegions(System.Collections.Generic.List{ModApi.Craft.Parts.PartData},System.Collections.Generic.HashSet{System.Int32},System.Collections.Generic.HashSet{System.Int32})">
+            <summary>
+            Maps each part to a region id, flood-filling structural connections but never crossing a cross-feed part (each is its own singleton region).
+            </summary>
+            <param name="parts">The parts to partition.</param>
+            <param name="partIds">The set of part ids in <paramref name="parts"/>, for fast membership tests.</param>
+            <param name="crossFeedPartIds">The ids of parts that bound the regions.</param>
+            <returns>A map from part id to region id.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Fuel.CraftFuelSources.FindConnectedTanks(ModApi.Craft.Parts.PartData,Assets.Scripts.Craft.Parts.Modifiers.FuelTankScript,Assets.Scripts.Craft.Fuel.CraftFuelSource,System.Collections.Generic.Dictionary{System.Int32,Assets.Scripts.Craft.Parts.Modifiers.FuelTankScript},System.Collections.Generic.HashSet{System.Int32})">
+            <summary>
+            Recursively adds the same-type tanks connected to the fuel source, crossing (without claiming) no-fuel pass-through parts so tanks separated only by one still share a pool.
             </summary>
             <param name="part">The part.</param>
-            <param name="fuelTankScript">The fuel tank script.</param>
+            <param name="fuelTankScript">The fuel tank script, or null when crossing a pass-through part that does not belong to the pool.</param>
             <param name="fuelSource">The fuel source.</param>
             <param name="lookup">The lookup.</param>
+            <param name="visitedPassThrough">Per-pool set of pass-through part ids already crossed, guarding against cycles.</param>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Fuel.CraftFuelSources.AddTankToRegionPool(System.Collections.Generic.Dictionary{System.Int32,System.Collections.Generic.Dictionary{System.String,ModApi.Craft.Parts.IFuelSource}},System.Int32,Assets.Scripts.Craft.Parts.Modifiers.FuelTankData,System.Collections.Generic.List{Assets.Scripts.Craft.Fuel.CraftFuelSource})">
+            <summary>
+            Adds a craft-wide-pool fuel tank to its region's pool for that fuel, creating the pool on first use.
+            </summary>
+            <param name="regionPools">The region pools, keyed by region then fuel id.</param>
+            <param name="region">The tank's region id.</param>
+            <param name="fuelTank">The fuel tank to add.</param>
+            <param name="fuelSources">An optional list to add newly created pools to.</param>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Fuel.CraftFuelSources.BorrowPoolsAcrossCrossFeeds(System.Collections.Generic.Dictionary{System.Int32,System.Int32},System.Collections.Generic.Dictionary{System.Int32,System.Collections.Generic.Dictionary{System.String,ModApi.Craft.Parts.IFuelSource}})">
+            <summary>
+            Lets a tankless region borrow the craft-wide pool from across an enabled cross feed, in the cross feed's feeding direction.
+            </summary>
+            <param name="regionByPart">The map from part id to region id.</param>
+            <param name="regionPools">The region pools, keyed by region then fuel id.</param>
         </member>
         <member name="M:Assets.Scripts.Craft.Fuel.CraftFuelSources.ClearFuelLog">
             <summary>
@@ -17941,6 +18031,11 @@
         <member name="M:Assets.Scripts.Craft.Fuel.CraftFuelSources.RaiseFuelUsedEvents">
             <summary>
             Raises the fuel used events based on the amount of fuel that has been used by the craft this frame.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Fuel.CraftFuelSources.SetupCraftWidePoolCrossFeeds">
+            <summary>
+            Wires cross-feed pull links between the region pools on each side of every enabled cross-feed boundary.
             </summary>
         </member>
         <member name="M:Assets.Scripts.Craft.Fuel.CraftFuelSources.SetupCrossFeeds(System.Boolean)">
@@ -18505,14 +18600,14 @@
         <member name="F:Assets.Scripts.Craft.PartGroupScript._shaderNozzleData">
             <summary>
             The array of nozzle glow data that is passed to the material property block.
-            x: nozzle wall temperature (Kelvin); y: Trim 4 material index for the part;
+            x: nozzle wall temperature (Kelvin); y: unused;
             z: exhaust-driven inner-wall glow temperature (Kelvin), unrelated to the wall temperature.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Craft.PartGroupScript._nozzleGlowSources">
             <summary>
-            The parts in this group that drive nozzle wall glow, paired with their part index and
-            cached Trim 4 material index. Empty for groups with no glowing engines.
+            The parts in this group that drive nozzle wall glow, paired with their part index.
+            Empty for groups with no glowing engines.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Craft.PartGroupScript._theme">
@@ -19279,6 +19374,11 @@
         <member name="F:Assets.Scripts.Craft.Parts.EmptyFuelSource._cache">
             <summary>
             Singleton instance.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.Parts.EmptyFuelSource._untypedInstance">
+            <summary>
+            The empty source returned when no fuel type is specified.
             </summary>
         </member>
         <member name="M:Assets.Scripts.Craft.Parts.EmptyFuelSource.#ctor(ModApi.Craft.Propulsion.FuelType)">
@@ -21045,11 +21145,6 @@
             Cached crew compartment modifier; resolved in <see cref="M:Assets.Scripts.Craft.Parts.Modifiers.CommandPodScript.OnModifiersCreated"/>.
             </summary>
         </member>
-        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.CommandPodScript._pooledFuelSources">
-            <summary>
-            Shared craft-wide pool of aggregated fuel sources keyed by fuel id, for pooled fuels other than battery/jet/mono.
-            </summary>
-        </member>
         <member name="F:Assets.Scripts.Craft.Parts.Modifiers.CommandPodScript._powerConsumption">
             <summary>
             The power consumption in kW.
@@ -21171,19 +21266,15 @@
         </member>
         <member name="P:Assets.Scripts.Craft.Parts.Modifiers.CommandPodScript.JetFuelSource">
             <summary>
-            Gets or sets the jet fuel source.
+            Gets or sets the jet fuel source for this pod's cross-feed-bounded region; the setter is ignored, kept only for the <see cref="T:ModApi.Craft.Parts.ICommandPodScript"/> contract.
             </summary>
-            <value>
-            The jet fuel source.
-            </value>
+            <value>The jet fuel source for this pod's region.</value>
         </member>
         <member name="P:Assets.Scripts.Craft.Parts.Modifiers.CommandPodScript.MonoFuelSource">
             <summary>
-            Gets or sets the mono fuel source.
+            Gets or sets the mono fuel source for this pod's cross-feed-bounded region; the setter is ignored, kept only for the <see cref="T:ModApi.Craft.Parts.ICommandPodScript"/> contract.
             </summary>
-            <value>
-            The mono fuel source.
-            </value>
+            <value>The mono fuel source for this pod's region.</value>
         </member>
         <member name="P:Assets.Scripts.Craft.Parts.Modifiers.CommandPodScript.NumStages">
             <summary>
@@ -21262,27 +21353,6 @@
             <summary>
             Activates the current stage.
             </summary>
-        </member>
-        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.CommandPodScript.AddPooledFuelSource(System.String,ModApi.Craft.Parts.IFuelSource)">
-            <summary>
-            Registers an aggregated source for a pooled fuel in the shared craft-wide pool.
-            </summary>
-            <param name="fuelId">The fuel id.</param>
-            <param name="source">The aggregated fuel source for that fuel.</param>
-        </member>
-        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.CommandPodScript.SetPooledFuelSources(System.Collections.Generic.Dictionary{System.String,ModApi.Craft.Parts.IFuelSource})">
-            <summary>
-            Points this pod at the shared craft-wide pool that every pod aggregates pooled fuels into.
-            </summary>
-            <param name="sources">The shared pool, keyed by fuel id.</param>
-        </member>
-        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.CommandPodScript.GetPooledFuelSource(System.String)">
-            <summary>
-            Gets the shared craft-wide source for a pooled fuel, or <c>null</c> when the craft has none;
-            monopropellant and jet map to their dedicated sources.
-            </summary>
-            <param name="fuelId">The fuel id.</param>
-            <returns>The aggregated fuel source, or <c>null</c>.</returns>
         </member>
         <member name="M:Assets.Scripts.Craft.Parts.Modifiers.CommandPodScript.CreateControls(System.Xml.Linq.XElement)">
             <summary>
@@ -25694,6 +25764,14 @@
             </summary>
             <value>
             The instance.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Eva.EvaSharedCamerasScript.InstanceIfExists">
+            <summary>
+            Gets the existing instance without lazily creating it, or <c>null</c> if none exists.
+            </summary>
+            <value>
+            The existing instance, or <c>null</c>.
             </value>
         </member>
         <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Eva.EvaSharedCamerasScript.FpsController">
@@ -44047,6 +44125,14 @@
             <param name="part">The part to test.</param>
             <returns>True if fuel passes through the part; otherwise false.</returns>
         </member>
+        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.EngineUtilities.GetAdjacentPart(ModApi.Craft.Parts.PartData,System.Int32)">
+            <summary>
+            Gets the single part attached at the given attach point, or null when it is missing or not connected to exactly one part.
+            </summary>
+            <param name="part">The part.</param>
+            <param name="attachPoint">The attach point index.</param>
+            <returns>The adjacent part, or null.</returns>
+        </member>
         <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.EngineUtilities.GetFuelTank(ModApi.Craft.Parts.IPartScript,System.Int32,ModApi.Craft.Propulsion.FuelType)">
             <summary>
             Gets the fuel tank from the part connection at the specified attach point. If a fuel tank is not connected at that attach
@@ -44080,6 +44166,14 @@
             <param name="attachPoint">The attach point index to start the search from.</param>
             <param name="fuelType">The exact fuel type to find.</param>
             <returns>The first fuel tank with a matching fuel type, or null if none was found.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.EngineUtilities.GetConstituentFuelTank(ModApi.Craft.Parts.IPartScript,ModApi.Craft.Propulsion.FuelType)">
+            <summary>
+            Finds a tank exactly matching <paramref name="fuelType"/> reachable from any of the part's attach points.
+            </summary>
+            <param name="partScript">The starting part script (the engine).</param>
+            <param name="fuelType">The exact fuel type to find.</param>
+            <returns>The first matching fuel tank from any attach point, or null if none was found.</returns>
         </member>
         <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.EngineUtilities.UpdateAutoFuelTypeFuelTanks(Assets.Scripts.Craft.Parts.Modifiers.FuelTankData,ModApi.Craft.Propulsion.FuelType)">
             <summary>
@@ -46191,7 +46285,7 @@
         <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.JetEngineScript._inverseLoxDensity">
             <summary>
             One divided by LOX density, used to convert the LOX afterburner stage's oxidizer mass flow
-            (kg/s) into a tank drain volume. Cached in <see cref="M:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.JetEngineScript.RefreshLoxSource(ModApi.Craft.ICraftScript)"/>.
+            (kg/s) into a tank drain volume. Cached in <see cref="M:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.JetEngineScript.RefreshLoxSource"/>.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.JetEngineScript._loxOxidizerMassFlowRate">
@@ -46669,12 +46763,10 @@
             <param name="model">The model.</param>
             <param name="flightScene">if set to <c>true</c> if in the flight scene.</param>
         </member>
-        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.JetEngineScript.RefreshLoxSource(ModApi.Craft.ICraftScript)">
+        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.JetEngineScript.RefreshLoxSource">
             <summary>
-            Scans the craft's fuel sources for a LOX source and caches it with the inverse LOX density
-            used to convert oxidizer mass flow to tank volume. Called when the craft structure changes.
+            Finds the LOX oxidizer tank reachable from any of the engine's attach points for the afterburner and caches its source and inverse density.
             </summary>
-            <param name="craftScript">The craft script.</param>
         </member>
         <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.JetEngineScript.GetInletEfficiency">
             <summary>
@@ -56097,6 +56189,11 @@
             Script for setting the material of a part.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Craft.Parts.PartMaterialScript.NozzleGlowMarkerOffset">
+            <summary>
+            Marker added to a Trim4 (nozzle-interior) vertex's uv1.w fraction so the shader can glow it independently of paint.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Craft.Parts.PartMaterialScript._tempUVList">
             <summary>
             The cached and reusable UV list.
@@ -56893,6 +56990,11 @@
             The command pod currently controlling this part.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Craft.Parts.PartScript._craftWidePoolFuelSources">
+            <summary>
+            The region's craft-wide-pool fuel sources (fuel id -> source) for the part.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Craft.Parts.PartScript._designerInteractionMode">
             <summary>
             The designer interaction mode
@@ -57390,6 +57492,13 @@
             </summary>
             <returns>The estimated drag force in scaled Newtons</returns>
         </member>
+        <member name="M:Assets.Scripts.Craft.Parts.PartScript.GetFuelSource(ModApi.Craft.Propulsion.FuelType)">
+            <summary>
+            Resolves the fuel source for the given fuel: the region pool for craft-wide-pool fuels, else the matching craft source, else empty.
+            </summary>
+            <param name="fuelType">The fuel type to resolve.</param>
+            <returns>The fuel source for that fuel, or an empty source.</returns>
+        </member>
         <member name="M:Assets.Scripts.Craft.Parts.PartScript.GetModifier``1">
             <summary>
             Gets the modifier script of the specified type, or null if it does not exist.
@@ -57599,6 +57708,18 @@
             </summary>
             <param name="reentryEffectStrength">The reentry effect strength.</param>
             <param name="vaporTrailStrength">The vapor trail strength.</param>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Parts.PartScript.GetCraftWidePoolFuelSources">
+            <summary>
+            Gets the region's craft-wide-pool fuel sources (fuel id -> source) for the part, or null if not yet assigned.
+            </summary>
+            <returns>The region pools, keyed by fuel id.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Parts.PartScript.SetCraftWidePoolFuelSources(System.Collections.Generic.IReadOnlyDictionary{System.String,ModApi.Craft.Parts.IFuelSource})">
+            <summary>
+            Assigns the region's craft-wide-pool fuel sources (fuel id -> source) when fuel sources rebuild.
+            </summary>
+            <param name="sources">The region pools, keyed by fuel id.</param>
         </member>
         <member name="M:Assets.Scripts.Craft.Parts.PartScript.Awake">
             <summary>
@@ -64116,7 +64237,7 @@
         </member>
         <member name="M:Assets.Scripts.Design.FuelFlowAnalyzer.IsGlobalFuel(ModApi.Craft.Propulsion.FuelType)">
             <summary>
-            Determines whether the fuel type is a global resource (battery/jet/mono) with no spatial route.
+            Determines whether the fuel type is a global resource (battery or a craft-wide-pool fuel) with no spatial route.
             </summary>
             <param name="fuelType">The fuel type.</param>
             <returns><c>true</c> if the fuel type is global; otherwise, <c>false</c>.</returns>
@@ -85001,6 +85122,26 @@
               <c>true</c> if the font was retrieved, otherwise <c>false</c>.
             </returns>
         </member>
+        <member name="M:Assets.Scripts.Ui.FontCache.GetPrimaryFont">
+            <summary>
+            Gets the current locale's primary (body) UI font, falling back to Roboto.
+            </summary>
+            <returns>The locale's primary font, or the Roboto fallback.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Ui.FontCache.ApplyPrimaryFont(UnityEngine.GameObject)">
+            <summary>
+            Re-points every text component under the root to the locale's primary font.
+            </summary>
+            <param name="root">The hierarchy root whose text components are re-fonted.</param>
+        </member>
+        <member name="M:Assets.Scripts.Ui.FontCache.ResolveLocaleFont(System.String,TMPro.TMP_FontAsset)">
+            <summary>
+            Resolves a locale font key to a font, trying a resource path first then a Fonts.xml id.
+            </summary>
+            <param name="localeKey">The locale key holding the font resource path or id.</param>
+            <param name="fallback">The font returned when the key cannot be resolved.</param>
+            <returns>The resolved font, or <paramref name="fallback"/>.</returns>
+        </member>
         <member name="M:Assets.Scripts.Ui.FontCache.GenerateTMPFont(UnityEngine.Font,System.Xml.Linq.XElement)">
             <summary>
             Generates the text mesh pro font.
@@ -98323,13 +98464,14 @@
             <param name="emitParams">The per-emit parameters.</param>
             <param name="count">The number of particles to emit.</param>
         </member>
-        <member name="M:Assets.Scripts.Flight.FlightSceneScript.TryGetTerrainParticleColor(ModApi.Flight.Sim.IPlanetNode,ModApi.Flight.GameView.IReferenceFrame,UnityEngine.Vector3,UnityEngine.Color@)">
+        <member name="M:Assets.Scripts.Flight.FlightSceneScript.TryGetTerrainParticleColor(ModApi.Flight.Sim.IPlanetNode,ModApi.Flight.GameView.IReferenceFrame,UnityEngine.Vector3,UnityEngine.Vector3,UnityEngine.Color@)">
             <summary>
             Gets the sub-biome particle color under a terrain point, reusing the particle manager's shared sample cache.
             </summary>
             <param name="planet">The planet whose terrain is being sampled.</param>
             <param name="referenceFrame">The reference frame the point is expressed in.</param>
             <param name="framePoint">The terrain point, in frame (world) space.</param>
+            <param name="frameNormal">The surface normal at the point, in frame (world) space; drives the flat/slope blend to match the terrain shading.</param>
             <param name="color">The sampled terrain particle color, valid only when this returns <c>true</c>.</param>
             <returns><c>true</c> if a color could be sampled.</returns>
         </member>
@@ -101528,12 +101670,52 @@
         </member>
         <member name="F:Assets.Scripts.Flight.GameView.Cameras.OrbitCameraController.ChaseAccelPullbackFactor">
             <summary>
-            Pullback fraction per sqrt-G of forward acceleration.
+            Pull-back distance, as a fraction of the chase distance, per sqrt-G of forward acceleration.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.Cameras.OrbitCameraController.ChaseAccelMaxPullbackFactor">
+            <summary>
+            Maximum acceleration pull-back, as a fraction of the chase distance, so the dolly's travel stays small enough not to clip the craft.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.Cameras.OrbitCameraController.ChaseAccelFovFactor">
+            <summary>
+            FoV offset (degrees) per sqrt-G of forward acceleration, layered on the dolly so the reduced travel still reads.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.Cameras.OrbitCameraController.ChaseAccelMaxFovOffsetDeg">
+            <summary>
+            Maximum acceleration FoV offset (degrees) applied over the base FoV.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.Cameras.OrbitCameraController.ChaseAccelSmoothingRate">
+            <summary>
+            Exponential smoothing rate (per second) applied to the forward-G reading that drives the chase dolly.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.Cameras.OrbitCameraController.ChaseReferenceFovDeg">
+            <summary>
+            FoV the chase framing is tuned for; the default distance scales relative to this as the FoV changes.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Flight.GameView.Cameras.OrbitCameraController.MinChaseDefaultDistance">
             <summary>
             Minimum chase distance after projecting craft bounds.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.Cameras.OrbitCameraController._chaseAccelGsSmoothed">
+            <summary>
+            Smoothed forward acceleration (in Gs) driving the chase dolly, low-passed across frames.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.Cameras.OrbitCameraController._chaseAccelFovOffset">
+            <summary>
+            Current acceleration FoV offset (degrees) eased over the base FoV.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.Cameras.OrbitCameraController._chaseFovApplied">
+            <summary>
+            Whether an acceleration FoV offset is currently applied, so it can be restored once it settles.
             </summary>
         </member>
         <member name="P:Assets.Scripts.Flight.GameView.Cameras.OrbitCameraController.Type">
@@ -101749,19 +101931,24 @@
             Projects the craft AABB onto pilot forward/up axes via the AABB support function.
             </summary>
         </member>
-        <member name="M:Assets.Scripts.Flight.GameView.Cameras.OrbitCameraController.ComputeChaseDefaultDistance(System.Single,System.Single)">
-            <summary>
-            max(length, 2*height) clamped to <see cref="F:Assets.Scripts.Flight.GameView.Cameras.OrbitCameraController.MinChaseDefaultDistance"/>.
-            </summary>
-        </member>
         <member name="M:Assets.Scripts.Flight.GameView.Cameras.OrbitCameraController.TryGetCraftBoundsSize(ModApi.Flight.Sim.IOrbitNode)">
             <summary>
             Craft AABB diagonal, or 0 if unavailable.
             </summary>
         </member>
+        <member name="M:Assets.Scripts.Flight.GameView.Cameras.OrbitCameraController.ComputeChaseDefaultDistance(System.Single,System.Single)">
+            <summary>
+            max(length, FoV-scaled 2*height) clamped to <see cref="F:Assets.Scripts.Flight.GameView.Cameras.OrbitCameraController.MinChaseDefaultDistance"/>.
+            </summary>
+        </member>
         <member name="M:Assets.Scripts.Flight.GameView.Cameras.OrbitCameraController.ApplyChaseDefaultDistance">
             <summary>
             Sets TargetDistance/DefaultZoom from the craft's pilot-frame bounds.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.Cameras.OrbitCameraController.ApplyChaseAccelFov(System.Single,System.Single)">
+            <summary>
+            Eases the acceleration FoV offset toward its target and applies it over the base FoV, restoring the base once it settles.
             </summary>
         </member>
         <member name="M:Assets.Scripts.Flight.GameView.Cameras.OrbitCameraController.TryComputeDualTargetPlacement(UnityEngine.Vector3@,UnityEngine.Quaternion@)">
@@ -101934,26 +102121,6 @@
             The layer mesh renderers are temporarily placed on while the airstream camera renders (shared with the drag calculator).
             </summary>
         </member>
-        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.LowTextureSize">
-            <summary>
-            The airstream RT resolution for the Low quality preset.
-            </summary>
-        </member>
-        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.MediumTextureSize">
-            <summary>
-            The airstream RT resolution for the Medium quality preset.
-            </summary>
-        </member>
-        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.HighTextureSize">
-            <summary>
-            The airstream RT resolution for the High quality preset.
-            </summary>
-        </member>
-        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.UltraTextureSize">
-            <summary>
-            The airstream RT resolution for the Ultra quality preset (PC only).
-            </summary>
-        </member>
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.MinSpeedToRender">
             <summary>
             The minimum surface speed (m/s) at which the render is performed.
@@ -101994,20 +102161,24 @@
             Mach number at or below which there is no cone (<see cref="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.ComputeMachStep"/> returns 0).
             </summary>
         </member>
-        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.PlasmaDensityFalloffExponent">
-            <summary>
-            Exponent on (Clamp01'd) density for the plasma intensity falloff: full at sea level (density 1), tapering with
-            altitude so high-Mach plasma ramps down gradually instead of staying saturated to the edge of space. Higher = faster ramp.
-            </summary>
-        </member>
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.UpReferenceParallelThreshold">
             <summary>
             Dot magnitude above which a craft axis is too parallel to a look direction to seed a LookRotation up reference, so the next axis is used.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.CondensationFadeMachStart">
+            <summary>
+            Mach number at which the condensation cone starts fading out, before the plasma gap.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.CondensationFadeMachFull">
+            <summary>
+            Mach number by which the condensation cone has fully faded out, leaving a gap before plasma onset.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.PlasmaMachStart">
             <summary>
-            Mach number at which condensation starts blending toward plasma.
+            Mach number at which the plasma cone starts appearing (above the condensation gap).
             </summary>
         </member>
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.PlasmaMachFull">
@@ -102035,16 +102206,6 @@
             Mach number by which the mesh noise has faded to its high-Mach floor.
             </summary>
         </member>
-        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.NoiseHighMachFloor">
-            <summary>
-            Residual mesh noise content at and above <see cref="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.NoiseFalloffMachFull"/>; kept high so the high-Mach plume stays streaky rather than a flat blanket.
-            </summary>
-        </member>
-        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.NoiseHighMachStretch">
-            <summary>
-            Radial noise stretch reached at <see cref="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.NoiseFalloffMachFull"/>: elongates the noise along the skirt at high speed so streaks run down the plume.
-            </summary>
-        </member>
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.CondensationDensityFloor">
             <summary>
             Normalized air density (sea level = 1) below which the non-plasma cone is fully gated out (~15 km on Droo).
@@ -102063,16 +102224,6 @@
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.HotPlasmaMachFull">
             <summary>
             Mach number by which the tint is fully the hot-plasma front tint.
-            </summary>
-        </member>
-        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.HotPlasmaFrontIntensity">
-            <summary>
-            HDR multiplier applied to the hot front colour after the default/planet tint is chosen, so both reach the same blooming intensity.
-            </summary>
-        </member>
-        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.MachStepScale">
-            <summary>
-            Tuning multiplier on the sqrt(M^2 - 1) per-step cone depth increment; 1 is unscaled, higher gives a tighter cone.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.ConeRelaxFramesTarget">
@@ -102102,7 +102253,7 @@
         </member>
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.HotPlasmaFrontTint">
             <summary>
-            Pink tint at the cone front for the hottest plasma (or the planet tint when set), at LDR scale; <see cref="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.HotPlasmaFrontIntensity"/> then boosts it into HDR so the nose blooms.
+            Default tint at the cone front for the hottest plasma (used unless a planet reentry tint is set); fed raw to the shader (no sRGB conversion) and the speed-driven intensity provides the HDR bloom.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.MeshAirstreamTexPropertyId">
@@ -102138,6 +102289,11 @@
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.MeshReentryTintPropertyId">
             <summary>
             The shader property id for the reentry tint colour.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.MeshReentryPlasmaTintPropertyId">
+            <summary>
+            The shader property id for the reentry plasma tint colour.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.MeshNoiseStretchPropertyId">
@@ -102641,7 +102797,7 @@
         </member>
         <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.EmitReentryTrail(ModApi.Craft.ICraftScript,UnityEngine.Bounds,Assets.Scripts.Flight.FlightSceneScript)">
             <summary>
-            Emits a frame's worth of reentry trail particles behind the craft, gated on a plasma factor with a density multiplier.
+            Emits a frame's worth of reentry trail particles behind the craft, gated on the plasma-and-heating intensity with density driving opacity.
             </summary>
             <param name="craft">The craft to emit a trail for.</param>
             <param name="bounds">The combined-with-cap bounds from <see cref="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.ComposeWorldBounds(ModApi.Craft.ICraftScript)"/>.</param>
@@ -104769,12 +104925,33 @@
         </member>
         <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailEmission.TrailEmissionScaleMin">
             <summary>
-            Lower clamp on the size-driven emission rate scale.
+            Lower clamp on the inverse size-driven emission rate scale; calibrated to reach the no-gap birth-size limit around 400 m.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailEmission.TrailEmissionScaleMax">
             <summary>
-            Upper clamp on the size-driven emission rate scale.
+            Upper clamp on the size-driven emission rate scale (inverse of crossSize/nominal; ceiling applies to small sources).
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailEmission.TrailLifetimeSizeScaleMin">
+            <summary>
+            Lower clamp on the size-driven particle lifetime scale (applied at sub-nominal source sizes).
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailEmission.TrailLifetimeSizeScaleMax">
+            <summary>
+            Upper clamp on the size-driven particle lifetime scale (applied at super-nominal source sizes).
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailEmission.TrailEmissionSpeedNominal">
+            <summary>
+            Reference surface speed (m/s) at which the base emission rates are calibrated. Above this the rate
+            scales proportionally with speed so trail density stays constant regardless of velocity.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailEmission.TrailDensityOpacityReference">
+            <summary>
+            Reference density × Mach² product at which particle opacity reaches 1; below it opacity fades with density like the mesh's plasma band.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailEmission.FlowParallelThreshold">
@@ -104788,14 +104965,15 @@
             </summary>
             <returns>The emission rate in particles per second.</returns>
         </member>
-        <member name="M:Assets.Scripts.Flight.GameView.ReentryTrailEmission.ComputeIntensity(System.Single,System.Single,System.Single@)">
+        <member name="M:Assets.Scripts.Flight.GameView.ReentryTrailEmission.ComputeIntensity(System.Single,System.Single,System.Single@,System.Single@)">
             <summary>
-            Returns the trail intensity (0..1) for a Mach number and air density, gated on the same density^exp * Mach² heating proxy the mesh uses.
+            Returns the trail intensity (0..1) driving emission rate; the linear density opacity term is split into <paramref name="alpha"/> so rate holds at altitude.
             </summary>
             <param name="mach">The source's Mach number.</param>
             <param name="airDensity">The source's air density.</param>
             <param name="plasma">The Mach-driven plasma ramp (0..1), used for lifetime and colour.</param>
-            <returns>The trail intensity (plasma * heating gate).</returns>
+            <param name="alpha">The density-attenuated opacity (0..1): intensity × Clamp01(density × Mach² / <see cref="F:Assets.Scripts.Flight.GameView.ReentryTrailEmission.TrailDensityOpacityReference"/>).</param>
+            <returns>The trail intensity (plasma × heating-gate); still gated to zero at altitude, but without the linear density opacity factor.</returns>
         </member>
         <member name="M:Assets.Scripts.Flight.GameView.ReentryTrailEmission.ComputeFrontalArea(UnityEngine.Quaternion,UnityEngine.Vector3,UnityEngine.Vector3)">
             <summary>
@@ -104814,7 +104992,7 @@
             <param name="flowDir">The prograde (flow) direction in world space.</param>
             <returns>The signed roll angle in degrees.</returns>
         </member>
-        <member name="M:Assets.Scripts.Flight.GameView.ReentryTrailEmission.Emit(Assets.Scripts.Flight.FlightSceneScript,System.Single@,System.Single,UnityEngine.Vector3,UnityEngine.Vector3,System.Single,System.Single,System.Single,System.Single,System.Single)">
+        <member name="M:Assets.Scripts.Flight.GameView.ReentryTrailEmission.Emit(Assets.Scripts.Flight.FlightSceneScript,System.Single@,System.Single,UnityEngine.Vector3,UnityEngine.Vector3,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
             <summary>
             Emits a frame's worth of reentry trail particles behind a source, accumulating sub-particle rates against <paramref name="carry"/>.
             </summary>
@@ -104825,8 +105003,9 @@
             <param name="surfaceVelocity">The source's surface velocity; sets the trail direction and batch-spread speed.</param>
             <param name="crossSize">The source's frontal extent (m); drives particle size and the size-based rate scale.</param>
             <param name="baseRollDeg">The source's flow-axis billboard roll (deg) so puffs streak coherently.</param>
-            <param name="intensity">The trail intensity (0..1) from <see cref="M:Assets.Scripts.Flight.GameView.ReentryTrailEmission.ComputeIntensity(System.Single,System.Single,System.Single@)"/>.</param>
-            <param name="plasma">The plasma ramp (0..1) from <see cref="M:Assets.Scripts.Flight.GameView.ReentryTrailEmission.ComputeIntensity(System.Single,System.Single,System.Single@)"/>.</param>
+            <param name="intensity">The density-independent trail intensity (0..1) from <see cref="M:Assets.Scripts.Flight.GameView.ReentryTrailEmission.ComputeIntensity(System.Single,System.Single,System.Single@,System.Single@)"/>; drives emission rate.</param>
+            <param name="alpha">The density-attenuated opacity (0..1) from <see cref="M:Assets.Scripts.Flight.GameView.ReentryTrailEmission.ComputeIntensity(System.Single,System.Single,System.Single@,System.Single@)"/>; sets particle start alpha.</param>
+            <param name="plasma">The plasma ramp (0..1) from <see cref="M:Assets.Scripts.Flight.GameView.ReentryTrailEmission.ComputeIntensity(System.Single,System.Single,System.Single@,System.Single@)"/>.</param>
             <param name="dt">The frame time (s) the batch is accumulated and spread over.</param>
         </member>
         <member name="T:Assets.Scripts.Flight.GameView.ReentryTrailManager">
@@ -106235,9 +106414,10 @@
             <summary>Toggles the ground-level clouds for the current planet on or off.</summary>
             <returns><c>true</c> if the clouds were turned on; otherwise <c>false</c>.</returns>
         </member>
-        <member name="M:Assets.Scripts.Flight.GroundCloudController.Initialize(Assets.Scripts.Terrain.QuadSphereScript)">
+        <member name="M:Assets.Scripts.Flight.GroundCloudController.Initialize(Assets.Scripts.Terrain.QuadSphereScript,ModApi.Flight.Sim.IOrbit)">
             <summary>Builds the ground cloud spheres for the planet, parented to its real-scale quad sphere.</summary>
             <param name="quadSphere">The current planet's quad sphere.</param>
+            <param name="orbit">The current planet's live orbit for the seasonal mask.</param>
         </member>
         <member name="M:Assets.Scripts.Flight.GroundCloudController.LateUpdate">
             <summary>Unity LateUpdate method.</summary>
@@ -109418,6 +109598,11 @@
             <param name="sender">The sender.</param>
             <param name="e">The changed setting.</param>
         </member>
+        <member name="M:Assets.Scripts.Flight.MapView.Items.MapPlanet.RefreshCloudSpheres">
+            <summary>
+            Rebuilds the cloud spheres, wiring terrain-height displacement to match the planet mesh when the map's vertex displacement is enabled.
+            </summary>
+        </member>
         <member name="M:Assets.Scripts.Flight.MapView.Items.MapPlanet.UpdateAtmosphereQuality(UnityEngine.Material)">
             <summary>
             Updates the atmosphere quality.
@@ -111714,7 +111899,7 @@
             The time which should be used to animate wave physics/shaders.
             </value>
         </member>
-        <member name="M:Assets.Scripts.Flight.MapView.MapViewManagerScript.Create(Assets.Scripts.Flight.Sim.PlanetNode,UnityEngine.Transform,System.Double,System.Double)">
+        <member name="M:Assets.Scripts.Flight.MapView.MapViewManagerScript.Create(Assets.Scripts.Flight.Sim.PlanetNode,UnityEngine.Transform,System.Double,System.Double,ModApi.State.MapView.MapViewData)">
             <summary>
             Creates the specified root node.
             </summary>
@@ -111722,6 +111907,7 @@
             <param name="container">The container.</param>
             <param name="scale">The scale of map-view versus in-game.</param>
             <param name="maxZoomDistance">The maximum zoom distance, in unscaled meters.</param>
+            <param name="stateData">The persistent map view state to load from and save to, or <c>null</c> to use ephemeral state (flight resolves its own).</param>
             <returns>
             The MapViewManagerScript.
             </returns>
@@ -111748,13 +111934,14 @@
             This function is called when the MonoBehaviour will be destroyed.
             </summary>
         </member>
-        <member name="M:Assets.Scripts.Flight.MapView.MapViewManagerScript.Initialize(Assets.Scripts.Flight.Sim.PlanetNode,System.Double,System.Double)">
+        <member name="M:Assets.Scripts.Flight.MapView.MapViewManagerScript.Initialize(Assets.Scripts.Flight.Sim.PlanetNode,System.Double,System.Double,ModApi.State.MapView.MapViewData)">
             <summary>
             Initializes the MapViewManagerScript.
             </summary>
             <param name="rootNode">The root node of the solar system.</param>
             <param name="scale">The scale of map-view versus in-game.</param>
             <param name="maxZoomDistance">The maximum zoom distance, in unscaled meters.</param>
+            <param name="stateData">The persistent map view state to load from and save to, or <c>null</c> for ephemeral state.</param>
         </member>
         <member name="M:Assets.Scripts.Flight.MapView.MapViewManagerScript.OnGameTimeChanged(System.Double,System.Double)">
             <summary>
@@ -112232,7 +112419,7 @@
               <c>true</c> if visible; otherwise, <c>false</c>.
             </value>
         </member>
-        <member name="M:Assets.Scripts.Flight.MapView.MapViewScript.Create(Assets.Scripts.Flight.MapView.MapViewManagerScript,ModApi.Ioc.IIocContainer,System.Double,System.Double,Assets.Scripts.Flight.Sim.PlanetNode)">
+        <member name="M:Assets.Scripts.Flight.MapView.MapViewScript.Create(Assets.Scripts.Flight.MapView.MapViewManagerScript,ModApi.Ioc.IIocContainer,System.Double,System.Double,Assets.Scripts.Flight.Sim.PlanetNode,ModApi.State.MapView.MapViewData)">
             <summary>
             Creates the specified map view manager.
             </summary>
@@ -112281,7 +112468,7 @@
             <param name="worldPosition">The world position.</param>
             <returns>The absolute (non-floated) position of the supplied world position.</returns>
         </member>
-        <member name="M:Assets.Scripts.Flight.MapView.MapViewScript.Initialize(Assets.Scripts.Flight.MapView.MapViewManagerScript,ModApi.Ioc.IIocContainer,System.Double,System.Double,Assets.Scripts.Flight.Sim.PlanetNode)">
+        <member name="M:Assets.Scripts.Flight.MapView.MapViewScript.Initialize(Assets.Scripts.Flight.MapView.MapViewManagerScript,ModApi.Ioc.IIocContainer,System.Double,System.Double,Assets.Scripts.Flight.Sim.PlanetNode,ModApi.State.MapView.MapViewData)">
             <summary>
             Initializes this instance of MapViewScript.
             </summary>
@@ -112290,6 +112477,7 @@
             <param name="scale">The scale of map-view versus in-game.</param>
             <param name="maxZoomDistance">The maximum zoom distance, in unscaled meters.</param>
             <param name="rootNode">The root node.</param>
+            <param name="stateData">The persistent map view state to load from and save to, or <c>null</c> for ephemeral state (the flight scene resolves its own).</param>
         </member>
         <member name="M:Assets.Scripts.Flight.MapView.MapViewScript.PerformMapClosedUpdates">
             <summary>
@@ -113020,12 +113208,13 @@
               <c>true</c> if automatic warping should be sped up; otherwise, <c>false</c>.
             </value>
         </member>
-        <member name="M:Assets.Scripts.Flight.MapView.Options.MapOptionsScript.Create(ModApi.Ioc.IIocContainer,UnityEngine.GameObject)">
+        <member name="M:Assets.Scripts.Flight.MapView.Options.MapOptionsScript.Create(ModApi.Ioc.IIocContainer,UnityEngine.GameObject,ModApi.State.MapView.MapViewData)">
             <summary>
             Creates an instance of a <see cref="T:Assets.Scripts.Flight.MapView.Options.MapOptionsScript" /> and attaches it to the specified parent.
             </summary>
             <param name="ioc">The ioc container.</param>
             <param name="parent">The parent to attach to.  Has no requirements.</param>
+            <param name="stateData">The persistent map view state to restore options from outside the flight scene, or <c>null</c> to reset to defaults.</param>
             <returns>
             The <see cref="T:Assets.Scripts.Flight.MapView.Options.MapOptionsScript" /> created.
             </returns>
@@ -113049,11 +113238,12 @@
             </summary>
             <param name="mapOptionsContainerElement">The map options container element.</param>
         </member>
-        <member name="M:Assets.Scripts.Flight.MapView.Options.MapOptionsScript.Initialize(ModApi.Ioc.IIocContainer)">
+        <member name="M:Assets.Scripts.Flight.MapView.Options.MapOptionsScript.Initialize(ModApi.Ioc.IIocContainer,ModApi.State.MapView.MapViewData)">
             <summary>
             Initializes this instance.
             </summary>
             <param name="ioc">The ioc container.</param>
+            <param name="stateData">The persistent map view state to restore options from outside the flight scene, or <c>null</c> to reset to defaults.</param>
         </member>
         <member name="M:Assets.Scripts.Flight.MapView.Options.MapOptionsScript.OnValidate">
             <summary>
@@ -118960,6 +119150,13 @@
             </summary>
             <returns>The number of points this line should be using in its Vectrocity line.</returns>
         </member>
+        <member name="M:Assets.Scripts.Flight.MapView.Orbits.MapOrbitLine.ClipPointsOutsideCameraRange(System.Collections.Generic.List{UnityEngine.Vector3},UnityEngine.Camera)">
+            <summary>
+            Removes line points beyond the safe render distance, keeping the longest surviving arc as one contiguous run.
+            </summary>
+            <param name="points">The line points to filter in place.</param>
+            <param name="camera">The camera the line is drawn with.</param>
+        </member>
         <member name="M:Assets.Scripts.Flight.MapView.Orbits.MapOrbitLine.CreateLine(UnityEngine.Transform,UnityEngine.Color,System.String,System.Int32)">
             <summary>
             Creates the line.
@@ -118999,6 +119196,13 @@
             <param name="point">The point.</param>
             <param name="coordinateConverter">The coordinate converter.</param>
             <returns>The scaled cache point.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Flight.MapView.Orbits.MapOrbitLine.SafeRenderDistance(UnityEngine.Camera)">
+            <summary>
+            Gets the largest distance from the camera at which a line point can be projected without producing non-finite mesh vertices.
+            </summary>
+            <param name="camera">The camera the line is drawn with.</param>
+            <returns>The safe render distance in map-view units.</returns>
         </member>
         <member name="M:Assets.Scripts.Flight.MapView.Orbits.MapOrbitLine.ShouldUiComponentBeEnabled(System.Double,System.Double,System.Double)">
             <summary>
@@ -119071,6 +119275,18 @@
             Sets whether the orbit line is drawing, or not.
             </summary>
             <param name="drawing">If set to <c>true</c> the line will be drawn, otherwise; <c>false</c>.</param>
+        </member>
+        <member name="M:Assets.Scripts.Flight.MapView.Orbits.MapOrbitLine.ShouldClipLineToCamera">
+            <summary>
+            Gets a value indicating whether the orbit reaches beyond the safe render distance, so the line must be clipped per-point to stay renderable.
+            </summary>
+            <returns><c>true</c> if the line should be clipped to the camera; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Flight.MapView.Orbits.MapOrbitLine.ShouldHideLineFromView">
+            <summary>
+            Gets a value indicating whether the whole orbit lies beyond the safe render distance, so the line should be hidden rather than rebuilt.
+            </summary>
+            <returns><c>true</c> if the line should be hidden; otherwise, <c>false</c>.</returns>
         </member>
         <member name="M:Assets.Scripts.Flight.MapView.Orbits.MapOrbitLine.UpdateEventSubscriptions(System.Boolean)">
             <summary>
@@ -122837,13 +123053,14 @@
             <param name="category">The particle category.</param>
             <returns><c>true</c> if the category is accepting emissions.</returns>
         </member>
-        <member name="M:Assets.Scripts.Flight.ParticleManagerScript.TryGetTerrainParticleColor(ModApi.Flight.Sim.IPlanetNode,ModApi.Flight.GameView.IReferenceFrame,UnityEngine.Vector3,UnityEngine.Color@)">
+        <member name="M:Assets.Scripts.Flight.ParticleManagerScript.TryGetTerrainParticleColor(ModApi.Flight.Sim.IPlanetNode,ModApi.Flight.GameView.IReferenceFrame,UnityEngine.Vector3,UnityEngine.Vector3,UnityEngine.Color@)">
             <summary>
             Gets the sub-biome particle color under a terrain point, reusing a shared cache of recent samples.
             </summary>
             <param name="planet">The planet whose terrain is being sampled.</param>
             <param name="referenceFrame">The reference frame the point is expressed in.</param>
             <param name="framePoint">The terrain point, in frame (world) space.</param>
+            <param name="frameNormal">The surface normal at the point, in frame (world) space; drives the flat/slope blend to match the terrain shading.</param>
             <param name="color">The sampled terrain particle color, valid only when this returns <c>true</c>.</param>
             <returns><c>true</c> if a color could be sampled.</returns>
         </member>
@@ -149074,6 +149291,11 @@
             Called when the MonoBehaviour is destroyed. Reverses every scene change made in <see cref="M:Assets.Scripts.Menu.MapView.MenuMapViewScript.Start"/>.
             </summary>
         </member>
+        <member name="M:Assets.Scripts.Menu.MapView.MenuMapViewScript.PersistMapViewState">
+            <summary>
+            Persists the map view visibility config to the save if it changed since opening.
+            </summary>
+        </member>
         <member name="M:Assets.Scripts.Menu.MapView.MenuMapViewScript.ResolveActiveLaunchPlanet(Assets.Scripts.Flight.Sim.PlanetNode,Assets.Scripts.Flight.MapView.Interfaces.IItemRegistry)">
             <summary>
             Resolves the MapPlanet for the player's selected launch location, or null when there's nothing useful to focus.
@@ -149439,6 +149661,11 @@
         <member name="F:Assets.Scripts.Menu.MenuScript._craft">
             <summary>
             The currently loaded craft.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Menu.MenuScript._creditsButtonText">
+            <summary>
+            The credits button label.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Menu.MenuScript._gameMenu">
@@ -153314,6 +153541,11 @@
             The intensity surface.
             </value>
         </member>
+        <member name="P:Assets.Scripts.PlanetStudio.Flyouts.AtmosphereShaderModel.ChapmanOpticalDepth">
+            <summary>
+            Gets or sets a value indicating whether the Chapman grazing-incidence function is used for atmospheric optical depth.
+            </summary>
+        </member>
         <member name="P:Assets.Scripts.PlanetStudio.Flyouts.AtmosphereShaderModel.LegacySkyShader">
             <summary>
             Gets or sets a value indicating whether legacy sky shader is used.
@@ -153367,6 +153599,16 @@
             <value>
             The color of the noon.
             </value>
+        </member>
+        <member name="P:Assets.Scripts.PlanetStudio.Flyouts.AtmosphereShaderModel.OzoneAbsorption">
+            <summary>
+            Gets or sets the color removed from the sky by ozone absorption. A strength of zero disables it.
+            </summary>
+        </member>
+        <member name="P:Assets.Scripts.PlanetStudio.Flyouts.AtmosphereShaderModel.OzoneStrength">
+            <summary>
+            Gets or sets the overall strength of ozone absorption.
+            </summary>
         </member>
         <member name="P:Assets.Scripts.PlanetStudio.Flyouts.AtmosphereShaderModel.RayleighScattering">
             <summary>
@@ -173789,6 +174031,11 @@
             The default close-up detail erosion strength for the ground clouds (0 to ~0.6).
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.DefaultThickness">
+            <summary>
+            The default layer thickness (meters) separating the ground cloud shells while the camera is near the layer.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.CloudTerrainDisplacementLod">
             <summary>
             The terrain height cubemap mip sampled when displacing the cloud shells; 0 samples full detail.
@@ -173814,11 +174061,6 @@
             The number of detail-noise repeats across the viewport at which the ground cloud detail erosion starts fading out.
             </summary>
         </member>
-        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.GroundCloudCameraFadeMeters">
-            <summary>
-            The distance in metres over which the ground clouds fade out near the camera, hiding the thin shell.
-            </summary>
-        </member>
         <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.GroundCloudDetailNoisePath">
             <summary>
             The resource path of the tiling noise sampled for the ground cloud close-up detail.
@@ -173826,17 +174068,27 @@
         </member>
         <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.GroundCloudEdgeFadeThreshold">
             <summary>
-            The view-vs-normal dot below which the ground cloud shells fade, thinning just their grazing edge.
+            The view-vs-normal dot below which the ground cloud outer shell fades, thinning just its grazing edge.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.GroundShellGapFadeThicknesses">
+            <summary>
+            The number of layer thicknesses beyond the layer band over which the ground shell gap collapses back to zero.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.MediumDetailFadeScale">
+            <summary>
+            The multiplier on the detail-fade range at Medium quality, so the shader's detail branch skips sooner.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer._cloudShader">
             <summary>
-            The cached per-layer cloud shader (used by the Ultra quality tier).
+            The cached per-layer cloud shader (ground variant at any tier, and scaled-space Ultra).
             </summary>
         </member>
         <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer._combinedCloudShader">
             <summary>
-            The cached combined cloud shader (used by the Medium and High quality tiers).
+            The cached combined cloud shader (scaled-space Medium and High).
             </summary>
         </member>
         <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer._detailNoise">
@@ -173884,6 +174136,11 @@
             A value indicating whether this is the ground-level variant (world scale, both faces, no shadows).
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer._orbit">
+            <summary>
+            The planet's live orbit that drives the seasonal mask reduction, or <c>null</c> if it has none (e.g. a sun or a static preview).
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer._planet">
             <summary>
             The planet data, used for the cloud configuration and the per-planet render-clouds toggle.
@@ -173929,9 +174186,34 @@
             The transform the cloud spheres are parented to.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer._seasonalMaskApoapsisReductions">
+            <summary>
+            The precomputed per-channel mask reductions subtracted at apoapsis (xyz = channels R, G, B).
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer._seasonalMaskEnabled">
+            <summary>
+            Whether the seasonal mask reduction varies with the orbit (a non-zero slider on a masked planet with an eccentric orbit).
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer._seasonalMaskPeriapsis">
+            <summary>
+            The planet's periapsis distance, cached for the per-frame orbit fraction.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer._seasonalMaskPeriapsisReductions">
+            <summary>
+            The precomputed per-channel mask reductions subtracted at periapsis (xyz = channels R, G, B).
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer._seasonalMaskSpan">
+            <summary>
+            The periapsis-to-apoapsis distance span, cached for the per-frame orbit fraction.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer._terrainDisplacementEnabled">
             <summary>
-            A value indicating whether terrain-height displacement is active for the current rebuild (height cubemap present and, in scaled space, the vertex-displacement setting on).
+            A value indicating whether terrain-height displacement is active for the current rebuild (a height cubemap was supplied and the terrain rises above sea level).
             </summary>
         </member>
         <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer._terrainHeightCubemap">
@@ -173954,13 +174236,14 @@
             The sea-level surface radius as a factor of the planet radius ((radius + seaLevel) / radius); terrain below it does not lift the clouds.
             </summary>
         </member>
-        <member name="M:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.#ctor(Assets.Scripts.Terrain.Rendering.PlanetRenderingData,ModApi.Planet.IPlanetData,System.Boolean)">
+        <member name="M:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.#ctor(Assets.Scripts.Terrain.Rendering.PlanetRenderingData,ModApi.Planet.IPlanetData,System.Boolean,ModApi.Flight.Sim.IOrbit)">
             <summary>
             Initializes a new instance of the <see cref="T:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer"/> class.
             </summary>
             <param name="renderingData">The planet rendering data.</param>
             <param name="planet">The planet data.</param>
             <param name="groundMode">If <c>true</c>, builds the ground-level variant: world scale, both faces and no shadows.</param>
+            <param name="orbit">The planet's live orbit for the seasonal mask, or <c>null</c> if it has none.</param>
         </member>
         <member name="P:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.HasClouds">
             <summary>
@@ -173981,8 +174264,8 @@
         </member>
         <member name="M:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.Refresh(UnityEngine.Transform,UnityEngine.Cubemap)">
             <summary>
-            Rebuilds the cloud spheres without terrain-height displacement. Used by the distant views (map view and main
-            menu) where the displacement is imperceptible and the terrain height cubemap is not wired up.
+            Rebuilds the cloud spheres without terrain-height displacement, for views that opt out (e.g. the main menu)
+            where the displacement is imperceptible and the terrain height cubemap is not wired up.
             </summary>
             <param name="parent">The transform to parent the cloud spheres to.</param>
             <param name="cloudCubemap">The detached clouds cubemap.</param>
@@ -174085,9 +174368,9 @@
             <param name="renderer">The created mesh renderer.</param>
             <returns>The created GameObject.</returns>
         </member>
-        <member name="M:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.CreateCloudSphere(UnityEngine.Shader,ModApi.Planet.PlanetCloudConfig,ModApi.Planet.CloudLayerRenderInfo,System.Boolean,System.Boolean,System.String,UnityEngine.Rendering.CullMode,System.Single,System.Int32)">
+        <member name="M:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.CreateCloudSphere(UnityEngine.Shader,ModApi.Planet.PlanetCloudConfig,ModApi.Planet.CloudLayerRenderInfo,System.Boolean,System.Boolean,System.String,UnityEngine.Rendering.CullMode,System.Boolean,System.Single,System.Int32)">
             <summary>
-            Creates a single cloud layer sphere (the Ultra quality tier renders one of these per layer).
+            Creates a single cloud layer sphere (rendered per layer by the ground variant at any tier and by scaled-space Ultra).
             </summary>
             <param name="shader">The cloud shader.</param>
             <param name="config">The cloud rendering configuration.</param>
@@ -174096,6 +174379,7 @@
             <param name="terrainShadow">If set to <c>true</c>, this sphere paints the cloud-on-terrain shadow.</param>
             <param name="nameSuffix">A suffix appended to the GameObject name (e.g. " Inner"/" Outer").</param>
             <param name="cull">The fixed cull mode for this shell's material.</param>
+            <param name="outer">If set to <c>true</c>, this is the ground Outer shell, culled while the camera is below it.</param>
             <param name="innerDarkening">The storm-cloud inner-face darkening strength (0 to 1).</param>
             <param name="renderQueue">The material render queue, or -1 to use the shader default.</param>
             <returns>The created cloud layer sphere.</returns>
@@ -174112,6 +174396,12 @@
             <param name="innerDarkening">The storm-cloud inner-face darkening strength (0 to 1).</param>
             <param name="renderQueue">The material render queue, or -1 to use the shader default.</param>
             <returns>The created combined cloud sphere.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.GetSeasonalMaskReductions">
+            <summary>
+            Computes this frame's per-channel mask reductions from the planet's current distance.
+            </summary>
+            <returns>The per-channel amounts to subtract from the mask (xyz = channels R, G, B).</returns>
         </member>
         <member name="M:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.GetSunDirection">
             <summary>
@@ -174144,6 +174434,12 @@
             </summary>
             <returns><c>true</c> if a valid projection was produced; otherwise <c>false</c>.</returns>
         </member>
+        <member name="M:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.UpdateSeasonalMaskParameters(ModApi.Planet.PlanetCloudConfig)">
+            <summary>
+            Precomputes the per-channel seasonal reductions and the orbit's fixed periapsis/span so the per-frame update only samples the current distance.
+            </summary>
+            <param name="config">The cloud rendering configuration providing each layer's seasonal contribution.</param>
+        </member>
         <member name="T:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.ShaderPropertyIds">
             <summary>
             The shader property IDs used by the cloud materials.
@@ -174152,11 +174448,6 @@
         <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.ShaderPropertyIds.BumpCube">
             <summary>
             The terrain height cubemap shader property id (alpha holds the baked terrain height for displacement).
-            </summary>
-        </member>
-        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.ShaderPropertyIds.CameraFade">
-            <summary>
-            The camera-proximity fade distance shader property id.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.ShaderPropertyIds.ChannelMask">
@@ -174289,6 +174580,16 @@
             The per-channel mask influence property id (xyz = channels R, G, B).
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.ShaderPropertyIds.MaskReductions">
+            <summary>
+            The per-channel seasonal mask reduction shader property id (xyz = channels R, G, B).
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.ShaderPropertyIds.MaskReductionSelf">
+            <summary>
+            The seasonal mask reduction for the sphere's own channel shader property id (per-layer spheres).
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.ShaderPropertyIds.MaxAsl">
             <summary>
             The maximum terrain surface radius factor shader property id (the upper end of the displacement lerp).
@@ -174304,9 +174605,24 @@
             The noon sunlight color shader property id.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.ShaderPropertyIds.ObjSunDirection">
+            <summary>
+            The unit sun direction in the sphere's object space shader property id.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.ShaderPropertyIds.RotationCoss">
+            <summary>
+            The per-channel rotation cosine property id (componentwise cos of _Rotations).
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.ShaderPropertyIds.Rotations">
             <summary>
             The per-channel rotation angle property id (xyz = channels R, G, B).
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.ShaderPropertyIds.RotationSins">
+            <summary>
+            The per-channel rotation sine property id (componentwise sin of _Rotations).
             </summary>
         </member>
         <member name="F:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.ShaderPropertyIds.SeaLevelAsl">
@@ -174354,7 +174670,7 @@
             A detached cloud sphere holding one layer (Ultra) or all combined layers (Medium/High).
             </summary>
         </member>
-        <member name="M:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.CloudLayerSphere.#ctor(UnityEngine.Transform,UnityEngine.MeshRenderer,UnityEngine.Material,ModApi.Planet.CloudLayerRenderInfo[],System.Boolean,System.Single)">
+        <member name="M:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.CloudLayerSphere.#ctor(UnityEngine.Transform,UnityEngine.MeshRenderer,UnityEngine.Material,ModApi.Planet.CloudLayerRenderInfo[],System.Boolean,System.Single,System.Boolean)">
             <summary>
             Initializes a new instance of the <see cref="T:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.CloudLayerSphere"/> class.
             </summary>
@@ -174364,6 +174680,7 @@
             <param name="layers">The cloud layers rendered by this sphere.</param>
             <param name="combined">If set to <c>true</c>, this sphere renders all layers at once.</param>
             <param name="heightScale">The constant scale factor for this sphere's altitude shell.</param>
+            <param name="outer">If set to <c>true</c>, this is the ground Outer shell, culled while the camera is below it.</param>
         </member>
         <member name="P:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.CloudLayerSphere.Combined">
             <summary>
@@ -174383,6 +174700,11 @@
         <member name="P:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.CloudLayerSphere.Material">
             <summary>
             Gets the material.
+            </summary>
+        </member>
+        <member name="P:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.CloudLayerSphere.Outer">
+            <summary>
+            Gets a value indicating whether this is the ground Outer shell, culled while the camera is below it.
             </summary>
         </member>
         <member name="P:Assets.Scripts.Terrain.Rendering.PlanetCloudRenderer.CloudLayerSphere.Renderer">
@@ -175084,6 +175406,14 @@
             The inverse wave length.
             </value>
         </member>
+        <member name="P:Assets.Scripts.Terrain.Rendering.PlanetShaderStaticData.OzoneCoefficient">
+            <summary>
+            Gets the ozone absorption coefficient (absorption color * strength) fed to the scattering extinction.
+            </summary>
+            <value>
+            The ozone absorption coefficient.
+            </value>
+        </member>
         <member name="P:Assets.Scripts.Terrain.Rendering.PlanetShaderStaticData.InvAtmosSizeScale">
             <summary>
             Gets 1 / <see cref="P:Assets.Scripts.Terrain.Rendering.PlanetShaderStaticData.AtmosSizeScale"/>. Precomputed for the sky/atmosphere shaders so
@@ -175269,6 +175599,9 @@
         <member name="F:Assets.Scripts.Terrain.Rendering.PlanetShaderStaticData.ShaderPropertyIds.AtmosSizeScale">
             <summary>The <c>_atmosSizeScale</c> shader property ID.</summary>
         </member>
+        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetShaderStaticData.ShaderPropertyIds.ChapmanEnabled">
+            <summary>The <c>_chapmanEnabled</c> shader property ID.</summary>
+        </member>
         <member name="F:Assets.Scripts.Terrain.Rendering.PlanetShaderStaticData.ShaderPropertyIds.DebugScaler">
             <summary>The <c>_debugScaler</c> shader property ID.</summary>
         </member>
@@ -175328,6 +175661,9 @@
         </member>
         <member name="F:Assets.Scripts.Terrain.Rendering.PlanetShaderStaticData.ShaderPropertyIds.OuterRadius2">
             <summary>The <c>_outerRadius2</c> shader property ID.</summary>
+        </member>
+        <member name="F:Assets.Scripts.Terrain.Rendering.PlanetShaderStaticData.ShaderPropertyIds.OzoneCoefficient">
+            <summary>The <c>_ozoneCoefficient</c> shader property ID.</summary>
         </member>
         <member name="F:Assets.Scripts.Terrain.Rendering.PlanetShaderStaticData.ShaderPropertyIds.Samples">
             <summary>The <c>_samples</c> shader property ID.</summary>

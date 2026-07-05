@@ -17,23 +17,36 @@ namespace Assets.Scripts
         {
             var patch = Game.Instance.Designer.CraftScript.PrimaryCommandPod.Part.PartScript
                 .GetModifier<STCommandPodPatchScript>();
-            switch (fuelId)
+            if (patch==null)
             {
-                case "Oxygen":
-                    return Instance.FormatFuel(patch.OxygenFuelSource.TotalFuel * patch.OxygenFuelSource.FuelType.Density, _massTypes);
-                case "H2O":
-                    return Instance.FormatFuel(patch.WaterFuelSource.TotalFuel * patch.WaterFuelSource.FuelType.Density, _massTypes);
-                case "Food":
-                    return Instance.FormatFuel(patch.FoodFuelSource.TotalFuel * patch.FoodFuelSource.FuelType.Density, _massTypes);
-                case "CO2":
-                    return Instance.FormatFuel(patch.CO2FuelSource.TotalCapacity * patch.CO2FuelSource.FuelType.Density, _massTypes);
-                case "Wasted Water":
-                    return Instance.FormatFuel(patch.WastedWaterFuelSource.TotalCapacity * patch.WastedWaterFuelSource.FuelType.Density, _massTypes);
-                case "Solid Waste":
-                    return Instance.FormatFuel(patch.SolidWasteFuelSource.TotalCapacity * patch.SolidWasteFuelSource.FuelType.Density, _massTypes);
-                default:
-                    return "NaN";
+                return "NaN";
             }
+
+            try
+            {
+                switch (fuelId)
+                {
+                    case "Oxygen":
+                        return Instance.FormatFuel(patch.OxygenFuelSource.TotalFuel * patch.OxygenFuelSource.FuelType.Density, _massTypes);
+                    case "H2O":
+                        return Instance.FormatFuel(patch.WaterFuelSource.TotalFuel * patch.WaterFuelSource.FuelType.Density, _massTypes);
+                    case "Food":
+                        return Instance.FormatFuel(patch.FoodFuelSource.TotalFuel * patch.FoodFuelSource.FuelType.Density, _massTypes);
+                    case "CO2":
+                        return Instance.FormatFuel(patch.CO2FuelSource.TotalCapacity * patch.CO2FuelSource.FuelType.Density, _massTypes);
+                    case "Wasted Water":
+                        return Instance.FormatFuel(patch.WastedWaterFuelSource.TotalCapacity * patch.WastedWaterFuelSource.FuelType.Density, _massTypes);
+                    case "Solid Waste":
+                        return Instance.FormatFuel(patch.SolidWasteFuelSource.TotalCapacity * patch.SolidWasteFuelSource.FuelType.Density, _massTypes);
+                    default:
+                        return "NaN";
+                }
+            }
+            catch (Exception e)
+            {
+                return "NaN";
+            }
+           
            
         }
         private string GetDroodCountInDesigner()

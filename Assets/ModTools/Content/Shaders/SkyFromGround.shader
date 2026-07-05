@@ -50,11 +50,6 @@ Shader "Jundroo/SkyFromGround"
             #pragma vertex vert
             #pragma fragment frag
             //#pragma enable_d3d11_debug_symbols
-            #include "UnityCG.cginc"
-            #include "AutoLight.cginc"
-            #include "Lighting.cginc"
-            #include "SkyUtils.cginc"
-            #include "Utils.cginc"
 
             float3 _adjustedCameraPosition;
             float _cameraHeightAtmosPercent;
@@ -78,11 +73,19 @@ Shader "Jundroo/SkyFromGround"
             float _scale;
             float _scaleDepth;
             float _scaleOverScaleDepth;
+            float _chapmanEnabled;
             float3 _worldCameraPosition;
             bool _legacySkyShader;
             float _maxColorValue;
             float3 _duskColor;
             float _skyTintEnabled;
+            float3 _ozoneCoefficient;
+
+            #include "UnityCG.cginc"
+            #include "AutoLight.cginc"
+            #include "Lighting.cginc"
+            #include "SkyUtils.cginc"
+            #include "Utils.cginc"
 
             struct v2f
             {
@@ -112,7 +115,7 @@ Shader "Jundroo/SkyFromGround"
                 float3 start = _adjustedCameraPosition.xyz;
                 float startAngle = dot(cameraToVertexDir, start) / length(start);
                 float depth = exp(_scaleOverScaleDepth * (_innerRadius - _cameraHeight));
-                float startOffset = depth*ExpScale(startAngle, _scaleDepthLn, _invAtmosSizeScale);
+                float startOffset = depth*OpticalDepthScaleAdaptive(startAngle, _cameraHeight, _scaleDepthLn, _scaleOverScaleDepth, _invAtmosSizeScale);
 
                 // Initialize the scattering loop variables
                 float sampleLength = cameraToVertexDist / _samples;
@@ -129,9 +132,9 @@ Shader "Jundroo/SkyFromGround"
                     float depth = exp(_scaleOverScaleDepth * (_innerRadius - height));
                     float lightAngle = dot(_lightDir.xyz, samplePoint) / height;
                     float cameraAngle = clamp(dot(cameraToVertexDir, samplePoint) / height, 0, 1);
-                    float scatter = (startOffset + depth * (ExpScale(lightAngle, _scaleDepthLn, _invAtmosSizeScale) - ExpScale(cameraAngle, _scaleDepthLn, _invAtmosSizeScale)));
+                    float scatter = (startOffset + depth * (OpticalDepthScaleAdaptive(lightAngle, height, _scaleDepthLn, _scaleOverScaleDepth, _invAtmosSizeScale) - OpticalDepthScaleAdaptive(cameraAngle, height, _scaleDepthLn, _scaleOverScaleDepth, _invAtmosSizeScale)));
 
-                    attenuate = exp(-scatter * (_invWaveLength.xyz * _kr4PI + _km4PI));
+                    attenuate = AtmosphereExtinction(scatter, _invWaveLength.xyz, _kr4PI, _km4PI, _ozoneCoefficient);
 
                     bool clouds = false;
                     if (clouds)
@@ -207,15 +210,19 @@ Shader "Jundroo/SkyFromGround"
                     fragColor.w = max(fragColor.w, MinSkyboxIntensity * scaler);
                 }
 
-                float3 planetUp = normalize(_adjustedCameraPosition.xyz);
-                float3 viewDir = normalize(INPUT.cameraToVertex.xyz);
-                float sunHorizon = -sqrt(saturate(1.0 - _innerRadius2 / _cameraHeight2));
-                float duskAmount = 1.0 - smoothstep(sunHorizon, sunHorizon + 0.1, dot(planetUp, _lightDir.xyz));
-                float horizonness = saturate(1.0 - dot(planetUp, viewDir));
-                horizonness = horizonness * horizonness * (3.0 - 2.0 * horizonness);
-                // Rec. 709 luma: tint the scattering's brightness so the recolor shifts hue, not density.
-                half3 duskTint = dot(fragColor.rgb, half3(0.2126, 0.7152, 0.0722)) * _duskColor.rgb;
-                fragColor.rgb = lerp(fragColor.rgb, duskTint, horizonness * _skyTintEnabled * duskAmount);
+                // Skip the per-pixel dusk-tint math entirely when the planet's sky tint is disabled.
+                if (_skyTintEnabled > 0.5)
+                {
+                    float3 planetUp = normalize(_adjustedCameraPosition.xyz);
+                    float3 viewDir = normalize(INPUT.cameraToVertex.xyz);
+                    float sunHorizon = -sqrt(saturate(1.0 - _innerRadius2 / _cameraHeight2));
+                    float duskAmount = 1.0 - smoothstep(sunHorizon, sunHorizon + 0.1, dot(planetUp, _lightDir.xyz));
+                    float horizonness = saturate(1.0 - dot(planetUp, viewDir));
+                    horizonness = horizonness * horizonness * (3.0 - 2.0 * horizonness);
+                    // Rec. 709 luma: tint the scattering's brightness so the recolor shifts hue, not density.
+                    half3 duskTint = dot(fragColor.rgb, half3(0.2126, 0.7152, 0.0722)) * _duskColor.rgb;
+                    fragColor.rgb = lerp(fragColor.rgb, duskTint, horizonness * duskAmount);
+                }
 
                 // Clamp HDR values so bloom doesn't go crazy.
                 return clamp(float4(fragColor.rgb, fragColor.w), 0, _maxColorValue);

@@ -18,6 +18,7 @@ using Droodism.RadiationBelt;
 using ModApi.Ui.Inspector;
 using System.Xml.Serialization;
 using Assets.Scripts.Craft.Fuel;
+using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using Assets.Scripts.Droodism.Crew;
 using Assets.Scripts.Droodism.ResourceWarning;
 using UnityEngine.UI;
@@ -55,14 +56,16 @@ namespace Assets.Scripts
         {
             return InFlightScene ?ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript as CraftScript:Game.Instance.Designer.CraftScript as CraftScript;
 
-        } 
-
-        public override void OnModLoaded()
+        } // 反射调用 private 方法
+       
+        protected override void OnModInitialized()
         {
-          
+            
+            CheckLocalizationFiles("ZH-CN");
+            CheckLocalizationFiles("EN-US");
+            base.OnModInitialized();
             try
             {
-                base.OnModLoaded();
                 var harmony = new Harmony("com.SatelliteTorifune.Droodism");
                 CrewManagerSyncPatches.Apply(harmony);
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
@@ -73,6 +76,19 @@ namespace Assets.Scripts
                 Game.Instance.UserInterface.CreateMessageDialog(s);
                 throw new FileNotFoundException(s);
             }
+            Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
+            Game.Instance.SceneManager.SceneTransitionCompleted+=OnSceneTransitionCompleted;
+            
+        }
+
+        /// <summary>
+        /// Called when the mod is fully loaded.
+        /// This occurs after the mod is initialized and after mod data is loaded (like part and propulsion data, UI resources, etc.)
+        /// </summary>
+        public override void OnModLoaded()
+        {
+          
+           
             GameObject DroodismGO=new GameObject("DroodismUI");
             DroodismGO.AddComponent<DroodismUIManager>();
             DroodismGO.AddComponent<RadiationBeltManager>();
@@ -82,10 +98,13 @@ namespace Assets.Scripts
             GameObject.DontDestroyOnLoad(DroodismGO);
             DroodismGO.SetActive(true);
             Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.MapView, OnBuildMapViewInspectorPanel);
+            RegisterCommands();
             CheckDefaultPlanetRadiationBeltConfig();
             CheckDefaultBreathablePlanetConfig();
             CheckDefaultFlagImage();
             
+            
+
         }
         
 
@@ -127,13 +146,7 @@ namespace Assets.Scripts
             GetDroodCountInDesigner();
         }
 
-        protected override void OnModInitialized()
-        {
-            base.OnModInitialized();
-            Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
-            Game.Instance.SceneManager.SceneTransitionCompleted+=OnSceneTransitionCompleted;
-            RegisterCommands();
-        }
+        
 
         /// <summary>
         /// 注册Droodism的自定义指令
@@ -170,6 +183,23 @@ namespace Assets.Scripts
                     Log($"大气组分占比{atmosphereComponent.MassFraction}");
 
                 }
+            });
+            
+            DevConsoleApi.RegisterCommand("TryGetHookStuff", () =>
+            {
+                foreach (var pd in Game.Instance.FlightScene.CraftNode.CraftScript.Data.Assembly.Parts)
+                {
+                    if (pd.PartType.Name=="Eva"||pd.PartType.Name=="Eva-Tourist")
+                    {
+                        var zhesha = pd.PartScript.GameObject.GetComponent<GrapplingHookScript>();
+                        if (zhesha != null)
+                        {
+                            Log($"Eva挂钩状态{zhesha.CraftGrappled}");
+                            Log($"Eva挂钩目标{zhesha.CraftTo}");
+                        }
+                    }
+                }
+                
             });
 
         }

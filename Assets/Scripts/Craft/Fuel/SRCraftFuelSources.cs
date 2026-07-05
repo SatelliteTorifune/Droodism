@@ -6,6 +6,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using Assets.Scripts.Craft.Parts;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
 using ModApi.Craft;
@@ -18,8 +20,10 @@ namespace Assets.Scripts.Craft.Fuel
     //
     // Summary:
     //     Manages the the craft's fuel sources.
-    public class SRCraftFuelSources
+    public class SRCraftFuelSources:ICraftFuelSources, IDisposable
     {
+       
+
         //
         // Summary:
         //     The cross feeds
@@ -45,6 +49,22 @@ namespace Assets.Scripts.Craft.Fuel
         private List<CraftFuelSource> _fuelSources = new List<CraftFuelSource>();
 
 
+        private static readonly IReadOnlyDictionary<string, IFuelSource> EmptyCraftWidePoolFuelSources =
+            new Dictionary<string, IFuelSource>();
+
+        private static readonly MethodInfo _setCraftWidePoolFuelSourcesMethod;
+        private static readonly MethodInfo _getCraftWidePoolFuelSourcesMethod;
+
+        static SRCraftFuelSources()
+        {
+            _setCraftWidePoolFuelSourcesMethod = typeof(PartScript).GetMethod(
+                "SetCraftWidePoolFuelSources",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            _getCraftWidePoolFuelSourcesMethod = typeof(PartScript).GetMethod(
+                "GetCraftWidePoolFuelSources",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+        }
+
         //
         // Summary:
         //     The fuel transfer manager
@@ -61,6 +81,8 @@ namespace Assets.Scripts.Craft.Fuel
         //
         // Summary:
         //     Occurs when fuel is used from any of the craft's fuel sources.
+        IReadOnlyList<IFuelSource> ICraftFuelSources.FuelSources => FuelSources;
+
         public event FuelDelegate FuelUsed;
 
         //
@@ -78,7 +100,7 @@ namespace Assets.Scripts.Craft.Fuel
 
         
 
-
+       
 
         //
         // Summary:
@@ -122,98 +144,109 @@ namespace Assets.Scripts.Craft.Fuel
         //     is null then it will not be used.
         public void CreateFuelSourceForConnectedParts(IEnumerable<PartData> parts, bool removeDisconnectedCrossFeeds, List<CraftFuelSource> fuelSources)
         {
-            
             List<FuelTankData> modifiers = new List<FuelTankData>();
             Dictionary<int, FuelTankScript> lookup = new Dictionary<int, FuelTankScript>();
+            List<PartData> parts1 = new List<PartData>();
+            HashSet<int> partIds = new HashSet<int>();
+            HashSet<int> crossFeedPartIds = new HashSet<int>();
+
             foreach (PartData part in parts)
             {
-                part.GetModifiers(modifiers);
-                if (!removeDisconnectedCrossFeeds)
+                parts1.Add(part);
+                partIds.Add(part.Id);
+                part.GetModifiers<FuelTankData>(modifiers);
+                CrossFeedData modifier = part.GetModifier<CrossFeedData>();
+                if (modifier != null)
                 {
-                    CrossFeedData modifier = part.GetModifier<CrossFeedData>();
-                    if (modifier != null && modifier.Mode != 0)
-                    {
-                        _crossFeeds.Add(modifier.Script);
-                    }
+                    if (!EngineUtilities.FuelPassesThrough(part))
+                        crossFeedPartIds.Add(part.Id);
+                    if (!removeDisconnectedCrossFeeds && modifier.Mode != 0)
+                        this._crossFeeds.Add(modifier.Script);
                 }
             }
-           
+
+            Dictionary<int, int> regions = ComputeRegions(parts1, partIds, crossFeedPartIds);
+            Dictionary<int, Dictionary<string, IFuelSource>> regionPools = new Dictionary<int, Dictionary<string, IFuelSource>>();
+
             try
             {
-
-                foreach (FuelTankData fuelTankData in modifiers)
+                foreach (FuelTankData fuelTank in modifiers)
                 {
-                    var patch = fuelTankData?.Part?.PartScript?.CommandPod?.Part?.PartScript?.GetModifier<STCommandPodPatchScript>();
-                    CraftFuelSource craftFuelSource = null;
-                    if (fuelTankData != null && !fuelTankData.Script.PartScript.Disconnected)
+                    if (fuelTank != null)
                     {
-                        
-                        if (fuelTankData.FuelType == FuelType.Battery)
+                        if (!fuelTank.Script.PartScript.Disconnected)
                         {
-                            craftFuelSource = fuelTankData.Part.PartScript.CommandPod?.BatteryFuelSource as CraftFuelSource;
-                        }
-                        else if (fuelTankData.FuelType != null && fuelTankData.FuelType.CraftWidePool)
-                        {
-                            CommandPodScript commandPod = fuelTankData.Part.PartScript.CommandPod as CommandPodScript;
-                            if (commandPod != null)
+                            if (fuelTank.FuelType == FuelType.Battery)
                             {
-                                IFuelSource pooled = commandPod.GetPooledFuelSource(fuelTankData.FuelType.Id);
-                                if (pooled is CraftFuelSource cfs)
+                                if (fuelTank.Part.PartScript.CommandPod?.BatteryFuelSource is CraftFuelSource batteryFuelSource)
                                 {
-                                    craftFuelSource = cfs;
+                                    batteryFuelSource.AddFuelTank(fuelTank.Script);
+                                    continue;
                                 }
-                                else
+                            }
+
+                            if (fuelTank.FuelType.Id == "Oxygen")
+                            {
+                                if (fuelTank?.Part.PartScript?.CommandPod?.Part.PartScript.GetModifier<STCommandPodPatchScript>().OxygenFuelSource is CraftFuelSource craftFuelSource)
                                 {
-                                    craftFuelSource = this.CreateFuelSource(fuelTankData.FuelType, true);
-                                    commandPod.AddPooledFuelSource(fuelTankData.FuelType.Id, (IFuelSource) craftFuelSource);
+                                    craftFuelSource.AddFuelTank(fuelTank.Script);
+                                    continue;
+                                }
+                            }
+                            if (fuelTank.FuelType.Id == "H2O")
+                            {
+                                if (fuelTank?.Part.PartScript?.CommandPod?.Part.PartScript.GetModifier<STCommandPodPatchScript>().WaterFuelSource is CraftFuelSource craftFuelSource)
+                                {
+                                    craftFuelSource.AddFuelTank(fuelTank.Script);
+                                    continue;
+                                }
+                            }
+                            if (fuelTank.FuelType.Id == "Food")
+                            {
+                                if (fuelTank?.Part.PartScript?.CommandPod?.Part.PartScript.GetModifier<STCommandPodPatchScript>().FoodFuelSource is CraftFuelSource craftFuelSource)
+                                {
+                                    craftFuelSource.AddFuelTank(fuelTank.Script);
+                                    continue;
+                                }
+                            }
+                            if (fuelTank.FuelType.Id == "CO2")
+                            {
+                                if (fuelTank?.Part.PartScript?.CommandPod?.Part.PartScript.GetModifier<STCommandPodPatchScript>().CO2FuelSource is CraftFuelSource craftFuelSource)
+                                {
+                                    craftFuelSource.AddFuelTank(fuelTank.Script);
+                                    continue;
+                                }
+                            }
+                            if (fuelTank.FuelType.Id == "Wasted Water")
+                            {
+                                if (fuelTank?.Part.PartScript?.CommandPod?.Part.PartScript.GetModifier<STCommandPodPatchScript>().WastedWaterFuelSource is CraftFuelSource craftFuelSource)
+                                {
+                                    craftFuelSource.AddFuelTank(fuelTank.Script);
+                                    continue;
+                                }
+                            }
+                            if (fuelTank.FuelType.Id == "Solid Waste")
+                            {
+                                if (fuelTank?.Part.PartScript?.CommandPod?.Part.PartScript.GetModifier<STCommandPodPatchScript>().SolidWasteFuelSource is CraftFuelSource craftFuelSource)
+                                {
+                                    craftFuelSource.AddFuelTank(fuelTank.Script);
+                                    continue;
+                                }
+                            }
+                            else
+                            {
+                                int region;
+                                if (fuelTank.FuelType != null && fuelTank.FuelType.CraftWidePool && regions.TryGetValue(fuelTank.Part.Id, out region))
+                                {
+                                    this.AddTankToRegionPool(regionPools, region, fuelTank, fuelSources);
+                                    continue;
                                 }
                             }
                         }
-                        else if (fuelTankData.FuelType == FuelType.Monopropellant)
-                        {
-                            craftFuelSource = fuelTankData.Part.PartScript.CommandPod?.MonoFuelSource as CraftFuelSource;
-                        }
-                        else if (fuelTankData.FuelType == FuelType.Jet)
-                        {
-                            craftFuelSource = fuelTankData.Part.PartScript.CommandPod.JetFuelSource as CraftFuelSource;
-                        }
-                        else if (fuelTankData.FuelType.Id =="Oxygen")
-                        {
-                            craftFuelSource=patch?.OxygenFuelSource as CraftFuelSource;
-                        }
-                        else if (fuelTankData.FuelType.Id =="H2O")
-                        {
-                            craftFuelSource=patch?.WaterFuelSource as CraftFuelSource;
-                        }
-                        else if (fuelTankData.FuelType.Id =="Wasted Water")
-                        {
-                            craftFuelSource=patch?.WastedWaterFuelSource as CraftFuelSource;
-                        }
-                        else if (fuelTankData.FuelType.Id =="Food")
-                        {
-                            craftFuelSource=patch?.FoodFuelSource as CraftFuelSource;
-                        }
-                        else if (fuelTankData.FuelType.Id =="Solid Waste")
-                        {
-                            craftFuelSource=patch?.SolidWasteFuelSource as CraftFuelSource;
-                        }
-                        else if (fuelTankData.FuelType.Id =="CO2")
-                        {
-                            craftFuelSource=patch?.CO2FuelSource as CraftFuelSource;
-                        }
-                    }
-                    
-                    if (craftFuelSource != null)
-                    {
-                        craftFuelSource.AddFuelTank(fuelTankData.Script);
-                    }
-                    else
-                    {
-                        lookup[fuelTankData.Part.Id] = fuelTankData.Script;
+                        lookup[fuelTank.Part.Id] = fuelTank.Script;
                     }
                 }
-                
-               
+
                 foreach (int key in lookup.Keys.ToArray<int>())
                 {
                     FuelTankScript fuelTankScript1 = lookup[key];
@@ -221,17 +254,72 @@ namespace Assets.Scripts.Craft.Fuel
                     {
                         FuelTankScript fuelTankScript2 = fuelTankScript1;
                         CraftFuelSource fuelSource = this.CreateFuelSource(fuelTankScript2.Data.FuelType);
-                        FindConnectedTanks(fuelTankScript2.PartScript.Data, fuelTankScript2, fuelSource, lookup);
+                        FindConnectedTanks(fuelTankScript2.PartScript.Data, fuelTankScript2, fuelSource, lookup, new HashSet<int>());
                         fuelSources?.Add(fuelSource);
                     }
                 }
+
+                BorrowPoolsAcrossCrossFeeds(regions, regionPools);
+
+                foreach (PartData partData in parts1)
+                {
+                    int key;
+                    Dictionary<string, IFuelSource> dictionary;
+                    IReadOnlyDictionary<string, IFuelSource> sources = !regions.TryGetValue(partData.Id, out key) || !regionPools.TryGetValue(key, out dictionary) ? EmptyCraftWidePoolFuelSources : (IReadOnlyDictionary<string, IFuelSource>) dictionary;
+                    if (partData.PartScript is PartScript partScript)
+                    {
+                        //反射调用方法
+                        _setCraftWidePoolFuelSourcesMethod?.Invoke(partScript, new object[] { sources });
+                    }
+                       
+                }
+
                 SetupCrossFeeds(removeDisconnectedCrossFeeds);
+                SetupCraftWidePoolCrossFeeds();
             }
             catch (Exception e)
             {
                 Mod.LogError($"Droodism:[SRCraftFuelSources] CreateFuelSourceForConnectedParts failed: {e}");
             }
-            
+        }
+        private void SetupCraftWidePoolCrossFeeds()
+        {
+          foreach (CrossFeedScript crossFeed in this._crossFeeds)
+          {
+            PartData data = crossFeed.PartScript.Data;
+            PartData adjacentPart1 = EngineUtilities.GetAdjacentPart(data, crossFeed.Data.AttachPointA);
+            PartData adjacentPart2 = EngineUtilities.GetAdjacentPart(data, crossFeed.Data.AttachPointB);
+            IReadOnlyDictionary<string, IFuelSource> widePoolFuelSources1 = adjacentPart1?.PartScript is PartScript partScript1
+                ? (IReadOnlyDictionary<string, IFuelSource>) _getCraftWidePoolFuelSourcesMethod?.Invoke(partScript1, null)
+                : null;
+            IReadOnlyDictionary<string, IFuelSource> widePoolFuelSources2 = adjacentPart2?.PartScript is PartScript partScript2
+                ? (IReadOnlyDictionary<string, IFuelSource>) _getCraftWidePoolFuelSourcesMethod?.Invoke(partScript2, null)
+                : null;
+            if (widePoolFuelSources1 != null && widePoolFuelSources2 != null)
+            {
+              foreach (KeyValuePair<string, IFuelSource> keyValuePair in widePoolFuelSources1)
+              {
+                if (widePoolFuelSources2.TryGetValue(keyValuePair.Key, out IFuelSource fuelSource))
+                {
+                  CraftFuelSource craftFuelSource1 = (CraftFuelSource) keyValuePair.Value;
+                  CraftFuelSource craftFuelSource2 = (CraftFuelSource) fuelSource;
+                  if (craftFuelSource1 != craftFuelSource2 && craftFuelSource1.FuelType.AllowFuelTransfer)
+                  {
+                    if (crossFeed.Data.Mode == CrossFeedData.CrossFeedMode.Equalize)
+                    {
+                      if (this._equalizeCrossFeeds == null)
+                        this._equalizeCrossFeeds = new List<Tuple<IFuelSource, IFuelSource>>();
+                      this._equalizeCrossFeeds.Add(new Tuple<IFuelSource, IFuelSource>((IFuelSource) craftFuelSource1, (IFuelSource) craftFuelSource2));
+                    }
+                    else if (crossFeed.Data.Mode == CrossFeedData.CrossFeedMode.Normal)
+                      craftFuelSource2.AddCrossFeedPullSource((IFuelSource) craftFuelSource1);
+                    else if (crossFeed.Data.Mode == CrossFeedData.CrossFeedMode.Reversed)
+                      craftFuelSource1.AddCrossFeedPullSource((IFuelSource) craftFuelSource2);
+                  }
+                }
+              }
+            }
+          }
         }
 
         //
@@ -245,24 +333,12 @@ namespace Assets.Scripts.Craft.Fuel
         {
             this._fuelSources.Clear();
             this._crossFeeds.Clear();
-            
+            this._equalizeCrossFeeds?.Clear();
 
-            CraftFuelSource fuelSource1 = this.CreateFuelSource(FuelType.Battery);
-            CraftFuelSource fuelSource2 = FuelType.Jet.CraftWidePool ? this.CreateFuelSource(FuelType.Jet, true) : (CraftFuelSource) null;
-            CraftFuelSource fuelSource3 = FuelType.Monopropellant.CraftWidePool ? this.CreateFuelSource(FuelType.Monopropellant, true) : (CraftFuelSource) null;
-            
-
-            Dictionary<string, IFuelSource> sources = new Dictionary<string, IFuelSource>();
-            int cpIndex = 0;
+            CraftFuelSource fuelSource = this.CreateFuelSource(FuelType.Battery);
             foreach (ICommandPod commandPod in craftScript.CommandPods)
             {
-                cpIndex++;
-                CommandPodScript commandPodScript = commandPod as CommandPodScript;
-
-                commandPodScript.BatteryFuelSource = (IFuelSource) fuelSource1;
-                commandPodScript.JetFuelSource = (IFuelSource) fuelSource2;
-                commandPodScript.MonoFuelSource = (IFuelSource) fuelSource3;
-                commandPodScript.SetPooledFuelSources(sources);
+                (commandPod as CommandPodScript).BatteryFuelSource = (IFuelSource) fuelSource;
                 STCommandPodPatchScript patchScript = commandPod.Part.PartScript?.GetModifier<STCommandPodPatchScript>();
                 if (patchScript != null)
                 {
@@ -280,8 +356,8 @@ namespace Assets.Scripts.Craft.Fuel
                         Mod.Log($"SRCCraftFuelSources.Rebuild: Error creating fuel sources: {e}");
                     }
                 }
-                
             }
+            
 
             this.CreateFuelSourceForConnectedParts((IEnumerable<PartData>) craftScript.Data.Assembly.Parts, false, (List<CraftFuelSource>) null);
             
@@ -355,28 +431,28 @@ namespace Assets.Scripts.Craft.Fuel
         //
         //   lookup:
         //     The lookup.
-        private static void FindConnectedTanks(PartData part, FuelTankScript fuelTankScript, CraftFuelSource fuelSource, Dictionary<int, FuelTankScript> lookup)
+        private static void FindConnectedTanks(
+            PartData part,
+            FuelTankScript fuelTankScript,
+            CraftFuelSource fuelSource,
+            Dictionary<int, FuelTankScript> lookup,
+            HashSet<int> visitedPassThrough)
         {
-            if (fuelTankScript != null)
+            if ((UnityEngine.Object) fuelTankScript != (UnityEngine.Object) null)
             {
                 fuelSource.AddFuelTank(fuelTankScript);
+                lookup[part.Id] = (FuelTankScript) null;
             }
-
-            lookup[part.Id] = (FuelTankScript) null;
             foreach (PartConnection partConnection in part.PartConnections)
             {
                 PartData otherPart = partConnection.GetOtherPart(part);
-                FuelTankScript value = null;
-                if (lookup.TryGetValue(otherPart.Id, out value))
+                if (EngineUtilities.ConnectedWithFuelLine(partConnection, part, otherPart))
                 {
-                    if (value != null && value.Data.FuelType == fuelSource.FuelType && EngineUtilities.ConnectedWithFuelLine(partConnection, part, otherPart))
-                    {
-                        FindConnectedTanks(otherPart, value, fuelSource, lookup);
-                    }
-                }
-                else if (otherPart.Config.FuelLineOverride)
-                {
-                    FindConnectedTanks(otherPart, null, fuelSource, lookup);
+                    FuelTankScript fuelTankScript1 = (FuelTankScript) null;
+                    if (lookup.TryGetValue(otherPart.Id, out fuelTankScript1) && (UnityEngine.Object) fuelTankScript1 != (UnityEngine.Object) null && fuelTankScript1.Data.FuelType == fuelSource.FuelType)
+                        FindConnectedTanks(otherPart, fuelTankScript1, fuelSource, lookup, visitedPassThrough);
+                    else if (EngineUtilities.FuelPassesThrough(otherPart) && visitedPassThrough.Add(otherPart.Id))
+                        FindConnectedTanks(otherPart, (FuelTankScript) null, fuelSource, lookup, visitedPassThrough);
                 }
             }
         }
@@ -413,6 +489,126 @@ namespace Assets.Scripts.Craft.Fuel
             _fuelSources.Add(craftFuelSource);
             return craftFuelSource;
         }
+
+        private static Dictionary<int, int> ComputeRegions(List<PartData> parts, HashSet<int> partIds, HashSet<int> crossFeedPartIds)
+        {
+            Dictionary<int, int> regions = new Dictionary<int, int>(parts.Count);
+            Queue<PartData> partDataQueue = new Queue<PartData>();
+            int num1 = 0;
+
+            foreach (PartData part1 in parts)
+            {
+                if (!regions.ContainsKey(part1.Id))
+                {
+                    if (crossFeedPartIds.Contains(part1.Id))
+                    {
+                        regions[part1.Id] = num1++;
+                    }
+                    else
+                    {
+                        int num2 = num1++;
+                        regions[part1.Id] = num2;
+                        partDataQueue.Enqueue(part1);
+
+                        while (partDataQueue.Count > 0)
+                        {
+                            PartData part2 = partDataQueue.Dequeue();
+                            foreach (PartConnection partConnection in part2.PartConnections)
+                            {
+                                PartData otherPart = partConnection.GetOtherPart(part2);
+                                if (otherPart != null && partIds.Contains(otherPart.Id) && !regions.ContainsKey(otherPart.Id) && !crossFeedPartIds.Contains(otherPart.Id))
+                                {
+                                    regions[otherPart.Id] = num2;
+                                    partDataQueue.Enqueue(otherPart);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return regions;
+        }
+
+        private void AddTankToRegionPool(Dictionary<int, Dictionary<string, IFuelSource>> regionPools, int region, FuelTankData fuelTank, List<CraftFuelSource> fuelSources)
+        {
+            if (!regionPools.TryGetValue(region, out Dictionary<string, IFuelSource> dictionary))
+            {
+                dictionary = new Dictionary<string, IFuelSource>();
+                regionPools[region] = dictionary;
+            }
+
+            if (dictionary.TryGetValue(fuelTank.FuelType.Id, out IFuelSource fuelSource1))
+            {
+                ((CraftFuelSource)fuelSource1).AddFuelTank(fuelTank.Script);
+            }
+            else
+            {
+                CraftFuelSource fuelSource2 = this.CreateFuelSource(fuelTank.FuelType, true);
+                dictionary[fuelTank.FuelType.Id] = fuelSource2;
+                fuelSource2.AddFuelTank(fuelTank.Script);
+                fuelSources?.Add(fuelSource2);
+            }
+        }
+
+        private static bool BorrowMissingPools(Dictionary<int, Dictionary<string, IFuelSource>> regionPools, int sourceRegion, int destRegion)
+        {
+            if (!regionPools.TryGetValue(sourceRegion, out Dictionary<string, IFuelSource> dictionary1))
+                return false;
+
+            if (!regionPools.TryGetValue(destRegion, out Dictionary<string, IFuelSource> dictionary2))
+            {
+                dictionary2 = new Dictionary<string, IFuelSource>();
+                regionPools[destRegion] = dictionary2;
+            }
+
+            bool flag = false;
+            foreach (KeyValuePair<string, IFuelSource> keyValuePair in dictionary1)
+            {
+                if (keyValuePair.Value.FuelType.AllowFuelTransfer && !dictionary2.ContainsKey(keyValuePair.Key))
+                {
+                    dictionary2[keyValuePair.Key] = keyValuePair.Value;
+                    flag = true;
+                }
+            }
+
+            return flag;
+        }
+
+        private void BorrowPoolsAcrossCrossFeeds(Dictionary<int, int> regionByPart, Dictionary<int, Dictionary<string, IFuelSource>> regionPools)
+        {
+            bool flag = true;
+            while (flag)
+            {
+                flag = false;
+                foreach (CrossFeedScript crossFeed in _crossFeeds)
+                {
+                    if (crossFeed.PartScript.Disconnected)
+                        continue;
+
+                    PartData data = crossFeed.PartScript.Data;
+                    PartData adjacentPart1 = EngineUtilities.GetAdjacentPart(data, crossFeed.Data.AttachPointA);
+                    PartData adjacentPart2 = EngineUtilities.GetAdjacentPart(data, crossFeed.Data.AttachPointB);
+
+                    if (adjacentPart1 == null || adjacentPart2 == null)
+                        continue;
+
+                    if (!regionByPart.TryGetValue(adjacentPart1.Id, out int num1) || !regionByPart.TryGetValue(adjacentPart2.Id, out int num2))
+                        continue;
+
+                    if (num1 == num2)
+                        continue;
+
+                    CrossFeedData.CrossFeedMode mode = crossFeed.Data.Mode;
+                    if (mode == CrossFeedData.CrossFeedMode.Normal || mode == CrossFeedData.CrossFeedMode.Equalize)
+                        flag |= BorrowMissingPools(regionPools, num1, num2);
+                    if (mode == CrossFeedData.CrossFeedMode.Reversed || mode == CrossFeedData.CrossFeedMode.Equalize)
+                        flag |= BorrowMissingPools(regionPools, num2, num1);
+                }
+            }
+        }
+
+        
 
         //
         // Summary:
@@ -511,46 +707,37 @@ namespace Assets.Scripts.Craft.Fuel
         {
             if (removeDisconnectedCrossFeeds)
             {
-                foreach (CraftFuelSource fuelSource in _fuelSources)
-                {
+                foreach (CraftFuelSource fuelSource in this._fuelSources)
                     fuelSource.ClearCrossFeeds();
-                }
-
-                CrossFeedScript[] array = _crossFeeds.ToArray();
-                _equalizeCrossFeeds?.Clear();
-                CrossFeedScript[] array2 = array;
-                foreach (CrossFeedScript crossFeedScript in array2)
+                CrossFeedScript[] array = this._crossFeeds.ToArray();
+                this._equalizeCrossFeeds?.Clear();
+                foreach (CrossFeedScript crossFeedScript in array)
                 {
                     if (crossFeedScript.PartScript.Disconnected)
-                    {
-                        _crossFeeds.Remove(crossFeedScript);
-                    }
+                        this._crossFeeds.Remove(crossFeedScript);
                 }
             }
-
-            foreach (CrossFeedScript crossFeed in _crossFeeds)
+            foreach (CrossFeedScript crossFeed in this._crossFeeds)
             {
-                FuelTankScript source = null;
-                FuelTankScript target = null;
-                if (!crossFeed.GetFuelTanks(out source, out target))
+                FuelTankScript source = (FuelTankScript) null;
+                FuelTankScript target = (FuelTankScript) null;
+                if (crossFeed.GetFuelTanks(out source, out target) && !source.FuelType.CraftWidePool)
                 {
-                    continue;
-                }
-
-                if (crossFeed.Data.Mode == CrossFeedData.CrossFeedMode.Equalize)
-                {
-                    if (_equalizeCrossFeeds == null)
+                    if (crossFeed.Data.Mode == CrossFeedData.CrossFeedMode.Equalize)
                     {
-                        _equalizeCrossFeeds = new List<Tuple<IFuelSource, IFuelSource>>();
+                        if (this._equalizeCrossFeeds == null)
+                            this._equalizeCrossFeeds = new List<Tuple<IFuelSource, IFuelSource>>();
+                        this._equalizeCrossFeeds.Add(new Tuple<IFuelSource, IFuelSource>((IFuelSource) source.CraftFuelSource, (IFuelSource) target.CraftFuelSource));
                     }
-
-                    _equalizeCrossFeeds.Add(new Tuple<IFuelSource, IFuelSource>(source.CraftFuelSource, target.CraftFuelSource));
-                }
-                else
-                {
-                    target.CraftFuelSource.AddCrossFeedPullSource(source.CraftFuelSource);
+                    else
+                        target.CraftFuelSource.AddCrossFeedPullSource((IFuelSource) source.CraftFuelSource);
                 }
             }
+        }
+
+        public void Dispose()
+        {
+            
         }
     }
 }

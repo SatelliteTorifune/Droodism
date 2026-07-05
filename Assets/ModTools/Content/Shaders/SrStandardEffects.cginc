@@ -87,8 +87,8 @@
                 float3 currentNormalized = current / height;
                 cameraAngle = saturate(dot(direction, currentNormalized));
                 lightAngle = dot(lightDir.xyz, currentNormalized);
-                cameraScale = ExpScale(cameraAngle, _scaleDepthLn, _invAtmosSizeScale);
-                lightScale = ExpScale(lightAngle, _scaleDepthLn, _invAtmosSizeScale);
+                cameraScale = OpticalDepthScaleAdaptive(cameraAngle, height, _scaleDepthLn, _scaleOverScaleDepth, _invAtmosSizeScale);
+                lightScale = OpticalDepthScaleAdaptive(lightAngle, height, _scaleDepthLn, _scaleOverScaleDepth, _invAtmosSizeScale);
                 scatter =  exp(-1.0 / _scaleDepth) + depth * (lightScale - cameraScale);
             }
             else
@@ -96,7 +96,17 @@
                 scatter = depth * precomputedScatter - precomputedCameraOffset;
             }
 
-            float attenuate = exp(-scatter * (invWavelength.xyz * _kr4PI + _km4PI));
+            // Skip the per-channel ozone path when ozone is inactive (zero coefficient), falling back
+            // to the historical monochrome red-channel haze.
+            float3 attenuate;
+            if (any(_ozoneCoefficient))
+            {
+                attenuate = AtmosphereExtinction(scatter, invWavelength.xyz, _kr4PI, _km4PI, _ozoneCoefficient);
+            }
+            else
+            {
+                attenuate = exp(-scatter * (invWavelength.x * _kr4PI + _km4PI));
+            }
             atmosColor += attenuate * depth * scaledLength;
 
             current += step;

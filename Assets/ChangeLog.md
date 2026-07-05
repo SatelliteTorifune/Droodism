@@ -1,3 +1,24 @@
+## 2026 7 5
+> 移植了JetEngineScript的大气组分扫描逻辑到SupportLifeScript
+> 
+> > SupportLifeScript.UsingInternalOxygen() 改为优先通过分析行星大气组分中的氧气质量分数来判断是否可呼吸
+> > 
+> > 新增 IsBreathableByComposition() 和 ComputeBreathable() 方法，带缓存机制
+> > 
+> > 行星大气中 LOX质量分数 >= 0.1即可呼吸
+> > 
+> > 保留原有 IsBreathablePlanet 名称白名单作为回退兼容
+> 
+>  提高了SupportLifeScript中可呼吸大气密度的阈值,密度必须大于0.4方可判定为使用外部氧气
+> 
+>增加了RTG功率衰减
+## 2026 7 4
+> 更新了SRCraftFuelSources.cs中的部分函数以适配新版本的CraftFuelSources和全局资源系统
+> 
+> 修复DesignerUI中部分空引用导致的数据显示异常
+> 
+> 增加自动本地化文件功能
+
 ## 2026 6 29
 > 修改了SRCraftFuelSources中的部分函数以修复JetFuel和Mono无法被读取的错误
 > 

@@ -51,23 +51,19 @@ namespace Assets.Scripts
                 Directory.CreateDirectory(folderPath);
             }
             var asset = Mod.ResourceLoader.LoadAsset<TextAsset>("Assets/Resources/BreathablePlanets.xml");
-            Log($"[Droodism] CheckDefaultBreathablePlanetConfig: asset={asset != null}, folderPath={folderPath}");
+            
             if (asset != null)
             {
                 var targetPath = Path.Combine(folderPath, "BreathablePlanets.xml");
                 if (!File.Exists(targetPath))
                 {
                     File.WriteAllText(targetPath, asset.text, Encoding.UTF8);
-                     Log($"[Droodism] Copied BreathablePlanets.xml to: {targetPath}");
-                }
-                else
-                {
-                     Log($"[Droodism] BreathablePlanets.xml already exists at: {targetPath}");
+                     Debug.LogFormat($"[Droodism] Copied BreathablePlanets.xml to: {targetPath}");
                 }
             }
             else
             {
-                LogError("[Droodism] Failed to load BreathablePlanets.xml from Resources!");
+                Debug.LogErrorFormat("[Droodism] Failed to load BreathablePlanets.xml from Resources!");
             }
         }
         private  static string GetRadiationBeltConfigFolderPath()
@@ -126,6 +122,26 @@ namespace Assets.Scripts
             catch (Exception e)
             {
                 LogError($"[Droodism] Failed to write default flag image to '{targetPath}': {e}");
+            }
+        }
+
+        private void CheckLocalizationFiles(string targetLanguage)
+        {
+            var targetPath = Path.Combine(Application.persistentDataPath, "Languages", targetLanguage, "StringsDroodism.xml");
+            if (File.Exists(targetPath))
+            {
+                return; 
+            }
+            
+            var localizationFile = Mod.ResourceLoader.LoadAsset<TextAsset>("Assets/Resources/LocalizationFile/"+targetLanguage+"/StringsDroodism.xml");
+            try
+            {
+                File.WriteAllBytes(targetPath, localizationFile.bytes);
+                Debug.LogFormat($"[Droodism] Wrote {targetLanguage} localization file to: {targetPath}");
+            }
+            catch (Exception e)
+            {
+                Debug.LogErrorFormat($"[Droodism] Failed to write {targetLanguage} localization file to '{targetPath}': {e}");
             }
         }
     }
