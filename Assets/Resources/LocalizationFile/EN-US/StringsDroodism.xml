@@ -341,4 +341,11 @@
 
     <!-- ModUlti -->
     <s id="Droodism.ModUlti.FlagPlanted">Planted Flag at {0}'s surface, at {1}° , {2}°</s>
+
+    <!-- RTGPowerFallScript -->
+    <s id="Droodism.RTGPowerFallScript.RTGGroupTitle">RTG Power Decay</s>
+    <s id="Droodism.RTGPowerFallScript.MissionTime">Mission Time</s>
+    <s id="Droodism.RTGPowerFallScript.CurrentPower">Current Power</s>
+    <s id="Droodism.RTGPowerFallScript.PowerRemaining">Power Remaining</s>
+    <s id="Droodism.RTGPowerFallScript.PreviewYears">Preview Years</s>
 </Strings>

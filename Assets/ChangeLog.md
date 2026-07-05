@@ -10,7 +10,8 @@
 > > 保留原有 IsBreathablePlanet 名称白名单作为回退兼容
 > 
 >  提高了SupportLifeScript中可呼吸大气密度的阈值,密度必须大于0.4方可判定为使用外部氧气
-
+> 
+>增加了RTG功率衰减
 ## 2026 7 4
 > 更新了SRCraftFuelSources.cs中的部分函数以适配新版本的CraftFuelSources和全局资源系统
 > 

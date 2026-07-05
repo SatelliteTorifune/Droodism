@@ -324,7 +324,7 @@
     <s id="Droodism.GasDealerScript.Malfunction">故障</s>
     <s id="Droodism.GasDealerScript.MalfunctionTooltip">减压阀故障,无法启动</s>
     <s id="Droodism.GasDealerScript.Malfunctioning">减压阀故障！</s>
-    <s id="Droodism.GasDealerScript.SequenceInitiated">减压序列已启动</s>
+    <s id="Droodism.GasDealerScript.SequenceInitiated">减压程序已启动</s>
 
     <!-- RagdollModifierScript -->
     <s id="Droodism.RagdollModifier.Ragdoll">布娃娃物理</s>
@@ -336,4 +336,11 @@
 
     <!-- ModUlti -->
     <s id="Droodism.ModUlti.FlagPlanted">已在 {0} 地表插旗,坐标 {1}° , {2}°</s>
+
+    <!-- RTGPowerFallScript -->
+    <s id="Droodism.RTGPowerFallScript.RTGGroupTitle">RTG 功率衰减</s>
+    <s id="Droodism.RTGPowerFallScript.MissionTime">任务时间</s>
+    <s id="Droodism.RTGPowerFallScript.CurrentPower">当前功率</s>
+    <s id="Droodism.RTGPowerFallScript.PowerRemaining">剩余功率</s>
+    <s id="Droodism.RTGPowerFallScript.PreviewYears">预览年数</s>
 </Strings>

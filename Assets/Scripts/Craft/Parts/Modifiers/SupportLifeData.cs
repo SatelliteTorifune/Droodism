@@ -109,53 +109,53 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         public float OxygenConsumeRate
         {
-            get =>IsLegal(this.oxygenConsumeRate)*0.007f; 
-            private set=>this.oxygenConsumeRate = value;
+            get => this.oxygenConsumeRate * 0.007f; 
+            private set => this.oxygenConsumeRate = Mathf.Max(0f, value);
         }
         public float FoodConsumeRate
         {
-            get=>this.IsLegal(foodConsumeRate)*0.0000058f;
-            set=>this.foodConsumeRate = value;
+            get => this.foodConsumeRate * 0.0000058f;
+            set => this.foodConsumeRate = Mathf.Max(0f, value);
         }
 
         public float WaterConsumeRate
         {
-            get => IsLegal(waterConsumeRate)*0.0000347f;
-            set => this.waterConsumeRate = value;
+            get => this.waterConsumeRate * 0.0000347f;
+            set => this.waterConsumeRate = Mathf.Max(0f, value);
         }
         public float OxygenDamageScale
         {
-            get=>IsLegal(this.oxygenDamageScale)*0.35f;
-            set=>this.oxygenDamageScale = value;
+            get => this.oxygenDamageScale * 0.35f;
+            set => this.oxygenDamageScale = Mathf.Max(0f, value);
         }
         public float FoodDamageScale
         {
-            get=>IsLegal(this.foodDamageScale)*0.0002f;
-            set=>this.foodDamageScale = value;
+            get => this.foodDamageScale * 0.0002f;
+            set => this.foodDamageScale = Mathf.Max(0f, value);
         }
         
         public float WaterDamageScale
         {
-            get=>IsLegal(waterDamageScale)*0.001f;
-            set=>this.waterDamageScale = value;
+            get => this.waterDamageScale * 0.001f;
+            set => this.waterDamageScale = Mathf.Max(0f, value);
         }
         
         public float DesireOxygenCapacity
         {
-            get=>IsLegal(desireOxygenCapacity)*600;
-            private set=>this.desireOxygenCapacity = value;
+            get => this.desireOxygenCapacity * 600;
+            private set => this.desireOxygenCapacity = Mathf.Max(0f, value);
         }
         
         public float DesireFoodCapacity
         {
-            get=>this.IsLegal(desireFoodCapacity)*0.5f;
-            set=>this.desireFoodCapacity = value;
+            get => this.desireFoodCapacity * 0.5f;
+            set => this.desireFoodCapacity = Mathf.Max(0f, value);
         }
         
         public float DesireWaterCapacity
         {
-            get=>this.IsLegal(this.desireWaterCapacity)*3;
-            set=>this.desireWaterCapacity = value;
+            get => this.desireWaterCapacity * 3;
+            set => this.desireWaterCapacity = Mathf.Max(0f, value);
         }
 
         public float DesireCO2Capacity
@@ -197,10 +197,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public float RadiationDamageThresholdLevel3
         {
             get => radiationDamageThresholdLevel3;
-        }
-        private float IsLegal(float value)
-        {
-            return value>0?value:1;
         }
 
         public float MinDeployHeight

@@ -243,7 +243,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             MissionDurationTime = (long)Game.Instance.FlightScene.FlightState.Time - Data.MissionStartTime;
             if (isRepairing)
             {
-                RepairPartWorkingLogic(frame,Game.Instance.FlightScene.ViewManager.GameView.SelectedPart.Data );
+                var selectedPart = Game.Instance.FlightScene.ViewManager.GameView.SelectedPart;
+                if (selectedPart != null)
+                {
+                    RepairPartWorkingLogic(frame, selectedPart.Data);
+                }
+                else
+                {
+                    isRepairing = false;
+                }
             }
         }
 
@@ -278,11 +286,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if(!Game.InFlightScene)
                 return;
             base.OnCraftStructureChanged(craftScript);
-            if (Game.InFlightScene)
-            {
-                Refresh();
-                Mod.Log("OnCraftStructureChanged调用RefreshFuelSource();");
-            }
+            Refresh();
+            Mod.Log("OnCraftStructureChanged调用RefreshFuelSource();");
         }
 
         /// <summary>
@@ -290,6 +295,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// </summary>
         public override void FlightEnd()
         {
+            Game.Instance.FlightScene.FlightEnded -= OnFlightEnded;
+            Game.Instance.FlightScene.PlayerChangedSoi -= OnPlayerChangedSoi;
+            if (Game.Instance.FlightScene.CraftNode != null)
+            {
+                Game.Instance.FlightScene.CraftNode.PhysicsDisabled -= OnPhysicsDisabled;
+                Game.Instance.FlightScene.CraftNode.PhysicsEnabled -= OnPhysicsEnabled;
+            }
             OnCraftUnloaded();
         }
 
@@ -438,6 +450,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
                 catch (Exception e)
                 {
+                    Mod.Log("SupportLifeScript.Refresh 出错:{0}", e);
                 }
             }
         }
@@ -536,8 +549,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             else
             {
-                craft.RemoveFuel(craft.TotalFuel);
-                amount+=(craft.TotalFuel);
+                double availableFuel = craft.TotalFuel;
+                craft.RemoveFuel(availableFuel);
+                amount += availableFuel;
             }
         }
         
@@ -548,15 +562,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             if (Craft.TotalCapacity-Craft.TotalFuel>drood)
             {
+                double addedAmount = drood;
                 Craft.AddFuel(drood);
                 drood = 0;
-                Mod.Log($"Remove{Craft.FuelType.Name} 成功:{0}实际{1}",drood,Craft.TotalFuel);
+                Mod.Log($"Remove{Craft.FuelType.Name} 成功:应加{addedAmount}实际{Craft.TotalFuel}");
             }
             else
             {
-                drood-=(Craft.TotalCapacity - Craft.TotalFuel);
-                Craft.AddFuel(Craft.TotalCapacity - Craft.TotalFuel);
-                Mod.Log($"Remove{Craft.FuelType.Name} 满了成功:{0}实际{1}", drood, Craft.TotalFuel);
+                double remainingSpace = Craft.TotalCapacity - Craft.TotalFuel;
+                drood -= remainingSpace;
+                Craft.AddFuel(remainingSpace);
+                Mod.Log($"Remove{Craft.FuelType.Name} 满了成功:剩余{drood}实际{Craft.TotalFuel}");
             }
         }
 
@@ -621,6 +637,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     return true;
                 }
                 DamageDrood(fuelTypeName, frame, damageScale);
+                return false;
             }
 
             if (craftSource!=null&&!craftSource.IsEmpty)
@@ -650,6 +667,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     return;
                 }
                 DamageWaste(fuelTypeName, frame, damageScale);
+                return;
             }
 
             if (craftSource!=null&&craftSource.TotalCapacity - craftSource.TotalFuel > 0.00001)
@@ -925,14 +943,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 return;
             }
-            try
-            {
-                currentPlanetName = name;
-            }
-            catch (Exception e)
-            {
-                Mod.Log("UpdateCurrentPlanet (string)调用出问题了{0}", e);
-            }
+            currentPlanetName = name;
             this.RadiationBeltConfig = RadiationBeltConfig.LoadFromFile(name);
         }
 
@@ -1050,7 +1061,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
             }
 
-            if (this.Data.CumulativeRad >= this.Data.RadiationDamageThresholdLevel3)
+            if (this.Data.CumulativeRad >= this.Data.RadiationDamageThresholdLevel3 && this.RadiationDoseRateRadPerHour <= 5f)
             {
                 damageMultiplier = 0.05f;
                 damageReason = "<color=red><size=120%>severe cumulative radiation exposure</color></size>";

@@ -20,6 +20,7 @@ namespace Assets.Scripts
         private static readonly string EvaPartName = "Eva";
         private static readonly string EvaTouristPartName = "Eva-Tourist";
         private static readonly string GeneratorPartName = "Generator1";
+        private static readonly string RTGPartName = "Generator2";
         private static readonly string EvaDataModifierName = "EvaData";
         private static readonly string ChairPartName = "Chair";
         private static readonly string Cockpit = "Cockpit1";
@@ -53,6 +54,13 @@ namespace Assets.Scripts
             {
                 AddLifeSupportGeneratorModifiers(part);
             }
+
+            // Process RTG parts
+            foreach (var part in GetPartsByType(craftScript, RTGPartName))
+            {
+                AddLifeSupportRTGModifiers(part);
+            }
+
 
             // Process Command Pods
             foreach (var part in craftScript.Data.Assembly.Parts.Where(part => part.PartType.IsCommandPod&&!part.PartType.Name.Contains(Cockpit) && !part.PartType.Name.Contains(EvaPartName)).ToList())
@@ -112,6 +120,10 @@ namespace Assets.Scripts
             else if (part.Name == GeneratorPartName)
             {
                 AddLifeSupportGeneratorModifiers(part);
+            }
+            else if (part.Name == RTGPartName)
+            {
+                AddLifeSupportRTGModifiers(part);
             }
             else if (part.PartType.IsCommandPod && !part.PartType.Name.Contains(EvaPartName)&&!part.PartType.Name.Contains(ChairPartName)&&!part.PartType.Name.Contains(Cockpit))
             {
@@ -202,6 +214,18 @@ namespace Assets.Scripts
                 waterData = PartModifierData.CreateFromDefaultXml<Water_DesalinationData>(part);
                 waterData.PartPropertiesEnabled = true;
                 waterData.InspectorEnabled = true;
+            }
+        }
+        
+        private static void AddLifeSupportRTGModifiers(PartData part)
+        {
+            if (part == null) return;
+            var rtgPowerFallData = part.GetModifier<RTGPowerFallData>();
+            if (rtgPowerFallData == null)
+            {
+                rtgPowerFallData = PartModifierData.CreateFromDefaultXml<RTGPowerFallData>(part);
+                rtgPowerFallData.PartPropertiesEnabled = false;
+                rtgPowerFallData.InspectorEnabled = true;
             }
         }
 
