@@ -1,7 +1,9 @@
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using HarmonyLib;
 using ModApi;
+using ModApi.Craft;
 using ModApi.GameLoop;
+using System;
 using System.Reflection;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using UnityEngine;
