@@ -9,30 +9,21 @@ using UnityEngine;
 
 namespace Assets.Scripts
 {
-    public partial class Mod
-    {
-        private static FieldInfo _grapplingHookField;
-
-        private static FieldInfo GrapplingHookField
-        {
-            get
-            {
-                if (_grapplingHookField == null)
-                    _grapplingHookField = AccessTools.Field(typeof(EvaScript), "_grapplingHook");
-                return _grapplingHookField;
-            }
-        }
-
-        
-        private const float OxygenRefillRatePerSecond = 5f;
-
-        /// <summary>
-        /// Postfix 补丁：在原生 UpdateGrapplingHook() 的 Jetpack 燃料充能逻辑执行完毕后，
-        /// 追加氧气补充逻辑。当钩爪连接 Eva ↔ 飞船时，从飞船氧气源抽取并补充 Eva 的个人氧气 buffer。
-        /// </summary>
         [HarmonyPatch]
         public class UpdateGrapplingHookOxygenRefillPatch
         {
+            private static FieldInfo _grapplingHookField;
+            private static FieldInfo GrapplingHookField
+            {
+                get
+                {
+                    if (_grapplingHookField == null)
+                        _grapplingHookField = AccessTools.Field(typeof(EvaScript), "_grapplingHook");
+                    return _grapplingHookField;
+                }
+            }
+            private const float OxygenRefillRatePerSecond = 1.5f;
+            private const float Co2TransferRatePerSecond = 1.5f;
             static MethodBase TargetMethod()
             {
                 return AccessTools.Method(typeof(EvaScript), "UpdateGrapplingHook");
@@ -40,98 +31,84 @@ namespace Assets.Scripts
 
             public static void Postfix(EvaScript __instance)
             {
-               
-                if (!Game.InFlightScene)
-                {
-                    return;
-                }
+                // 1. 前置检查
+                if (!Game.InFlightScene) return;
+                if (!__instance.PartScript.CommandPod.IsPlayerControlled) return;
 
-                if (!__instance.PartScript.CommandPod.IsPlayerControlled)
-                {
-                    return;
-                }
+                // 2. 通过反射获取钩爪实例
                 var hook = GrapplingHookField.GetValue(__instance) as GrapplingHookScript;
-                if (hook == null)
-                {
-                    return;
-                }
-                
+                if (hook == null) return;
 
-                // 3. 判断钩爪是否连接到了飞船（Eva ↔ Craft）
-                bool hasEvaFrom = hook.EvaFrom != null;
-                bool hasCraftTo = hook.CraftTo != null;
-                bool hasEvaTo = hook.EvaTo != null;
-                bool hasCraftFrom = hook.CraftFrom != null;
-
-                if (hasEvaFrom && hasCraftTo)
-                {
-                    PatchWorkingLogic(hook.EvaFrom, hook.CraftTo);
-                }
-                else if (hasEvaTo && hasCraftFrom)
-                {
-                    PatchWorkingLogic(hook.EvaTo, hook.CraftFrom);
-                }
-                
+                // 3. 判断连接方向，提取 Eva 和飞船
+                if (hook.EvaFrom != null && hook.CraftTo != null)
+                    TransferResources(hook.EvaFrom, hook.CraftTo);
+                else if (hook.EvaTo != null && hook.CraftFrom != null)
+                    TransferResources(hook.EvaTo, hook.CraftFrom);
             }
 
-            private static void PatchWorkingLogic(EvaScript eva, ICraftScript targetCraft)
+            // ---- 核心传输逻辑 ----
+
+            private static void TransferResources(EvaScript eva, ICraftScript targetCraft)
             {
-                // 4. 获取当前 Eva 的 SupportLifeScript
                 var supportLife = eva.PartScript.GetModifier<SupportLifeScript>();
-                if (supportLife?.Data == null)
-                {
-                    return;
-                }
+                if (supportLife?.Data == null) return;
+
+                var cmdPodPatch = targetCraft
+                    ?.PrimaryCommandPod
+                    ?.Part?.PartScript
+                    ?.GetModifier<STCommandPodPatchScript>();
+                if (cmdPodPatch == null) return;
+
+                TransferOxygen(supportLife, cmdPodPatch);
+                TransferCo2(supportLife, cmdPodPatch);
+            }
+
+            private static void TransferOxygen(
+                SupportLifeScript life,
+                STCommandPodPatchScript cmdPodPatch)
+            {
+                var src = cmdPodPatch.OxygenFuelSource;
+                if (src == null) return;
+
+                double amount = OxygenRefillRatePerSecond * Time.deltaTime;
+                if (amount <= 0.0) return;
+
+                double available = Math.Min(amount, src.TotalFuel);
+                if (available <= 0.0) return;
+
+                double buffer  = life.Data._oxygenAmountBuffer;
+                double cap     = life.Data.DesireOxygenCapacity;
+                double space   = cap - buffer;
+                if (space <= 0.0) return;
+
+                double actual = Math.Min(available, space);
+
+                src.RemoveFuel(actual);
+                life.Data._oxygenAmountBuffer += actual;
                 
+            }
+            
 
-                // 5. 获取目标飞船的氧气源
-                var activePod = targetCraft.PrimaryCommandPod;
-                if (activePod?.Part?.PartScript == null)
-                {
-                    return;
-                }
+            private static void TransferCo2(
+                SupportLifeScript life,
+                STCommandPodPatchScript cmdPodPatch)
+            {
+                var dst = cmdPodPatch.CO2FuelSource;
+                if (dst == null) return;
+                if (life.Data._co2AmountBuffer <= 0.0) return;
+
+                double amount = Co2TransferRatePerSecond * Time.deltaTime;
+                if (amount <= 0.0) return;
+
+                double available = Math.Min(amount, life.Data._co2AmountBuffer);
+                double space     = dst.TotalCapacity - dst.TotalFuel;
+                if (space <= 0.0) return;
+
+                double actual = Math.Min(available, space);
+
+                dst.AddFuel(actual);
+                life.Data._co2AmountBuffer -= actual;
                 
-                var cmdPodPatch = activePod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
-                if (cmdPodPatch == null)
-                {
-                    return;
-                }
-                
-                var craftOxygen = cmdPodPatch.OxygenFuelSource;
-                if (craftOxygen == null)
-                {
-                    return;
-                }
-                
-                // 6. 计算本帧应补充的氧气量
-                double refillAmount = OxygenRefillRatePerSecond * Time.deltaTime;
-                Log(
-                    $"[O2Refill] Step6: refillAmount={refillAmount:F6} (rate={OxygenRefillRatePerSecond}/s × dt={Time.deltaTime:F6})");
-                if (refillAmount <= 0.0) return;
-
-                // 检查飞船是否有足够的氧气
-                double availableFromCraft = Math.Min(refillAmount, craftOxygen.TotalFuel);
-                Log(
-                    $"[O2Refill] Step6b: availableFromCraft={availableFromCraft:F6} (craft has {craftOxygen.TotalFuel:F6})");
-                if (availableFromCraft <= 0.0) return;
-
-                // 检查 Eva 个人 buffer 是否已满
-                double currentBuffer = supportLife.Data._oxygenAmountBuffer;
-                double capacity = supportLife.Data.DesireOxygenCapacity;
-                double spaceLeft = capacity - currentBuffer;
-                Log(
-                    $"[O2Refill] Step6c: Eva O₂ buffer={currentBuffer:F3}/{capacity:F3}, spaceLeft={spaceLeft:F3}");
-                if (spaceLeft <= 0.0) return;
-
-                double actualRefill = Math.Min(availableFromCraft, spaceLeft);
-
-                // 7. 执行转移：飞船 → Eva
-                craftOxygen.RemoveFuel(actualRefill);
-                supportLife.Data._oxygenAmountBuffer += actualRefill;
-
-                Log($"[O2Refill] SUCCESS: refilled {actualRefill:F3} O₂ to {eva.Data.CrewName} " +
-                        $"(buffer: {currentBuffer:F3} → {supportLife.Data._oxygenAmountBuffer:F3} / {capacity:F3})");
             }
         }
-    }
 }
