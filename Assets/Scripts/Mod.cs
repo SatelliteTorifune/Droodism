@@ -21,6 +21,7 @@ using Assets.Scripts.Craft.Fuel;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using Assets.Scripts.Droodism.Crew;
 using Assets.Scripts.Droodism.ResourceWarning;
+using ModApi.Craft.Parts;
 using UnityEngine.UI;
 
 namespace Assets.Scripts
@@ -155,7 +156,7 @@ namespace Assets.Scripts
         {
             DevConsoleApi.RegisterCommand("RefreshFuelSource",那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花);
             DevConsoleApi.RegisterCommand("ManualRefreshInstance",ManualRefreshInstance);
-            DevConsoleApi.RegisterCommand("RBUI", () =>
+            DevConsoleApi.RegisterCommand("RadiationBeltDebugUI", () =>
             {
                 if (!Game.InFlightScene)
                 {
@@ -172,34 +173,6 @@ namespace Assets.Scripts
             {
                 var fs = ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.FuelSources as CraftFuelSources;
                 fs.Rebuild(ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript);
-            });
-            DevConsoleApi.RegisterCommand("ShowAirCom", () =>
-            {
-                var coms = ModApi.Common.Game.Instance.FlightScene.CraftNode.Parent.PlanetData.AtmosphereData
-                    .Composition;
-                foreach (var atmosphereComponent in coms)
-                {
-                    Log($"大气组分{atmosphereComponent.GasId}");
-                    Log($"大气组分占比{atmosphereComponent.MassFraction}");
-
-                }
-            });
-            
-            DevConsoleApi.RegisterCommand("TryGetHookStuff", () =>
-            {
-                foreach (var pd in Game.Instance.FlightScene.CraftNode.CraftScript.Data.Assembly.Parts)
-                {
-                    if (pd.PartType.Name=="Eva"||pd.PartType.Name=="Eva-Tourist")
-                    {
-                        var zhesha = pd.PartScript.GameObject.GetComponent<GrapplingHookScript>();
-                        if (zhesha != null)
-                        {
-                            Log($"Eva挂钩状态{zhesha.CraftGrappled}");
-                            Log($"Eva挂钩目标{zhesha.CraftTo}");
-                        }
-                    }
-                }
-                
             });
 
         }

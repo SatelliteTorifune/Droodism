@@ -61,8 +61,8 @@
     <s id="Droodism.DroodismUIManager.RemainOxygen">剩余氧气</s>
     <s id="Droodism.DroodismUIManager.RemainWater">剩余水</s>
     <s id="Droodism.DroodismUIManager.ResetAllTransferMode">重置所有传输模式</s>
-    <s id="Droodism.DroodismUIManager.ResourcesDrainWasteFill">资源消耗,废物填充</s>
-    <s id="Droodism.DroodismUIManager.ResourcesFillWasteDrain">资源排出,废物填充</s>
+    <s id="Droodism.DroodismUIManager.ResourcesDrainWasteFill">资源排出,废物填充</s>
+    <s id="Droodism.DroodismUIManager.ResourcesFillWasteDrain">资源填充,废物排出</s>
     <s id="Droodism.DroodismUIManager.SolidWasteLevel">固体废物浓度</s>
     <s id="Droodism.DroodismUIManager.SelectDrood">选中此航天员</s>
     <s id="Droodism.DroodismUIManager.ToggleDroodismUI">开启 Droodism UI</s>

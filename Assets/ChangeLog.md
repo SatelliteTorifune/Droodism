@@ -1,3 +1,6 @@
+## 2026 7 7
+> 加入了通过钩爪补充氧气的功能
+
 ## 2026 7 5
 > 移植了JetEngineScript的大气组分扫描逻辑到SupportLifeScript
 > 

@@ -108,7 +108,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// 累计辐射值状态
         /// </summary>
         public string CurrentCumulativeRadiationStats{ get; private set; }
-        
+                
         /// <summary>
         /// 当前辐射状态
         /// </summary>
