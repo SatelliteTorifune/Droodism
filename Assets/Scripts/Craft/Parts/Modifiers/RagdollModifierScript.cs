@@ -56,6 +56,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private readonly List<GameObject> _dynamicallyAddedBones = new();
         private readonly Dictionary<GameObject, Collider> _replacedColliders = new();
 
+        // Cached transforms for spring constraint between CharacterCollider and Hips
+        private Transform _characterColliderTransform;
+        private Transform _hipsTransform;
 
         #endregion
 
@@ -111,12 +114,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             group.Add(new TextButtonModel(Locale.GetString("Droodism.RagdollModifier.Disable"), b => DisableRagdollMode()));
             group.Add(new TextModel(Locale.GetString("Droodism.RagdollModifier.Status"), () => Data.EnableRagdoll ? Locale.GetString("Droodism.RagdollModifier.Active") : Locale.GetString("Droodism.RagdollModifier.Inactive")));
             //group.Add(new ToggleModel("操",()=>cnm,(b)=>cnm=b));
-            group.Add(new SliderModel("操你妈",()=>sm,(f)=>sm=f,-2,2f));
             
         }
-
-     
-        private float sm = 4;
 
         #endregion
 
@@ -130,10 +129,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (_isRagdollActive) return;
 
             _wasPaused = false;
-            var characterCollider = _evaScript.transform.Find("CharacterCollider");
-            var hips = _evaScript.transform.Find("Root").Find("Offset").Find("Hips");
-            if (characterCollider == null || hips == null) return;
-            hips.localPosition = characterCollider.localPosition;
+            _characterColliderTransform = _evaScript.transform.Find("CharacterCollider");
+            _hipsTransform = _evaScript.transform.Find("Root").Find("Offset").Find("Hips");
+            if (_characterColliderTransform == null || _hipsTransform == null) return;
+
+            // Align Hips to CharacterCollider position before activating ragdoll physics
+            _hipsTransform.position = _characterColliderTransform.position;
 
             if (_evaScript != null && _pilotIK != null)
             {
@@ -143,20 +144,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
             _isRagdollActive = true;
             Data.EnableRagdoll = true;
-           
+            
         }
 
         public void DisableRagdollMode()
         {
             if (!_isRagdollActive) return;
-
-            var characterCollider = _evaScript.transform.Find("CharacterCollider");
-            var hips = _evaScript.transform.Find("Root").Find("Offset").Find("Hips");
-            if (characterCollider == null || hips == null) return;
-            hips.localPosition = characterCollider.localPosition;
-
-            var capsule = characterCollider.GetComponent<CapsuleCollider>();
-            if (capsule != null) capsule.enabled = true;
 
             _isRagdollActive = false;
             _ragdollPhysicsCreated = false;
@@ -338,6 +331,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
                 rb.interpolation = RigidbodyInterpolation.Interpolate;
 
+                // Add a CapsuleCollider to Hips so it doesn't clip through the ground.
+                // Without this, Hips (as the root ragdoll bone) has no collision and falls freely.
+                var hipsCol = hips.gameObject.AddComponent<CapsuleCollider>();
+                hipsCol.radius = 0.15f;
+                hipsCol.height = 0.4f;
+                hipsCol.center = new Vector3(0f, 0.1f, 0f);
+                hipsCol.direction = 1;
 
                 _dynamicallyAddedBones.Add(hips.gameObject);
 
@@ -450,7 +450,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private void DisableRagdollSelfCollisions()
         {
-          
+           
             if (_evaScript == null) return;
 
             var ragdollCols = _evaScript.GetComponentsInChildren<Collider>();
@@ -465,12 +465,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
             }
 
-            // Keep CharacterCollider enabled (so craft doesn't fall through ground),
-            // but make it ignore all ragdoll CapsuleColliders
-            var characterCollider = _evaScript.transform.Find("CharacterCollider");
-            if (characterCollider != null)
+            // Also make CharacterCollider (which is NOT under the bone hierarchy) ignore ragdoll colliders.
+            // CharacterCollider stays at the craft/part level and should not double-collide with bones.
+            if (_characterColliderTransform != null)
             {
-                var ccCols = characterCollider.GetComponentsInChildren<Collider>();
+                var ccCols = _characterColliderTransform.GetComponentsInChildren<Collider>();
                 foreach (var cc in ccCols)
                 {
                     if (cc == null) continue;
@@ -486,16 +485,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
 
        
-
-        private void SyncCharacterColliderToHips()
-        {
-            if (_evaScript == null) return;
-
-            var characterCollider = _evaScript.transform.Find("CharacterCollider");
-            var hips = _evaScript.transform.Find("Root").Find("Offset").Find("Hips");
-            if (characterCollider == null || hips == null) return;
-            hips.localPosition = new Vector3(characterCollider.localPosition.x, this.PartScript.CraftScript.FlightData.InWater?hips.localPosition.y:Math.Clamp(hips.localPosition.y,0f,sm), characterCollider.localPosition.z);
-        }
 
         #endregion
         
@@ -592,11 +581,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         void IFlightUpdate.FlightUpdate(in FlightFrameData frame)
         {
-            if (!Data.EnableRagdoll)
-            {
-                return;
-            }
-            SyncCharacterColliderToHips();
+            // Hips spring constraint is applied in FlightFixedUpdate (physics step).
+            // No per-frame transform sync needed.
         }
 
         void IFlightFixedUpdate.FlightFixedUpdate(in FlightFrameData frame)
@@ -610,6 +596,25 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 if (rb.isKinematic)
                     rb.isKinematic = false;
+            }
+
+            // Spring constraint: pull Hips toward CharacterCollider to prevent "灵魂出窍"
+            // (visual mesh drifting away from the part collision box).
+            // Uses a gentle spring force proportional to distance, so the ragdoll can still
+            // flop naturally but won't drift more than ~1m from the collider.
+            if (_hipsTransform != null && _characterColliderTransform != null)
+            {
+                var hipsRb = _hipsTransform.GetComponent<Rigidbody>();
+                if (hipsRb != null)
+                {
+                    Vector3 toTarget = _characterColliderTransform.position - _hipsTransform.position;
+                    float dist = toTarget.magnitude;
+                    if (dist > 0.3f)
+                    {
+                        float springForce = Mathf.Min(dist * 10f, 100f);
+                        hipsRb.AddForce(toTarget.normalized * springForce, ForceMode.Acceleration);
+                    }
+                }
             }
 
             ForceDisableAnimatorAndIK();
