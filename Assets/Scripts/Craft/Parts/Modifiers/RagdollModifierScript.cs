@@ -288,7 +288,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private void CreateRagdollDynamically(Transform root)
         {
-            
+            // Get the part's design mass so ragdoll total mass matches the part.
+            float partMass = PartScript?.Data?.Mass ?? 100f;
+            // Base total of all hardcoded bone masses below
+            const float baseTotalMass = 102.4f;
+            float massScale = partMass / baseTotalMass;
 
             _dynamicallyAddedBones.Clear();
             var boneRoot = root.Find("Root/Offset") ?? root.Find("Offset") ?? root;
@@ -325,7 +329,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (hips != null)
             {
                 var rb = hips.gameObject.AddComponent<Rigidbody>();
-                rb.mass = 25f;
+                rb.mass = 25f * massScale;
                 rb.isKinematic = false;
                 rb.useGravity = true;
                 rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
@@ -343,14 +347,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
             }
 
-            void AddRBJoint(Transform child, Transform parent, float mass,
+            void AddRBJoint(Transform child, Transform parent, float baseMass,
                 float swingLimit = 20f, float twistLow = -30f, float twistHigh = 30f,
                 float limbLen = 0.2f, bool isHinge = false)
             {
                 if (child == null || parent == null) return;
 
                 var rb = child.gameObject.AddComponent<Rigidbody>();
-                rb.mass = mass;
+                rb.mass = baseMass * massScale;
                 rb.isKinematic = false;
                 rb.useGravity = true;
                 rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
@@ -581,8 +585,26 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         void IFlightUpdate.FlightUpdate(in FlightFrameData frame)
         {
-            // Hips spring constraint is applied in FlightFixedUpdate (physics step).
-            // No per-frame transform sync needed.
+            if (!_isRagdollActive || _hipsTransform == null || _characterColliderTransform == null)
+                return;
+
+            // 20m 边界检测：如果碰撞箱和视觉模型分离超过 20m，强制归中
+            float dist = Vector3.Distance(_hipsTransform.position, _characterColliderTransform.position);
+            if (dist > 20f)
+            {
+                Mod.Log($"[Ragdoll] Boundary exceeded ({dist:F1}m > 20m), hard-syncing Hips → CharacterCollider");
+                _hipsTransform.position = _characterColliderTransform.position;
+
+                // Also zero out velocities on all ragdoll Rigidbodies to prevent bounce-back
+                foreach (var rb in _hipsTransform.GetComponentsInChildren<Rigidbody>())
+                {
+                    if (rb != null)
+                    {
+                        rb.velocity = Vector3.zero;
+                        rb.angularVelocity = Vector3.zero;
+                    }
+                }
+            }
         }
 
         void IFlightFixedUpdate.FlightFixedUpdate(in FlightFrameData frame)
@@ -598,10 +620,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     rb.isKinematic = false;
             }
 
-            // Spring constraint: pull Hips toward CharacterCollider to prevent "灵魂出窍"
-            // (visual mesh drifting away from the part collision box).
-            // Uses a gentle spring force proportional to distance, so the ragdoll can still
-            // flop naturally but won't drift more than ~1m from the collider.
+            // 弹性归中：用弹簧力把 Hips 拉向 CharacterCollider
+            // 让布娃娃在 20m 范围内自由物理运动，同时防止无限分离
             if (_hipsTransform != null && _characterColliderTransform != null)
             {
                 var hipsRb = _hipsTransform.GetComponent<Rigidbody>();
@@ -609,10 +629,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 {
                     Vector3 toTarget = _characterColliderTransform.position - _hipsTransform.position;
                     float dist = toTarget.magnitude;
-                    if (dist > 0.3f)
+                    if (dist > 0.5f && dist < 20f)
                     {
-                        float springForce = Mathf.Min(dist * 10f, 100f);
-                        hipsRb.AddForce(toTarget.normalized * springForce, ForceMode.Acceleration);
+                        // 弹簧系数随距离增大，最大 50
+                        float springK = Mathf.Min(dist * 2.5f, 50f);
+                        hipsRb.AddForce(toTarget.normalized * springK, ForceMode.Acceleration);
                     }
                 }
             }
