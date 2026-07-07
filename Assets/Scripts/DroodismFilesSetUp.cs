@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 using Assets.Scripts.Droodism.Crew;
-using Droodism.RadiationBelt;
+using Assets.Scripts.Droodism.RadiationBelt;
 using UnityEngine;
 
 namespace Assets.Scripts

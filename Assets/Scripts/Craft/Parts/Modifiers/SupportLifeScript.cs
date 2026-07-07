@@ -14,7 +14,7 @@ using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
 using Assets.Scripts.Droodism;
 using Assets.Scripts.Droodism.Crew;
 using Assets.Scripts.Droodism.ResourceWarning;
-using Droodism.RadiationBelt;
+using Assets.Scripts.Droodism.RadiationBelt;
 using ModApi;
 using ModApi.Flight.Events;
 using ModApi.Planet;

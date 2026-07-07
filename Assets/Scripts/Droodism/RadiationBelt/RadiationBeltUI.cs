@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Droodism.RadiationBelt;
+using Assets.Scripts.Droodism.RadiationBelt;
 using ModApi;
 using ModApi.Craft.Parts.Attributes;
 using ModApi.Flight.Sim;

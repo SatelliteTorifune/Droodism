@@ -48,6 +48,8 @@ namespace Assets.Scripts
         public BoolSetting RemoveDockingPortCamera { get; set; }
 
         public BoolSetting ReceiveCraftRadiation { get; set; }
+        
+        public BoolSetting LegacyPauseResume { get; set; }
 
         /// <summary>
         /// Initializes the settings in the category.
@@ -81,6 +83,8 @@ namespace Assets.Scripts
             ResourceCriticalThreshold = CreateNumeric<float>("CriticalThreshold",0.05f,0.2f,0.01f)
                 .SetDescription(Locale.GetString("Droodism.ModSettings.CriticalThresholdDesc"))
                 .SetDefault(0.10f);
+            LegacyPauseResume=CreateBool("LegacyPauseResume")
+                .SetDefault(false);
         }
     }
 }

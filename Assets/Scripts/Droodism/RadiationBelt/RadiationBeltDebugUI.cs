@@ -9,7 +9,7 @@ using ModApi.Ui.Inspector;
 using UnityEngine;
 
 
-namespace Droodism.RadiationBelt
+namespace Assets.Scripts.Droodism.RadiationBelt
 {
     public class RadiationBeltDebugUI : MonoBehaviourBase
     {

@@ -2,7 +2,7 @@ using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using HarmonyLib;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.HarmonyPatches
 {
     [HarmonyPatch(typeof(EvaData), nameof(EvaData.AssignCrewMember))]
     public static class AssignCrewPatch

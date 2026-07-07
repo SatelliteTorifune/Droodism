@@ -10,7 +10,7 @@ using ModApi.Scenes.Events;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Droodism.RadiationBelt
+namespace Assets.Scripts.Droodism.RadiationBelt
 {
     
     public class RadiationBeltManager : MonoBehaviourBase

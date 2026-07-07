@@ -1,6 +1,6 @@
 using Assets.Scripts.Craft.Parts.Modifiers.Fuselage;
 using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
-using Droodism.RadiationBelt;
+using Assets.Scripts.Droodism.RadiationBelt;
 using ModApi;
 using ModApi.Craft;
 using ModApi.Design;

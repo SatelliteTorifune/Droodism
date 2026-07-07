@@ -5,10 +5,9 @@ using ModApi;
 using ModApi.Mods;
 using ModApi.Ui.Inspector;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.HarmonyPatches
 {
-    public partial class Mod : GameMod
-    {
+   
 
 
         [HarmonyPatch(typeof(CraftPerformanceAnalysis), "RefreshInspectorPanel", new Type[] { typeof(bool) })]
@@ -29,14 +28,14 @@ namespace Assets.Scripts
 
                     if (inspectorPanel == null)
                     {
-                        LogError("InspectorPanel is null, cannot add TEXT group.");
+                        Mod.LogError("InspectorPanel is null, cannot add TEXT group.");
                         return;
                     }
 
                     var inspectorModel = inspectorPanel.Model;
                     if (inspectorModel == null)
                     {
-                        LogError("InspectorModel is null, cannot add TEXT group.");
+                        Mod.LogError("InspectorModel is null, cannot add TEXT group.");
                         return;
                     }
 
@@ -44,7 +43,7 @@ namespace Assets.Scripts
 
                     textGroup.Add<TextModel>(new TextModel(Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.DroodCount"),
                         () => Scripts.Mod.Instance.GetDroodCountInDesigner()));
-                    foreach (var var in fuelTypes)
+                    foreach (var var in Mod.fuelTypes)
                     {
                         AddStuff(var);
                     }
@@ -84,7 +83,7 @@ namespace Assets.Scripts
                             ? " " + Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.Capacity")
                             : " " + Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.Amount");
                         textGroup.Add<TextModel>(new TextModel(name + suffix,
-                            () => GetFuelAmountInDesigner(fuelType)));
+                            () => Mod.GetFuelAmountInDesigner(fuelType)));
                     }
 
                     // 将新组添加到 InspectorModel
@@ -92,9 +91,9 @@ namespace Assets.Scripts
                 }
                 catch (Exception e)
                 {
-                    Log("Droodism.CraftPerformanceAnalysis failed", e);
+                    Mod.Log("Droodism.CraftPerformanceAnalysis failed", e);
                 }
             }
         }
-    }
+    
 }

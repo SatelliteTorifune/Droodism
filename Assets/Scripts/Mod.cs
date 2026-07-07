@@ -14,13 +14,14 @@ using ModApi.State;
 using static ModApi.Common.Game;
 using static ModApi.Craft.Parts.PartData;
 using Assembly = System.Reflection.Assembly;
-using Droodism.RadiationBelt;
+using Assets.Scripts.Droodism.RadiationBelt;
 using ModApi.Ui.Inspector;
 using System.Xml.Serialization;
 using Assets.Scripts.Craft.Fuel;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using Assets.Scripts.Droodism.Crew;
 using Assets.Scripts.Droodism.ResourceWarning;
+using Assets.Scripts.HarmonyPatches;
 using ModApi.Craft.Parts;
 using UnityEngine.UI;
 
@@ -71,11 +72,11 @@ namespace Assets.Scripts
                 CrewManagerSyncPatches.Apply(harmony);
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
             }
-            catch (Exception)
+            catch (Exception exception)
             {
                 string s = $"Mod {Mod.ModInfo.Name} failed to Initialize. Verify all depencencies installed and enabled.<br><color=red><size=200%>你他妈加Juno Harmony了吗?";
                 Game.Instance.UserInterface.CreateMessageDialog(s);
-                throw new FileNotFoundException(s);
+                Debug.LogErrorFormat($"Exception occurred while initializing Droodism: {{0}}", exception);
             }
             Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
             Game.Instance.SceneManager.SceneTransitionCompleted+=OnSceneTransitionCompleted;

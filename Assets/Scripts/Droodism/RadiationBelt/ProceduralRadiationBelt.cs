@@ -7,7 +7,7 @@ using ModApi.CelestialData;
 using ModApi;
 using UnityEngine;
 
-namespace Droodism.RadiationBelt
+namespace Assets.Scripts.Droodism.RadiationBelt
 {
     public class ProceduralRadiationBelt : MonoBehaviour
     {

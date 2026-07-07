@@ -11,9 +11,9 @@ namespace Assets.Scripts
     public partial class Mod:GameMod
     {
         public static readonly string[] _massTypes = { "g", "kg", "t", "kt" };
-        private static List<string> fuelTypes = new List<string> { "Oxygen", "H2O", "Food", "CO2", "Wasted Water", "Solid Waste"};
+        public static List<string> fuelTypes = new List<string> { "Oxygen", "H2O", "Food", "CO2", "Wasted Water", "Solid Waste"};
 
-        private static string GetFuelAmountInDesigner(string fuelId)
+        public static string GetFuelAmountInDesigner(string fuelId)
         {
             var patch = Game.Instance.Designer.CraftScript.PrimaryCommandPod.Part.PartScript
                 .GetModifier<STCommandPodPatchScript>();
@@ -49,7 +49,7 @@ namespace Assets.Scripts
            
            
         }
-        private string GetDroodCountInDesigner()
+        public string GetDroodCountInDesigner()
         {
             int DroodCountInDesigner = 0;
             ICraftScript craftScript = Game.Instance.Designer.CraftScript;
