@@ -498,35 +498,136 @@ Droodism/SR2 中：
 
 将 Droodism 的整个资源系统改为 Kerbalism 的模型（使用 VesselResources 风格），风险过高，可能导致现有功能大规模退化。
 
-### 7.4 Mermaid 流程图
+---
 
-```mermaid
-flowchart TD
-    A[游戏主循环] --> B{物理状态?}
-    B -->|物理启用/加载| C[IFlightUpdate 每帧更新]
-    B -->|时间加速| D[IFlightFixedUpdateWarp 加速更新]
-    B -->|物理禁用/卸载| E[OnPhysicsDisabled 批量结算]
-    
-    C --> F[SupportLifeScript.FlightUpdate]
-    F --> G[ConsumptionLogic - 微量消耗]
-    
-    D --> H[BackgroundWarper.FixedUpdateWarp]
-    H --> I[FastForwardSimulation - 加速模拟]
-    I --> J[deltaTime = frame.DeltaTimeWorld * warpMultiplier]
-    
-    E --> K[BackgroundUnloader.OnPhysicsDisabled]
-    K --> L[CatchUpSimulation - 追赶结算]
-    L --> M[deltaTime = currentTime - lastSaveTime]
-    
-    J --> N[ResourceCalculator]
-    M --> N
-    G --> N
-    
-    N --> O[消耗 O2/Food/H2O]
-    N --> P[产生 CO2/Waste]
-    N --> Q[辐射累计]
-    N --> R[伤害判定]
+## 9. (小白版) Kerbalism 后台系统到底干了什么？
+
+### 9.1 先搞懂 KSP 的飞船管理
+
+KSP 把所有飞船分成三类，放在三个不同的篮子里（参考 [`FlightGlobals`](C:/renko/unityProjects/kspre2/Assets/Scripts/Assembly-CSharp/FlightGlobals.cs)）：
+
+| 篮子 | 变量名 | 里面放什么 |
+|------|--------|-----------|
+| 🟢 **所有飞船** | [`Vessels`](C:/renko/unityProjects/kspre2/Assets/Scripts/Assembly-CSharp/FlightGlobals.cs:192) | 游戏世界中 **全部** 飞船，不管远不远 |
+| 🔵 **已加载的** | [`VesselsLoaded`](C:/renko/unityProjects/kspre2/Assets/Scripts/Assembly-CSharp/FlightGlobals.cs:200) | 在你周围 2.5km 范围内的飞船 |
+| 🔴 **未加载的** | [`VesselsUnloaded`](C:/renko/unityProjects/kspre2/Assets/Scripts/Assembly-CSharp/FlightGlobals.cs:208) | 离你很远、不出现在视野里的飞船 |
+
+关键点：**未加载的飞船并没有消失**！它们的零件数据被压缩成"快照"（`ProtoPartSnapshot`）保存在内存里，虽然你不能看到它们，但它们仍然在轨道上飞行。
+
+### 9.2 Kerbalism 的后台系统在做什么？
+
+想象你有 5 艘飞船同时在太空中飞行：
+
 ```
+你正在驾驶的飞船 A（已加载）
+  └─ 小蓝人正在消耗氧气 → FlightUpdate 每帧处理 ✅
+
+远在月球轨道的飞船 B（未加载）
+  └─ 小蓝人也在消耗氧气！但没人管他！ ❌
+      → 如果不处理，等你切换到飞船B时，小蓝人早就憋死了
+
+飞往火星的飞船 C（未加载）
+  └─ 太阳能板还在发电吗？蓄电池还有电吗？
+      → 没人知道
+
+停留在空间站的飞船 D（未加载）
+  └─ 温室还在种菜吗？实验室还在做实验吗？
+      → 没人知道
+```
+
+**Kerbalism 的 Background 系统就是来解决这个问题的。** 它定期扫描 **所有飞船**（不管加载没加载），对每艘飞船上的每个零件模块进行计算，模拟这段时间里发生的一切。
+
+### 9.3 工作原理：用一张图说清楚
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│  KSP 游戏每帧调用 Kerbalism.Background.Update()                    │
+│                                                                     │
+│  1. 遍历 ALL 飞船（FlightGlobals.Vessels）                          │
+│     ├─ 已加载的 → 用当前零件数据                                     │
+│     └─ 未加载的 → 用 ProtoPartSnapshot 快照                          │
+│                                                                     │
+│  2. 对每艘飞船，遍历它的所有零件快照（ProtoPartSnapshots）             │
+│     ├─ 获取每个零件上的模块（ProtoPartModuleSnapshot）                 │
+│     ├─ 看模块名字 -> 确定类型（Module_type）                          │
+│     └─ 根据不同类型调用不同的处理函数                                  │
+│                                                                     │
+│  3. 每种模块的处理函数做不同的事：                                    │
+│     ├─ "Command"（指令舱）→ 消耗电力                                   │
+│     ├─ "Generator"（发电机）→ 生产电力                                 │
+│     ├─ "Converter"（资源转换器）→ 把A资源变成B资源                      │
+│     ├─ "Greenhouse"（温室）→ 植物生长 + 氧气生产                      │
+│     ├─ "Experiment"（科学实验）→ 自动做实验                           │
+│     └─ ...（一共 24+ 种类型）                                         │
+│                                                                     │
+│  4. 把所有资源的增减汇总到 VesselResources                           │
+│     └─ 最终更新飞船的资源数值                                         │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### 9.4 核心机制拆解
+
+#### 机制一：模块发现（怎么知道零件上有啥模块？）
+
+KSP 的每个零件上可以挂很多"模块"（PartModule），比如一个指令舱可以同时有 `ModuleCommand`（指令模块）和 `ModuleLight`（灯光模块）。Kerbalism 通过模块的**名字**来识别它是什么：
+
+```csharp
+// BackGround.cs:101
+Module_type ModuleType(string module_name)
+{
+    if (module_name == "Reliability")   return Module_type.Reliability;
+    if (module_name == "ModuleCommand") return Module_type.Command;
+    if (module_name == "ModuleGenerator") return Module_type.Generator;
+    // ... 一共 24+ 种已知类型
+    return Module_type.Unknown; // 不认识的模块
+}
+```
+
+如果遇到不认识的模块，它还会用**反射**（就是 C# 的"照妖镜"功能）去检查这个模块有没有一个叫 `BackgroundUpdate` 的方法。如果有，就通过 `APIModule` 类型调用它。这就允许**其他 Mod 也接入 Kerbalism 的后台系统**。
+
+#### 机制二：时间步长（怎么计算消耗了多少？）
+
+消耗量 = 消耗速率 × 时间
+
+关键是这个**时间**怎么算：
+- 正常飞行时：`elapsed_s = Time.deltaTime`（大约 0.02 秒）
+- 时间加速时：`elapsed_s = warp倍率 × Time.deltaTime`（比如 1000x 加速时就是 20 秒）
+- 从存档加载时：`elapsed_s = 当前时间 - 上次保存时间`（可能是好几个小时）
+
+Kerbalism 的 `Background.Update()` 直接接收一个 `elapsed_s` 参数，所以不管时间多长，算法都一样。
+
+#### 机制三：资源管理（怎么处理资源的增减？）
+
+所有模块的资源操作都通过 `VesselResources` 这个中央管理器：
+
+```
+模块A说："我要消耗 5 个电力"
+模块B说："我要生产 10 个电力"
+        ↓
+  VesselResources 统一计算
+        ↓
+  最终：飞船电力 +5 ✅
+```
+
+每个资源操作都带一个 `ResourceBroker` 标签，用来追踪"谁用了多少资源"——方便玩家 Debug。
+
+### 9.5 与 KSP 原版的差异
+
+| 特性 | KSP 原版 | Kerbalism |
+|------|---------|-----------|
+| 未加载飞船 | ❌ 不模拟任何东西 | ✅ 全部模拟 |
+| 零件模块 | 只在加载时才运行 | 未加载的也通过快照模拟 |
+| 资源消耗 | 只有玩家飞船才消耗 | 所有飞船都消耗 |
+| 时间加速 | 只算轨道，不消耗资源 | 正确模拟加速期间的消耗 |
+| 第三方 Mod | 不支持 | ✅ 通过 `BackgroundDelegate` 反射机制支持 |
+
+### 9.6 用大白话总结
+
+> **KSP 的世界是个大冰箱：你眼睛看到的（已加载飞船）只是上面一小层，下面还冻着好多艘飞船（未加载的）。如果不给下面这些飞船"解冻"算账，它们的小蓝人早饿死了。Kerbalism 的后台系统就是定期把冰箱门打开，挨个检查每艘飞船还剩下多少吃的，够不够撑到你下次开门。**
+
+或者更简单地说：
+
+> **Kerbalism.Background = 一个自动化的"远程保姆"，帮你照看所有你看不到的飞船上的小蓝人。**
 
 ---
 

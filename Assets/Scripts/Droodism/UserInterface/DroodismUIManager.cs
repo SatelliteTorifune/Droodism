@@ -17,6 +17,7 @@ using ModApi.GameLoop.Interfaces;
 using ModApi.Math;
 using ModApi.Scenes.Events;
 using ModApi.Ui.Inspector;
+using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace Assets.Scripts.Droodism.UserInterface
@@ -47,6 +48,23 @@ namespace Assets.Scripts.Droodism.UserInterface
             { "Wasted Water", (0, 0) },
             { "Solid Waste", (0, 0) }
         };
+
+        /// <summary>
+        /// 使用指数移动平均(EMA)平滑后的各燃料消耗率，Key = fuelTypeId, Value = 平滑后的消耗率(单位/秒)
+        /// </summary>
+        private Dictionary<string, double> _smoothedRates = new Dictionary<string, double>();
+
+        /// <summary>
+        /// EMA 平滑因子（alpha）。值越小曲线越平滑，值越大响应越快。
+        /// 0.1 表示新原始值占 10% 权重，历史平滑值占 90%，可有效过滤高频噪声。
+        /// </summary>
+        private const double SmoothingFactor = 0.25f;
+
+        /// <summary>
+        /// 高帧率阈值（秒）。当 deltaTime 小于此值（即帧率 > 120 FPS）时启用 EMA 平滑，
+        /// 否则直接使用原始帧率计算值以保证低帧率下的响应速度。
+        /// </summary>
+        private const float HighFpsThreshold = 1f / 60f;
 
         private List<string> fuelTypeIDList = new List<string>
             { "Oxygen", "H2O", "Food", "CO2", "Wasted Water", "Solid Waste" };
@@ -124,6 +142,7 @@ namespace Assets.Scripts.Droodism.UserInterface
             double currentFuel, previousFuel;
             string fuelTypeId = fuelSource.FuelType.Id;
             float fuelDensity = fuelSource.FuelType.Density;
+            double totalCapacity = fuelSource.TotalCapacity;
             if (FuelMap.ContainsKey(fuelTypeId))
             {
                 currentFuel = fuelSource.TotalFuel;
@@ -136,12 +155,38 @@ namespace Assets.Scripts.Droodism.UserInterface
                 previousFuel = 0;
             }
 
-            double fuelPercentage = (currentFuel / fuelSource.TotalCapacity);
+            double fuelPercentage = (currentFuel / totalCapacity);
             bool isWasted = (fuelTypeId.Contains("Waste") || fuelTypeId.Contains("CO2"));
             string FuelAmountPercentagestr = Mod.Instance.FormatFuel(fuelSource.TotalFuel * fuelDensity, _massTypes) +
-                                             "/" + Mod.Instance.FormatFuel(fuelSource.TotalCapacity * fuelDensity,
+                                             "/" + Mod.Instance.FormatFuel(totalCapacity * fuelDensity,
                                                  _massTypes);
-            double fuelConsumption = (currentFuel - previousFuel) / Game.Instance.FlightScene.TimeManager.DeltaTime;
+            float deltaTime = (float)Game.Instance.FlightScene.TimeManager.DeltaTime;
+
+            // 仅在帧率 > 120 FPS (deltaTime < 1/120s) 时启用 EMA 平滑，
+            // 低帧率下直接使用原始帧率值以保证响应速度。
+            double fuelConsumption;
+            bool hasSmoothed = _smoothedRates.ContainsKey(fuelTypeId);
+
+            if (deltaTime <= 0f)
+            {
+                // deltaTime 为零或负值时复用上一帧的平滑值，避免零除
+                fuelConsumption = hasSmoothed ? _smoothedRates[fuelTypeId] : 0.0;
+            }
+            else if (deltaTime < HighFpsThreshold && hasSmoothed)
+            {
+                // 高帧率：应用 EMA 平滑，过滤单帧噪声
+                double rawRate = (currentFuel - previousFuel) / deltaTime;
+                fuelConsumption = rawRate * SmoothingFactor + _smoothedRates[fuelTypeId] * (1.0 - SmoothingFactor);
+                _smoothedRates[fuelTypeId] = fuelConsumption;
+            }
+            else
+            {
+                // 低帧率或首次初始化，直接使用原始值
+                double rawRate = (currentFuel - previousFuel) / deltaTime;
+                _smoothedRates[fuelTypeId] = rawRate;
+                fuelConsumption = rawRate;
+            }
+
             string fuelConsumptionStr = Mod.Instance.FormatFuel(fuelConsumption * fuelDensity, _massTypes) + "/s";
 
             string timeLeft = isWasted

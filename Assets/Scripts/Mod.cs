@@ -98,7 +98,7 @@ namespace Assets.Scripts
             DroodismGO.AddComponent<RadiationBeltDebugUI>();
             DroodismGO.AddComponent<DroodismCrewDataManager>();
             DroodismGO.AddComponent<ResourceWarningScript>();
-            DroodismGO.AddComponent<BackGroundCalulator>();
+            //DroodismGO.AddComponent<BackGroundCalulator>();
             GameObject.DontDestroyOnLoad(DroodismGO);
             DroodismGO.SetActive(true);
             Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.MapView, OnBuildMapViewInspectorPanel);
