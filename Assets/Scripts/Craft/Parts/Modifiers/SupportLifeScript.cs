@@ -221,6 +221,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             if (frame.DeltaTimeWorld == 0.0) 
                 return;
+
             UpdateRunningStatus();
             CheckRadiationState(frame);
             DamageRadiation(frame);
@@ -318,6 +319,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             if (ModSettings.Instance.ConsumeResourceWhenUnloaded==true&&!IsHibernating)
             {
+                // 先刷新燃料源引用，确保 RemoveFuelAmountInstantly / AddWastedAmountInstantly
+                // 能正确访问到 craft 油箱，否则只会消耗本地 buffer（仅 ~5小时容量）
+                Refresh();
                 RemoveFuelAmountInstantly();
                 AddWastedAmountInstantly();
             }
@@ -590,7 +594,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             bool usingInternalOxygen = UsingInternalOxygen();
             double baseRate = frame.DeltaTimeWorld * (IsRunning ? 1.75 : 1) * (IsTourist ? 1.05 : 1);
-            
+
             if (usingInternalOxygen)
             {
                 double oxygenConsumeAmount = (double)Data.OxygenConsumeRate * baseRate;
@@ -708,8 +712,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private void RemoveFuelAmountInstantly()
         {
             double elapsedSeconds = Game.Instance.FlightScene.FlightState.Time - Data.LastLoadTime;
-            Mod.Log("调用RemoveFuelAmountInstantly ,间隔{0}", elapsedSeconds);
-
             double activityMultiplier = (IsTourist ? 1.05 : 1.0);
 
             // --- 氧气消耗（仅在使用内部氧气时）---
@@ -743,8 +745,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             double remainingWater = waterToConsume - fromWaterSource;
             if (remainingWater > 0)
             {
-                double fromWaterBuffer = Math.Min(remainingWater, Data._waterAmountBuffer);
-                Data.AddLifeSupportFuel("H2O", -fromWaterBuffer);
+                double fromBuffer = Math.Min(remainingWater, Data._waterAmountBuffer);
+                Data.AddLifeSupportFuel("H2O", -fromBuffer);
             }
 
             // --- 食物消耗 ---
@@ -759,8 +761,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             double remainingFood = foodToConsume - fromFoodSource;
             if (remainingFood > 0)
             {
-                double fromFoodBuffer = Math.Min(remainingFood, Data._foodAmountBuffer);
-                Data.AddLifeSupportFuel("Food", -fromFoodBuffer);
+                double fromBuffer = Math.Min(remainingFood, Data._foodAmountBuffer);
+                Data.AddLifeSupportFuel("Food", -fromBuffer);
             }
         }
         
@@ -768,7 +770,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             double elapsedSeconds = Game.Instance.FlightScene.FlightState.Time - Data.LastLoadTime;
             double activityMultiplier = (IsTourist ? 1.05 : 1.0);
-            Mod.Log("AddWastedAmountInstantly ,间隔{0}", elapsedSeconds);
 
             // --- CO2 产生（仅在使用内部氧气时）---
             if (UsingInternalOxygen())
@@ -1215,7 +1216,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 deltaHours = Mod.GetDeltaTimeHours();
             }
-            
+
             this.RadiationDoseRateRadPerHour = innerDoseRateRadPerHour*(1-innerRadiationProtection)+outerDoseRateRadPerHour*(1-outerRadiationProtection)+GetNTRRadiationDoseRate()*(1-craftRadiationProtection)+GetRTGRadiationDoseRate()*(1-craftRadiationProtection);
             this.Data.CumulativeRad += RadiationDoseRateRadPerHour * deltaHours;
             CurrentCumulativeRadiationStats = GetAcuteBand((float)this.Data.CumulativeRad);

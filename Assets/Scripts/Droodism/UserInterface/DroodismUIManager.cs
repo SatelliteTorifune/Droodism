@@ -58,7 +58,7 @@ namespace Assets.Scripts.Droodism.UserInterface
         /// EMA 平滑因子（alpha）。值越小曲线越平滑，值越大响应越快。
         /// 0.1 表示新原始值占 10% 权重，历史平滑值占 90%，可有效过滤高频噪声。
         /// </summary>
-        private const double SmoothingFactor = 0.25f;
+        private const double SmoothingFactor = 0.2f;
 
         /// <summary>
         /// 高帧率阈值（秒）。当 deltaTime 小于此值（即帧率 > 120 FPS）时启用 EMA 平滑，

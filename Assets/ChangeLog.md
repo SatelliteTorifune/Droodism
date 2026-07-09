@@ -1,3 +1,9 @@
+## 2026 7 9
+> 使用EMA算法对UI中的消耗速率进行了平滑处理,以减少UI中消耗速率显示的波动
+> 
+> 优化了一点点SupportLifeScript中RemoveFuelAmountInstantly的计算
+> >虽然也没好到哪里去
+
 ## 2026 7 8
 > 加入了回到旧版暂停逻辑的功能
 > 
