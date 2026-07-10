@@ -257,21 +257,15 @@ namespace Assets.Scripts.Droodism.RadiationBelt
             
         }
 
-        private static GameObject GetMapPlanet(string PlanetName)
+        private static GameObject GetMapPlanet(string planetName)
         {
-            foreach (Transform t in GameObject.FindObjectsOfType<Transform>(true))
+            var mapView = Game.Instance.FlightScene.ViewManager.MapViewManager.MapView;
+            foreach (var planetNode in mapView.GetCelestialBodies())
             {
-                if (t.name == PlanetName)
+                if (planetNode.Name == planetName)
                 {
-                    Transform parent = t.parent;
-                    if (parent != null && parent.name == "Planets")
-                    {
-                        Transform mapView = parent.parent;
-                        if (mapView != null && mapView.name.Contains("MapView"))
-                        {
-                            return t.gameObject;
-                        }
-                    }
+                    var celestialTransform = mapView.GetCelestialBodyTransform(planetNode);
+                    return celestialTransform != null ? celestialTransform.gameObject : null;
                 }
             }
             return null;
