@@ -303,6 +303,7 @@ namespace Assets.Scripts.Droodism.UserInterface
             }
 
             UpdateInfo();
+            //别想了,这个做不到
             //CraftFuelSources craftFuelSource = craftScript.FuelSources as CraftFuelSources;
             //craftFuelSource?.Rebuild(craftScript);
             

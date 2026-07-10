@@ -38,41 +38,52 @@ namespace Assets.Scripts.Droodism.RadiationBelt
         { 
             Instance = this;
             Game.Instance.SceneManager.SceneTransitionCompleted += OnSceneTransitionCompleted;
+            Game.Instance.SceneManager.SceneLoaded+=OnSceneLoaded;
         }
-
-        
+        public void OnSceneLoaded(object sender, SceneEventArgs e)
+        {
+            if (e.Scene=="Menu")
+            {
+                
+            }
+            
+        }
 
         public void OnSceneTransitionCompleted(object sender, SceneTransitionEventArgs e)
         {
-            if (e.TransitionToScene!="Flight")
+            if (e.TransitionToScene == "Flight")
             {
-                return;
-            }
-            this.BeltList.Clear();
-            this.planetRadiusMetersByName.Clear();
-            this.planetRadiusScaledByName.Clear();
-            CurrentFocusPlanet = Game.Instance.FlightScene.CraftNode.Parent.Name;
-            foreach (IPlanetData planetData in Game.Instance.FlightScene.CraftNode.Parent.PlanetData.SolarSystemData.Planets)
-            {
-                planetRadiusMetersByName[planetData.Name] = planetData.Radius;
-                planetRadiusScaledByName[planetData.Name] = planetData.RadiusScaledSpace;
-                AddPlanetRadiationBelt(planetData.Name);
-            }
 
-            this.CurrentConfig = RadiationBeltConfig.LoadFromFile(CurrentFocusPlanet);
-            var currentRadiationBelt = GetCurrentRadiationBelt(CurrentFocusPlanet);
-            this.currentRadiationBeltObject = currentRadiationBelt.gameObject;
-            this.FlightCameraRenderer =
-                Game.Instance.FlightScene.ViewManager.MapViewManager.MapViewCamera.gameObject
-                    .GetComponent<RadiationBeltCameraRenderer>() == null
-                    ? Game.Instance.FlightScene.ViewManager.MapViewManager.MapViewCamera.gameObject
-                        .AddComponent<RadiationBeltCameraRenderer>()
-                    : Game.Instance.FlightScene.ViewManager.MapViewManager.MapViewCamera.gameObject
-                        .GetComponent<RadiationBeltCameraRenderer>();
-            FlightCameraRenderer.beltRenderer = currentRadiationBelt;
-            this.BeltInstance = GetCurrentRadiationBelt(CurrentFocusPlanet);
+
+                this.BeltList.Clear();
+                this.planetRadiusMetersByName.Clear();
+                this.planetRadiusScaledByName.Clear();
+                CurrentFocusPlanet = Game.Instance.FlightScene.CraftNode.Parent.Name;
+                foreach (IPlanetData planetData in Game.Instance.FlightScene.CraftNode.Parent.PlanetData.SolarSystemData
+                             .Planets)
+                {
+                    planetRadiusMetersByName[planetData.Name] = planetData.Radius;
+                    planetRadiusScaledByName[planetData.Name] = planetData.RadiusScaledSpace;
+                    AddPlanetRadiationBelt(planetData.Name);
+                }
+
+                this.CurrentConfig = RadiationBeltConfig.LoadFromFile(CurrentFocusPlanet);
+                var currentRadiationBelt = GetCurrentRadiationBelt(CurrentFocusPlanet);
+                this.currentRadiationBeltObject = currentRadiationBelt.gameObject;
+                this.FlightCameraRenderer =
+                    Game.Instance.FlightScene.ViewManager.MapViewManager.MapViewCamera.gameObject
+                        .GetComponent<RadiationBeltCameraRenderer>() == null
+                        ? Game.Instance.FlightScene.ViewManager.MapViewManager.MapViewCamera.gameObject
+                            .AddComponent<RadiationBeltCameraRenderer>()
+                        : Game.Instance.FlightScene.ViewManager.MapViewManager.MapViewCamera.gameObject
+                            .GetComponent<RadiationBeltCameraRenderer>();
+                FlightCameraRenderer.beltRenderer = currentRadiationBelt;
+                this.BeltInstance = GetCurrentRadiationBelt(CurrentFocusPlanet);
+
+            }
             
         }
+
         #endregion
 
        

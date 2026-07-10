@@ -63,9 +63,7 @@ namespace Assets.Scripts
        
         protected override void OnModInitialized()
         {
-            
-            CheckLocalizationFiles("ZH-CN");
-            CheckLocalizationFiles("EN-US");
+          
             base.OnModInitialized();
             try
             {
@@ -92,7 +90,7 @@ namespace Assets.Scripts
         {
           
            
-            GameObject DroodismGO=new GameObject("DroodismUI");
+            GameObject DroodismGO=new GameObject("DroodismGameObject");
             DroodismGO.AddComponent<DroodismUIManager>();
             DroodismGO.AddComponent<RadiationBeltManager>();
             DroodismGO.AddComponent<RadiationBeltDebugUI>();

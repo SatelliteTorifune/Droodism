@@ -235,8 +235,8 @@
     <!-- Sodium_PeroxideScript -->
     <s id="Droodism.Sodium_PeroxideScript.ContainerUsedUp">&lt;color=red&gt;此部件已用尽&lt;/color&gt;</s>
     <s id="Droodism.Sodium_PeroxideScript.CurrentState">当前状态</s>
-    <s id="Droodism.Sodium_PeroxideScript.GenerationPercentage">生成百分比</s>
-    <s id="Droodism.Sodium_PeroxideScript.GenerationProgress">生成进度</s>
+    <s id="Droodism.Sodium_PeroxideScript.GenerationPercentage">反应百分比</s>
+    <s id="Droodism.Sodium_PeroxideScript.GenerationProgress">反应进度</s>
     <s id="Droodism.Sodium_PeroxideScript.Idle">&lt;color=yellow&gt;空闲&lt;/color&gt;</s>
     <s id="Droodism.Sodium_PeroxideScript.Working">&lt;color=green&gt;工作中&lt;/color&gt;</s>
 
