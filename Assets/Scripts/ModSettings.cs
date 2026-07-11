@@ -50,6 +50,7 @@ namespace Assets.Scripts
         public BoolSetting ReceiveCraftRadiation { get; set; }
         
         public BoolSetting LegacyPauseResume { get; set; }
+        public BoolSetting FixAngularDragInVacuum { get; set; }
 
         /// <summary>
         /// Initializes the settings in the category.
@@ -84,6 +85,9 @@ namespace Assets.Scripts
                 .SetDescription(Locale.GetString("Droodism.ModSettings.CriticalThresholdDesc"))
                 .SetDefault(0.10f);
             LegacyPauseResume=CreateBool("LegacyPauseResume")
+                .SetDefault(false);
+            FixAngularDragInVacuum=CreateBool("FixAngularDragInVacuum")
+                .SetDescription(Locale.GetString("Droodism.ModSettings.FixAngularDragInVacuumDesc"))
                 .SetDefault(false);
         }
     }

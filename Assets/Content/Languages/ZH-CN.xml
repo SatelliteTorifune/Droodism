@@ -131,6 +131,8 @@
     <s id="Droodism.ModSettings.ToggleDebugModeDesc">在开发控制台中启用一些日志,并开启一些隐藏选项</s>
     <s id="Droodism.ModSettings.WarningThreshold">警告阈值</s>
     <s id="Droodism.ModSettings.WarningThresholdDesc">当资源低于此百分比时将触发警告</s>
+    <s id="Droodism.ModSettings.FixAngularDragInVacuum">修复真空中角速度阻力</s>
+    <s id="Droodism.ModSettings.FixAngularDragInVacuumDesc">修复真空中角速度自行衰减的问题，禁用此项可还原原版行为</s>
 
     <!-- OnHireButtonClickedPatch -->
     <s id="Droodism.OnHireButtonClickedPatch.ChooseDroodType">选择您想要招募的 Drood 类型：</s>

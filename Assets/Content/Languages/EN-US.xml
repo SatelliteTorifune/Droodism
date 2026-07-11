@@ -129,6 +129,8 @@
     <s id="Droodism.ModSettings.ToggleDebugModeDesc">Enable some log in dev console,and toggle some hidden option</s>
     <s id="Droodism.ModSettings.WarningThreshold">Warning Threshold</s>
     <s id="Droodism.ModSettings.WarningThresholdDesc">Warning will trigger when resources fall below this percentage.</s>
+    <s id="Droodism.ModSettings.FixAngularDragInVacuum">Fix Angular Drag In Vacuum</s>
+    <s id="Droodism.ModSettings.FixAngularDragInVacuumDesc">Fix angular velocity decay in vacuum. Disable to restore original behavior.</s>
 
     <!-- OnHireButtonClickedPatch -->
     <s id="Droodism.OnHireButtonClickedPatch.ChooseDroodType">Choose the what kind of Drood you want to hire:</s>
