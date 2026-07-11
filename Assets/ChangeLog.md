@@ -1,5 +1,7 @@
 ## 2026 7 11
 > 为menuMapView添加了辐射带支持
+> 
+> 修复了一处CraftFuelSourcesPatches中的空引用导致游戏无法进入FlightScene的bug
 
 ## 2026 7 9
 > 使用EMA算法对UI中的消耗速率进行了平滑处理,以减少UI中消耗速率显示的波动

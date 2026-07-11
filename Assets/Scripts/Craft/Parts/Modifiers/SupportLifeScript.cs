@@ -487,8 +487,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
     
             void RefreshCraftFuelSources()
-            { 
-                var patch = PartScript.GetModifier<EvaScript>().CrewCompartment?.PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+            {
+                var evaModifier = PartScript.GetModifier<EvaScript>();
+                if (evaModifier == null) return;
+                var patch = evaModifier.CrewCompartment?.PartScript?.CommandPod?.Part?.PartScript?.GetModifier<STCommandPodPatchScript>();
                 if (patch==null)
                 {
                     Mod.Log("NULl DEtected in SupportLifeScript.RefreshFuelSource.RefreshCraftFuelSources");

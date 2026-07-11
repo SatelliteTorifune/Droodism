@@ -185,51 +185,51 @@ namespace Assets.Scripts.Craft.Fuel
                                 }
                             }
 
-                            if (fuelTank.FuelType.Id == "Oxygen")
+                            if (fuelTank.FuelType?.Id == "Oxygen")
                             {
-                                if (fuelTank?.Part.PartScript?.CommandPod?.Part.PartScript.GetModifier<STCommandPodPatchScript>().OxygenFuelSource is CraftFuelSource craftFuelSource)
+                                if (fuelTank?.Part?.PartScript?.CommandPod?.Part?.PartScript?.GetModifier<STCommandPodPatchScript>()?.OxygenFuelSource is CraftFuelSource craftFuelSource)
                                 {
-                                    craftFuelSource.AddFuelTank(fuelTank.Script);
+                                    craftFuelSource?.AddFuelTank(fuelTank?.Script);
                                     continue;
                                 }
                             }
-                            if (fuelTank.FuelType.Id == "H2O")
+                            if (fuelTank.FuelType?.Id == "H2O")
                             {
-                                if (fuelTank?.Part.PartScript?.CommandPod?.Part.PartScript.GetModifier<STCommandPodPatchScript>().WaterFuelSource is CraftFuelSource craftFuelSource)
+                                if (fuelTank?.Part?.PartScript?.CommandPod?.Part?.PartScript?.GetModifier<STCommandPodPatchScript>()?.WaterFuelSource is CraftFuelSource craftFuelSource)
                                 {
-                                    craftFuelSource.AddFuelTank(fuelTank.Script);
+                                    craftFuelSource?.AddFuelTank(fuelTank?.Script);
                                     continue;
                                 }
                             }
-                            if (fuelTank.FuelType.Id == "Food")
+                            if (fuelTank.FuelType?.Id == "Food")
                             {
-                                if (fuelTank?.Part.PartScript?.CommandPod?.Part.PartScript.GetModifier<STCommandPodPatchScript>().FoodFuelSource is CraftFuelSource craftFuelSource)
+                                if (fuelTank?.Part?.PartScript?.CommandPod?.Part?.PartScript?.GetModifier<STCommandPodPatchScript>()?.FoodFuelSource is CraftFuelSource craftFuelSource)
                                 {
-                                    craftFuelSource.AddFuelTank(fuelTank.Script);
+                                    craftFuelSource?.AddFuelTank(fuelTank?.Script);
                                     continue;
                                 }
                             }
-                            if (fuelTank.FuelType.Id == "CO2")
+                            if (fuelTank.FuelType?.Id == "CO2")
                             {
-                                if (fuelTank?.Part.PartScript?.CommandPod?.Part.PartScript.GetModifier<STCommandPodPatchScript>().CO2FuelSource is CraftFuelSource craftFuelSource)
+                                if (fuelTank?.Part?.PartScript?.CommandPod?.Part?.PartScript?.GetModifier<STCommandPodPatchScript>()?.CO2FuelSource is CraftFuelSource craftFuelSource)
                                 {
-                                    craftFuelSource.AddFuelTank(fuelTank.Script);
+                                    craftFuelSource?.AddFuelTank(fuelTank?.Script);
                                     continue;
                                 }
                             }
-                            if (fuelTank.FuelType.Id == "Wasted Water")
+                            if (fuelTank.FuelType?.Id == "Wasted Water")
                             {
-                                if (fuelTank?.Part.PartScript?.CommandPod?.Part.PartScript.GetModifier<STCommandPodPatchScript>().WastedWaterFuelSource is CraftFuelSource craftFuelSource)
+                                if (fuelTank?.Part?.PartScript?.CommandPod?.Part?.PartScript?.GetModifier<STCommandPodPatchScript>()?.WastedWaterFuelSource is CraftFuelSource craftFuelSource)
                                 {
-                                    craftFuelSource.AddFuelTank(fuelTank.Script);
+                                    craftFuelSource?.AddFuelTank(fuelTank?.Script);
                                     continue;
                                 }
                             }
-                            if (fuelTank.FuelType.Id == "Solid Waste")
+                            if (fuelTank.FuelType?.Id == "Solid Waste")
                             {
-                                if (fuelTank?.Part.PartScript?.CommandPod?.Part.PartScript.GetModifier<STCommandPodPatchScript>().SolidWasteFuelSource is CraftFuelSource craftFuelSource)
+                                if (fuelTank?.Part?.PartScript?.CommandPod?.Part?.PartScript?.GetModifier<STCommandPodPatchScript>()?.SolidWasteFuelSource is CraftFuelSource craftFuelSource)
                                 {
-                                    craftFuelSource.AddFuelTank(fuelTank.Script);
+                                    craftFuelSource?.AddFuelTank(fuelTank?.Script);
                                     continue;
                                 }
                             }
