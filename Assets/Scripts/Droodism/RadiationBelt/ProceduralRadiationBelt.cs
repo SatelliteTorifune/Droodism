@@ -171,13 +171,20 @@ namespace Assets.Scripts.Droodism.RadiationBelt
 
         private float GetSpinDeltaTimeSeconds()
         {
-            if (Game.Instance?.FlightScene?.TimeManager == null)
+            // Menu 场景：没有 TimeManager，使用 Unity 的 deltaTime
+            if (Game.InMenuScene)
             {
                 return Time.deltaTime;
             }
 
-            // Warp-aware game delta time (pauses/timewarp already reflected by TimeManager).
-            return Mathf.Max(0f, (float)Game.Instance.FlightScene.TimeManager.DeltaTime);
+            // Flight 场景：TimeManager 存在时使用 warp-aware deltaTime
+            if (Game.Instance?.FlightScene?.TimeManager != null)
+            {
+                return Mathf.Max(0f, (float)Game.Instance.FlightScene.TimeManager.DeltaTime);
+            }
+
+            // 兜底
+            return Time.deltaTime;
         }
         
         void OnDestroy()

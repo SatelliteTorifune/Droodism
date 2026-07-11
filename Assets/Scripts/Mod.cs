@@ -23,6 +23,7 @@ using Assets.Scripts.Droodism.BackGround;
 using Assets.Scripts.Droodism.Crew;
 using Assets.Scripts.Droodism.ResourceWarning;
 using Assets.Scripts.HarmonyPatches;
+using Assets.Scripts.Menu.MapView;
 using ModApi.Craft.Parts;
 using UnityEngine.UI;
 
@@ -93,6 +94,7 @@ namespace Assets.Scripts
             GameObject DroodismGO=new GameObject("DroodismGameObject");
             DroodismGO.AddComponent<DroodismUIManager>();
             DroodismGO.AddComponent<RadiationBeltManager>();
+            DroodismGO.AddComponent<MenuMapRadiationBeltManager>();
             DroodismGO.AddComponent<RadiationBeltDebugUI>();
             DroodismGO.AddComponent<DroodismCrewDataManager>();
             DroodismGO.AddComponent<ResourceWarningScript>();
@@ -159,16 +161,22 @@ namespace Assets.Scripts
             DevConsoleApi.RegisterCommand("ManualRefreshInstance",ManualRefreshInstance);
             DevConsoleApi.RegisterCommand("RadiationBeltDebugUI", () =>
             {
-                if (!Game.InFlightScene)
+                if (Game.InFlightScene)
                 {
-                    return;   
+                    if (!Game.Instance.FlightScene.ViewManager.MapViewManager.MapView.Visible)
+                        return;
                 }
-                if (!Game.Instance.FlightScene.ViewManager.MapViewManager.MapView.Visible)
+                else if (!Game.InMenuScene)
                 {
-                    return;   
+                    return;
                 }
+                if (Game.InMenuScene && MenuMapViewScript.Instance == null)
+                    return;
+
                 RadiationBeltDebugUI.Instance.OnToggleInspectorPanelState();
             });
+
+
             
             DevConsoleApi.RegisterCommand("RebuildFuelSource",()=>
             {

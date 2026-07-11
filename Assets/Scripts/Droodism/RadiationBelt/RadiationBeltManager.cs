@@ -19,11 +19,14 @@ namespace Assets.Scripts.Droodism.RadiationBelt
         public RadiationBeltConfig CurrentConfig;
 
         private GameObject currentRadiationBeltObject;
+        
         public ProceduralRadiationBelt BeltInstance;
-
-       public RadiationBeltCameraRenderer  FlightCameraRenderer,MapCameraRenderer;
+        public string CurrentFocusPlanet { get; internal set; }
+        
+        public RadiationBeltCameraRenderer  FlightCameraRenderer;
         
         public List<ProceduralRadiationBelt> BeltList=new List<ProceduralRadiationBelt>();
+        
         private readonly Dictionary<string, double> planetRadiusMetersByName = new Dictionary<string, double>();
         private readonly Dictionary<string, double> planetRadiusScaledByName = new Dictionary<string, double>();
             
@@ -38,15 +41,6 @@ namespace Assets.Scripts.Droodism.RadiationBelt
         { 
             Instance = this;
             Game.Instance.SceneManager.SceneTransitionCompleted += OnSceneTransitionCompleted;
-            Game.Instance.SceneManager.SceneLoaded+=OnSceneLoaded;
-        }
-        public void OnSceneLoaded(object sender, SceneEventArgs e)
-        {
-            if (e.Scene=="Menu")
-            {
-                
-            }
-            
         }
 
         public void OnSceneTransitionCompleted(object sender, SceneTransitionEventArgs e)
@@ -88,7 +82,6 @@ namespace Assets.Scripts.Droodism.RadiationBelt
 
        
         
-        public string CurrentFocusPlanet { get; private set; }
         //这个其实很蠢,我手动写了一个切换时更新的
         void Update()
         {
@@ -136,16 +129,7 @@ namespace Assets.Scripts.Droodism.RadiationBelt
                     Mod.LogError("fucked1111 " + e.StackTrace);
                 }
             }
-
-            if (Game.InMenuScene)
-            {
-                //TODO 
-                /*
-                if (map in menu stuff active)
-                {
-                    
-                }*/
-            }
+            
         }
        
         private void OnFocusPlanetChanged(string currentName)
