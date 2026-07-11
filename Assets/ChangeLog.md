@@ -1,3 +1,18 @@
+## 2026 7 11
+> 为menuMapView添加了辐射带支持
+> 
+> 修复了一处CraftFuelSourcesPatches中的空引用导致游戏无法进入FlightScene的bug
+
+## 2026 7 9
+> 使用EMA算法对UI中的消耗速率进行了平滑处理,以减少UI中消耗速率显示的波动
+> 
+> 优化了一点点SupportLifeScript中RemoveFuelAmountInstantly的计算
+> >虽然也没好到哪里去
+
+## 2026 7 8
+> 加入了回到旧版暂停逻辑的功能
+> 
+
 ## 2026 7 7
 > 加入了通过钩爪补充氧气的功能
 > >顺便加入了通过钩爪移除二氧化碳的功能

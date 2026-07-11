@@ -4,7 +4,7 @@ using Assets.Scripts.Droodism.Crew;
 using HarmonyLib;
 using UnityEngine;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.HarmonyPatches
 {
     public static class CrewManagerSyncPatches
     {

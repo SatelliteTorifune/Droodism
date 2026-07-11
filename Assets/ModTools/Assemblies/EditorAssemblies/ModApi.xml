@@ -16148,6 +16148,14 @@
               <c>true</c> if [break on start]; otherwise, <c>false</c>.
             </value>
         </member>
+        <member name="P:ModApi.Craft.Parts.PartConnection.HasFusedAttachment">
+            <summary>
+            Gets a value indicating whether any attachment in this connection rigidly fuses the two parts.
+            </summary>
+            <value>
+              <c>true</c> if it has a fused attachment; otherwise, <c>false</c>.
+            </value>
+        </member>
         <member name="P:ModApi.Craft.Parts.PartConnection.Invalid">
             <summary>
             Gets a value indicating whether this <see cref="T:ModApi.Craft.Parts.PartConnection"/> is invalid.
@@ -16194,6 +16202,14 @@
             </summary>
             <value>
             The symmetry identifier.
+            </value>
+        </member>
+        <member name="P:ModApi.Craft.Parts.PartConnection.Welded">
+            <summary>
+            Gets or sets a value indicating whether this connection has been welded, fusing its two parts into one rigid body with no joint.
+            </summary>
+            <value>
+              <c>true</c> if welded; otherwise, <c>false</c>.
             </value>
         </member>
         <member name="M:ModApi.Craft.Parts.PartConnection.GetPartConnectionsBetweenParts(ModApi.Craft.Parts.PartData,ModApi.Craft.Parts.PartData)">
@@ -20871,6 +20887,14 @@
             Allows manually handling a collision that was generated outside of the physics engine.
             </summary>
             <param name="collision">The collision.</param>
+        </member>
+        <member name="M:ModApi.Craft.IBodyCollisionHandler.DeferJointBreak(UnityEngine.Joint,System.Single,System.Single)">
+            <summary>
+            Defers a joint's break thresholds until a grace period elapses, keeping it unbreakable meanwhile so transient load forces can't snap it.
+            </summary>
+            <param name="joint">The joint.</param>
+            <param name="breakForce">The break force to apply after the grace period, or zero to leave it unbreakable.</param>
+            <param name="breakTorque">The break torque to apply after the grace period, or zero to leave it unbreakable.</param>
         </member>
         <member name="M:ModApi.Craft.IBodyCollisionHandler.DisconnectPart(ModApi.Craft.Parts.IPartScript)">
             <summary>
@@ -38168,6 +38192,19 @@
               <c>true</c> if visible; otherwise, <c>false</c>.
             </value>
         </member>
+        <member name="M:ModApi.Flight.MapView.IMapView.GetCelestialBodies">
+            <summary>
+            Gets the celestial bodies (planets and moons) currently present in this map view.
+            </summary>
+            <returns>The celestial bodies currently present in this map view.</returns>
+        </member>
+        <member name="M:ModApi.Flight.MapView.IMapView.GetCelestialBodyTransform(ModApi.Flight.Sim.IPlanetNode)">
+            <summary>
+            Gets the map view game object transform for the specified celestial body, or <c>null</c> if it is not present.
+            </summary>
+            <param name="planetNode">The celestial body to get the map view transform for.</param>
+            <returns>The map view transform for the celestial body, or <c>null</c> if it is not present.</returns>
+        </member>
         <member name="M:ModApi.Flight.MapView.IMapView.SetCameraFocus(ModApi.Flight.MapView.ICameraFocusable,ModApi.Flight.MapView.CameraTransitionSpeed,System.Boolean)">
             <summary>
             Sets the camera focus.
@@ -38369,6 +38406,38 @@
             <value>
               <c>true</c> if the targeting system should use a binary search for finding closest encounter with target instead regular step intervals; otherwise, <c>false</c>.
             </value>
+        </member>
+        <member name="T:ModApi.Flight.MapView.MapViewManagers">
+            <summary>
+            Provides mods with access to the map view currently loaded, in any scene (flight, main menu, or planet studio).
+            </summary>
+        </member>
+        <member name="F:ModApi.Flight.MapView.MapViewManagers._getCurrent">
+            <summary>
+            The cached accessor that reads the game's current map view manager.
+            </summary>
+        </member>
+        <member name="P:ModApi.Flight.MapView.MapViewManagers.Current">
+            <summary>
+            Gets the map view manager for the map view currently loaded, or <c>null</c> when none is.
+            </summary>
+            <value>
+            The current map view manager, or <c>null</c> when no map view is loaded.
+            </value>
+        </member>
+        <member name="P:ModApi.Flight.MapView.MapViewManagers.IsMapViewActive">
+            <summary>
+            Gets a value indicating whether a map view is currently being displayed to the player.
+            </summary>
+            <value>
+              <c>true</c> if a map view is currently being displayed; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="M:ModApi.Flight.MapView.MapViewManagers.GetAccessor">
+            <summary>
+            Resolves and caches a reflective accessor for the game's current map view manager.
+            </summary>
+            <returns>The accessor, or <c>null</c> if it could not be resolved.</returns>
         </member>
         <member name="T:ModApi.Flight.ParticleCategory">
             <summary>
@@ -46023,6 +46092,11 @@
             The root &lt;Strings&gt; attribute naming a language's preferred fallback (e.g. ZH-TW -&gt; ZH-CN).
             </summary>
         </member>
+        <member name="F:ModApi.Locale.ModStringsFilePrefix">
+            <summary>
+            The prefix for a mod's installed supplementary strings file (<c>Strings_&lt;ModName&gt;.xml</c>).
+            </summary>
+        </member>
         <member name="P:ModApi.Locale.Languages">
             <summary>
             Gets the languages.
@@ -46103,12 +46177,41 @@
             Updates the XmlLayoutLocalization.
             </summary>
         </member>
+        <member name="M:ModApi.Locale.InstallModStrings(System.String,System.String,System.String)">
+            <summary>
+            Installs a mod's string table as <c>Languages/&lt;language&gt;/Strings_&lt;modName&gt;.xml</c>, overwriting any existing file.
+            </summary>
+            <param name="modName">The name of the mod supplying the strings; used to name the file.</param>
+            <param name="language">The language code the strings target (e.g. EN-US).</param>
+            <param name="xmlContent">The contents of the Strings.xml document to install.</param>
+        </member>
+        <member name="M:ModApi.Locale.RemoveModStrings(System.String)">
+            <summary>
+            Removes every string file the specified mod previously installed, across all language folders.
+            </summary>
+            <param name="modName">The name of the mod whose installed string files should be removed.</param>
+            <returns><c>true</c> if at least one file was removed.</returns>
+        </member>
         <member name="M:ModApi.Locale.ParseStringLocales(System.Xml.Linq.XElement)">
             <summary>
             Parses the &lt;s&gt; entries of a Strings.xml document into an id -&gt; value table.
             </summary>
             <param name="definitions">The root element of a parsed Strings.xml document.</param>
             <returns>The string table for the document.</returns>
+        </member>
+        <member name="M:ModApi.Locale.GetModStringsFileName(System.String)">
+            <summary>
+            Builds a mod's supplementary strings file name, sanitizing the mod name for the filesystem.
+            </summary>
+            <param name="modName">The name of the mod.</param>
+            <returns>The file name to use for the mod's supplementary strings file.</returns>
+        </member>
+        <member name="M:ModApi.Locale.SanitizeFileToken(System.String)">
+            <summary>
+            Replaces characters that are invalid in a file or folder name with underscores.
+            </summary>
+            <param name="token">The token to sanitize.</param>
+            <returns>The sanitized token.</returns>
         </member>
         <member name="M:ModApi.Locale.TryLoadLanguages">
             <summary>
@@ -53439,12 +53542,13 @@
             <param name="input">The input data needed to generate vertex data.</param>
             <param name="data">The vertex data object to be updated.</param>
         </member>
-        <member name="M:ModApi.Planet.Modifiers.VertexData.Biomes.ApplyBiomeData.UpdateBiomeData(ModApi.Planet.PlanetVertexData,ModApi.Planet.SubBiomeTerrainData,System.Single)">
+        <member name="M:ModApi.Planet.Modifiers.VertexData.Biomes.ApplyBiomeData.UpdateBiomeData(ModApi.Planet.PlanetVertexData,ModApi.Planet.SubBiomeTerrainData,ModApi.Planet.SubBiomeTerrainData,System.Single)">
             <summary>
             Updates the biome data.
             </summary>
             <param name="data">The data to update.</param>
             <param name="biomeData">The biome data to which to apply.</param>
+            <param name="slopeData">The sub-biome's slope data, used as the particle color default when <paramref name="biomeData"/> does not override it.</param>
             <param name="strength">The strength of the biome data to apply.</param>
         </member>
         <member name="M:ModApi.Planet.Modifiers.VertexData.Biomes.ApplyBiomeData.UpdateBiomeData(ModApi.Planet.PlanetBiomeVertexData,ModApi.Planet.SubBiomeTerrainData,System.Single)">
@@ -76526,6 +76630,14 @@
             The re-entry effects quality.
             </value>
         </member>
+        <member name="P:ModApi.Settings.VisualEffectsQualitySettings.ReEntryPlasmaBias">
+            <summary>
+            Gets the re-entry plasma bias, a multiplier applied to the plasma-effect Mach thresholds.
+            </summary>
+            <value>
+            The re-entry plasma bias.
+            </value>
+        </member>
         <member name="P:ModApi.Settings.VisualEffectsQualitySettings.TireTracks">
             <summary>
             Gets the tire tracks quality.
@@ -84626,6 +84738,11 @@
         <member name="F:ModApi.Ui.UserInterfaceIds.CrewAssignmentDialog">
             <summary>
             The crew assignment dialog XML ID.
+            </summary>
+        </member>
+        <member name="F:ModApi.Ui.UserInterfaceIds.FpsOverlay">
+            <summary>
+            The FPS overlay XML ID.
             </summary>
         </member>
         <member name="F:ModApi.Ui.UserInterfaceIds.InputDialog">

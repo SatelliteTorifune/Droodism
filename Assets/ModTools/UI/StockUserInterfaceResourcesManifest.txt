@@ -128,6 +128,7 @@ UnityEngine.TextAsset
    Ui/Xml/Flight/StagingPanel
    Ui/Xml/Flight/TimePanel
    Ui/Xml/Flight/ViewPanel
+   Ui/Xml/FpsOverlay
    Ui/Xml/InfoPanel/InfoPanelStyles
    Ui/Xml/InputDialog
    Ui/Xml/InspectorPanel

@@ -4,6 +4,5 @@
     <Component type="UnityEngine.MeshFilter" />
     <Component type="UnityEngine.MeshRenderer" />
     <Component type="ModApi.Craft.Parts.PartMeshScript" />
-    <Component type="UnityEngine.MeshCollider" />
   </GameObject>
 </GameObject>

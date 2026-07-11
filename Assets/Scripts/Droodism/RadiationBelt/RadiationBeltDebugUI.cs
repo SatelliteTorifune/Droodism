@@ -9,7 +9,7 @@ using ModApi.Ui.Inspector;
 using UnityEngine;
 
 
-namespace Droodism.RadiationBelt
+namespace Assets.Scripts.Droodism.RadiationBelt
 {
     public class RadiationBeltDebugUI : MonoBehaviourBase
     {
@@ -35,10 +35,18 @@ namespace Droodism.RadiationBelt
 
         private void OnSceneLoaded(object sender, SceneEventArgs e)
         {
-            
-            if (e.Scene != "Flight")
+            // 在 Flight 和 Menu 场景都可以使用 DebugUI
+            if (e.Scene != "Flight" && e.Scene != "Menu")
             {
                 return;
+            }
+
+            // Menu 场景加载时，如果已有旧的 InspectorPanel 则关闭它
+            if (e.Scene == "Menu" && inspectorPanel != null)
+            {
+                try { inspectorPanel.Close(); } catch { }
+                inspectorPanel = null;
+                inspectorModel = null;
             }
         }
 
@@ -68,53 +76,127 @@ namespace Droodism.RadiationBelt
              }));
              inspectorModel.Add(new TextButtonModel(Locale.GetString("Droodism.RadiationBeltDebugUI.ReGenerateBeltMesh"), (b) =>
              {
-                 RadiationBeltManager.Instance.ReGenerateMeshes();
+                 if (Game.InMenuScene && MenuMapRadiationBeltManager.Instance != null)
+                 {
+                     MenuMapRadiationBeltManager.Instance.ReGenerateCurrentMeshes();
+                 }
+                 else
+                 {
+                     RadiationBeltManager.Instance.ReGenerateMeshes();
+                 }
              }));
-             inspectorModel.Add(new TextButtonModel(Locale.GetString("Droodism.RadiationBeltDebugUI.SaveCurrentConfig"), (Action<TextButtonModel>)(b => 
-             {
-                 RadiationBeltManager.Instance.CurrentConfig.SaveToFile(RadiationBeltManager.Instance.CurrentFocusPlanet);
-             })));
-             inspectorModel.Add(new TextButtonModel(Locale.GetString("Droodism.RadiationBeltDebugUI.LoadCurrentConfig"), (Action<TextButtonModel>)(b => 
-             {
-                 RadiationBeltManager.Instance.ReFreshCurrentConfig();
-                 RadiationBeltManager.Instance.ReGenerateMeshes();
-             })));
+             inspectorModel.Add(new TextButtonModel(Locale.GetString("Droodism.RadiationBeltDebugUI.SaveCurrentConfig"), (Action<TextButtonModel>)(b =>
+            {
+                if (Game.InMenuScene && MenuMapRadiationBeltManager.Instance != null)
+                {
+                    if (RadiationBeltManager.Instance?.CurrentConfig != null)
+                    {
+                        RadiationBeltManager.Instance.CurrentConfig.SaveToFile(RadiationBeltManager.Instance.CurrentFocusPlanet);
+                    }
+                }
+                else
+                {
+                    RadiationBeltManager.Instance.CurrentConfig.SaveToFile(RadiationBeltManager.Instance.CurrentFocusPlanet);
+                }
+            })));
+             inspectorModel.Add(new TextButtonModel(Locale.GetString("Droodism.RadiationBeltDebugUI.LoadCurrentConfig"), (Action<TextButtonModel>)(b =>
+            {
+                if (Game.InMenuScene && MenuMapRadiationBeltManager.Instance != null)
+                {
+                    MenuMapRadiationBeltManager.Instance.ReGenerateCurrentMeshes();
+                }
+                else
+                {
+                    RadiationBeltManager.Instance.ReFreshCurrentConfig();
+                    RadiationBeltManager.Instance.ReGenerateMeshes();
+                }
+            })));
              
              inspectorModel.Add(new TextButtonModel(Locale.GetString("Droodism.RadiationBeltDebugUI.ReturnToDefaultPreset"), (Action<TextButtonModel>)(b =>
-             {
-                 var manager = RadiationBeltManager.Instance;
-                 if (manager.CurrentConfig == null) return;
-                 manager.CurrentConfig.ApplyDefaultPreset();
-                 manager.ReGenerateMeshes();
-             })));
+            {
+                if (Game.InMenuScene && MenuMapRadiationBeltManager.Instance != null)
+                {
+                    var config = RadiationBeltManager.Instance?.CurrentConfig;
+                    if (config == null) return;
+                    config.ApplyDefaultPreset();
+                    MenuMapRadiationBeltManager.Instance.ReGenerateCurrentMeshes();
+                }
+                else
+                {
+                    var manager = RadiationBeltManager.Instance;
+                    if (manager.CurrentConfig == null) return;
+                    manager.CurrentConfig.ApplyDefaultPreset();
+                    manager.ReGenerateMeshes();
+                }
+            })));
              inspectorModel.Add(new TextButtonModel(Locale.GetString("Droodism.RadiationBeltDebugUI.ApplyGiantPreset"), (Action<TextButtonModel>)(b =>
-             {
-                 var manager = RadiationBeltManager.Instance;
-                 if (manager.CurrentConfig == null) return;
-                 manager.CurrentConfig.ApplyGiantPreset();
-                 manager.ReGenerateMeshes();
-             })));
+            {
+                if (Game.InMenuScene && MenuMapRadiationBeltManager.Instance != null)
+                {
+                    var config = RadiationBeltManager.Instance?.CurrentConfig;
+                    if (config == null) return;
+                    config.ApplyGiantPreset();
+                    MenuMapRadiationBeltManager.Instance.ReGenerateCurrentMeshes();
+                }
+                else
+                {
+                    var manager = RadiationBeltManager.Instance;
+                    if (manager.CurrentConfig == null) return;
+                    manager.CurrentConfig.ApplyGiantPreset();
+                    manager.ReGenerateMeshes();
+                }
+            })));
              inspectorModel.Add(new TextButtonModel(Locale.GetString("Droodism.RadiationBeltDebugUI.ApplyMetallicPreset"), (Action<TextButtonModel>)(b =>
-             {
-                 var manager = RadiationBeltManager.Instance;
-                 if (manager.CurrentConfig == null) return;
-                 manager.CurrentConfig.ApplyMetallicPreset();
-                 manager.ReGenerateMeshes();
-             })));
+            {
+                if (Game.InMenuScene && MenuMapRadiationBeltManager.Instance != null)
+                {
+                    var config = RadiationBeltManager.Instance?.CurrentConfig;
+                    if (config == null) return;
+                    config.ApplyMetallicPreset();
+                    MenuMapRadiationBeltManager.Instance.ReGenerateCurrentMeshes();
+                }
+                else
+                {
+                    var manager = RadiationBeltManager.Instance;
+                    if (manager.CurrentConfig == null) return;
+                    manager.CurrentConfig.ApplyMetallicPreset();
+                    manager.ReGenerateMeshes();
+                }
+            })));
              inspectorModel.Add(new TextButtonModel(Locale.GetString("Droodism.RadiationBeltDebugUI.ApplySolidIronPreset"), (Action<TextButtonModel>)(b =>
-             {
-                 var manager = RadiationBeltManager.Instance;
-                 if (manager.CurrentConfig == null) return;
-                 manager.CurrentConfig.ApplySolidIronPreset();
-                 manager.ReGenerateMeshes();
-             })));
+            {
+                if (Game.InMenuScene && MenuMapRadiationBeltManager.Instance != null)
+                {
+                    var config = RadiationBeltManager.Instance?.CurrentConfig;
+                    if (config == null) return;
+                    config.ApplySolidIronPreset();
+                    MenuMapRadiationBeltManager.Instance.ReGenerateCurrentMeshes();
+                }
+                else
+                {
+                    var manager = RadiationBeltManager.Instance;
+                    if (manager.CurrentConfig == null) return;
+                    manager.CurrentConfig.ApplySolidIronPreset();
+                    manager.ReGenerateMeshes();
+                }
+            })));
              inspectorModel.Add(new TextButtonModel(Locale.GetString("Droodism.RadiationBeltDebugUI.ApplyAnomalyPreset"), (Action<TextButtonModel>)(b =>
-             {
-                 var manager = RadiationBeltManager.Instance;
-                 if (manager.CurrentConfig == null) return;
-                 manager.CurrentConfig.ApplyAnomalyPreset();
-                 manager.ReGenerateMeshes();
-             })));
+            {
+                if (Game.InMenuScene && MenuMapRadiationBeltManager.Instance != null)
+                {
+                    var config = RadiationBeltManager.Instance?.CurrentConfig;
+                    if (config == null) return;
+                    config.ApplyAnomalyPreset();
+                    MenuMapRadiationBeltManager.Instance.ReGenerateCurrentMeshes();
+                }
+                else
+                {
+                    var manager = RadiationBeltManager.Instance;
+                    if (manager.CurrentConfig == null) return;
+                    manager.CurrentConfig.ApplyAnomalyPreset();
+                    manager.ReGenerateMeshes();
+                }
+            })));
              inspectorModel.Add(new ToggleModel(Locale.GetString("Droodism.RadiationBeltDebugUI.Show"),()=>ShowGeneral,(b =>
              {
                  ShowGeneral = b;

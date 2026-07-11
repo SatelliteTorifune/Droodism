@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 using Assets.Scripts.Droodism.Crew;
-using Droodism.RadiationBelt;
+using Assets.Scripts.Droodism.RadiationBelt;
 using UnityEngine;
 
 namespace Assets.Scripts
@@ -125,24 +125,6 @@ namespace Assets.Scripts
             }
         }
 
-        private void CheckLocalizationFiles(string targetLanguage)
-        {
-            var targetPath = Path.Combine(Application.persistentDataPath, "Languages", targetLanguage, "StringsDroodism.xml");
-            if (File.Exists(targetPath))
-            {
-                return; 
-            }
-            
-            var localizationFile = Mod.ResourceLoader.LoadAsset<TextAsset>("Assets/Resources/LocalizationFile/"+targetLanguage+"/StringsDroodism.xml");
-            try
-            {
-                File.WriteAllBytes(targetPath, localizationFile.bytes);
-                Debug.LogFormat($"[Droodism] Wrote {targetLanguage} localization file to: {targetPath}");
-            }
-            catch (Exception e)
-            {
-                Debug.LogErrorFormat($"[Droodism] Failed to write {targetLanguage} localization file to '{targetPath}': {e}");
-            }
-        }
+        
     }
 }

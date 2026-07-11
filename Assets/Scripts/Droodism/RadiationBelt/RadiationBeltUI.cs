@@ -1,5 +1,6 @@
 using System.Collections.Generic;
-using Droodism.RadiationBelt;
+using Assets.Scripts.Droodism.RadiationBelt;
+using Assets.Scripts.Menu.MapView;
 using ModApi;
 using ModApi.Craft.Parts.Attributes;
 using ModApi.Flight.Sim;
@@ -13,7 +14,8 @@ namespace Assets.Scripts
     {
         private void OnBuildMapViewInspectorPanel(BuildInspectorPanelRequest request)
         {
-            if (!Game.InFlightScene)
+            // 同时支持 Flight 场景和 Menu 场景（MenuMapView）
+            if (!Game.InFlightScene && !Game.InMenuScene)
             {
                 return;
             }
@@ -110,11 +112,26 @@ namespace Assets.Scripts
 
         private IPlanetData FindPlanet(string name)
         {
-            foreach (var childPlanet in Game.Instance.FlightScene.FlightState.SolarSystemData.Planets)
+            // Flight 场景
+            if (Game.InFlightScene && Game.Instance.FlightScene?.FlightState?.SolarSystemData?.Planets != null)
             {
-                if (childPlanet.Name == name)
+                foreach (var childPlanet in Game.Instance.FlightScene.FlightState.SolarSystemData.Planets)
                 {
-                    return childPlanet;
+                    if (childPlanet.Name == name)
+                        return childPlanet;
+                }
+            }
+            // Menu 场景（MenuMapView）
+            else if (Game.InMenuScene && MenuMapViewScript.Instance != null)
+            {
+                var solarSystem = MenuMapViewScript.Instance.GetComponentInChildren<SolarSystemDataScript>();
+                if (solarSystem != null)
+                {
+                    foreach (PlanetDataScript planetData in solarSystem.Planets)
+                    {
+                        if (planetData.Name == name)
+                            return planetData;
+                    }
                 }
             }
             return (IPlanetData) null;

@@ -7,28 +7,25 @@ using ModApi.Mods;
 using ModApi.Ui.Inspector;
 using UnityEngine;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.HarmonyPatches
 {
-    public partial class Mod : GameMod
+    //byd jundroo给的教程有问题,本来是用另一个函数的,但是只能用harmony
+    [HarmonyPatch(typeof(NavPanelController), "LayoutRebuilt")]
+    class LayoutRebuiltPatch
     {
-        //byd jundroo给的教程有问题,本来是用另一个函数的,但是只能用harmony
-        [HarmonyPatch(typeof(NavPanelController), "LayoutRebuilt")]
-        class LayoutRebuiltPatch
+        static bool Prefix(NavPanelController __instance)
         {
-            static bool Prefix(NavPanelController __instance)
+            try
             {
-                try
-                {
-                    __instance.xmlLayout.GetElementById(DroodismUIManager.droodismBottomId)
-                        .AddOnClickEvent(DroodismUIManager.Instance.OnToggleDroodismInspectorPanelState, true);
-                }
-                catch (Exception e)
-                {
-                    Log("Error while adding click event to{0}", e);
-                }
-
-                return true;
+                __instance.xmlLayout.GetElementById(DroodismUIManager.droodismBottomId)
+                    .AddOnClickEvent(DroodismUIManager.Instance.OnToggleDroodismInspectorPanelState, true);
             }
+            catch (Exception e)
+            {
+                Mod.LogError("Error while adding click event to{0}" + e);
+            }
+
+            return true;
         }
     }
 }

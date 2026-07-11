@@ -1868,6 +1868,11 @@
             The getting started help text.
             </summary>
         </member>
+        <member name="F:ModApi.Editor.HelpText.Localization">
+            <summary>
+            The localization help text.
+            </summary>
+        </member>
         <member name="F:ModApi.Editor.HelpText.PartCategories">
             <summary>
             The part categories help text.

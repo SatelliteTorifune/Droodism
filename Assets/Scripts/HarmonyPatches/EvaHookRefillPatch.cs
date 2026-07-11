@@ -7,7 +7,7 @@ using ModApi.Craft;
 using ModApi.Mods;
 using UnityEngine;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.HarmonyPatches
 {
         [HarmonyPatch]
         public class UpdateGrapplingHookOxygenRefillPatch

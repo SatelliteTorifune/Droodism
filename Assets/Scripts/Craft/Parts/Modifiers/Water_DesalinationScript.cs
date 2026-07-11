@@ -35,8 +35,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         protected override void UpdateFuelSources()
         {
             base.UpdateFuelSources();
-            waterFuelSource = PartScript?.CommandPod?.Part.PartScript.GetModifier<STCommandPodPatchScript>()
-                .WaterFuelSource;
+            waterFuelSource = PartScript?.CommandPod?.Part.PartScript.GetModifier<STCommandPodPatchScript>()?.WaterFuelSource;
         }
         
 

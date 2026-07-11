@@ -14,7 +14,7 @@ using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
 using Assets.Scripts.Droodism;
 using Assets.Scripts.Droodism.Crew;
 using Assets.Scripts.Droodism.ResourceWarning;
-using Droodism.RadiationBelt;
+using Assets.Scripts.Droodism.RadiationBelt;
 using ModApi;
 using ModApi.Flight.Events;
 using ModApi.Planet;
@@ -221,6 +221,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             if (frame.DeltaTimeWorld == 0.0) 
                 return;
+
             UpdateRunningStatus();
             CheckRadiationState(frame);
             DamageRadiation(frame);
@@ -318,6 +319,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             if (ModSettings.Instance.ConsumeResourceWhenUnloaded==true&&!IsHibernating)
             {
+                // 先刷新燃料源引用，确保 RemoveFuelAmountInstantly / AddWastedAmountInstantly
+                // 能正确访问到 craft 油箱，否则只会消耗本地 buffer（仅 ~5小时容量）
+                Refresh();
                 RemoveFuelAmountInstantly();
                 AddWastedAmountInstantly();
             }
@@ -483,8 +487,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
     
             void RefreshCraftFuelSources()
-            { 
-                var patch = PartScript.GetModifier<EvaScript>().CrewCompartment?.PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+            {
+                var evaModifier = PartScript.GetModifier<EvaScript>();
+                if (evaModifier == null) return;
+                var patch = evaModifier.CrewCompartment?.PartScript?.CommandPod?.Part?.PartScript?.GetModifier<STCommandPodPatchScript>();
                 if (patch==null)
                 {
                     Mod.Log("NULl DEtected in SupportLifeScript.RefreshFuelSource.RefreshCraftFuelSources");
@@ -590,7 +596,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             bool usingInternalOxygen = UsingInternalOxygen();
             double baseRate = frame.DeltaTimeWorld * (IsRunning ? 1.75 : 1) * (IsTourist ? 1.05 : 1);
-            
+
             if (usingInternalOxygen)
             {
                 double oxygenConsumeAmount = (double)Data.OxygenConsumeRate * baseRate;
@@ -707,127 +713,105 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         
         private void RemoveFuelAmountInstantly()
         {
-            Mod.Log("调用RemoveFuelAmountInstantly ,间隔{0}", Game.Instance.FlightScene.FlightState.Time-Data.LastLoadTime);
+            double elapsedSeconds = Game.Instance.FlightScene.FlightState.Time - Data.LastLoadTime;
+            double activityMultiplier = (IsTourist ? 1.05 : 1.0);
 
-            double amount = (Game.Instance.FlightScene.FlightState.Time - Data.LastLoadTime) / 1;
+            // --- 氧气消耗（仅在使用内部氧气时）---
             if (UsingInternalOxygen())
             {
-                if (OxygenSource!=null)
+                double oxygenToConsume = Data.OxygenConsumeRate * activityMultiplier * elapsedSeconds;
+                double fromSource = 0;
+                if (OxygenSource != null && !OxygenSource.IsEmpty)
                 {
-                    if (amount*Data.OxygenConsumeRate>OxygenSource.TotalFuel)
-                    {
-                        OxygenSource.RemoveFuel(OxygenSource.TotalCapacity);
-                        double remain=amount-OxygenSource.TotalFuel;
-                        Data.AddLifeSupportFuel("Oxygen", remain>Data.DesireOxygenCapacity?-Data._oxygenAmountBuffer:-remain);
-                    }
+                    fromSource = Math.Min(oxygenToConsume, OxygenSource.TotalFuel);
+                    OxygenSource.RemoveFuel(fromSource);
                 }
-                if(OxygenSource==null||OxygenSource.IsEmpty)
+
+                double remainingOxygen = oxygenToConsume - fromSource;
+                if (remainingOxygen > 0)
                 {
-                    Data.AddLifeSupportFuel("Oxygen", amount*Data.OxygenConsumeRate>Data.DesireOxygenCapacity?-Data._oxygenAmountBuffer:-amount*Data.OxygenConsumeRate);
-                }
-            }
-            if (WaterSource!=null)
-            {
-                if (amount*Data.WaterConsumeRate>WaterSource.TotalFuel)
-                {
-                    WaterSource.RemoveFuel(WaterSource.TotalCapacity);
-                    double remain=amount-WaterSource.TotalFuel;
-                    Data.AddLifeSupportFuel("H2O", remain>Data.DesireWaterCapacity?-Data._waterAmountBuffer:-remain);
-                }
-                else
-                {
-                    WaterSource.RemoveFuel(amount * Data.WaterConsumeRate);
+                    double fromBuffer = Math.Min(remainingOxygen, Data._oxygenAmountBuffer);
+                    Data.AddLifeSupportFuel("Oxygen", -fromBuffer);
                 }
             }
 
-            if (WaterSource==null||WaterSource.IsEmpty)
+            // --- 水消耗 ---
+            double waterToConsume = Data.WaterConsumeRate * activityMultiplier * elapsedSeconds;
+            double fromWaterSource = 0;
+            if (WaterSource != null && !WaterSource.IsEmpty)
             {
-                Data.AddLifeSupportFuel("H2O", amount*Data.WaterConsumeRate>Data.DesireWaterCapacity?-Data._waterAmountBuffer:-amount*Data.WaterConsumeRate);
-            }
-            
-            if (FoodSource!=null)
-            {
-                if (amount*Data.FoodConsumeRate>FoodSource.TotalFuel)
-                {
-                    FoodSource.RemoveFuel(FoodSource.TotalCapacity);
-                    double remain=amount-FoodSource.TotalFuel;
-                    Data.AddLifeSupportFuel("Food", remain>Data.DesireFoodCapacity?-Data._foodAmountBuffer:-remain);
-                }
-                else
-                {
-                    FoodSource.RemoveFuel(amount*Data.FoodConsumeRate);
-                }
+                fromWaterSource = Math.Min(waterToConsume, WaterSource.TotalFuel);
+                WaterSource.RemoveFuel(fromWaterSource);
             }
 
-            if (FoodSource==null||FoodSource.IsEmpty)
+            double remainingWater = waterToConsume - fromWaterSource;
+            if (remainingWater > 0)
             {
-                Data.AddLifeSupportFuel("Food", amount*Data.FoodConsumeRate>Data.DesireFoodCapacity?-Data._foodAmountBuffer:-amount*Data.FoodConsumeRate);
+                double fromBuffer = Math.Min(remainingWater, Data._waterAmountBuffer);
+                Data.AddLifeSupportFuel("H2O", -fromBuffer);
+            }
+
+            // --- 食物消耗 ---
+            double foodToConsume = Data.FoodConsumeRate * activityMultiplier * elapsedSeconds;
+            double fromFoodSource = 0;
+            if (FoodSource != null && !FoodSource.IsEmpty)
+            {
+                fromFoodSource = Math.Min(foodToConsume, FoodSource.TotalFuel);
+                FoodSource.RemoveFuel(fromFoodSource);
+            }
+
+            double remainingFood = foodToConsume - fromFoodSource;
+            if (remainingFood > 0)
+            {
+                double fromBuffer = Math.Min(remainingFood, Data._foodAmountBuffer);
+                Data.AddLifeSupportFuel("Food", -fromBuffer);
             }
         }
         
         private void AddWastedAmountInstantly()
         {
-            double amount =(Game.Instance.FlightScene.FlightState.Time - Data.LastLoadTime) / 1;
-            Mod.Log("AddWastedAmountInstantly ,间隔{0}.这啥{1}",Game.Instance.FlightScene.FlightState.Time-Data.LastLoadTime,amount);
-            double co2ToAdd = Data.OxygenConsumeRate * Data.evaConsumeEfficiency * 1.375 * amount;
-            double wastedWaterToAdd = 1.1 * Data.WaterConsumeRate * Data.evaConsumeEfficiency * amount;
-            double solidWasteToAdd = Data.FoodConsumeRate * Data.evaConsumeEfficiency * 1.1 * amount;
+            double elapsedSeconds = Game.Instance.FlightScene.FlightState.Time - Data.LastLoadTime;
+            double activityMultiplier = (IsTourist ? 1.05 : 1.0);
+
+            // --- CO2 产生（仅在使用内部氧气时）---
             if (UsingInternalOxygen())
             {
-                if (Co2Source != null)
-                {
-                    if ( co2ToAdd>= this.Co2Source.TotalCapacity - Co2Source.TotalFuel)
-                    {
-                        Co2Source.AddFuel(Co2Source.TotalCapacity - Co2Source.TotalFuel);
-                        double remain = amount - (Co2Source.TotalCapacity - Co2Source.TotalFuel);
-                        Data.AddLifeSupportFuel("CO2",remain>Data.DesireCO2Capacity-Data._co2AmountBuffer?Data.DesireCO2Capacity-Data._co2AmountBuffer:remain);
-                    }
-                    else
-                    {
-                        Co2Source.AddFuel(co2ToAdd);
-                    }
-                }
+                double co2ToAdd = Data.OxygenConsumeRate * activityMultiplier * elapsedSeconds * 1.375 * Data.evaConsumeEfficiency;
+                AddWasteToSource(Co2Source, ref Data._co2AmountBuffer, Data.DesireCO2Capacity, co2ToAdd);
+            }
 
-                if (Co2Source==null||Co2Source.IsEmpty)
-                {
-                    double remain = co2ToAdd;
-                    Data.AddLifeSupportFuel("CO2",remain>Data.DesireCO2Capacity-Data._co2AmountBuffer?Data.DesireCO2Capacity-Data._co2AmountBuffer:remain);
-                }
-            }
-            if (WastedWaterSource != null)
-            {   
-                if ( wastedWaterToAdd>= this.WastedWaterSource.TotalCapacity - WastedWaterSource.TotalFuel)
-                {
-                    WastedWaterSource.AddFuel(WastedWaterSource.TotalCapacity - WastedWaterSource.TotalFuel);
-                    double remain = amount - (WastedWaterSource.TotalCapacity - WastedWaterSource.TotalFuel);
-                    Data.AddLifeSupportFuel("Wasted Water",remain>Data.DesireWastedWaterCapacity-Data._wastedWaterAmountBuffer?Data.DesireWastedWaterCapacity-Data._wastedWaterAmountBuffer:remain);
-                }
-                else
-                {
-                    WastedWaterSource.AddFuel(wastedWaterToAdd);
-                }
-            }
-            if (WastedWaterSource==null||WastedWaterSource.IsEmpty)
+            // --- 废水产生 ---
+            double wastedWaterToAdd = 1.1 * Data.WaterConsumeRate * Data.evaConsumeEfficiency * activityMultiplier * elapsedSeconds;
+            AddWasteToSource(WastedWaterSource, ref Data._wastedWaterAmountBuffer, Data.DesireWastedWaterCapacity, wastedWaterToAdd);
+
+            // --- 固体废物产生（注意 0.04 系数，与 ConsumptionLogic 对齐）---
+            double solidWasteToAdd = Data.FoodConsumeRate * Data.evaConsumeEfficiency * 1.1 * 0.04 * activityMultiplier * elapsedSeconds;
+            AddWasteToSource(SolidWasteSource, ref Data._solidWasteAmountBuffer, Data.DesireSolidWasteCapacity, solidWasteToAdd);
+        }
+
+        /// <summary>
+        /// 将废物先填入 craft fuel source，满了再填入本地 buffer
+        /// </summary>
+        private void AddWasteToSource(IFuelSource craftSource, ref double buffer, float bufferCapacity, double amountToAdd)
+        {
+            if (amountToAdd <= 0) return;
+
+            if (craftSource != null)
             {
-                Data.AddLifeSupportFuel("Wasted Water",wastedWaterToAdd>Data.DesireWastedWaterCapacity-Data._wastedWaterAmountBuffer?Data.DesireWastedWaterCapacity-Data._wastedWaterAmountBuffer:wastedWaterToAdd);
-            }
-            
-            if (SolidWasteSource != null)
-            {   
-                if ( solidWasteToAdd>= this.SolidWasteSource.TotalCapacity - SolidWasteSource.TotalFuel)
+                double availableSpace = craftSource.TotalCapacity - craftSource.TotalFuel;
+                double intoCraft = Math.Min(amountToAdd, availableSpace);
+                craftSource.AddFuel(intoCraft);
+                double overflow = amountToAdd - intoCraft;
+                if (overflow > 0)
                 {
-                    SolidWasteSource.AddFuel(SolidWasteSource.TotalCapacity - SolidWasteSource.TotalFuel);
-                    double remain = amount - (SolidWasteSource.TotalCapacity - SolidWasteSource.TotalFuel);
-                    Data.AddLifeSupportFuel("Solid Waste",remain>Data.DesireSolidWasteCapacity-Data._solidWasteAmountBuffer?Data.DesireSolidWasteCapacity-Data._solidWasteAmountBuffer:remain);
-                }
-                else
-                {
-                    SolidWasteSource.AddFuel(solidWasteToAdd);
+                    double intoBuffer = Math.Min(overflow, bufferCapacity - buffer);
+                    buffer += intoBuffer;
                 }
             }
-            if (SolidWasteSource==null||SolidWasteSource.IsEmpty)
+            else
             {
-                Data.AddLifeSupportFuel("Solid Waste",solidWasteToAdd>Data.DesireSolidWasteCapacity-Data._solidWasteAmountBuffer?Data.DesireSolidWasteCapacity-Data._solidWasteAmountBuffer:solidWasteToAdd);
+                double intoBuffer = Math.Min(amountToAdd, bufferCapacity - buffer);
+                buffer += intoBuffer;
             }
         }
 
@@ -1234,7 +1218,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 deltaHours = Mod.GetDeltaTimeHours();
             }
-            
+
             this.RadiationDoseRateRadPerHour = innerDoseRateRadPerHour*(1-innerRadiationProtection)+outerDoseRateRadPerHour*(1-outerRadiationProtection)+GetNTRRadiationDoseRate()*(1-craftRadiationProtection)+GetRTGRadiationDoseRate()*(1-craftRadiationProtection);
             this.Data.CumulativeRad += RadiationDoseRateRadPerHour * deltaHours;
             CurrentCumulativeRadiationStats = GetAcuteBand((float)this.Data.CumulativeRad);

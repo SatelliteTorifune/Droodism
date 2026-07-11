@@ -12508,6 +12508,11 @@
             dust disc is thrown. Using the craft mass keeps a light leading body from reading the crash as tiny.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Craft.BodyCollisionHandler.JointBreakGraceDuration">
+            <summary>
+            How long a docking joint stays unbreakable after creation, in seconds of physics time, so transient load forces can't snap it.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Craft.BodyCollisionHandler.MaxEjectaProjectiles">
             <summary>
             The most invisible ejecta projectiles a single impact spawns (each trails dust along its own arc).
@@ -12602,6 +12607,11 @@
         <member name="F:Assets.Scripts.Craft.BodyCollisionHandler._explosionParts">
             <summary>
             Reused buffer for the parts list passed to ExplosionManagerScript.CreateExplosion/>.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.BodyCollisionHandler._jointBreakGraces">
+            <summary>
+            Joints whose break thresholds are deferred until their grace period elapses.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Craft.BodyCollisionHandler._bodyScript">
@@ -12743,6 +12753,14 @@
             Allows manually handling a collision that was generated outside of the physics engine.
             </summary>
             <param name="collision">The collision.</param>
+        </member>
+        <member name="M:Assets.Scripts.Craft.BodyCollisionHandler.DeferJointBreak(UnityEngine.Joint,System.Single,System.Single)">
+            <summary>
+            Defers a joint's break thresholds until a grace period elapses, keeping it unbreakable meanwhile so transient load forces can't snap it.
+            </summary>
+            <param name="joint">The joint.</param>
+            <param name="breakForce">The break force to apply after the grace period, or zero to leave it unbreakable.</param>
+            <param name="breakTorque">The break torque to apply after the grace period, or zero to leave it unbreakable.</param>
         </member>
         <member name="M:Assets.Scripts.Craft.BodyCollisionHandler.DisconnectPart(ModApi.Craft.Parts.IPartScript)">
             <summary>
@@ -12936,6 +12954,11 @@
             True if the collision was handled.
             </returns>
         </member>
+        <member name="M:Assets.Scripts.Craft.BodyCollisionHandler.HandleJointBreakGraces">
+            <summary>
+            Advances the grace period of deferred joints and applies their break thresholds once it elapses.
+            </summary>
+        </member>
         <member name="M:Assets.Scripts.Craft.BodyCollisionHandler.OnPartDisconnectExplosion(Assets.Scripts.Craft.BodyCollisionHandler.DisconnectedPart)">
             <summary>
             Called when a part disconnect explosion occurs.
@@ -13005,6 +13028,39 @@
             <value>
             The part.
             </value>
+        </member>
+        <member name="T:Assets.Scripts.Craft.BodyCollisionHandler.JointBreakGrace">
+            <summary>
+            Tracks a joint whose break thresholds are deferred until its grace period elapses.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Craft.BodyCollisionHandler.JointBreakGrace.#ctor(UnityEngine.Joint,System.Single,System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Assets.Scripts.Craft.BodyCollisionHandler.JointBreakGrace"/> class.
+            </summary>
+            <param name="joint">The joint.</param>
+            <param name="breakForce">The break force to apply after the grace period.</param>
+            <param name="breakTorque">The break torque to apply after the grace period.</param>
+        </member>
+        <member name="P:Assets.Scripts.Craft.BodyCollisionHandler.JointBreakGrace.BreakForce">
+            <summary>
+            Gets the break force to apply once the grace period ends, or zero to leave it unbreakable.
+            </summary>
+        </member>
+        <member name="P:Assets.Scripts.Craft.BodyCollisionHandler.JointBreakGrace.BreakTorque">
+            <summary>
+            Gets the break torque to apply once the grace period ends, or zero to leave it unbreakable.
+            </summary>
+        </member>
+        <member name="P:Assets.Scripts.Craft.BodyCollisionHandler.JointBreakGrace.Elapsed">
+            <summary>
+            Gets or sets the physics time elapsed since the grace period started.
+            </summary>
+        </member>
+        <member name="P:Assets.Scripts.Craft.BodyCollisionHandler.JointBreakGrace.Joint">
+            <summary>
+            Gets the joint being protected.
+            </summary>
         </member>
         <member name="T:Assets.Scripts.Craft.BodyJoint">
             <summary>
@@ -14069,6 +14125,13 @@
             <param name="joint">The joint.</param>
             <param name="targetBodyLocalRotation">The target body local rotation.</param>
         </member>
+        <member name="M:Assets.Scripts.Craft.CraftBuilder.WeldBodies(Assets.Scripts.Craft.CraftScript,ModApi.Craft.Parts.PartConnection)">
+            <summary>
+            Welds the two bodies joined by the connection into a single rigid body, removing the joint at that seam. Flight only.
+            </summary>
+            <param name="craftScript">The craft script.</param>
+            <param name="weldedConnection">The docking connection whose two parts should be fused into one body.</param>
+        </member>
         <member name="M:Assets.Scripts.Craft.CraftBuilder.BuildCraft(System.Boolean,System.Boolean)">
             <summary>
             Builds the craft.
@@ -14190,6 +14253,13 @@
             The center of the attach point positions, in world coordinates.
             </returns>
         </member>
+        <member name="M:Assets.Scripts.Craft.CraftBuilder.GetWorldAngularMomentum(UnityEngine.Rigidbody)">
+            <summary>
+            Gets the body's angular momentum in world space from its current angular velocity and inertia tensor.
+            </summary>
+            <param name="body">The rigid body.</param>
+            <returns>The angular momentum in world space.</returns>
+        </member>
         <member name="M:Assets.Scripts.Craft.CraftBuilder.IsPartInRigidBody(ModApi.Craft.BodyData,ModApi.Craft.Parts.PartData)">
             <summary>
             Determines whether [is part in rigid body] [the specified rigid body group].
@@ -14204,6 +14274,14 @@
             </summary>
             <param name="craftScript">The craft script.</param>
             <param name="initialLaunch">if set to <c>true</c> then this is the craft's initial launch.</param>
+        </member>
+        <member name="M:Assets.Scripts.Craft.CraftBuilder.SolveAngularVelocity(UnityEngine.Rigidbody,UnityEngine.Vector3)">
+            <summary>
+            Solves for the angular velocity that produces the given world-space angular momentum through the body's inertia tensor.
+            </summary>
+            <param name="body">The rigid body.</param>
+            <param name="angularMomentum">The world-space angular momentum.</param>
+            <returns>The angular velocity in world space.</returns>
         </member>
         <member name="T:Assets.Scripts.Craft.CraftBuilder.CenterOfMassResult">
             <summary>
@@ -22293,6 +22371,14 @@
               <c>true</c> if this instance is undocking; otherwise, <c>false</c>.
             </value>
         </member>
+        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.DockingPortScript.IsWelded">
+            <summary>
+            Gets a value indicating whether this docking port has been welded, fusing it into a single rigid body.
+            </summary>
+            <value>
+              <c>true</c> if welded; otherwise, <c>false</c>.
+            </value>
+        </member>
         <member name="P:Assets.Scripts.Craft.Parts.Modifiers.DockingPortScript.OtherDockingPort">
             <summary>
             Gets the other docking port.
@@ -22367,6 +22453,11 @@
             Updates the scale.
             </summary>
             <param name="repositionAttachedParts">if set to <c>true</c> [reposition attached parts].</param>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.DockingPortScript.Weld">
+            <summary>
+            Welds this docking port, fusing the two docked bodies into a single rigid body with no joint at the seam.
+            </summary>
         </member>
         <member name="M:Assets.Scripts.Craft.Parts.Modifiers.DockingPortScript.OnInitialized">
             <summary>
@@ -24396,6 +24487,16 @@
             The crew anim controller
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Eva.EvaScript._originalAnimatorCullingMode">
+            <summary>
+            The animator culling mode before it was forced to always animate, valid only while cached.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Eva.EvaScript._animatorCullingModeCached">
+            <summary>
+            A value indicating whether <see cref="F:Assets.Scripts.Craft.Parts.Modifiers.Eva.EvaScript._originalAnimatorCullingMode"/> holds a cached value to restore.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Eva.EvaScript._crewCompartment">
             <summary>
             The crew compartment we're occupying, or <c>null</c> if we aren't in one.
@@ -25156,6 +25257,12 @@
             </summary>
             <param name="controller">The first person camera controller showing this crew member's point of view.</param>
         </member>
+        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Eva.EvaScript.SetAnimatorAlwaysAnimate(System.Boolean)">
+            <summary>
+            Forces this crew member's animator to always animate, or restores its original culling mode.
+            </summary>
+            <param name="alwaysAnimate">Whether to always animate; otherwise the original culling mode is restored.</param>
+        </member>
         <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Eva.EvaScript.OnInitialized">
             <summary>
             Called when the part modifier script is initialized.
@@ -25897,6 +26004,11 @@
             The time manager
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Eva.GrapplingHookScript._removingImmediately">
+            <summary>
+            Whether the hook is being removed via an explicit immediate disconnect rather than engine/scene teardown.
+            </summary>
+        </member>
         <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Eva.GrapplingHookScript.AutoDeleteToBody">
             <summary>
             Gets a value indicating whether to automaticly delete the "TO" rigid-body when disconnecting/destroying the grappling hook.  We'd want to do this if we automatically added a kinematic body to something (like the terrain).
@@ -26057,6 +26169,11 @@
         <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Eva.GrapplingHookScript.Awake">
             <summary>
             Awakes this instance.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Eva.GrapplingHookScript.RemoveImmediately">
+            <summary>
+            Removes the grappling hook, tearing down the joint and any auto-created body within the same frame.
             </summary>
         </member>
         <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Eva.GrapplingHookScript.GetBodyFromRay(UnityEngine.Ray,System.Single,System.Boolean@,UnityEngine.RaycastHit@,Assets.Scripts.Craft.Parts.PartScript@)">
@@ -44310,6 +44427,11 @@
             The part
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.ExhaustDamageScript._pushForceMultiplier">
+            <summary>
+            The multiplier for the force the exhaust applies to parts inside it.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.ExhaustDamageScript._reactionEngine">
             <summary>
             The reaction engine
@@ -45303,6 +45425,11 @@
             The compression ratio
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.JetEngineData._exhaustPushForceOverride">
+            <summary>
+            A multiplier for the force the exhaust applies to parts inside it.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.JetEngineData._hasAfterburner">
             <summary>
             The has afterburner flag.
@@ -45316,6 +45443,11 @@
         <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.JetEngineData._hasReverseThrust">
             <summary>
             The has reverse thrust flag.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.JetEngineData._heatTransferOverride">
+            <summary>
+            An override option for the amount of heat transferred by the exhaust.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.JetEngineData._mass">
@@ -45493,6 +45625,14 @@
             The core radius.
             </value>
         </member>
+        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.JetEngineData.ExhaustPushForceOverride">
+            <summary>
+            Gets the multiplier for the force the exhaust applies to parts inside it.
+            </summary>
+            <value>
+            The multiplier for the force the exhaust applies to parts inside it.
+            </value>
+        </member>
         <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.JetEngineData.FanArea">
             <summary>
             Gets the fan area.
@@ -45532,6 +45672,14 @@
             </summary>
             <value>
               <c>true</c> if this instance has reverse thrust; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.JetEngineData.HeatTransferOverride">
+            <summary>
+            Gets how much the heat transferred by the exhaust is scaled.
+            </summary>
+            <value>
+            The scale of the heat transferred.
             </value>
         </member>
         <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.JetEngineData.MassDry">
@@ -48037,6 +48185,11 @@
             An override to indicate how much direct damage the exhaust does to parts entering it.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.RocketEngineData._exhaustPushForceOverride">
+            <summary>
+            A multiplier for the force the exhaust applies to parts inside it.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.RocketEngineData._overexpansionDamage">
             <summary>
             A multiplier to adjust the damage caused by the overexpansion.
@@ -48455,6 +48608,14 @@
             </summary>
             <value>
             How much direct damage the exhaust does to parts entering it.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.RocketEngineData.ExhaustPushForceOverride">
+            <summary>
+            Gets the multiplier for the force the exhaust applies to parts inside it.
+            </summary>
+            <value>
+            The multiplier for the force the exhaust applies to parts inside it.
             </value>
         </member>
         <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.RocketEngineData.OverexpansionDamage">
@@ -63387,11 +63548,12 @@
             </summary>
             <param name="parseResult">The parse result.</param>
         </member>
-        <member name="M:Assets.Scripts.Design.DesignerUiController.OnToolIconChanged(UnityEngine.Sprite)">
+        <member name="M:Assets.Scripts.Design.DesignerUiController.OnToolIconChanged(UnityEngine.Sprite,UnityEngine.Color)">
             <summary>
             Called when the tool icon has changed.
             </summary>
             <param name="icon">The icon.</param>
+            <param name="color">The color of the tool's icon, inherited so the sprite keeps its intended tint.</param>
         </member>
         <member name="M:Assets.Scripts.Design.DesignerUiController.ShowMessage(System.String,System.Single)">
             <summary>
@@ -74197,6 +74359,14 @@
             Hides the parts that were created symmetrically from this list of parts.
             </summary>
             <param name="partScripts">The parts.</param>
+        </member>
+        <member name="M:Assets.Scripts.Design.Tools.MovePartToolHelper.IsFusedToPart(ModApi.Craft.Parts.PartData,ModApi.Craft.Parts.PartData)">
+            <summary>
+            Determines whether the source part is already fused to the target part.
+            </summary>
+            <param name="sourcePart">The part seeking a connection.</param>
+            <param name="targetPart">The part being connected to.</param>
+            <returns>True if the parts are already fused together.</returns>
         </member>
         <member name="M:Assets.Scripts.Design.Tools.MovePartToolHelper.AutoRotateFuselage(ModApi.Craft.Parts.AttachPointScript,ModApi.Craft.Parts.AttachPointScript,UnityEngine.Vector3)">
             <summary>
@@ -85185,6 +85355,131 @@
             <param name="sequence">The sequence.</param>
             <returns>uint character array</returns>
         </member>
+        <member name="T:Assets.Scripts.Ui.FpsCounter.FpsMonitor">
+            <summary>
+            Headless frame-rate sampler shared by the on-screen overlay and the benchmark.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Ui.FpsCounter.FpsMonitor.WindowSize">
+            <summary>
+            Number of recent frames retained for short-window statistics (average / 1% low).
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Ui.FpsCounter.FpsMonitor.WarmupFrames">
+            <summary>
+            Frames ignored after a reset so load-time hitches do not skew min/max.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Ui.FpsCounter.FpsMonitor.SmoothingFactor">
+            <summary>
+            Smoothing factor applied to the headline frame time so the number stays readable.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Ui.FpsCounter.FpsMonitor._frameMs">
+            <summary>
+            Circular buffer of recent frame times, in milliseconds.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Ui.FpsCounter.FpsMonitor._sortScratch">
+            <summary>
+            Scratch buffer used to compute the 1% low without allocating each query.
+            </summary>
+        </member>
+        <member name="P:Assets.Scripts.Ui.FpsCounter.FpsMonitor.CurrentFps">
+            <summary>
+            Gets the smoothed instantaneous frame rate, in frames per second.
+            </summary>
+        </member>
+        <member name="P:Assets.Scripts.Ui.FpsCounter.FpsMonitor.CurrentFrameMs">
+            <summary>
+            Gets the smoothed instantaneous frame time, in milliseconds.
+            </summary>
+        </member>
+        <member name="P:Assets.Scripts.Ui.FpsCounter.FpsMonitor.AverageFps">
+            <summary>
+            Gets the average frame rate since the last reset (total frames over total time), in frames per second.
+            </summary>
+        </member>
+        <member name="P:Assets.Scripts.Ui.FpsCounter.FpsMonitor.MinFps">
+            <summary>
+            Gets the lowest frame rate observed since the last reset, in frames per second.
+            </summary>
+        </member>
+        <member name="P:Assets.Scripts.Ui.FpsCounter.FpsMonitor.MaxFps">
+            <summary>
+            Gets the highest frame rate observed since the last reset, in frames per second.
+            </summary>
+        </member>
+        <member name="P:Assets.Scripts.Ui.FpsCounter.FpsMonitor.OnePercentLowFps">
+            <summary>
+            Gets the mean frame rate of the worst 1% of recent frames, in frames per second.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Ui.FpsCounter.FpsMonitor.AddToScene">
+            <summary>
+            Creates a detached monitor that persists so it can sample across scene loads.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Ui.FpsCounter.FpsMonitor.Reset">
+            <summary>
+            Clears all accumulated statistics and restarts the warm-up skip.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Ui.FpsCounter.FpsMonitor.CalculateLow(System.Single)">
+            <summary>
+            Averages the frame rate of the slowest <paramref name="fraction"/> of the window.
+            </summary>
+        </member>
+        <member name="T:Assets.Scripts.Ui.FpsCounter.FpsOverlayScript">
+            <summary>
+            On-screen performance overlay, styled from Ui/Xml/FpsOverlay.xml and localized via ModApi.Locale.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Ui.FpsCounter.FpsOverlayScript.CanvasSortingOrder">
+            <summary>
+            Sorting order that keeps the overlay above the rest of the interface.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Ui.FpsCounter.FpsOverlayScript.RefreshInterval">
+            <summary>
+            Seconds between text refreshes; sampling still happens every frame in FpsMonitor.
+            </summary>
+        </member>
+        <member name="P:Assets.Scripts.Ui.FpsCounter.FpsOverlayScript.Expanded">
+            <summary>
+            Gets a value indicating whether the expanded diagnostics section is shown.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Ui.FpsCounter.FpsOverlayScript.SetExpanded(System.Boolean)">
+            <summary>
+            Shows or hides the expanded diagnostics section (memory, craft/body counts, device info).
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Ui.FpsCounter.FpsOverlayScript.GetTargetFps">
+            <summary>
+            Resolves the target frame rate from the frame-rate cap, falling back to the display refresh rate.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Ui.FpsCounter.FpsOverlayScript.ColorForRatio(System.Single)">
+            <summary>
+            Primary above 90% of target, white down to 50%, red below.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Ui.FpsCounter.FpsOverlayScript.ComputeDeviceInfo">
+            <summary>
+            Caches the static device information; the values are written to the panel while it is visible.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Ui.FpsCounter.FpsOverlayScript.RefreshDeviceInfo">
+            <summary>
+            Writes the cached device information into the panel; done here so it survives the panel becoming visible.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Ui.FpsCounter.FpsOverlayScript.RefreshFlightStats">
+            <summary>
+            Populates the loaded-craft and physics-body counts, which only apply in the flight scene.
+            </summary>
+        </member>
         <member name="T:Assets.Scripts.Ui.GradientEditor.ColourInputGroup">
             <summary>
             Script to control a paired colour input and hex colour field.
@@ -95701,6 +95996,11 @@
         <member name="F:Assets.Scripts.Ui.UserInterface._fpsDisplay">
             <summary>
             The FPS display.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Ui.UserInterface._fpsOverlay">
+            <summary>
+            The FPS overlay component on the FPS display.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Ui.UserInterface._inspectorController">
@@ -112467,6 +112767,19 @@
             </summary>
             <param name="worldPosition">The world position.</param>
             <returns>The absolute (non-floated) position of the supplied world position.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Flight.MapView.MapViewScript.GetCelestialBodies">
+            <summary>
+            Gets the celestial bodies (planets and moons) currently present in this map view.
+            </summary>
+            <returns>The celestial bodies currently present in this map view.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Flight.MapView.MapViewScript.GetCelestialBodyTransform(ModApi.Flight.Sim.IPlanetNode)">
+            <summary>
+            Gets the map view game object transform for the specified celestial body, or <c>null</c> if it is not present.
+            </summary>
+            <param name="planetNode">The celestial body to get the map view transform for.</param>
+            <returns>The map view transform for the celestial body, or <c>null</c> if it is not present.</returns>
         </member>
         <member name="M:Assets.Scripts.Flight.MapView.MapViewScript.Initialize(Assets.Scripts.Flight.MapView.MapViewManagerScript,ModApi.Ioc.IIocContainer,System.Double,System.Double,Assets.Scripts.Flight.Sim.PlanetNode,ModApi.State.MapView.MapViewData)">
             <summary>
@@ -149179,6 +149492,11 @@
             Sort order for the elevated inspector canvas. Above MapView UI (0) and the InputCatcher.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Menu.MapView.MenuMapViewScript.CubemapReloadAttempted">
+            <summary>
+            Planetary systems already reloaded for cubemap baking, so a failed bake can't loop reloads.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Menu.MapView.MenuMapViewScript._restoreActions">
             <summary>
             Scene mutations stacked in setup order; invoked in reverse on <see cref="M:Assets.Scripts.Menu.MapView.MenuMapViewScript.OnDestroy"/>.
@@ -149290,6 +149608,13 @@
             <summary>
             Called when the MonoBehaviour is destroyed. Reverses every scene change made in <see cref="M:Assets.Scripts.Menu.MapView.MenuMapViewScript.Start"/>.
             </summary>
+        </member>
+        <member name="M:Assets.Scripts.Menu.MapView.MenuMapViewScript.TryReloadToBakeCubemaps(System.Guid)">
+            <summary>
+            Reloads the menu so the scene-transition loading screen bakes missing planet cubemaps.
+            </summary>
+            <param name="planetarySystemId">The id of the current save's planetary system.</param>
+            <returns><c>true</c> if a reload was triggered and setup should abort.</returns>
         </member>
         <member name="M:Assets.Scripts.Menu.MapView.MenuMapViewScript.PersistMapViewState">
             <summary>
@@ -149545,6 +149870,11 @@
             <value>
             The camera.
             </value>
+        </member>
+        <member name="P:Assets.Scripts.Menu.MenuPlanetScript.CloudOpacity">
+            <summary>
+            Gets or sets the cloud opacity multiplier used to fade the fake clouds in and out.
+            </summary>
         </member>
         <member name="P:Assets.Scripts.Menu.MenuPlanetScript.Eclipse">
             <summary>
@@ -150807,6 +151137,16 @@
             A reference to the mod manager instance using its concrete type.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Mods.ModManagerScript._modLanguagesChanged">
+            <summary>
+            Whether any mod installed or updated language files this load, so localization is refreshed once afterward.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Mods.ModManagerScript._initialModLoadComplete">
+            <summary>
+            Whether the initial enabled-mods load has finished, after which a mod loaded at runtime refreshes localization immediately.
+            </summary>
+        </member>
         <member name="P:Assets.Scripts.Mods.ModManagerScript.HasModSupport">
             <summary>
             Gets a value indicating whether this version of the game has mod support.
@@ -150839,6 +151179,11 @@
         <member name="M:Assets.Scripts.Mods.ModManagerScript.Awake">
             <summary>
             Awake is called when the script instance is being loaded.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Mods.ModManagerScript.ReloadModLocalization">
+            <summary>
+            Refreshes localization after mod language files have been installed, logging any failure.
             </summary>
         </member>
         <member name="M:Assets.Scripts.Mods.ModManagerScript.CopyModFileToModDirectory(System.String)">
@@ -150907,6 +151252,13 @@
             </summary>
             <param name="mod">The mod from which to load the UI resource databases.</param>
             <param name="manifestData">The manifest data containing info on the UI resource databases to be loaded.</param>
+        </member>
+        <member name="M:Assets.Scripts.Mods.ModManagerScript.LoadModLanguages(Jundroo.ModTools.ILoadedMod)">
+            <summary>
+            Installs a mod's bundled <c>Languages/&lt;LANG&gt;.xml</c> files into the user's Languages folder, flushing the mod's previous files first.
+            </summary>
+            <param name="mod">The mod from which to install language files.</param>
+            <returns><c>true</c> if the mod's installed language files changed.</returns>
         </member>
         <member name="M:Assets.Scripts.Mods.ModManagerScript.ModApiVersionMismatch(System.Object,Jundroo.ModTools.Core.Events.ApiVersionMismatchEventArgs)">
             <summary>
@@ -167166,6 +167518,14 @@
             <param name="milestone">The milestone.</param>
             <param name="tier">The tier.</param>
         </member>
+        <member name="M:Assets.Scripts.State.CareerState.SyncNewLaunchLocations(Assets.Scripts.State.GameState,System.String)">
+            <summary>
+            Adds launch locations added to the career's file after this game state was created.
+            </summary>
+            <param name="gameState">The game state.</param>
+            <param name="rootPath">The root path.</param>
+            <returns>The names of the newly added launch locations.</returns>
+        </member>
         <member name="M:Assets.Scripts.State.CareerState.UnlockLocation(System.String)">
             <summary>
             Unlocks the location.
@@ -183063,6 +183423,11 @@
         <member name="F:Assets.Scripts.Vizzy.UI.VizzyUIController._selectedCategoryButton">
             <summary>
             The selected category button
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Vizzy.UI.VizzyUIController._currentToolboxCategoryId">
+            <summary>
+            The id of the toolbox category currently shown; used to keep the scroll position across a same-category refresh.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Vizzy.UI.VizzyUIController._templateCategoryButton">

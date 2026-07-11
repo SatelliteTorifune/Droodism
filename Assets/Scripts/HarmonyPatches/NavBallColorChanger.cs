@@ -3,7 +3,7 @@ using HarmonyLib;
 using ModApi.Flight.UI;
 using UnityEngine;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.HarmonyPatches
 {
     //开个新坑,改改navball颜色
     [HarmonyPatch]

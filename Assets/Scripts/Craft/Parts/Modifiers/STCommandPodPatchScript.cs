@@ -1,6 +1,6 @@
 using System.Windows.Forms;
 using ModApi.GameLoop;
-using Droodism.RadiationBelt;
+using Assets.Scripts.Droodism.RadiationBelt;
 using ModApi.Flight.Sim;
 
 namespace Assets.Scripts.Craft.Parts.Modifiers

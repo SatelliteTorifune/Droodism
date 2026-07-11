@@ -34,11 +34,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public override void FlightStart(in FlightFrameData frame)
         {
-            _generatorScript = GetComponent<GeneratorScript>();
+            _generatorScript = PartScript.GetModifier<GeneratorScript>();
             var fuelTypeId = _generatorScript.Data.FuelType.Id;
             IsHydroloxFunctional = fuelTypeId == "LOX/LH2";
-            FossilFuelTypeIndex =
-                fuelTypeId == "LOX/RP1" ? 1 : fuelTypeId == "LOX/CH4" ? 2 : fuelTypeId == "Jet" ? 3 : 0;
+            FossilFuelTypeIndex = fuelTypeId == "LOX/RP1" ? 1 : fuelTypeId == "LOX/CH4" ? 2 : fuelTypeId == "Jet" ? 3 : 0;
             UpdateFuelSources();
         }
 

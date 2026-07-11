@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XmlLayout xmlns="http://www.w3schools.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\XmlLayout.xsd">
+  <Include path="Ui/Xml/Styles.xml" />
+  <Defaults>
+    <TextMeshPro fontSize="12" alignment="Left" raycastTarget="false" enableWordWrapping="false" flexibleWidth="0" />
+  </Defaults>
+  <VerticalLayout id="root" color="rgba(0,0,0,0.5)" raycastTarget="false" rectAlignment="UpperLeft" pivot="0 1" offsetXY="0 0" padding="6 6 4 4" spacing="1" childForceExpandHeight="false" childForceExpandWidth="false" contentSizeFitter="both" childAlignment="UpperLeft">
+    <HorizontalLayout class="no-image" childForceExpandWidth="false" spacing="4" childAlignment="MiddleLeft" minHeight="22">
+      <TextMeshPro class="label" text="{Ui.FpsCounter.Fps}" preferredWidth="34" />
+      <TextMeshPro id="fps-value" class="value" fontSize="18" fontStyle="Bold" preferredWidth="46" />
+      <TextMeshPro id="fps-ms" class="value" alignment="Right" preferredWidth="50" />
+      <TextMeshPro class="label" text="{Ui.FpsCounter.Ms}" preferredWidth="26" />
+    </HorizontalLayout>
+    <VerticalLayout id="expanded-group" class="no-image" active="false" childForceExpandHeight="false" childForceExpandWidth="false" contentSizeFitter="both" spacing="1" childAlignment="UpperLeft">
+      <HorizontalLayout class="no-image" childForceExpandWidth="false" spacing="4" minHeight="16">
+        <TextMeshPro class="label" text="{Ui.FpsCounter.Min}" preferredWidth="56" />
+        <TextMeshPro id="min-value" class="value" preferredWidth="44" />
+        <TextMeshPro class="label" text="{Ui.FpsCounter.Max}" preferredWidth="52" />
+        <TextMeshPro id="max-value" class="value" preferredWidth="44" />
+      </HorizontalLayout>
+      <HorizontalLayout class="no-image" childForceExpandWidth="false" spacing="4" minHeight="16">
+        <TextMeshPro class="label" text="{Ui.FpsCounter.Low}" preferredWidth="56" />
+        <TextMeshPro id="low-value" class="value" preferredWidth="44" />
+        <TextMeshPro class="label" text="{Ui.FpsCounter.Avg}" preferredWidth="52" />
+        <TextMeshPro id="avg-value" class="value" preferredWidth="44" />
+      </HorizontalLayout>
+      <HorizontalLayout id="crafts-bodies-row" class="no-image" childForceExpandWidth="false" spacing="4" minHeight="16">
+        <TextMeshPro class="label" text="{Ui.FpsCounter.Crafts}" preferredWidth="56" />
+        <TextMeshPro id="crafts-value" class="value" preferredWidth="44" />
+        <TextMeshPro class="label" text="{Ui.FpsCounter.Bodies}" preferredWidth="52" />
+        <TextMeshPro id="bodies-value" class="value" preferredWidth="44" />
+      </HorizontalLayout>
+      <HorizontalLayout class="no-image" childForceExpandWidth="false" spacing="4" minHeight="16">
+        <TextMeshPro class="label" text="{Ui.FpsCounter.MemTotal}" preferredWidth="84" />
+        <TextMeshPro id="mem-total-value" class="value" />
+      </HorizontalLayout>
+      <HorizontalLayout class="no-image" childForceExpandWidth="false" spacing="4" minHeight="16">
+        <TextMeshPro class="label" text="{Ui.FpsCounter.MemAllocated}" preferredWidth="84" />
+        <TextMeshPro id="mem-alloc-value" class="value" />
+      </HorizontalLayout>
+      <HorizontalLayout class="no-image" childForceExpandWidth="false" spacing="4" minHeight="16">
+        <TextMeshPro class="label" text="{Ui.FpsCounter.MemMono}" preferredWidth="84" />
+        <TextMeshPro id="mem-mono-value" class="value" />
+      </HorizontalLayout>
+      <HorizontalLayout class="no-image" childForceExpandWidth="false" spacing="4" minHeight="16">
+        <TextMeshPro class="label" text="{Ui.FpsCounter.Os}" preferredWidth="44" />
+        <TextMeshPro id="os-value" class="value" />
+      </HorizontalLayout>
+      <HorizontalLayout class="no-image" childForceExpandWidth="false" spacing="4" minHeight="16">
+        <TextMeshPro class="label" text="{Ui.FpsCounter.Cpu}" preferredWidth="44" />
+        <TextMeshPro id="cpu-value" class="value" />
+      </HorizontalLayout>
+      <HorizontalLayout class="no-image" childForceExpandWidth="false" spacing="4" minHeight="16">
+        <TextMeshPro class="label" text="{Ui.FpsCounter.Gpu}" preferredWidth="44" />
+        <TextMeshPro id="gpu-value" class="value" />
+      </HorizontalLayout>
+      <HorizontalLayout class="no-image" childForceExpandWidth="false" spacing="4" minHeight="16">
+        <TextMeshPro class="label" text="{Ui.FpsCounter.Ram}" preferredWidth="44" />
+        <TextMeshPro id="ram-value" class="value" />
+      </HorizontalLayout>
+      <HorizontalLayout class="no-image" childForceExpandWidth="false" spacing="4" minHeight="16">
+        <TextMeshPro class="label" text="{Ui.FpsCounter.Screen}" preferredWidth="44" />
+        <TextMeshPro id="screen-value" class="value" />
+      </HorizontalLayout>
+      <HorizontalLayout class="no-image" childForceExpandWidth="false" spacing="4" minHeight="16">
+        <TextMeshPro class="label" text="{Ui.FpsCounter.Model}" preferredWidth="44" />
+        <TextMeshPro id="model-value" class="value" />
+      </HorizontalLayout>
+    </VerticalLayout>
+  </VerticalLayout>
+</XmlLayout>

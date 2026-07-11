@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
 
-namespace Droodism.RadiationBelt
+namespace Assets.Scripts.Droodism.RadiationBelt
 {
     public sealed class ParticleMesh
     {

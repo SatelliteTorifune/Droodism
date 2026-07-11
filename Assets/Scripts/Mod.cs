@@ -14,13 +14,16 @@ using ModApi.State;
 using static ModApi.Common.Game;
 using static ModApi.Craft.Parts.PartData;
 using Assembly = System.Reflection.Assembly;
-using Droodism.RadiationBelt;
+using Assets.Scripts.Droodism.RadiationBelt;
 using ModApi.Ui.Inspector;
 using System.Xml.Serialization;
 using Assets.Scripts.Craft.Fuel;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
+using Assets.Scripts.Droodism.BackGround;
 using Assets.Scripts.Droodism.Crew;
 using Assets.Scripts.Droodism.ResourceWarning;
+using Assets.Scripts.HarmonyPatches;
+using Assets.Scripts.Menu.MapView;
 using ModApi.Craft.Parts;
 using UnityEngine.UI;
 
@@ -61,9 +64,7 @@ namespace Assets.Scripts
        
         protected override void OnModInitialized()
         {
-            
-            CheckLocalizationFiles("ZH-CN");
-            CheckLocalizationFiles("EN-US");
+          
             base.OnModInitialized();
             try
             {
@@ -71,11 +72,11 @@ namespace Assets.Scripts
                 CrewManagerSyncPatches.Apply(harmony);
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
             }
-            catch (Exception)
+            catch (Exception exception)
             {
                 string s = $"Mod {Mod.ModInfo.Name} failed to Initialize. Verify all depencencies installed and enabled.<br><color=red><size=200%>你他妈加Juno Harmony了吗?";
                 Game.Instance.UserInterface.CreateMessageDialog(s);
-                throw new FileNotFoundException(s);
+                Debug.LogErrorFormat($"Exception occurred while initializing Droodism: {{0}}", exception);
             }
             Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
             Game.Instance.SceneManager.SceneTransitionCompleted+=OnSceneTransitionCompleted;
@@ -90,12 +91,14 @@ namespace Assets.Scripts
         {
           
            
-            GameObject DroodismGO=new GameObject("DroodismUI");
+            GameObject DroodismGO=new GameObject("DroodismGameObject");
             DroodismGO.AddComponent<DroodismUIManager>();
             DroodismGO.AddComponent<RadiationBeltManager>();
+            DroodismGO.AddComponent<MenuMapRadiationBeltManager>();
             DroodismGO.AddComponent<RadiationBeltDebugUI>();
             DroodismGO.AddComponent<DroodismCrewDataManager>();
             DroodismGO.AddComponent<ResourceWarningScript>();
+            //DroodismGO.AddComponent<BackGroundCalulator>();
             GameObject.DontDestroyOnLoad(DroodismGO);
             DroodismGO.SetActive(true);
             Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.MapView, OnBuildMapViewInspectorPanel);
@@ -158,16 +161,22 @@ namespace Assets.Scripts
             DevConsoleApi.RegisterCommand("ManualRefreshInstance",ManualRefreshInstance);
             DevConsoleApi.RegisterCommand("RadiationBeltDebugUI", () =>
             {
-                if (!Game.InFlightScene)
+                if (Game.InFlightScene)
                 {
-                    return;   
+                    if (!Game.Instance.FlightScene.ViewManager.MapViewManager.MapView.Visible)
+                        return;
                 }
-                if (!Game.Instance.FlightScene.ViewManager.MapViewManager.MapView.Visible)
+                else if (!Game.InMenuScene)
                 {
-                    return;   
+                    return;
                 }
+                if (Game.InMenuScene && MenuMapViewScript.Instance == null)
+                    return;
+
                 RadiationBeltDebugUI.Instance.OnToggleInspectorPanelState();
             });
+
+
             
             DevConsoleApi.RegisterCommand("RebuildFuelSource",()=>
             {
