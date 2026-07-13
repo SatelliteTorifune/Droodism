@@ -1,3 +1,6 @@
+## 2026 7 13
+> 修复了PartAddingManager中不给cockpit添加STCommandPodPatch的bug
+
 ## 2026 7 11
 > 为menuMapView添加了辐射带支持
 > 
