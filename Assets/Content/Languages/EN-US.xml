@@ -350,4 +350,18 @@
     <s id="Droodism.RTGPowerFallScript.CurrentPower">Current Power</s>
     <s id="Droodism.RTGPowerFallScript.PowerRemaining">Power Remaining</s>
     <s id="Droodism.RTGPowerFallScript.PreviewYears">Preview Years</s>
+    
+    <!-- Propulsion Fuels -->
+    <s id="Fuel.Food.Name">Food</s>
+    <s id="Fuel.Food.Description">The heavy compressed food Drood eat</s>
+    <s id="Fuel.Oxygen.Name">Gas Oxygen</s>
+    <s id="Fuel.Oxygen.Description">Low pressure oxygen Drood could breathe directly</s>
+    <s id="Fuel.LPCO2.Name">Gas Carbon Dioxide</s>
+    <s id="Fuel.LPCO2.Description">low pressure Carbon Dioxide Drood generated</s>
+    <s id="Fuel.Wasted Water.Name">Wasted Water</s>
+    <s id="Fuel.Wasted Water.Description">Wasted Water Drood Generated</s>
+    <s id="Fuel.Solid Waste.Name">Solid Waste</s>
+    <s id="Fuel.Solid Waste.Description">Solid Waste Drood Generated,or you can call it sh1t</s>
+    <s id="Fuel.LPN2.Name">Gas Nitrogen</s>
+    <s id="Fuel.LPN2.Description">Nitrogen, scooped from the atmosphere of any world that has one. Nothing burns it directly, but combine it with hydrogen in a converter and you can synthesize hydrazine, a potent storable propellant.</s>
 </Strings>

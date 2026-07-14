@@ -346,6 +346,17 @@
     <s id="Droodism.RTGPowerFallScript.PowerRemaining">剩余功率</s>
     <s id="Droodism.RTGPowerFallScript.PreviewYears">预览年数</s>
     
+    <!-- Propulsion Fuels -->
+    <s id="Fuel.Oxygen.Name">气态氧气</s>
+    <s id="Fuel.Oxygen.Description">Drood可直接呼吸的低压氧气</s>
     <s id="Fuel.Food.Name">食物</s>
     <s id="Fuel.Food.Description">Drood食用的高密度压缩食物</s>
+    <s id="Fuel.LPCO2.Name">气态二氧化碳</s>
+    <s id="Fuel.LPCO2.Description">Drood呼吸产生的低压二氧化碳</s>
+    <s id="Fuel.Wasted Water.Name">废水</s>
+    <s id="Fuel.Wasted Water.Description">Drood产生的废水</s>
+    <s id="Fuel.Solid Waste.Name">固体废物</s>
+    <s id="Fuel.Solid Waste.Description">Drood产生的固体废物,或者你可以称之为屎</s>
+    <s id="Fuel.LPN2.Name">气态氮气</s>
+    <s id="Fuel.LPN2.Description">纯纯的低压氮气</s>
 </Strings>
