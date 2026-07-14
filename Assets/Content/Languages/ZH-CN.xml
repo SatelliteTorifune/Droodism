@@ -345,4 +345,6 @@
     <s id="Droodism.RTGPowerFallScript.CurrentPower">当前功率</s>
     <s id="Droodism.RTGPowerFallScript.PowerRemaining">剩余功率</s>
     <s id="Droodism.RTGPowerFallScript.PreviewYears">预览年数</s>
+    
+    <s id="FuelType.Food.Name">食物</s>
 </Strings>
