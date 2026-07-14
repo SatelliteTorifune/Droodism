@@ -351,6 +351,7 @@
     <s id="Fuel.Oxygen.Description">Drood可直接呼吸的低压氧气</s>
     <s id="Fuel.Food.Name">食物</s>
     <s id="Fuel.Food.Description">Drood食用的高密度压缩食物</s>
+    <s id="Fuel.H2O.Name">水</s>
     <s id="Fuel.LPCO2.Name">气态二氧化碳</s>
     <s id="Fuel.LPCO2.Description">Drood呼吸产生的低压二氧化碳</s>
     <s id="Fuel.Wasted Water.Name">废水</s>

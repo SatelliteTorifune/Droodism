@@ -509,7 +509,7 @@ namespace Assets.Scripts.Droodism.UserInterface
                 CraftFuelSourceInspectorModel.Add(new TextModel("", () => ""));
                 // 添加燃料名称和数据（燃料量、消耗率、剩余时间）
                 CraftFuelSourceInspectorModel.Add(new TextModel(
-                    ModApi.Common.Game.Instance.PropulsionData.GetFuelType(fuelTypeId).Name,
+                    Locale.GetString($"Fuel.{fuelTypeId}.Name"),
                     () => FuelUIDataMap.ContainsKey(fuelTypeId)
                         ? $"{FuelUIDataMap[fuelTypeId].TimeLeft}"
                         : Locale.GetString("Droodism.DroodismUIManager.Empty")));

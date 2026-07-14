@@ -354,6 +354,7 @@
     <!-- Propulsion Fuels -->
     <s id="Fuel.Food.Name">Food</s>
     <s id="Fuel.Food.Description">The heavy compressed food Drood eat</s>
+    <s id="Fuel.H2O.Name">Water</s>
     <s id="Fuel.Oxygen.Name">Gas Oxygen</s>
     <s id="Fuel.Oxygen.Description">Low pressure oxygen Drood could breathe directly</s>
     <s id="Fuel.LPCO2.Name">Gas Carbon Dioxide</s>
