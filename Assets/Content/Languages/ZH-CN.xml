@@ -346,5 +346,6 @@
     <s id="Droodism.RTGPowerFallScript.PowerRemaining">剩余功率</s>
     <s id="Droodism.RTGPowerFallScript.PreviewYears">预览年数</s>
     
-    <s id="FuelType.Food.Name">食物</s>
+    <s id="Fuel.Food.Name">食物</s>
+    <s id="Fuel.Food.Description">Drood食用的高密度压缩食物</s>
 </Strings>

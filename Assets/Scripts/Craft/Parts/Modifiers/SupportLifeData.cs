@@ -290,7 +290,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 case "Oxygen": return DesireOxygenCapacity;
                 case "Food": return DesireFoodCapacity;
                 case "H2O": return DesireWaterCapacity;
-                case "CO2": return DesireCO2Capacity;
+                case "LPCO2": return DesireCO2Capacity;
                 case "Wasted Water": return DesireWastedWaterCapacity;
                 case "Solid Waste": return DesireSolidWasteCapacity;
                 default: return 0.0;
@@ -304,7 +304,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 case "Oxygen": return _oxygenAmountBuffer;
                 case "Food": return _foodAmountBuffer;
                 case "H2O": return _waterAmountBuffer;
-                case "CO2": return _co2AmountBuffer;
+                case "LPCO2": return _co2AmountBuffer;
                 case "Wasted Water": return _wastedWaterAmountBuffer;
                 case "Solid Waste": return _solidWasteAmountBuffer;
                 default: return 0.0;
@@ -322,7 +322,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 case "Oxygen": _oxygenAmountBuffer = value; break;
                 case "Food": _foodAmountBuffer = value; break;
                 case "H2O": _waterAmountBuffer = value; break;
-                case "CO2": _co2AmountBuffer = value; break;
+                case "LPCO2": _co2AmountBuffer = value; break;
                 case "Wasted Water": _wastedWaterAmountBuffer = value; break;
                 case "Solid Waste": _solidWasteAmountBuffer = value; break;
             }

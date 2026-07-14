@@ -604,7 +604,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 if (oxygenConsumed)
                 {
                     double co2Amount = oxygenConsumeAmount * 1.375 * Data.evaConsumeEfficiency;
-                    ProduceWasteResource(Co2Source, ref Data._co2AmountBuffer,Data.DesireCO2Capacity, co2Amount, frame, Data.OxygenDamageScale,"CO2");
+                    ProduceWasteResource(Co2Source, ref Data._co2AmountBuffer,Data.DesireCO2Capacity, co2Amount, frame, Data.OxygenDamageScale,"LPCO2");
                 }
             }
 
@@ -1690,7 +1690,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
             try
             {
-                string[] fuelTypesToRemove = { "Oxygen", "Food", "H2O","CO2","Wasted Water","Solid Waste" };
+                string[] fuelTypesToRemove = { "Oxygen", "Food", "H2O","LPCO2","Wasted Water","Solid Waste" };
                 var tanksToRemove = partElement.Elements("FuelTank")
                     .Where(fuelTank => fuelTypesToRemove.Contains(fuelTank.Attribute("fuelType")?.Value))
                     .ToList();

@@ -44,7 +44,7 @@ namespace Assets.Scripts.Droodism.UserInterface
             { "Oxygen", (0, 0) },
             { "H2O", (0, 0) },
             { "Food", (0, 0) },
-            { "CO2", (0, 0) },
+            { "LPCO2", (0, 0) },
             { "Wasted Water", (0, 0) },
             { "Solid Waste", (0, 0) }
         };
@@ -67,7 +67,7 @@ namespace Assets.Scripts.Droodism.UserInterface
         private const float HighFpsThreshold = 1f / 60f;
 
         private List<string> fuelTypeIDList = new List<string>
-            { "Oxygen", "H2O", "Food", "CO2", "Wasted Water", "Solid Waste" };
+            { "Oxygen", "H2O", "Food", "LPCO2", "Wasted Water", "Solid Waste" };
 
         private struct FuelUIData
         {
@@ -82,7 +82,7 @@ namespace Assets.Scripts.Droodism.UserInterface
             { "Oxygen", new FuelUIData() },
             { "H2O", new FuelUIData() },
             { "Food", new FuelUIData() },
-            { "CO2", new FuelUIData() },
+            { "LPCO2", new FuelUIData() },
             { "Wasted Water", new FuelUIData() },
             { "Solid Waste", new FuelUIData() }
         };
@@ -156,7 +156,7 @@ namespace Assets.Scripts.Droodism.UserInterface
             }
 
             double fuelPercentage = (currentFuel / totalCapacity);
-            bool isWasted = (fuelTypeId.Contains("Waste") || fuelTypeId.Contains("CO2"));
+            bool isWasted = (fuelTypeId.Contains("Waste") || fuelTypeId.Contains("LPCO2"));
             string FuelAmountPercentagestr = Mod.Instance.FormatFuel(fuelSource.TotalFuel * fuelDensity, _massTypes) +
                                              "/" + Mod.Instance.FormatFuel(totalCapacity * fuelDensity,
                                                  _massTypes);
@@ -579,7 +579,7 @@ namespace Assets.Scripts.Droodism.UserInterface
                 SetFuelTransferMode(FuelTransferMode.Fill, "Oxygen");
                 SetFuelTransferMode(FuelTransferMode.Fill, "H2O");
                 SetFuelTransferMode(FuelTransferMode.Fill, "Food");
-                SetFuelTransferMode(FuelTransferMode.Drain, "CO2");
+                SetFuelTransferMode(FuelTransferMode.Drain, "LPCO2");
                 SetFuelTransferMode(FuelTransferMode.Drain, "Wasted Water");
                 SetFuelTransferMode(FuelTransferMode.Drain, "Solid Waste");
             }
@@ -589,7 +589,7 @@ namespace Assets.Scripts.Droodism.UserInterface
                 SetFuelTransferMode(FuelTransferMode.Drain, "Oxygen");
                 SetFuelTransferMode(FuelTransferMode.Drain, "H2O");
                 SetFuelTransferMode(FuelTransferMode.Drain, "Food");
-                SetFuelTransferMode(FuelTransferMode.Fill, "CO2");
+                SetFuelTransferMode(FuelTransferMode.Fill, "LPCO2");
                 SetFuelTransferMode(FuelTransferMode.Fill, "Wasted Water");
                 SetFuelTransferMode(FuelTransferMode.Fill, "Solid Waste");
             }
@@ -599,7 +599,7 @@ namespace Assets.Scripts.Droodism.UserInterface
                 SetFuelTransferMode(FuelTransferMode.None, "Oxygen");
                 SetFuelTransferMode(FuelTransferMode.None, "H2O");
                 SetFuelTransferMode(FuelTransferMode.None, "Food");
-                SetFuelTransferMode(FuelTransferMode.None, "CO2");
+                SetFuelTransferMode(FuelTransferMode.None, "LPCO2");
                 SetFuelTransferMode(FuelTransferMode.None, "Wasted Water");
                 SetFuelTransferMode(FuelTransferMode.None, "Solid Waste");
             }
@@ -687,7 +687,7 @@ namespace Assets.Scripts.Droodism.UserInterface
                         return patchScript.WaterFuelSource;
                     case "Food":
                         return patchScript.FoodFuelSource;
-                    case "CO2":
+                    case "LPCO2":
                         return patchScript.CO2FuelSource;
                     case "Wasted Water":
                         return patchScript.WastedWaterFuelSource;

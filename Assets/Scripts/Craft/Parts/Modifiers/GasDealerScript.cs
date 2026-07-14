@@ -170,12 +170,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                         lowPressureGasSource=patchScript.OxygenFuelSource;
                         break;
                     case "CO2" :
-                        highPressureGasSource = GetCraftFuelSource("HPCO2");
+                        highPressureGasSource = GetCraftFuelSource("CO2");
                         lowPressureGasSource =  patchScript.CO2FuelSource;
                         break;
                     case "N2" :
-                        highPressureGasSource = GetCraftFuelSource("HPN2");
-                        lowPressureGasSource =  GetCraftFuelSource("N2");
+                        highPressureGasSource = GetCraftFuelSource("N2");
+                        lowPressureGasSource =  GetCraftFuelSource("LPN2");
                         break;
                 }
             }
