@@ -1022,17 +1022,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 if (this.Data.CumulativeRad >= this.Data.RadiationDamageThresholdLevel3)
                 {
                     damageMultiplier = 0.05f * (1 + rateFactor); // Severe damage amplified by rate
-                    damageReason = "<color=red>severe cumulative radiation exposure</color>";
+                    damageReason = "<color=red>" + Locale.GetString("Droodism.SupportLifeScript.RadiationDamageSevereCumulative") + "</color>";
                 }
                 else if (this.Data.CumulativeRad >= this.Data.RadiationDamageThresholdLevel2)
                 {
                     damageMultiplier = 0.001f * (1 + rateFactor); // Moderate damage amplified by rate
-                    damageReason = "<color=orange>moderate cumulative radiation exposure</color>";
+                    damageReason = "<color=orange>" + Locale.GetString("Droodism.SupportLifeScript.RadiationDamageModerateCumulative") + "</color>";
                 }
                 else if (this.Data.CumulativeRad >= this.Data.RadiationDamageThresholdLevel1)
                 {
                     damageMultiplier = 0.00025f * (1 + rateFactor); // Mild damage amplified by rate
-                    damageReason = "<color=yellow>mild cumulative radiation exposure</color>";
+                    damageReason = "<color=yellow>" + Locale.GetString("Droodism.SupportLifeScript.RadiationDamageMildCumulative") + "</color>";
                 }
                 else
                 {
@@ -1040,7 +1040,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     if (this.RadiationDoseRateRadPerHour > 30f)
                     {
                         damageMultiplier = 0.05f * rateFactor; // Minor damage from high rate alone
-                        damageReason = "<color=purple>high radiation rate exposure</color>";
+                        damageReason = "<color=purple>" + Locale.GetString("Droodism.SupportLifeScript.RadiationDamageHighRate") + "</color>";
                     }
                 }
             }
@@ -1048,16 +1048,19 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (this.Data.CumulativeRad >= this.Data.RadiationDamageThresholdLevel3 && this.RadiationDoseRateRadPerHour <= 5f)
             {
                 damageMultiplier = 0.05f;
-                damageReason = "<color=red><size=120%>severe cumulative radiation exposure</color></size>";
+                damageReason = "<color=red><size=120%>" + Locale.GetString("Droodism.SupportLifeScript.RadiationDamageSevereCumulative") + "</color></size>";
             }
 
             if (damageMultiplier > 0f)
             {
                 this.PartScript.TakeDamage(damageMultiplier * dtWorld * impactScale);
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
-                    $"<color=red>Crew Member {evaScript.Data.CrewName}(id:{this.PartScript.Data.Id}) is taking damage due to {damageReason} " +"<br>"+
-                    $"he/she has {Units.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / (damageMultiplier * impactScale))} left",
-                    false, 2f);
+                string msg = string.Format(
+                    "<color=red>" + Locale.GetString("Droodism.SupportLifeScript.RadiationDamageMessage") + "</color>",
+                    evaScript.Data.CrewName,
+                    this.PartScript.Data.Id,
+                    damageReason,
+                    Units.GetStopwatchTimeString((100 - this.PartScript.Data.Damage) / (damageMultiplier * impactScale)));
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage(msg, false, 2f);
             }
         }
         
@@ -1225,26 +1228,37 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             CurrentRadiationRateStats = GetRadiationRateStats(RadiationDoseRateRadPerHour);
         }
        
+        private static string GetLocalizedCrewRole(DroodType role)
+        {
+            switch (role)
+            {
+                case DroodType.Engineer: return Locale.GetString("Droodism.SupportLifeData.CrewRoleEngineer");
+                case DroodType.Scientist: return Locale.GetString("Droodism.SupportLifeData.CrewRoleScientist");
+                case DroodType.Pilot: return Locale.GetString("Droodism.SupportLifeData.CrewRolePilot");
+                default: return role.ToString();
+            }
+        }
+
         private static string GetAcuteBand(float cumulativeDoseRad)
         {
             if (cumulativeDoseRad >= 500f)
-                return"<color=red>Critical";
+                return "<color=red>" + Locale.GetString("Droodism.SupportLifeScript.RadiationBandCritical");
             if (cumulativeDoseRad >= 200f)
-                return"<color=orange>Severe";
+                return "<color=orange>" + Locale.GetString("Droodism.SupportLifeScript.RadiationBandSevere");
             if (cumulativeDoseRad >= 100f)
-                return"<color=yellow>Mild";
-            return"<color=green>nominal";
+                return "<color=yellow>" + Locale.GetString("Droodism.SupportLifeScript.RadiationBandMild");
+            return "<color=green>" + Locale.GetString("Droodism.SupportLifeScript.RadiationBandNominal");
         }
 
         private static string GetRadiationRateStats(float rate)
         {
             if (rate > 10f)
-                return"<color=red>Critical";
+                return "<color=red>" + Locale.GetString("Droodism.SupportLifeScript.RadiationBandCritical");
             if (rate > 5f)
-                return"<color=orange>Severe"; 
+                return "<color=orange>" + Locale.GetString("Droodism.SupportLifeScript.RadiationBandSevere");
             if (rate > 1f)
-                return"<color=yellow>Mild";
-            return"<color=green>nominal";
+                return "<color=yellow>" + Locale.GetString("Droodism.SupportLifeScript.RadiationBandMild");
+            return "<color=green>" + Locale.GetString("Droodism.SupportLifeScript.RadiationBandNominal");
         }
 
         #endregion
@@ -1261,7 +1275,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             //单独看任务时间的
             if (!this.IsTourist)
             {
-                model.Add<TextModel>(new TextModel("<color=yellow>" + Locale.GetString("Droodism.SupportLifeScript.CrewRole"), (Func<string>) (() =>Data.DroodismCrewData==null?Locale.GetString("Droodism.SupportLifeScript.Unknown"):Data.DroodismCrewData.CrewRole.ToString())));
+                model.Add<TextModel>(new TextModel("<color=yellow>" + Locale.GetString("Droodism.SupportLifeScript.CrewRole"), (Func<string>) (() =>Data.DroodismCrewData==null?Locale.GetString("Droodism.SupportLifeScript.Unknown"):GetLocalizedCrewRole(Data.DroodismCrewData.CrewRole))));
             }
             model.Add<TextModel>(new TextModel("<color=yellow>" + Locale.GetString("Droodism.SupportLifeScript.MissionTime"), (Func<string>) (() =>Units.GetStopwatchTimeString(MissionDurationTime))));
             //维生资源

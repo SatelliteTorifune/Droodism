@@ -15,7 +15,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using UnityEngine;
 
     [Serializable]
-    [DesignerPartModifier("Sewage Treat Device")]
+    [DesignerPartModifier("Droodism.SewageTreatDeivceData.Header")]
     [PartModifierTypeId("SewageTreatDevice")]
     public class SewageTreatDeivceData : PartModifierData<SewageTreatDeivceScript>
     {
@@ -28,12 +28,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         [SerializeField] [PartModifierProperty(true, false)]
         private float _wastedWaterComsumeRate=1f;
         [SerializeField] 
-        [DesignerPropertySlider(0.1f, 1f, 21, Label = "Efficiency", Tooltip = "Defines the efficiency of the device.")]
+        [DesignerPropertySlider(0.1f, 1f, 21, Label = "Droodism.SewageTreatDeivceData.Efficiency", Tooltip = "Droodism.SewageTreatDeivceData.EfficiencyTooltip")]
         private float _convertEffiency=1f;
         [SerializeField] [PartModifierProperty(true, false)]
         private float _batteryComsumeRate=1f;
         [SerializeField]
-        [DesignerPropertySlider(0.5f, 4f, 76, Label = "Size", Tooltip = "Defines the scale of the device.")]
+        [DesignerPropertySlider(0.5f, 4f, 76, Label = "Droodism.SewageTreatDeivceData.Size", Tooltip = "Droodism.SewageTreatDeivceData.SizeTooltip")]
         private float _scale = 1f;
         
         public float WastedWaterComsumeRate { get => this._wastedWaterComsumeRate*0.0002f;   }

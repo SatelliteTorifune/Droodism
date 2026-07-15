@@ -29,6 +29,76 @@
     <s id="Droodism.CraftPerformanceAnalysisPatch.Food">Food</s>
     <s id="Droodism.CraftPerformanceAnalysisPatch.SolidWaste">Solid Waste</s>
 
+    <!-- CrewCabinData -->
+    <s id="Droodism.CrewCabinData.Header">Crew Cabin</s>
+    <s id="Droodism.CrewCabinData.RadiationShieldAmount">&lt;color=yellow&gt;Radiation Shield Amount</s>
+    <s id="Droodism.CrewCabinData.RadiationShieldAmountTooltip">Current Radiation Shield Amount of this Crew Compartment, could greatly impact the mass of this part</s>
+    <s id="Droodism.CrewCabinData.RadiationShieldType">&lt;color=yellow&gt;Radiation Shield Type&lt;/color&gt;</s>
+    <s id="Droodism.CrewCabinData.RadiationShieldTypeTooltip">The type of Radiation Shield this Compartment brings.</s>
+    <s id="Droodism.CrewCabinData.ShieldTypeNone">None</s>
+    <s id="Droodism.CrewCabinData.ShieldTypeAluminium">Aluminium</s>
+    <s id="Droodism.CrewCabinData.ShieldTypePolyEthylene">PolyEthylene</s>
+    <s id="Droodism.CrewCabinData.ShieldTypeBoratedPolyEthylene">Borated PolyEthylene</s>
+    <s id="Droodism.CrewCabinData.ShieldTypeWater">Water</s>
+    <s id="Droodism.CrewCabinData.ShieldTypeLiquidHydrogen">Liquid Hydrogen</s>
+    <s id="Droodism.CrewCabinData.ShieldTypeBoronNitrideNanotubes">Boron Nitride Nanotubes</s>
+
+    <!-- ChemicalReactorData -->
+    <s id="Droodism.ChemicalReactorData.Header">Chemical Reactor</s>
+    <s id="Droodism.ChemicalReactorData.ReactionType">Reaction Type</s>
+    <s id="Droodism.ChemicalReactorData.ReactionTypeTooltip">The type of Chemical Reactor of This Part Applies</s>
+    <s id="Droodism.ChemicalReactorData.GenerationRate">Generation Rate</s>
+    <s id="Droodism.ChemicalReactorData.GenerationRateTooltip">Determines the rate which the chemical reactor processes fuel.</s>
+    <s id="Droodism.ChemicalReactorData.DescHydrolox">Hydrolox Generating: Use Liquid Hydrogen and Liquid Oxygen to generate Hydrolox</s>
+    <s id="Droodism.ChemicalReactorData.DescN2H4">Monopropellant Generating&lt;br&gt;Use High Pressure Nitrogen and LH2 to generate Monopropellant</s>
+    <s id="Droodism.ChemicalReactorData.DescMethalox">Methalox Generating&lt;br&gt;Use Water, High Pressure Carbon Dioxide to generate Methalox</s>
+
+    <!-- GasDealerData -->
+    <s id="Droodism.GasDealerData.Header">Gas Dealer</s>
+    <s id="Droodism.GasDealerData.GasFlowRate">Gas Flow Rate</s>
+    <s id="Droodism.GasDealerData.GasFlowRateTooltip">Determines the rate which High Pressure gas is released/compressed by the part.</s>
+    <s id="Droodism.GasDealerData.GasType">Gas Type</s>
+    <s id="Droodism.GasDealerData.GasTypeTooltip">The type of Gas of This Part Works</s>
+    <s id="Droodism.GasDealerData.GasOxygen">Oxygen</s>
+    <s id="Droodism.GasDealerData.GasCarbonDioxide">Carbon Dioxide</s>
+    <s id="Droodism.GasDealerData.GasNitrogen">Nitrogen</s>
+
+    <!-- GravityRingData -->
+    <s id="Droodism.GravityRingData.Header">Gravity Ring</s>
+    <s id="Droodism.GravityRingData.ReverseRotation">Reverse the Rotation Direction</s>
+    <s id="Droodism.GravityRingData.ExtendSpeed">Extend Speed</s>
+    <s id="Droodism.GravityRingData.DeployRotationSpeed">Deploy Rotation Speed</s>
+
+    <!-- FlagData -->
+    <s id="Droodism.FlagData.Header">Flag</s>
+    <s id="Droodism.FlagData.ExtendSpeed">Extend Speed</s>
+    <s id="Droodism.FlagData.DeployRotationSpeed">Deploy Rotation Speed</s>
+
+    <!-- RagdollModifierData -->
+    <s id="Droodism.RagdollModifierData.Header">Ragdoll</s>
+    <s id="Droodism.RagdollModifierData.EnableRagdoll">Enable Ragdoll</s>
+    <s id="Droodism.RagdollModifierData.EnableRagdollTooltip">Whether to enable ragdoll physics on this part.</s>
+
+    <!-- SewageTreatDeivceData -->
+    <s id="Droodism.SewageTreatDeivceData.Header">Sewage Treat Device</s>
+    <s id="Droodism.SewageTreatDeivceData.Efficiency">Efficiency</s>
+    <s id="Droodism.SewageTreatDeivceData.EfficiencyTooltip">Defines the efficiency of the device.</s>
+    <s id="Droodism.SewageTreatDeivceData.Size">Size</s>
+    <s id="Droodism.SewageTreatDeivceData.SizeTooltip">Defines the scale of the device.</s>
+
+    <!-- ResourcePackData -->
+    <s id="Droodism.ResourcePackData.Header">Resource Pack</s>
+    <s id="Droodism.ResourcePackData.Size">Size</s>
+    <s id="Droodism.ResourcePackData.SizeTooltip">The size of this ResourcePack.</s>
+
+    <!-- PhotoBioReactorScript -->
+    <s id="Droodism.PhotoBioReactorScript.StatusOffline">Device is Offline</s>
+    <s id="Droodism.PhotoBioReactorScript.StatusArtificialLight">Using Artificial Light, Generating Food</s>
+    <s id="Droodism.PhotoBioReactorScript.StatusNoSolarRadiation">Unable to generate food: Unable to get solar radiation</s>
+    <s id="Droodism.PhotoBioReactorScript.StatusSolarLight">Using Solar Light, Generating Food</s>
+    <s id="Droodism.PhotoBioReactorScript.StatusLackResources">Unable to generate food: Lack of Resources</s>
+    <s id="Droodism.PhotoBioReactorScript.StatusWasteFull">Unable to generate food: Wasted Water is full</s>
+
     <!-- CrewCabinScript -->
     <s id="Droodism.CrewCabinScript.RadiationDuration">Radiation Duration</s>
     <s id="Droodism.CrewCabinScript.RadiationShieldDuration">Radiation Shield Duration</s>
@@ -240,6 +310,38 @@
     <s id="Droodism.Sodium_PeroxideScript.Idle">&lt;color=yellow&gt;Idle&lt;/color&gt;</s>
     <s id="Droodism.Sodium_PeroxideScript.Working">&lt;color=green&gt;Working&lt;/color&gt;</s>
 
+    <!-- SupportLifeData -->
+    <s id="Droodism.SupportLifeData.Header">Life Support</s>
+    <s id="Droodism.SupportLifeData.CrewNameLabel">Crew Name</s>
+    <s id="Droodism.SupportLifeData.CrewRoleLabel">Crew Role</s>
+    <s id="Droodism.SupportLifeData.RadiationDoseLabel">Radiation Dose</s>
+    <s id="Droodism.SupportLifeData.MissionTimeLabel">Total Mission Time</s>
+    <s id="Droodism.SupportLifeData.Unknown">Unknown</s>
+    <s id="Droodism.SupportLifeData.EngineerDescription">Engineer could fix parts</s>
+    <s id="Droodism.SupportLifeData.ScientistDescription">Scientist could increase science experiment outcome(I haven't done it yet)</s>
+    <s id="Droodism.SupportLifeData.PilotDescription">Basic Drood which is good at taking control of the craft, takes less Overload damage</s>
+    <s id="Droodism.SupportLifeData.UnknownDroodType">Unknown Drood Type</s>
+    <s id="Droodism.SupportLifeData.OxygenCarryAmount">&lt;color=green&gt;Oxygen&lt;/color&gt; Carry Amount(days)</s>
+    <s id="Droodism.SupportLifeData.OxygenCarryAmountTooltip">How much Oxygen Drood himself/herself will carry when Eva.</s>
+    <s id="Droodism.SupportLifeData.FoodCarryAmount">&lt;color=yellow&gt;Food&lt;/color&gt; Carry Amount(days)</s>
+    <s id="Droodism.SupportLifeData.FoodCarryAmountTooltip">How much Food Drood himself/herself will carry when Eva.</s>
+    <s id="Droodism.SupportLifeData.WaterCarryAmount">&lt;color=red&gt;Water&lt;/color&gt; Carry Amount(days)</s>
+    <s id="Droodism.SupportLifeData.WaterCarryAmountTooltip">How much Drinking Water Drood himself/herself will carry when Eva.</s>
+    <s id="Droodism.SupportLifeData.ChuteType">&lt;color=yellow&gt;Chute Type&lt;/color&gt;</s>
+    <s id="Droodism.SupportLifeData.ChuteTypeTooltip">The type of parachute this drood brings.</s>
+    <s id="Droodism.SupportLifeData.MinDeployHeight">Min Deploy Height</s>
+    <s id="Droodism.SupportLifeData.MinDeployHeightTooltip">Minimum height for parachute deployment</s>
+    <s id="Droodism.SupportLifeData.ChuteTypeNone">None</s>
+    <s id="Droodism.SupportLifeData.ChuteTypeParaGlider">ParaGlider</s>
+    <s id="Droodism.SupportLifeData.ChuteTypeParachute">Parachute</s>
+    <s id="Droodism.SupportLifeData.CrewRoleEngineer">Engineer</s>
+    <s id="Droodism.SupportLifeData.CrewRoleScientist">Scientist</s>
+    <s id="Droodism.SupportLifeData.CrewRolePilot">Pilot</s>
+    <s id="Droodism.SupportLifeData.AutoDeployParachute">&lt;color=#FFB600&gt;Auto Deploy Parachute&lt;/color&gt;</s>
+    <s id="Droodism.SupportLifeData.AutoDeployParachuteTooltip">Auto Deploy Parachute or not</s>
+    <s id="Droodism.SupportLifeData.AutoDeployHeight">&lt;color=#FFB600&gt;Auto Deploy Height&lt;/color&gt;</s>
+    <s id="Droodism.SupportLifeData.AutoDeployHeightTooltip">Height for auto parachute deployment in AGL</s>
+
     <!-- SupportLifeScript -->
     <s id="Droodism.SupportLifeScript.AutoDeployHeight">Auto Deploy Height</s>
     <s id="Droodism.SupportLifeScript.AutoDeployParachute">Auto Deploy Parachute</s>
@@ -291,6 +393,15 @@
     <s id="Droodism.SupportLifeScript.ManualDeployParaGlider">Manual Deploy ParaGlider</s>
     <s id="Droodism.SupportLifeScript.WastedWaterLevel">Wasted Water Level</s>
     <s id="Droodism.SupportLifeScript.WaterSupplyTime">Water Supply Time</s>
+    <s id="Droodism.SupportLifeScript.RadiationDamageSevereCumulative">severe cumulative radiation exposure</s>
+    <s id="Droodism.SupportLifeScript.RadiationDamageModerateCumulative">moderate cumulative radiation exposure</s>
+    <s id="Droodism.SupportLifeScript.RadiationDamageMildCumulative">mild cumulative radiation exposure</s>
+    <s id="Droodism.SupportLifeScript.RadiationDamageHighRate">high radiation rate exposure</s>
+    <s id="Droodism.SupportLifeScript.RadiationDamageMessage">Crew Member {0}(id:{1}) is taking damage due to {2}&lt;br&gt;he/she has {3} left</s>
+    <s id="Droodism.SupportLifeScript.RadiationBandCritical">Critical</s>
+    <s id="Droodism.SupportLifeScript.RadiationBandSevere">Severe</s>
+    <s id="Droodism.SupportLifeScript.RadiationBandMild">Mild</s>
+    <s id="Droodism.SupportLifeScript.RadiationBandNominal">nominal</s>
 
     <!--FlagPlanting-->
     <s id="Droodism.FlagPlanting.CannotPlantFlagAlreadyPlanted">Can Not Plant Flag, This Drood had already plant one!</s>

@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using Assets.Scripts.Design;
+using ModApi;
 using ModApi.Design.PartProperties;
 using ModApi.Math;
 using UnityEngine.UI;
@@ -16,16 +17,16 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using UnityEngine;
 
     [Serializable]
-    [DesignerPartModifier("ChemicalReactor")]
+    [DesignerPartModifier("Droodism.ChemicalReactorData.Header")]
     [PartModifierTypeId("ChemicalReactor")]
         public class ChemicalReactorData : PartModifierData<ChemicalReactorScript>
     {
         [SerializeField]  
-        [DesignerPropertySpinner(Label = "Reaction Type", Order = 0, Tooltip = "The type of Chemical Reactor of This Part Applies")]
+        [DesignerPropertySpinner(Label = "Droodism.ChemicalReactorData.ReactionType", Order = 0, Tooltip = "Droodism.ChemicalReactorData.ReactionTypeTooltip")]
         private string reactorType = "LH2+LOX=Hydrolox";
         
         [SerializeField]  
-        [DesignerPropertySlider(0.1f, 1f, 10, Label = "Generation Rate", Tooltip = "Determines the rate which the chemical reactor processes fuel.")]
+        [DesignerPropertySlider(0.1f, 1f, 10, Label = "Droodism.ChemicalReactorData.GenerationRate", Tooltip = "Droodism.ChemicalReactorData.GenerationRateTooltip")]
         private float generationRate = 0.3f;
         
         [SerializeField]
@@ -67,11 +68,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             switch (this.reactorType)
             {
                 case "LH2+LOX=Hydrolox":
-                    return "Hydrolox Generating:Use Liquid Hydrogen and Liquid Oxygen to generate Hydrolox";
+                    return Locale.GetString("Droodism.ChemicalReactorData.DescHydrolox");
                 case "N2+LH2=N2H4":
-                    return "Monopropellant Generating<br>Use High Pressure Nitrogen and LH2 to generate Monopropellant";
+                    return Locale.GetString("Droodism.ChemicalReactorData.DescN2H4");
                 case "H2O+CO2=Methanelox":
-                    return "Methalox Generating<br>Use Water,High Pressure Carbon Dioxide to generate Methalox";
+                    return Locale.GetString("Droodism.ChemicalReactorData.DescMethalox");
                 default:
                     return this.reactorType;
             }

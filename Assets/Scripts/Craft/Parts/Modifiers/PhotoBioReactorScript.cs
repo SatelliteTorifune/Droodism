@@ -60,7 +60,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             else
             {
-                deviceStatus = "<color=yellow>Device is Offline</color>";
+                deviceStatus = "<color=yellow>" + Locale.GetString("Droodism.PhotoBioReactorScript.StatusOffline") + "</color>";
                 Data.stayDeployed = false;
             }
             
@@ -79,7 +79,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 if (usingArtificialLight)
                 {
-                    deviceStatus = "<color=green>Using Artificial Light,Generating Food</color>";
+                    deviceStatus = "<color=green>" + Locale.GetString("Droodism.PhotoBioReactorScript.StatusArtificialLight") + "</color>";
                     isBoosted = false;
                     _co2Source.RemoveFuel(Data.Co2ConsumptionRate * frame.DeltaTimeWorld);
                     _waterSource.RemoveFuel(Data.WaterConsumptionRate * frame.DeltaTimeWorld);
@@ -116,10 +116,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                         {
                             growProgress -= Data.DecaySpeed;
                         }
-                        deviceStatus = "<color=red>Unable to generate food:Unable to get solar radiation</color>";
+                        deviceStatus = "<color=red>" + Locale.GetString("Droodism.PhotoBioReactorScript.StatusNoSolarRadiation") + "</color>";
                         return;
                     }
-                    deviceStatus = "<color=green>Using Solar Light,Generating Food</color>";
+                    deviceStatus = "<color=green>" + Locale.GetString("Droodism.PhotoBioReactorScript.StatusSolarLight") + "</color>";
                     isBoosted = false;
                     _co2Source.RemoveFuel(Data.Co2ConsumptionRate*_rechargePointingEfficiency * frame.DeltaTimeWorld);
                     _waterSource.RemoveFuel(Data.WaterConsumptionRate*_rechargePointingEfficiency* frame.DeltaTimeWorld);
@@ -144,7 +144,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 {
                     growProgress -= Data.DecaySpeed;
                 }
-                deviceStatus = "<color=red>Unable to generate food:Lack of Resources</color>";
+                deviceStatus = "<color=red>" + Locale.GetString("Droodism.PhotoBioReactorScript.StatusLackResources") + "</color>";
                 return;
             }
             
@@ -154,7 +154,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 {
                     growProgress -= Data.DecaySpeed;
                 }
-                deviceStatus = "<color=red>Unable to generate food:Wasted Water is full</color>";
+                deviceStatus = "<color=red>" + Locale.GetString("Droodism.PhotoBioReactorScript.StatusWasteFull") + "</color>";
                 return;
             }
             
