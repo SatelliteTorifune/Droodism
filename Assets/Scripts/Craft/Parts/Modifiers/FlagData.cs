@@ -10,7 +10,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using UnityEngine;
 
     [Serializable]
-    [DesignerPartModifier("Flag")]
+    [DesignerPartModifier("Droodism.FlagData.Header")]
     [PartModifierTypeId("Flag")]
     public class FlagData : PartModifierData<FlagScript>
     {
@@ -20,9 +20,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private float currentExtentPercent2 = 0.001f;
         private float currentRotationPercent = 0f;
         [SerializeField]
-        [DesignerPropertySlider(0.1f, 1f,10, Label = "Extend Speed")]
+        [DesignerPropertySlider(0.1f, 1f,10, Label = "Droodism.FlagData.ExtendSpeed")]
         public float ExtendSpeed = 0.2f;
-        [SerializeField] [DesignerPropertySlider(1f, 30f,30, Label = "Deploy Rotation Speed")]
+        [SerializeField] [DesignerPropertySlider(1f, 30f,30, Label = "Droodism.FlagData.DeployRotationSpeed")]
         private float deployRotationSpeed = 15f;
 
         [SerializeField] [PartModifierProperty]

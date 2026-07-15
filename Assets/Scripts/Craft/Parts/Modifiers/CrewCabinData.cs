@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using Assets.Scripts.Craft.Parts.Modifiers.Fuselage;
+using ModApi;
 using ModApi.Design.PartProperties;
 using ModApi.GameLoop;
 using ModApi.GameLoop.Interfaces;
@@ -16,17 +17,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using UnityEngine;
 
     [Serializable]
-    [DesignerPartModifier("CrewCabin")]
+    [DesignerPartModifier("Droodism.CrewCabinData.Header")]
     [PartModifierTypeId("CrewCabin")]
     public class CrewCabinData : PartModifierData<CrewCabinScript>
     {
         
-        [SerializeField] [DesignerPropertySlider(10f, 200f, 90, Label = "<color=yellow>Radiation Shield Amount",Order=1, Tooltip = "Current Radiation Shield Amount of this Crew Compartment, could greatly impact the mass of this part")]
+        [SerializeField] [DesignerPropertySlider(10f, 200f, 90, Label = "Droodism.CrewCabinData.RadiationShieldAmount", Order = 1, Tooltip = "Droodism.CrewCabinData.RadiationShieldAmountTooltip")]
         private double radiationShieldDuration = 100d;
         [SerializeField] [PartModifierProperty(true, false)]
         private double radiationShieldDurationUpperLimit = 100d;
 
-        [SerializeField]  [DesignerPropertySpinner(Label = "<color=yellow>Radiation Shield Type</color>", Order = 0, Tooltip = "The type of Radiation Shield this Compartment brings.")]
+        [SerializeField] [DesignerPropertySpinner(Label = "Droodism.CrewCabinData.RadiationShieldType", Order = 0, Tooltip = "Droodism.CrewCabinData.RadiationShieldTypeTooltip")]
         private string radiationShieldType = "None";
 
         // MassDry 由其它 modifier（如 ScalablePodData / CrewCompartmentData）参与计算时，直接在 getter 里读会出现“缩放后不刷新”的问题。
@@ -101,7 +102,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         protected override void OnDesignerInitialization(IDesignerPartPropertiesModifierInterface d)
         {
             base.OnDesignerInitialization(d);
-            d.OnValueLabelRequested<string>(() => this.radiationShieldType, x => x);
+            d.OnValueLabelRequested<string>(() => this.radiationShieldType, GetLocalizedShieldType);
             d.OnSpinnerValuesRequested<string>(() => this.radiationShieldType, this.GetSpinnerValues);
             d.OnPropertyChanged<string>((Expression<Func<string>>) (() => this.radiationShieldType), (Action<string, string>) ((newVal, oldVal) =>
             {
@@ -130,6 +131,21 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
 
 
+
+        private static string GetLocalizedShieldType(string type)
+        {
+            switch (type)
+            {
+                case "None": return Locale.GetString("Droodism.CrewCabinData.ShieldTypeNone");
+                case "Aluminium": return Locale.GetString("Droodism.CrewCabinData.ShieldTypeAluminium");
+                case "PolyEthylene": return Locale.GetString("Droodism.CrewCabinData.ShieldTypePolyEthylene");
+                case "Borated PolyEthylene": return Locale.GetString("Droodism.CrewCabinData.ShieldTypeBoratedPolyEthylene");
+                case "Water": return Locale.GetString("Droodism.CrewCabinData.ShieldTypeWater");
+                case "Liquid Hydrogen": return Locale.GetString("Droodism.CrewCabinData.ShieldTypeLiquidHydrogen");
+                case "Boron Nitride Nanotubes": return Locale.GetString("Droodism.CrewCabinData.ShieldTypeBoronNitrideNanotubes");
+                default: return type;
+            }
+        }
 
         private void GetSpinnerValues(List<string> shieldTypes)
         {

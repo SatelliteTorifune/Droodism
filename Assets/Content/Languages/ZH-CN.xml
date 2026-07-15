@@ -23,11 +23,81 @@
     <s id="Droodism.CraftPerformanceAnalysisPatch.CarbonDioxide">二氧化碳</s>
     <s id="Droodism.CraftPerformanceAnalysisPatch.DroodCount">Drood 数量</s>
     <s id="Droodism.CraftPerformanceAnalysisPatch.LifeSupportResourcesInfo">维生资源信息</s>
-    <s id="Droodism.CraftPerformanceAnalysisPatch.Water">水</s>
+    <s id="Droodism.CraftPerformanceAnalysisPatch.Water">饮用水</s>
     <s id="Droodism.CraftPerformanceAnalysisPatch.Oxygen">氧气</s>
     <s id="Droodism.CraftPerformanceAnalysisPatch.WastedWater">废水</s>
     <s id="Droodism.CraftPerformanceAnalysisPatch.Food">食物</s>
     <s id="Droodism.CraftPerformanceAnalysisPatch.SolidWaste">固体废物</s>
+
+    <!-- CrewCabinData -->
+    <s id="Droodism.CrewCabinData.Header">乘员舱</s>
+    <s id="Droodism.CrewCabinData.RadiationShieldAmount">&lt;color=yellow&gt;辐射屏蔽层量&lt;/color&gt;</s>
+    <s id="Droodism.CrewCabinData.RadiationShieldAmountTooltip">此乘员舱的当前辐射屏蔽层量，会极大影响部件质量</s>
+    <s id="Droodism.CrewCabinData.RadiationShieldType">&lt;color=yellow&gt;辐射屏蔽层类型&lt;/color&gt;</s>
+    <s id="Droodism.CrewCabinData.RadiationShieldTypeTooltip">此乘员舱携带的辐射屏蔽材料类型</s>
+    <s id="Droodism.CrewCabinData.ShieldTypeNone">无</s>
+    <s id="Droodism.CrewCabinData.ShieldTypeAluminium">铝</s>
+    <s id="Droodism.CrewCabinData.ShieldTypePolyEthylene">聚乙烯</s>
+    <s id="Droodism.CrewCabinData.ShieldTypeBoratedPolyEthylene">硼化聚乙烯</s>
+    <s id="Droodism.CrewCabinData.ShieldTypeWater">水</s>
+    <s id="Droodism.CrewCabinData.ShieldTypeLiquidHydrogen">液氢</s>
+    <s id="Droodism.CrewCabinData.ShieldTypeBoronNitrideNanotubes">氮化硼纳米管</s>
+
+    <!-- ChemicalReactorData -->
+    <s id="Droodism.ChemicalReactorData.Header">化学反应器</s>
+    <s id="Droodism.ChemicalReactorData.ReactionType">反应类型</s>
+    <s id="Droodism.ChemicalReactorData.ReactionTypeTooltip">此部件应用的化学反应类型</s>
+    <s id="Droodism.ChemicalReactorData.GenerationRate">生成速率</s>
+    <s id="Droodism.ChemicalReactorData.GenerationRateTooltip">决定化学反应器处理燃料的速率</s>
+    <s id="Droodism.ChemicalReactorData.DescHydrolox">液氢液氧生成中：使用液氢和液氧生成液氢液氧燃料</s>
+    <s id="Droodism.ChemicalReactorData.DescN2H4">肼生成&lt;br&gt;使用高压氮气和液氢生成单组元推进剂</s>
+    <s id="Droodism.ChemicalReactorData.DescMethalox">甲烷液氧生成&lt;br&gt;使用水和高压二氧化碳生成甲烷液氧</s>
+
+    <!-- GasDealerData -->
+    <s id="Droodism.GasDealerData.Header">气体处理器</s>
+    <s id="Droodism.GasDealerData.GasFlowRate">气体流速</s>
+    <s id="Droodism.GasDealerData.GasFlowRateTooltip">决定部件释放/压缩高压气体的速率</s>
+    <s id="Droodism.GasDealerData.GasType">气体类型</s>
+    <s id="Droodism.GasDealerData.GasTypeTooltip">此部件处理的气体类型</s>
+    <s id="Droodism.GasDealerData.GasOxygen">氧气</s>
+    <s id="Droodism.GasDealerData.GasCarbonDioxide">二氧化碳</s>
+    <s id="Droodism.GasDealerData.GasNitrogen">氮气</s>
+
+    <!-- GravityRingData -->
+    <s id="Droodism.GravityRingData.Header">重力环</s>
+    <s id="Droodism.GravityRingData.ReverseRotation">反转旋转方向</s>
+    <s id="Droodism.GravityRingData.ExtendSpeed">展开速度</s>
+    <s id="Droodism.GravityRingData.DeployRotationSpeed">部署旋转速度</s>
+
+    <!-- FlagData -->
+    <s id="Droodism.FlagData.Header">旗帜</s>
+    <s id="Droodism.FlagData.ExtendSpeed">展开速度</s>
+    <s id="Droodism.FlagData.DeployRotationSpeed">部署旋转速度</s>
+
+    <!-- RagdollModifierData -->
+    <s id="Droodism.RagdollModifierData.Header">布娃娃物理</s>
+    <s id="Droodism.RagdollModifierData.EnableRagdoll">启用布娃娃物理</s>
+    <s id="Droodism.RagdollModifierData.EnableRagdollTooltip">是否在此部件上启用布娃娃物理</s>
+
+    <!-- SewageTreatDeivceData -->
+    <s id="Droodism.SewageTreatDeivceData.Header">废水处理装置</s>
+    <s id="Droodism.SewageTreatDeivceData.Efficiency">效率</s>
+    <s id="Droodism.SewageTreatDeivceData.EfficiencyTooltip">定义设备的运行效率</s>
+    <s id="Droodism.SewageTreatDeivceData.Size">尺寸</s>
+    <s id="Droodism.SewageTreatDeivceData.SizeTooltip">定义设备的缩放比例</s>
+
+    <!-- ResourcePackData -->
+    <s id="Droodism.ResourcePackData.Header">资源包</s>
+    <s id="Droodism.ResourcePackData.Size">尺寸</s>
+    <s id="Droodism.ResourcePackData.SizeTooltip">此资源包的尺寸</s>
+
+    <!-- PhotoBioReactorScript -->
+    <s id="Droodism.PhotoBioReactorScript.StatusOffline">离线</s>
+    <s id="Droodism.PhotoBioReactorScript.StatusArtificialLight">正在使用人工光源产粮</s>
+    <s id="Droodism.PhotoBioReactorScript.StatusNoSolarRadiation">无法产粮：无法获取太阳辐射</s>
+    <s id="Droodism.PhotoBioReactorScript.StatusSolarLight">正在使用太阳光产粮</s>
+    <s id="Droodism.PhotoBioReactorScript.StatusLackResources">无法产粮：资源不足</s>
+    <s id="Droodism.PhotoBioReactorScript.StatusWasteFull">无法产粮：废水已满</s>
 
     <!-- CrewCabinScript -->
     <s id="Droodism.CrewCabinScript.RadiationDuration">辐射屏蔽层耐久</s>
@@ -131,6 +201,8 @@
     <s id="Droodism.ModSettings.ToggleDebugModeDesc">在开发控制台中启用一些日志,并开启一些隐藏选项</s>
     <s id="Droodism.ModSettings.WarningThreshold">警告阈值</s>
     <s id="Droodism.ModSettings.WarningThresholdDesc">当资源低于此百分比时将触发警告</s>
+    <s id="Droodism.ModSettings.FixAngularDragInVacuum">修复真空中角速度阻力</s>
+    <s id="Droodism.ModSettings.FixAngularDragInVacuumDesc">修复真空中角速度自行衰减的问题，禁用此项可还原原版行为</s>
 
     <!-- OnHireButtonClickedPatch -->
     <s id="Droodism.OnHireButtonClickedPatch.ChooseDroodType">选择您想要招募的 Drood 类型：</s>
@@ -240,6 +312,38 @@
     <s id="Droodism.Sodium_PeroxideScript.Idle">&lt;color=yellow&gt;空闲&lt;/color&gt;</s>
     <s id="Droodism.Sodium_PeroxideScript.Working">&lt;color=green&gt;工作中&lt;/color&gt;</s>
 
+    <!-- SupportLifeData -->
+    <s id="Droodism.SupportLifeData.Header">维生数据</s>
+    <s id="Droodism.SupportLifeData.CrewNameLabel">乘员姓名</s>
+    <s id="Droodism.SupportLifeData.CrewRoleLabel">职位类型</s>
+    <s id="Droodism.SupportLifeData.RadiationDoseLabel">辐射剂量</s>
+    <s id="Droodism.SupportLifeData.MissionTimeLabel">总任务时间</s>
+    <s id="Droodism.SupportLifeData.Unknown">未知</s>
+    <s id="Droodism.SupportLifeData.EngineerDescription">工程师可修复零件</s>
+    <s id="Droodism.SupportLifeData.ScientistDescription">科学家可提高科学实验产出(但是我还没做完)</s>
+    <s id="Droodism.SupportLifeData.PilotDescription">基础Drood，擅长操控飞行器,受到的过载伤害更小</s>
+    <s id="Droodism.SupportLifeData.UnknownDroodType">未知Drood类型</s>
+    <s id="Droodism.SupportLifeData.OxygenCarryAmount">&lt;color=green&gt;氧气&lt;/color&gt;携带量(天)</s>
+    <s id="Droodism.SupportLifeData.OxygenCarryAmountTooltip">Drood出舱时自身携带的氧气量</s>
+    <s id="Droodism.SupportLifeData.FoodCarryAmount">&lt;color=yellow&gt;食物&lt;/color&gt;携带量(天)</s>
+    <s id="Droodism.SupportLifeData.FoodCarryAmountTooltip">Drood出舱时自身携带的食物量</s>
+    <s id="Droodism.SupportLifeData.WaterCarryAmount">&lt;color=red&gt;饮用水&lt;/color&gt;携带量(天)</s>
+    <s id="Droodism.SupportLifeData.WaterCarryAmountTooltip">Drood出舱时自身携带的饮用水量</s>
+    <s id="Droodism.SupportLifeData.ChuteType">&lt;color=yellow&gt;降落伞类型&lt;/color&gt;</s>
+    <s id="Droodism.SupportLifeData.ChuteTypeTooltip">此Drood携带的降落伞类型</s>
+    <s id="Droodism.SupportLifeData.MinDeployHeight">最小展开高度</s>
+    <s id="Droodism.SupportLifeData.MinDeployHeightTooltip">降落伞部署的最小高度</s>
+    <s id="Droodism.SupportLifeData.ChuteTypeNone">无</s>
+    <s id="Droodism.SupportLifeData.ChuteTypeParaGlider">滑翔伞</s>
+    <s id="Droodism.SupportLifeData.ChuteTypeParachute">降落伞</s>
+    <s id="Droodism.SupportLifeData.CrewRoleEngineer">工程师</s>
+    <s id="Droodism.SupportLifeData.CrewRoleScientist">科学家</s>
+    <s id="Droodism.SupportLifeData.CrewRolePilot">飞行员</s>
+    <s id="Droodism.SupportLifeData.AutoDeployParachute">&lt;color=#FFB600&gt;自动展开降落伞&lt;/color&gt;</s>
+    <s id="Droodism.SupportLifeData.AutoDeployParachuteTooltip">是否自动展开降落伞</s>
+    <s id="Droodism.SupportLifeData.AutoDeployHeight">&lt;color=#FFB600&gt;自动展开高度&lt;/color&gt;</s>
+    <s id="Droodism.SupportLifeData.AutoDeployHeightTooltip">自动部署降落伞的高度（离地高度）</s>
+
     <!-- SupportLifeScript -->
     <s id="Droodism.SupportLifeScript.AutoDeployHeight">自动展开高度</s>
     <s id="Droodism.SupportLifeScript.AutoDeployParachute">自动展开降落伞</s>
@@ -289,7 +393,16 @@
     <s id="Droodism.SupportLifeScript.AutoDeployParaGlider">自动展开滑翔伞</s>
     <s id="Droodism.SupportLifeScript.ManualDeployParaGlider">手动展开滑翔伞</s>
     <s id="Droodism.SupportLifeScript.WastedWaterLevel">废水浓度</s>
-    <s id="Droodism.SupportLifeScript.WaterSupplyTime">水供应时间</s>
+    <s id="Droodism.SupportLifeScript.WaterSupplyTime">饮用水供应时间</s>
+    <s id="Droodism.SupportLifeScript.RadiationDamageSevereCumulative">严重累积辐射暴露</s>
+    <s id="Droodism.SupportLifeScript.RadiationDamageModerateCumulative">中度累积辐射暴露</s>
+    <s id="Droodism.SupportLifeScript.RadiationDamageMildCumulative">轻度累积辐射暴露</s>
+    <s id="Droodism.SupportLifeScript.RadiationDamageHighRate">高辐射率暴露</s>
+    <s id="Droodism.SupportLifeScript.RadiationDamageMessage">乘员 {0}(id:{1}) 正因{2}受到伤害&lt;br&gt;预计存活时间 {3}</s>
+    <s id="Droodism.SupportLifeScript.RadiationBandCritical">危急</s>
+    <s id="Droodism.SupportLifeScript.RadiationBandSevere">严重</s>
+    <s id="Droodism.SupportLifeScript.RadiationBandMild">轻度</s>
+    <s id="Droodism.SupportLifeScript.RadiationBandNominal">正常</s>
 
     <!--FlagPlanting-->
     <s id="Droodism.FlagPlanting.CannotPlantFlagAlreadyPlanted">无法插旗,此 Drood 已经插过旗了</s>
@@ -343,4 +456,19 @@
     <s id="Droodism.RTGPowerFallScript.CurrentPower">当前功率</s>
     <s id="Droodism.RTGPowerFallScript.PowerRemaining">剩余功率</s>
     <s id="Droodism.RTGPowerFallScript.PreviewYears">预览年数</s>
+    
+    <!-- Propulsion Fuels -->
+    <s id="Fuel.Oxygen.Name">气态氧气</s>
+    <s id="Fuel.Oxygen.Description">Drood可直接呼吸的低压氧气</s>
+    <s id="Fuel.Food.Name">食物</s>
+    <s id="Fuel.Food.Description">Drood食用的高密度压缩食物</s>
+    <s id="Fuel.H2O.Name">水</s>
+    <s id="Fuel.LPCO2.Name">气态二氧化碳</s>
+    <s id="Fuel.LPCO2.Description">Drood呼吸产生的低压二氧化碳</s>
+    <s id="Fuel.Wasted Water.Name">废水</s>
+    <s id="Fuel.Wasted Water.Description">Drood产生的废水</s>
+    <s id="Fuel.Solid Waste.Name">固体废物</s>
+    <s id="Fuel.Solid Waste.Description">Drood产生的固体废物,或者你可以称之为屎</s>
+    <s id="Fuel.LPN2.Name">气态氮气</s>
+    <s id="Fuel.LPN2.Description">纯纯的低压氮气</s>
 </Strings>

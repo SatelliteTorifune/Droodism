@@ -29266,6 +29266,13 @@
             <param name="instruction">The program instruction.</param>
             <param name="state">The state.</param>
         </member>
+        <member name="M:ModApi.Craft.Program.ThreadContext.ResolveVariableName(System.String)">
+            <summary>
+            Resolves an event-variable locale-key name to its invariant English id; plain names pass through.
+            </summary>
+            <param name="name">The variable name from the program.</param>
+            <returns>The invariant English variable id.</returns>
+        </member>
         <member name="T:ModApi.Craft.Program.Variable">
             <summary>
             Variable used in a program.
@@ -29841,6 +29848,11 @@
         <member name="P:ModApi.Craft.Propulsion.FuelType.DisplayName">
             <summary>
             Gets the localized display name, resolved from "Fuel.&lt;Id&gt;.Name" and falling back to <see cref="P:ModApi.Craft.Propulsion.FuelType.Name"/>.
+            </summary>
+        </member>
+        <member name="P:ModApi.Craft.Propulsion.FuelType.DisplayDescription">
+            <summary>
+            Gets the localized description, resolved from "Fuel.&lt;Id&gt;.Description" and falling back to <see cref="P:ModApi.Craft.Propulsion.FuelType.Description"/>.
             </summary>
         </member>
         <member name="P:ModApi.Craft.Propulsion.FuelType.Price">
@@ -80024,7 +80036,7 @@
             Loads the fonts from the path/Fonts.xml.
             </summary>
             <param name="path">The folder path containing Fonts.xml.</param>
-            <returns><c>true</c> if we parsed Fonts.xml under the path, otherwise <c>false</c>.</returns>
+            <returns><c>true</c> if a Fonts.xml exists under the path, otherwise <c>false</c>.</returns>
         </member>
         <member name="M:ModApi.Ui.IFontCache.TryGetFont(System.String,System.Object@)">
             <summary>

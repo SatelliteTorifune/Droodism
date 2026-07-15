@@ -15,12 +15,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 {
     using System;
     using System.Collections.Generic;
+    using ModApi;
     using ModApi.Craft.Parts;
     using ModApi.Craft.Parts.Attributes;
     using UnityEngine;
 
     [Serializable]
-    [DesignerPartModifier("SupportLife",PanelOrder = 2000)]
+    [DesignerPartModifier("Droodism.SupportLifeData.Header", PanelOrder = 2000)]
     [PartModifierTypeId("SupportLife")]
     public class SupportLifeData : PartModifierData<SupportLifeScript>
     {
@@ -48,28 +49,28 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private string crewRadiationDoes = "Unknow"; 
         [SerializeField] [DesignerPropertyLabel(Order=0)]
         private string crewMissionTime = "Unknow";
-        [SerializeField] 
-        [DesignerPropertySlider(0.1f, 3f, 30, Label = "<color=green>Oxygen</color> Carry Amount(days)",Order = 4, Tooltip = "How much <color=green>Oxygen</color> Drood himself/herself will carry when Eva.")]
+        [SerializeField]
+        [DesignerPropertySlider(0.1f, 3f, 30, Label = "Droodism.SupportLifeData.OxygenCarryAmount", Order = 4, Tooltip = "Droodism.SupportLifeData.OxygenCarryAmountTooltip")]
         private float desireOxygenCapacity = 0.2f;
-        [SerializeField] [DesignerPropertySlider(0.1f, 3f, 30, Label = "<color=yellow>Food</color> Carry Amount(days)",Order = 5, Tooltip = "How much <color=yellow>Food</color> Drood himself/herself will carry when Eva.")]
+        [SerializeField] [DesignerPropertySlider(0.1f, 3f, 30, Label = "Droodism.SupportLifeData.FoodCarryAmount", Order = 5, Tooltip = "Droodism.SupportLifeData.FoodCarryAmountTooltip")]
         private float desireFoodCapacity = 0.2f;
-        [SerializeField] [DesignerPropertySlider(0.1f, 3f, 30, Label = "<color=red>Water</color> Carry Amount(days)",Order = 6, Tooltip = "How much<color=red> Drinking Water</color> Drood himself/herself will carry when Eva.")]
+        [SerializeField] [DesignerPropertySlider(0.1f, 3f, 30, Label = "Droodism.SupportLifeData.WaterCarryAmount", Order = 6, Tooltip = "Droodism.SupportLifeData.WaterCarryAmountTooltip")]
         private float desireWaterCapacity = 0.2f;
         
         [SerializeField]
-        [DesignerPropertySpinner(Label = "<color=yellow>Chute Type</color>", Order = 0, Tooltip = "The type of parachute this drood brings.")]
+        [DesignerPropertySpinner(Label = "Droodism.SupportLifeData.ChuteType", Order = 0, Tooltip = "Droodism.SupportLifeData.ChuteTypeTooltip")]
         private string _parachuteType = "Parachute";
 
         [SerializeField] 
-        [DesignerPropertySlider(100f, 1000f, 60, Label = "Min Deploy Height",Order=1, Tooltip = "Minimum height for parachute deployment")]
+        [DesignerPropertySlider(100f, 1000f, 60, Label = "Droodism.SupportLifeData.MinDeployHeight", Order = 1, Tooltip = "Droodism.SupportLifeData.MinDeployHeightTooltip")]
         private float minDeployHeight = 250f;
 
         [SerializeField]
-        [DesignerPropertyToggleButton(Label = "<color=#FFB600>Auto Deploy Parachute</color>", Order = 2,
-            Tooltip = "Auto Deploy Parachute or not")]
+        [DesignerPropertyToggleButton(Label = "Droodism.SupportLifeData.AutoDeployParachute", Order = 2,
+            Tooltip = "Droodism.SupportLifeData.AutoDeployParachuteTooltip")]
         private bool autoDeployEnabled;
         [SerializeField] 
-        [DesignerPropertySlider(100f, 1000f, 60, Label = "<color=#FFB600>Auto Deploy Height</color>",Order = 3, Tooltip = "Height for auto parachute deployment in Agl")]
+        [DesignerPropertySlider(100f, 1000f, 60, Label = "Droodism.SupportLifeData.AutoDeployHeight", Order = 3, Tooltip = "Droodism.SupportLifeData.AutoDeployHeightTooltip")]
         private float autoDeployHeight = 500f;
         
         [SerializeField][PartModifierProperty]
@@ -223,7 +224,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         protected override void OnDesignerInitialization(IDesignerPartPropertiesModifierInterface d)
         {
             base.OnDesignerInitialization(d);
-            d.OnValueLabelRequested<string>(() => this._parachuteType, x => x);
+            d.OnValueLabelRequested<string>(() => this._parachuteType, GetLocalizedChuteType);
             d.OnSpinnerValuesRequested<string>(() => this._parachuteType, this.GetSpinnerValues);
             d.OnValueLabelRequested(() => this.minDeployHeight, s => Units.GetDistanceString(Mathf.Min(s,autoDeployHeight)));
             d.OnValueLabelRequested(() => this.autoDeployHeight, s => Units.GetDistanceString(s));
@@ -248,6 +249,28 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             d.OnVisibilityRequested<string>((Expression<Func<string>>) (() => this.crewMissionTime), (Func<bool, bool>) (x => !this.Part.GetModifier<EvaData>().IsTourist));
         }
 
+
+        private static string GetLocalizedCrewRole(DroodType role)
+        {
+            switch (role)
+            {
+                case DroodType.Engineer: return Locale.GetString("Droodism.SupportLifeData.CrewRoleEngineer");
+                case DroodType.Scientist: return Locale.GetString("Droodism.SupportLifeData.CrewRoleScientist");
+                case DroodType.Pilot: return Locale.GetString("Droodism.SupportLifeData.CrewRolePilot");
+                default: return role.ToString();
+            }
+        }
+
+        private static string GetLocalizedChuteType(string type)
+        {
+            switch (type)
+            {
+                case "None": return Locale.GetString("Droodism.SupportLifeData.ChuteTypeNone");
+                case "ParaGlider": return Locale.GetString("Droodism.SupportLifeData.ChuteTypeParaGlider");
+                case "Parachute": return Locale.GetString("Droodism.SupportLifeData.ChuteTypeParachute");
+                default: return type;
+            }
+        }
 
         private void GetSpinnerValues(List<string> chuteTypes)
         {
@@ -274,12 +297,27 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 evaData.CrewName == "Unassigned"
                     ? null
                     : DroodismCrewDataManager.Instance.GetCrewMember(evaData.CrewId);
+            
+            string YellowLabel(string text) => $"<color=yellow>{text}</color>: ";
+
+            string crewNameLabel = YellowLabel(Locale.GetString("Droodism.SupportLifeData.CrewNameLabel"));
             this.crewName = DroodismCrewData == null
-                ? "<color=yellow>Crew Name</color>: Unknow"
-                : "<color=yellow>Crew Name</color>: " + evaData.CrewName;
-            this.crewRoleName = DroodismCrewData == null ? "<color=yellow>Crew Role</color>: Unknow" : GetCrewRoleName();
-            this.crewRadiationDoes=DroodismCrewData == null ? "<color=yellow>Radiation Dose: Unknow" : "<color=yellow>Radiation Dose:"+(DroodismCrewData.RadiationRate.ToString("f1")+" rad");
-            this.crewMissionTime = DroodismCrewData == null ? "<color=yellow>Total Mission Time</color>: Unknow" : "<color=yellow>Total Mission Time</color>: " + Units.GetStopwatchTimeString(DroodismCrewData.MissionTime);
+                ? crewNameLabel + Locale.GetString("Droodism.SupportLifeData.Unknown")
+                : crewNameLabel + evaData.CrewName;
+
+            this.crewRoleName = DroodismCrewData == null
+                ? YellowLabel(Locale.GetString("Droodism.SupportLifeData.CrewRoleLabel")) + Locale.GetString("Droodism.SupportLifeData.Unknown")
+                : GetCrewRoleName();
+
+            string radLabel = YellowLabel(Locale.GetString("Droodism.SupportLifeData.RadiationDoseLabel"));
+            this.crewRadiationDoes = DroodismCrewData == null
+                ? radLabel + Locale.GetString("Droodism.SupportLifeData.Unknown")
+                : radLabel + (DroodismCrewData.RadiationRate.ToString("f1") + " rad");
+
+            string missionLabel = YellowLabel(Locale.GetString("Droodism.SupportLifeData.MissionTimeLabel"));
+            this.crewMissionTime = DroodismCrewData == null
+                ? missionLabel + Locale.GetString("Droodism.SupportLifeData.Unknown")
+                : missionLabel + Units.GetStopwatchTimeString(DroodismCrewData.MissionTime);
         }
 
         /// <summary>维生罐最大容量（与旧 AddTank 逻辑一致，单位与 buffer 一致）。</summary>
@@ -290,7 +328,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 case "Oxygen": return DesireOxygenCapacity;
                 case "Food": return DesireFoodCapacity;
                 case "H2O": return DesireWaterCapacity;
-                case "CO2": return DesireCO2Capacity;
+                case "LPCO2": return DesireCO2Capacity;
                 case "Wasted Water": return DesireWastedWaterCapacity;
                 case "Solid Waste": return DesireSolidWasteCapacity;
                 default: return 0.0;
@@ -304,7 +342,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 case "Oxygen": return _oxygenAmountBuffer;
                 case "Food": return _foodAmountBuffer;
                 case "H2O": return _waterAmountBuffer;
-                case "CO2": return _co2AmountBuffer;
+                case "LPCO2": return _co2AmountBuffer;
                 case "Wasted Water": return _wastedWaterAmountBuffer;
                 case "Solid Waste": return _solidWasteAmountBuffer;
                 default: return 0.0;
@@ -322,7 +360,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 case "Oxygen": _oxygenAmountBuffer = value; break;
                 case "Food": _foodAmountBuffer = value; break;
                 case "H2O": _waterAmountBuffer = value; break;
-                case "CO2": _co2AmountBuffer = value; break;
+                case "LPCO2": _co2AmountBuffer = value; break;
                 case "Wasted Water": _wastedWaterAmountBuffer = value; break;
                 case "Solid Waste": _solidWasteAmountBuffer = value; break;
             }
@@ -339,14 +377,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private string GetCrewRoleName()
         {
             string Description = 
-                DroodismCrewData.CrewRole == DroodType.Engineer ? "Enginner Could Fix Parts" : DroodismCrewData.CrewRole == DroodType.Scientist ? "Scientist Could Increase more Science Experiment outcome(LMAO i didn't even implement this)" : 
+                DroodismCrewData.CrewRole == DroodType.Engineer ? Locale.GetString("Droodism.SupportLifeData.EngineerDescription") : DroodismCrewData.CrewRole == DroodType.Scientist ? Locale.GetString("Droodism.SupportLifeData.ScientistDescription") : 
                     DroodismCrewData.CrewRole ==DroodType.Pilot ?
-                "Basic Drood which is good at taking control of the craft":
-                "Unknow Drood Type";
+                Locale.GetString("Droodism.SupportLifeData.PilotDescription"):
+                Locale.GetString("Droodism.SupportLifeData.UnknownDroodType");
             string color = DroodismCrewData.CrewRole == DroodType.Engineer ? "#0072FF" :
                 DroodismCrewData.CrewRole == 
                 DroodType.Scientist ? "#62BF05" : DroodismCrewData.CrewRole == DroodType.Pilot?"#FF0003":"white";
-            return "<color=yellow>Crew Role</color>: "+"<color="+color+">"+DroodismCrewData.CrewRole+"</color><br>"+Description;
+            string label = $"<color=yellow>{Locale.GetString("Droodism.SupportLifeData.CrewRoleLabel")}</color>: ";
+            return label + "<color="+color+">"+GetLocalizedCrewRole(DroodismCrewData.CrewRole)+"</color><br>"+Description;
         }
         
 

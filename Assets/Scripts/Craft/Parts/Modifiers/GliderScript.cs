@@ -74,8 +74,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private bool FuckOff2=true;
         public void FlightUpdate(in FlightFrameData frame)
         {
-            if (_pilot == null)
+            if (_pilot == null||_crewCompartment.Crew.Count==0)
             {
+                this.PartScript.BodyScript.ExplodePart(this.PartScript, -1);
                 return;
             }
             
@@ -109,10 +110,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
             }
             
-            if (_crewCompartment.Crew.Count==0)
-            {
-                this.PartScript.BodyScript.ExplodePart(this.PartScript, -1);
-            }
+            
             
             OpenPercent = (parachuteMeshTransform.transform.localScale.x * parachuteMeshTransform.transform.localScale.y)/ 1e4f;
             

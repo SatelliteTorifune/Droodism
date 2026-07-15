@@ -50,7 +50,7 @@ namespace Assets.Scripts.HarmonyPatches
 
                     void AddStuff(String fuelType)
                     {
-                        bool isWaste = fuelType.Contains("Waste") || fuelType == "CO2";
+                        bool isWaste = fuelType.Contains("Waste") || fuelType == "LPCO2";
                         string name;
                         switch (fuelType)
                         {
@@ -63,7 +63,7 @@ namespace Assets.Scripts.HarmonyPatches
                             case "Food":
                                 name = Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.Food");
                                 break;
-                            case "CO2":
+                            case "LPCO2":
                                 name = Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.CarbonDioxide");
                                 break;
                             case "Wasted Water":

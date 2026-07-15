@@ -27,6 +27,7 @@ namespace Assets.Scripts
         private static readonly string SupportLifeDataModifierName = "SupportLifeData";
         private static readonly string RagdollModifierName = "RagdollModifier";
         private static readonly string DockingPortModifierName = "Docking Port";
+        private static readonly string ParachutePartName = "DroodParachute";
 
         
 
@@ -63,10 +64,10 @@ namespace Assets.Scripts
 
 
             // Process Command Pods
-            foreach (var part in craftScript.Data.Assembly.Parts.Where(part => part.PartType.IsCommandPod&&!part.PartType.Name.Contains(Cockpit) && !part.PartType.Name.Contains(EvaPartName)).ToList())
+            foreach (var part in GetCommandPods(craftScript))
             {
                 PatchCommandPod(part);
-                if (part.GetModifier<CrewCompartmentData>() != null)
+                if (part.GetModifier<CrewCompartmentData>() != null&&part.PartType.Name!=ParachutePartName)
                 {
                     AddCrewCompartmentPatch(part);
                 }
@@ -74,7 +75,7 @@ namespace Assets.Scripts
             }
             
             // Process Crew Compartments
-            foreach (var part in craftScript.Data.Assembly.Parts.Where(part => part.GetModifier<CrewCompartmentData>() != null&&!part.PartType.Name.Contains(ChairPartName)&&!part.PartType.Name.Contains(Cockpit) && !part.PartType.Name.Contains(EvaPartName)).ToList())
+            foreach (var part in craftScript.Data.Assembly.Parts.Where(part => part.GetModifier<CrewCompartmentData>() != null&&!part.PartType.Name.Contains(ChairPartName)&&!part.PartType.Name.Contains(Cockpit) && !part.PartType.Name.Contains(EvaPartName)&&part.PartType.Name!=ParachutePartName).ToList())
             {
                 AddCrewCompartmentPatch(part);
             }
@@ -84,6 +85,11 @@ namespace Assets.Scripts
                 GetDroodCountInDesigner();
             }
             
+        }
+
+        private List<PartData> GetCommandPods(CraftScript craft)
+        {
+            return craft.Data.Assembly.Parts.Where(part => part.PartType.IsCommandPod && !part.PartType.Name.Contains(EvaPartName)).ToList();
         }
 
         /// <summary>
@@ -125,15 +131,15 @@ namespace Assets.Scripts
             {
                 AddLifeSupportRTGModifiers(part);
             }
-            else if (part.PartType.IsCommandPod && !part.PartType.Name.Contains(EvaPartName)&&!part.PartType.Name.Contains(ChairPartName)&&!part.PartType.Name.Contains(Cockpit))
+            else if (part.PartType.IsCommandPod && !part.PartType.Name.Contains(EvaPartName))
             {
                 PatchCommandPod(part);
-                if (part.GetModifier<CrewCompartmentData>() != null)
+                if (part.GetModifier<CrewCompartmentData>() != null&&part.PartType.Name!=ParachutePartName)
                 {
                     AddCrewCompartmentPatch(part);
                 }
             }
-            else if (part.GetModifier<CrewCompartmentData>() != null && !part.PartType.Name.Contains(EvaPartName)&&!part.PartType.Name.Contains(ChairPartName)&&!part.PartType.Name.Contains(Cockpit)&&!part.PartType.Name.Contains(ChairPartName))
+            else if (part.GetModifier<CrewCompartmentData>() != null && !part.PartType.Name.Contains(EvaPartName)&&!part.PartType.Name.Contains(ChairPartName)&&!part.PartType.Name.Contains(Cockpit)&&!part.PartType.Name.Contains(ChairPartName)&&part.PartType.Name!=ParachutePartName)
             {
                 AddCrewCompartmentPatch(part);
             }

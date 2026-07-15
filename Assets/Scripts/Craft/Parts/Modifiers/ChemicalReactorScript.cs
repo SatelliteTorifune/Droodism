@@ -131,7 +131,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             switch (WorkingType)
             {
                 case "H2O+CO2=Methanelox":
-                    HPco2Source = GetRegularCraftFuelSource("HPCO2");
+                    HPco2Source = GetRegularCraftFuelSource("CO2");
                     waterSource=this.PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>().WaterFuelSource;
                     methaneloxSource = GetRegularCraftFuelSource("LOX/CH4");
                     break;

@@ -11,7 +11,7 @@ namespace Assets.Scripts
     public partial class Mod:GameMod
     {
         public static readonly string[] _massTypes = { "g", "kg", "t", "kt" };
-        public static List<string> fuelTypes = new List<string> { "Oxygen", "H2O", "Food", "CO2", "Wasted Water", "Solid Waste"};
+        public static List<string> fuelTypes = new List<string> { "Oxygen", "H2O", "Food", "LPCO2", "Wasted Water", "Solid Waste"};
 
         public static string GetFuelAmountInDesigner(string fuelId)
         {
@@ -32,7 +32,7 @@ namespace Assets.Scripts
                         return Instance.FormatFuel(patch.WaterFuelSource.TotalFuel * patch.WaterFuelSource.FuelType.Density, _massTypes);
                     case "Food":
                         return Instance.FormatFuel(patch.FoodFuelSource.TotalFuel * patch.FoodFuelSource.FuelType.Density, _massTypes);
-                    case "CO2":
+                    case "LPCO2":
                         return Instance.FormatFuel(patch.CO2FuelSource.TotalCapacity * patch.CO2FuelSource.FuelType.Density, _massTypes);
                     case "Wasted Water":
                         return Instance.FormatFuel(patch.WastedWaterFuelSource.TotalCapacity * patch.WastedWaterFuelSource.FuelType.Density, _massTypes);

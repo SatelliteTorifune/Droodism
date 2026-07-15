@@ -6,13 +6,13 @@ using ModApi.Design.PartProperties;
 using UnityEngine;
 
 [Serializable]
-[DesignerPartModifier("Ragdoll",PanelOrder = 2000)]
+[DesignerPartModifier("Droodism.RagdollModifierData.Header", PanelOrder = 2000)]
 [PartModifierTypeId("Ragdoll")]
 public class RagdollModifierData : PartModifierData<RagdollModifierScript>
 {
     [SerializeField]
     [PartModifierProperty]
-    [DesignerPropertyToggleButton(Label = "Enable Ragdoll", Order = 0, Tooltip = "Whether to enable ragdoll physics on this part.")]
+    [DesignerPropertyToggleButton(Label = "Droodism.RagdollModifierData.EnableRagdoll", Order = 0, Tooltip = "Droodism.RagdollModifierData.EnableRagdollTooltip")]
     private bool _enableRagdoll = false;
     public bool EnableRagdoll
     {

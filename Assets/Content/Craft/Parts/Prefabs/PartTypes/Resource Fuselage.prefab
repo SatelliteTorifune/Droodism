@@ -354,7 +354,7 @@ MonoBehaviour:
     _autoFuelType: 1
     _capacity: 150
     _fuel: 0
-    _fuelType: CO2
+    _fuelType: LPCO2
     _fuelTypeDescription: 
     _fuelTypeReadOnly: true
     _priority: 0

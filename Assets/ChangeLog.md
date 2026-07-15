@@ -1,3 +1,15 @@
+## 2026 7 15
+> 增加了更多的本地化
+
+## 2026 7 14
+> 替换并移除了Override的fuelType
+> >移除了高压二氧化碳和高压氮气
+>
+> 完成了UI本地化
+
+## 2026 7 13
+> 修复了PartAddingManager中不给cockpit添加STCommandPodPatch的bug
+
 ## 2026 7 11
 > 为menuMapView添加了辐射带支持
 > 

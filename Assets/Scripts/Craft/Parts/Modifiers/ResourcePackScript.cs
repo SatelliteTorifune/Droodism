@@ -45,7 +45,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     case "Food":
                         partModifierScript.Data.Capacity = partModifierScript.Data.Fuel = 0.5f*Data.ResScale;
                         break;
-                    case "CO2":
+                    case "LPCO2":
                         partModifierScript.Data.Capacity = 300*Data.ResScale;
                         partModifierScript.Data.Fuel = 0;
                         break;

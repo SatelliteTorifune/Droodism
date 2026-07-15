@@ -161,7 +161,7 @@ namespace Assets.Scripts.Droodism.ResourceWarning
                     supportLifeData._foodAmountBuffer, supportLifeData.DesireFoodCapacity, false,
                     true, gameTime);
 
-                CheckResource(droodName, droodId, "CO2",
+                CheckResource(droodName, droodId, "LPCO2",
                     supportLifeData._co2AmountBuffer, supportLifeData.DesireCO2Capacity, true,
                     usingInternalOxygen, gameTime);
 
