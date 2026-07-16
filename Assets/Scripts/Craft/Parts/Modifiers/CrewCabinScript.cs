@@ -57,7 +57,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public override void OnGenerateInspectorModel(PartInspectorModel model)
         {
             base.OnGenerateInspectorModel(model);
-            model.Add<TextModel>(new TextModel("<color=yellow>" + Locale.GetString("Droodism.CrewCabinScript.RadiationShieldType"), (Func<string>) (() =>this.Data.RadiationShieldType)));
+            model.Add<TextModel>(new TextModel("<color=yellow>" + Locale.GetString("Droodism.CrewCabinScript.RadiationShieldType"), (Func<string>) (() =>CrewCabinData.GetLocalizedShieldType(this.Data.RadiationShieldType))));
             model.Add<TextModel>(new TextModel("<color=yellow>" + Locale.GetString("Droodism.CrewCabinScript.RadiationShieldDuration"), (Func<string>) (() =>Data.RadiationShieldDurationUpperLimit==0?Locale.GetString("Droodism.DroodismUIManager.NotAvailable"):Units.GetPercentageString((float)(this.Data.RadiationShieldDuration/this.Data.RadiationShieldDurationUpperLimit)))));
             if (this.Data.RadiationShieldType == "Water" || Data.RadiationShieldType == "Liquid Hydrogen")
             {
@@ -296,7 +296,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public override void OnGeneratePerformanceAnalysisModel(GroupModel groupModel)
         {
-            groupModel.Add<TextModel>(new TextModel("<color=yellow>" + Locale.GetString("Droodism.CrewCabinScript.RadiationShieldType") + "</color>",(Func<string>) (()=> this.Data.RadiationShieldType),tooltip: Locale.GetString("Droodism.CrewCabinScript.RadiationShieldTypeTooltip")));
+            groupModel.Add<TextModel>(new TextModel("<color=yellow>" + Locale.GetString("Droodism.CrewCabinScript.RadiationShieldType") + "</color>",(Func<string>) (()=> CrewCabinData.GetLocalizedShieldType(this.Data.RadiationShieldType)),tooltip: Locale.GetString("Droodism.CrewCabinScript.RadiationShieldTypeTooltip")));
             groupModel.Add<ProgressBarModel>(new ProgressBarModel(()=>
                 Locale.GetString("Droodism.CrewCabinScript.RadiationDuration"), 
                 () => (float)(this.Data.RadiationShieldDuration / this.Data.RadiationShieldDurationUpperLimit)));

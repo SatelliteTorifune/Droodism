@@ -132,7 +132,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
 
 
-        private static string GetLocalizedShieldType(string type)
+        internal static string GetLocalizedShieldType(string type)
         {
             switch (type)
             {
