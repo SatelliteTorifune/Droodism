@@ -80,11 +80,11 @@ MonoBehaviour:
   Data:
     _activationGroup: 0
     _category: {fileID: 11400000, guid: 2d849a06cee127543a64b34a37e37bc1, type: 2}
-    _description: Put this into water to refill the water
+    _description: DesignerParts.WaterPump.WaterPump.Description
     _displayOrder: 0
     _iconPath: 
     _iconType: 0
-    _name: Water Pump
+    _name: DesignerParts.WaterPump.WaterPump.Name
     _partTypeOverrides: []
     _position: {x: 0, y: 0, z: 0}
     _rotation: {x: 0, y: 0, z: 0}

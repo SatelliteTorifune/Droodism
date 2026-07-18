@@ -13,7 +13,7 @@
     </SubpartTypes>
   </PartType>
   <DesignerParts>
-    <DesignerPart name="MethaloxGenerator" category="In-Situ Resource Utilization" description="A device turnning &lt;color=red&gt;High Pressure CO2&lt;/color&gt;,&lt;color=red&gt;Water &lt;/color&gt;into&#xA;&lt;color=green&gt;Methalox" order="0" showInDesigner="true" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
+    <DesignerPart name="DesignerParts.MethaloxGenerator.MethaloxGenerator.Name" category="In-Situ Resource Utilization" description="DesignerParts.MethaloxGenerator.MethaloxGenerator.Description" order="0" showInDesigner="true" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
       <Assembly>
         <Parts>
           <Part id="1" partType="MethaloxGenerator" position="0,0,0" rotation="0,0,0">

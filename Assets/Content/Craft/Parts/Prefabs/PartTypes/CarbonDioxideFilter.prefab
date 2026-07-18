@@ -80,13 +80,11 @@ MonoBehaviour:
   Data:
     _activationGroup: 0
     _category: {fileID: 11400000, guid: 7d2b6f557b8767544a162f30e61d22b6, type: 2}
-    _description: A Filter to removed<color=red> Carbon Dioxide </color>when you
-      don't want to make use of it,the device simply throw the waste CarbonDioxide
-      out of craft using eletricity charge to operate
+    _description: DesignerParts.CarbonDioxideFilter.CarbonDioxideFilter.Description
     _displayOrder: 0
     _iconPath: 
     _iconType: 0
-    _name: Carbon DioxideFilter
+    _name: DesignerParts.CarbonDioxideFilter.CarbonDioxideFilter.Name
     _partTypeOverrides: []
     _position: {x: 0, y: 0, z: 0}
     _rotation: {x: 0, y: 0, z: 0}

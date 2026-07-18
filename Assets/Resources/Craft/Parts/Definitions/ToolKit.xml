@@ -14,7 +14,7 @@
     </SubpartTypes>
   </PartType>
   <DesignerParts>
-    <DesignerPart name="Tool Kit" category="LifeSupport" description="A tool kit which resupplies engineers' repair tools" order="0" showInDesigner="true" iconType="Resource" iconPath="Assets/Content/Craft/Parts/ToolBox.png" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
+    <DesignerPart name="DesignerParts.ToolKit.ToolKit.Name" category="LifeSupport" description="DesignerParts.ToolKit.ToolKit.Description" order="0" showInDesigner="true" iconType="Resource" iconPath="Assets/Content/Craft/Parts/ToolBox.png" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
       <Assembly>
         <Parts>
           <Part id="1" partType="ToolKit" position="0,0,0" rotation="0,0,0">

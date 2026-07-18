@@ -32,7 +32,7 @@
     <!-- CrewCabinData -->
     <s id="Droodism.CrewCabinData.Header">乘员舱</s>
     <s id="Droodism.CrewCabinData.RadiationShieldAmount">&lt;color=yellow&gt;辐射屏蔽层量&lt;/color&gt;</s>
-    <s id="Droodism.CrewCabinData.RadiationShieldAmountTooltip">此乘员舱的当前辐射屏蔽层量，会极大影响部件质量</s>
+    <s id="Droodism.CrewCabinData.RadiationShieldAmountTooltip">此乘员舱的当前辐射屏蔽层量,会极大影响部件质量</s>
     <s id="Droodism.CrewCabinData.RadiationShieldType">&lt;color=yellow&gt;辐射屏蔽层类型&lt;/color&gt;</s>
     <s id="Droodism.CrewCabinData.RadiationShieldTypeTooltip">此乘员舱携带的辐射屏蔽材料类型</s>
     <s id="Droodism.CrewCabinData.ShieldTypeNone">无</s>
@@ -202,7 +202,7 @@
     <s id="Droodism.ModSettings.WarningThreshold">警告阈值</s>
     <s id="Droodism.ModSettings.WarningThresholdDesc">当资源低于此百分比时将触发警告</s>
     <s id="Droodism.ModSettings.FixAngularDragInVacuum">修复真空中角速度阻力</s>
-    <s id="Droodism.ModSettings.FixAngularDragInVacuumDesc">修复真空中角速度自行衰减的问题，禁用此项可还原原版行为</s>
+    <s id="Droodism.ModSettings.FixAngularDragInVacuumDesc">修复真空中角速度自行衰减的问题,禁用此项可还原原版行为</s>
 
     <!-- OnHireButtonClickedPatch -->
     <s id="Droodism.OnHireButtonClickedPatch.ChooseDroodType">选择您想要招募的 Drood 类型：</s>
@@ -321,7 +321,7 @@
     <s id="Droodism.SupportLifeData.Unknown">未知</s>
     <s id="Droodism.SupportLifeData.EngineerDescription">工程师可修复零件</s>
     <s id="Droodism.SupportLifeData.ScientistDescription">科学家可提高科学实验产出(但是我还没做完)</s>
-    <s id="Droodism.SupportLifeData.PilotDescription">基础Drood，擅长操控飞行器,受到的过载伤害更小</s>
+    <s id="Droodism.SupportLifeData.PilotDescription">基础Drood,擅长操控飞行器,受到的过载伤害更小</s>
     <s id="Droodism.SupportLifeData.UnknownDroodType">未知Drood类型</s>
     <s id="Droodism.SupportLifeData.OxygenCarryAmount">&lt;color=green&gt;氧气&lt;/color&gt;携带量(天)</s>
     <s id="Droodism.SupportLifeData.OxygenCarryAmountTooltip">Drood出舱时自身携带的氧气量</s>
@@ -471,4 +471,66 @@
     <s id="Fuel.Solid Waste.Description">Drood产生的固体废物,或者你可以称之为屎</s>
     <s id="Fuel.LPN2.Name">气态氮气</s>
     <s id="Fuel.LPN2.Description">纯纯的低压氮气</s>
+    
+    <!--Designer-->
+    <s id="DesignerParts.CarbonDioxideFilter.CarbonDioxideFilter.Name">二氧化碳过滤器</s>
+    <s id="DesignerParts.CarbonDioxideFilter.CarbonDioxideFilter.Description">一种用于去除 &lt;color=red&gt;二氧化碳&lt;/color&gt; 的过滤器,当你不需要利用它时,设备会直接将废弃的二氧化碳排出飞行器,需要电力来运行</s>
+    
+    <s id="DesignerParts.ChemicalReactor.ChemicalReactor.Name">化学反应器</s>
+    <s id="DesignerParts.ChemicalReactor.ChemicalReactor.Description">一个用于 ISRU 的小型化学反应器,使用前请选择正确的反应类型</s>
+    
+    <s id="DesignerParts.DOCRDevice.DOCRDevice.Name">Drood 有机分类与回收装置</s>
+    <s id="DesignerParts.DOCRDevice.DOCRDevice.Description">&lt;color=red&gt;&lt;size=150%&gt;有时候,为了更伟大的利益,你的船员需要做出牺牲......&lt;/size&gt;&lt;/color&gt;</s>
+    
+    <s id="DesignerParts.ElectrolyticDevice.ElectrolyticDevice.Name">电解水装置</s>
+    <s id="DesignerParts.ElectrolyticDevice.ElectrolyticDevice.Description">将 &lt;color=yellow&gt;水&lt;/color&gt; 转化为 &lt;color=green&gt;氧气&lt;/color&gt;,需要电力运行</s>
+    
+    <s id="DesignerParts.FoodTank.FoodTank.Name">食物箱</s>
+    <s id="DesignerParts.FoodTank.FoodTank.Description">一个装有 &lt;color=yellow&gt;食物&lt;/color&gt; 的容器</s>
+    
+    <s id="DesignerParts.GasDepressurizeDevice.GasDepressurizeDevice.Name">气体减压装置</s>
+    <s id="DesignerParts.GasDepressurizeDevice.GasDepressurizeDevice.Description">用于将高压气体或液态气体减压为低压气体的减压阀</s>
+    
+    <s id="DesignerParts.GasPressurizeDevice.GasPressurizeDevice.Name">气体加压装置</s>
+    <s id="DesignerParts.GasPressurizeDevice.GasPressurizeDevice.Description">用于将低密度气体压缩为高压气体或液态气体,需要电力运行</s>
+    
+    <s id="DesignerParts.HibernatingChamber.HibernatingChamber.Name">冬眠舱</s>
+    <s id="DesignerParts.HibernatingChamber.HibernatingChamber.Description">想让你的船员睡得更久一点?这就是你想要的</s>
+    
+    <s id="DesignerParts.MethaloxGenerator.MethaloxGenerator.Name">甲烷液氧反应器</s>
+    <s id="DesignerParts.MethaloxGenerator.MethaloxGenerator.Description">一个将 &lt;color=red&gt;高压二氧化碳&lt;/color&gt;、&lt;color=red&gt;水&lt;/color&gt; 转化为 &lt;color=green&gt;甲烷液氧&lt;/color&gt; 的装置</s>
+    
+    <s id="DesignerParts.PhotoBioReactor.PhotoBioReactor.Name">光生物反应器</s>
+    <s id="DesignerParts.PhotoBioReactor.PhotoBioReactor.Description">当 &lt;color=green&gt;激活&lt;/color&gt; 时,将二氧化碳/水转化为氧气和食物,由太阳能或电力驱动。固体废物将提升食物生成效率</s>
+    
+    <s id="DesignerParts.ResourcesFuselage.ResourcesFuselage.Name">资源箱</s>
+    <s id="DesignerParts.ResourcesFuselage.ResourcesFuselage.Description">多功能燃料箱,可塑形为多种形状,并可存储多种不同类型的 &lt;color=green&gt;维生资源&lt;/color&gt;</s>
+    
+    <s id="DesignerParts.ResourcesPack.ResourcesPack.Name">资源包</s>
+    <s id="DesignerParts.ResourcesPack.ResourcesPack.Description">如果你不想花时间一个一个地设置和放置维生资源箱,这是个更快捷的选择,此部件集成了 &lt;color=green&gt;单个 Drood&lt;/color&gt; 24 小时消耗的必要资源</s>
+    
+    <s id="DesignerParts.SewageTreatDevice.SewageTreatDevice.Name">污水处理装置</s>
+    <s id="DesignerParts.SewageTreatDevice.SewageTreatDevice.Description">一种将 &lt;color=red&gt;废水&lt;/color&gt; 处理为清洁 &lt;color=green&gt;饮用水&lt;/color&gt; 的装置,由电力驱动</s>
+    
+    <s id="DesignerParts.SodiumPeroxideContainer.SodiumPeroxideContainer.Name">过氧化钠容器</s>
+    <s id="DesignerParts.SodiumPeroxideContainer.SodiumPeroxideContainer.Description">吸收二氧化碳/废水并在紧急情况下释放出 &lt;color=green&gt;氧气&lt;/color&gt;,不需要电力驱动</s>
+    
+    <s id="DesignerParts.ToolKit.ToolKit.Name">工具箱</s>
+    <s id="DesignerParts.ToolKit.ToolKit.Description">一个用于补充工程师修复工具的工具箱</s>
+    
+    <s id="DesignerParts.WaterPump.WaterPump.Name">水泵</s>
+    <s id="DesignerParts.WaterPump.WaterPump.Description">放入水中以补充水的装置</s>
+    
+    <s id="DesignerParts.WaterTank.WaterTank.Name">水箱</s>
+    <s id="DesignerParts.WaterTank.WaterTank.Description">一个装有 &lt;color=green&gt;水&lt;/color&gt; 的容器</s>
+    
+    <s id="DesignerParts.FirstAidKit.FirstAidKit.Name">急救包</s>
+    <s id="DesignerParts.FirstAidKit.FirstAidKit.Description">治疗 Drood</s>
+    
+    <s id="DesignerParts.GravityRing.GravityRing.Name">&lt;color=green&gt;重力环&lt;/color&gt;</s>
+    <s id="DesignerParts.GravityRing.GravityRing.Description">一个巨大的重力环,能利用人工重力提供舒适的居住环境,需要氮气来展开部署</s>
+
+    <!--category-->
+    <s id="Design.PartsList.Category.LifeSupport.Name">维生资源</s>
+    <s id="Design.PartsList.Category.ISRU.Name">原位资源利用</s>
 </Strings>

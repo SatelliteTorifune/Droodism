@@ -13,7 +13,7 @@
     </SubpartTypes>
   </PartType>
   <DesignerParts>
-    <DesignerPart name="Food Tank" category="LifeSupport" description="A container with &lt;color=yellow&gt;food" order="0" showInDesigner="true" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
+    <DesignerPart name="DesignerParts.FoodTank.FoodTank.Name" category="LifeSupport" description="DesignerParts.FoodTank.FoodTank.Description" order="0" showInDesigner="true" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
       <Assembly>
         <Parts>
           <Part id="1" partType="FoodTank" position="0,0,0" rotation="0,0,0">

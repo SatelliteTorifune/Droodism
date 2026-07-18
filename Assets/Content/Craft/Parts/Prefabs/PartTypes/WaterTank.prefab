@@ -80,11 +80,11 @@ MonoBehaviour:
   Data:
     _activationGroup: 0
     _category: {fileID: 11400000, guid: 7d2b6f557b8767544a162f30e61d22b6, type: 2}
-    _description: A Container with <color=green>Water
+    _description: DesignerParts.WaterTank.WaterTank.Description
     _displayOrder: 0
     _iconPath: 
     _iconType: 0
-    _name: WaterTank
+    _name: DesignerParts.WaterTank.WaterTank.Name
     _partTypeOverrides: []
     _position: {x: 0, y: 0, z: 0}
     _rotation: {x: 0, y: 0, z: 0}

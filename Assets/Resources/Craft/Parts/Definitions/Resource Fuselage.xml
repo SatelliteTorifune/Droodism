@@ -24,7 +24,7 @@
     </SubpartTypes>
   </PartType>
   <DesignerParts>
-    <DesignerPart name="Resource Fuselage" category="LifeSupport" description="Versatile fuel tank that can be resized into many shapes and can hold many different types of &lt;color=green&gt;Life Support Resources." order="0" showInDesigner="true" snapshotDistanceScaler="1.1" snapshotRotation="30,30,0">
+    <DesignerPart name="DesignerParts.ResourcesFuselage.ResourcesFuselage.Name" category="LifeSupport" description="DesignerParts.ResourcesFuselage.ResourcesFuselage.Description" order="0" showInDesigner="true" snapshotDistanceScaler="1.1" snapshotRotation="30,30,0">
       <Assembly>
         <Parts>
           <Part id="1" partType="Resource Fuselage" position="0,0,0" rotation="0,0,0">

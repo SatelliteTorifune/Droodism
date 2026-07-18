@@ -80,12 +80,11 @@ MonoBehaviour:
   Data:
     _activationGroup: 0
     _category: {fileID: 11400000, guid: 7d2b6f557b8767544a162f30e61d22b6, type: 2}
-    _description: Electrolytic Device,which turns<color=yellow>water</color> to<color=green>oxygen</color>,require
-      electricity to run
+    _description: DesignerParts.ElectrolyticDevice.ElectrolyticDevice.Description
     _displayOrder: 0
     _iconPath: 
     _iconType: 0
-    _name: Electrolytic Device
+    _name: DesignerParts.ElectrolyticDevice.ElectrolyticDevice.Name
     _partTypeOverrides: []
     _position: {x: 0, y: 0, z: 0}
     _rotation: {x: 0, y: 0, z: 0}

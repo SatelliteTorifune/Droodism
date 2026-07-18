@@ -80,11 +80,11 @@ MonoBehaviour:
   Data:
     _activationGroup: 0
     _category: {fileID: 11400000, guid: 4bfc71c0b9c1253428ca08e136ecc26f, type: 2}
-    _description: 
+    _description: DesignerParts.GravityRing.GravityRing.Description
     _displayOrder: 0
     _iconPath: Assets/Content/Craft/Parts/GravityRingIcon.png
     _iconType: 2
-    _name: <color=green>Flag
+    _name: DesignerParts.GravityRing.GravityRing.Name
     _partTypeOverrides: []
     _position: {x: 0, y: 0, z: 0}
     _rotation: {x: 0, y: 0, z: 0}
