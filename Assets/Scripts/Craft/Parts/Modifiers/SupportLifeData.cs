@@ -51,11 +51,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private string crewMissionTime = "Unknow";
         [SerializeField]
         [DesignerPropertySlider(0.1f, 3f, 30, Label = "Droodism.SupportLifeData.OxygenCarryAmount", Order = 4, Tooltip = "Droodism.SupportLifeData.OxygenCarryAmountTooltip")]
-        private float desireOxygenCapacity = 0.2f;
+        private float desireOxygenCapacity = 0.5f;
         [SerializeField] [DesignerPropertySlider(0.1f, 3f, 30, Label = "Droodism.SupportLifeData.FoodCarryAmount", Order = 5, Tooltip = "Droodism.SupportLifeData.FoodCarryAmountTooltip")]
-        private float desireFoodCapacity = 0.2f;
+        private float desireFoodCapacity = 0.5f;
         [SerializeField] [DesignerPropertySlider(0.1f, 3f, 30, Label = "Droodism.SupportLifeData.WaterCarryAmount", Order = 6, Tooltip = "Droodism.SupportLifeData.WaterCarryAmountTooltip")]
-        private float desireWaterCapacity = 0.2f;
+        private float desireWaterCapacity = 0.5f;
         
         [SerializeField]
         [DesignerPropertySpinner(Label = "Droodism.SupportLifeData.ChuteType", Order = 0, Tooltip = "Droodism.SupportLifeData.ChuteTypeTooltip")]

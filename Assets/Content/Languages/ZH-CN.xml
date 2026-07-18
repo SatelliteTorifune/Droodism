@@ -314,8 +314,8 @@
 
     <!-- SupportLifeData -->
     <s id="Droodism.SupportLifeData.Header">维生数据</s>
-    <s id="Droodism.SupportLifeData.CrewNameLabel">乘员姓名</s>
-    <s id="Droodism.SupportLifeData.CrewRoleLabel">职位类型</s>
+    <s id="Droodism.SupportLifeData.CrewNameLabel">姓名</s>
+    <s id="Droodism.SupportLifeData.CrewRoleLabel">类型</s>
     <s id="Droodism.SupportLifeData.RadiationDoseLabel">辐射剂量</s>
     <s id="Droodism.SupportLifeData.MissionTimeLabel">总任务时间</s>
     <s id="Droodism.SupportLifeData.Unknown">未知</s>
