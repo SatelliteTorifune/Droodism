@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 4192649501
+CRC: 3677572865
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 935b8b07c9357aaa8345459dc57703ad
+    Hash: dbb0ea24e0403a1f12d1d2b03637f01a
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 8357e557b520cda23c528e14b1789d5e
+    Hash: a58ce5eca3b8004653945f316c923753
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 935b8b07c9357aaa8345459dc57703ad
+    Hash: dbb0ea24e0403a1f12d1d2b03637f01a
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -62,8 +62,6 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 199
   Script: {instanceID: 0}
-- Class: 212
-  Script: {instanceID: 0}
 - Class: 213
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers:
@@ -71,13 +69,13 @@ SerializeReferenceClassIdentifiers:
   ClassName: UI.Xml.XmlLayoutResourceEntry
 Assets:
 - Assets/Resources/DefaultRadiationBeltConfigs/Cylero.xml
+- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/Resources/DefaultRadiationBeltConfigs/Tydos.xml
 - Assets/Resources/Craft/Parts/Prefabs/GravityRing.prefab
-- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/Content/Craft/Parts/Textures/cloud_4_variants.psd
 - Assets/Resources/Craft/Parts/Prefabs/Flag.prefab
 - Assets/Resources/DefaultRadiationBeltConfigs/Earth.xml
-- Assets/Content/Craft/Parts/Categories/Science.asset
+- Assets/Content/Languages/ZH-CN.xml
 - Assets/Resources/Craft/Parts/Prefabs/PhotoBioReactor.prefab
 - Assets/Resources/DefaultRadiationBeltConfigs/Taurus.xml
 - Assets/Content/Craft/Parts/ToolBox.png
@@ -111,11 +109,11 @@ Assets:
 - Assets/Resources/Craft/Parts/Prefabs/ToolKit.prefab
 - Assets/Resources/Craft/Parts/Definitions/Resource Fuselage.xml
 - Assets/Resources/Craft/Parts/Prefabs/GasDepressurizeDevice.prefab
-- Assets/Resources/Craft/Parts/Definitions/SewageTreatDevice.xml
+- Assets/Content/Craft/Parts/Categories/Icons/DroodsimCatIcon.png
 - Assets/Resources/Craft/Parts/Prefabs/DOCRDevice.prefab
+- Assets/Resources/Craft/Parts/Definitions/SewageTreatDevice.xml
 - Assets/Content/Craft/Parts/GravityRingIcon.png
 - Assets/Resources/Craft/Parts/Prefabs/ResourcesPack.prefab
-- Assets/_ModAssets_/Droodism.dll.bytes
 - Assets/Resources/Craft/Parts/Prefabs/WaterTank.prefab
 - Assets/Resources/DefaultRadiationBeltConfigs/Vulco.xml
 - Assets/Resources/Craft/Parts/Definitions/HibernatingChamber.xml
@@ -131,12 +129,14 @@ Assets:
 - Assets/Resources/DefaultRadiationBeltConfigs/Droo.xml
 - Assets/Content/Craft/Parts/PartManager.asset
 - Assets/Resources/Craft/Parts/Definitions/Sodium Peroxide Container.xml
+- Assets/Content/Languages/EN-US.xml
 - Assets/Resources/Craft/Parts/Definitions/ChemicalReactor.xml
 - Assets/Resources/Craft/Parts/Prefabs/CarbonDioxideFilter.prefab
 - Assets/Resources/PlanetBelt.prefab
 - Assets/Content/Craft/Parts/FirstAidKit.png
 - Assets/Content/XML UI/Sprites/DroodsimUIIcon.png
 - Assets/Resources/Craft/Parts/Prefabs/SewageTreatDevice.prefab
+- Assets/_ModAssets_/Droodism.dll.bytes
 - Assets/Resources/Craft/Parts/Definitions/FirstAidKit.xml
 - Assets/Resources/Craft/Parts/Prefabs/Sodium Peroxide Container.prefab
 - Assets/Resources/Craft/Parts/Prefabs/MiningMachine.prefab

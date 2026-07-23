@@ -108,7 +108,7 @@ namespace Assets.Scripts
                     cam.IsNight = false;
                     if (ModSettings.Instance.RemoveDockingPortCamera)
                     {
-                        cam.RemoveModifier();
+                        cam.Script.CameraController?.SetEnabled(false, false);
                     }
                 }
                 catch (Exception)

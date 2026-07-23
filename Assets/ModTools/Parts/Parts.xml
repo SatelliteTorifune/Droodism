@@ -1136,7 +1136,7 @@
     <PartType id="DockingPort1" includeInBodyDrag="true" name="Docking Port" prefabPath="Craft/Parts/Prefabs/DockingPort1.prefab" mass="0" price="0" partCollisions="Default" defaultMaterials="0,1,2,3,4" subpartsSharePartStyle="false" stylesShareHeader="false">
       <Modifiers>
         <Config autoActivateIfNoStageOrActivationGroup="true" buoyancyBaseScale="0" buoyancyUserScale="1" castShadows="true" centerOfMass="0,0,0" collisionDisconnectImpulse="3000" collisionDisconnectVelocity="-1" collisionExplodeImpulse="4000" collisionExplodeVelocity="-1" collisionPreventExternalDisconnections="false" collisionVelocityMode="None" dragScale="1" dragScaleActive="1" dragScaleAngular="1" explosiveness="0" fuelLine="false" heatShield="0" heatShieldBaseScale="1" heatShieldMass="0" heatShieldScale="-1" heatShieldValidation="true" ignoreValidation="false" includeInDrag="true" inertiaTensorBaseScale="1" inertiaTensorMin="0.05" inertiaTensorUserScale="1" initialCraftNodeId="-1" massScale="1" maxDamage="100" maxDrag="0" maxDragActive="0" maxTemperature="1000" occlusion="Auto" partCollisionHandling="Default" partCollisionResponse="Default" partScale="1,1,1" partSelectionEnabled="true" preventDebris="true" priceScale="1" raiseWaterEventsEvenIfNotBuoyant="false" renderQueue="Default" stageActivationType="None" supportsActivation="true" supportsTransparency="true" thermalMassRatio="1" inspectorEnabled="false" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
-        <DockingPort magnetForce="1" scale="0" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="2" versionsAllowed="" />
+        <DockingPort camera="true" magnetForce="1" scale="0" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="2" versionsAllowed="" />
         <CameraVantage autoCenterCamera="true" cameraOffset="0,0,0" cameraRotationOffset="-90,0,0" dirtIntensity="0" enabledByDefault="true" hideBase="false" scale="1" fieldOfView="60" fieldOfViewMax="100" fieldOfViewMin="40" isHidden="false" isNight="true" nightVisionColor="#FFFFFF" lookAtCommandPod="false" manualRegister="false" padPosition="false" priority="0" variableZoom="false" inspectorEnabled="false" partPropertiesEnabled="false" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
         <CrossFeed attachPointA="0" attachPointB="1" mode="Disabled" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
       </Modifiers>
@@ -3501,7 +3501,7 @@
           <Parts>
             <Part id="1" partType="RocketEngine1" position="0,0,0" rotation="0,-90,0">
               <Config heatShieldScale="0" supportsTransparency="false" />
-              <RocketEngine engineSubTypeId="Gimbal" engineTypeId="Solid" fuelType="Solid" gimbalRange="2" nozzleSize="0.45" nozzleThroatSize="0.7" nozzleTypeId="EchoGimbal" fuelGrain="Star" size="2" wattsPerFuelFlowOverride="-1" heatTransferOverride="1" mass="15.1865234" price="9166030" version="2" />
+              <RocketEngine engineSubTypeId="Gimbal" engineTypeId="Solid" fuelType="Solid" gimbalRange="1" nozzleSize="0.45" nozzleThroatSize="0.7" nozzleTypeId="EchoGimbal" fuelGrain="Star" size="2" wattsPerFuelFlowOverride="-1" heatTransferOverride="1" mass="15.1865234" price="9166030" version="2" />
               <InputController />
             </Part>
           </Parts>

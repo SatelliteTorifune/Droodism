@@ -46167,6 +46167,14 @@
             <param name="args">The arguments to pass to <c>string.Format</c>.</param>
             <returns>Localized (and optionally formatted) string.</returns>
         </member>
+        <member name="M:ModApi.Locale.GetStringOrFallback(System.String,System.String)">
+            <summary>
+            Gets the localized string for the id, or the fallback when the id has no entry in the current language.
+            </summary>
+            <param name="id">The local string identifier.</param>
+            <param name="fallback">The text to use when the id has no entry.</param>
+            <returns>The localized string, the id when <see cref="F:ModApi.Locale.ShowKeys"/> is enabled and the id is authored, or the fallback.</returns>
+        </member>
         <member name="M:ModApi.Locale.GetXmlReadyString(System.String)">
             <summary>
             Gets the localized string in the currently selected language, if it exists, ready to be parsed as XML.
@@ -76645,6 +76653,14 @@
             The re-entry plasma bias.
             </value>
         </member>
+        <member name="P:ModApi.Settings.VisualEffectsQualitySettings.ReEntryExtraEffects">
+            <summary>
+            Gets the maximum number of extra re-entry effects rendered for nearby non-player craft and large debris (at half the player craft's resolution).
+            </summary>
+            <value>
+            The maximum number of extra re-entry effects.
+            </value>
+        </member>
         <member name="P:ModApi.Settings.VisualEffectsQualitySettings.TireTracks">
             <summary>
             Gets the tire tracks quality.
@@ -76677,6 +76693,14 @@
             <summary>
             Called when all settings categories (that are loaded as part of the same group) have been initialized, loaded, and committed.
             </summary>
+        </member>
+        <member name="M:ModApi.Settings.VisualEffectsQualitySettings.GetExtraEffectsRange(ModApi.Settings.Core.DeviceFlags,System.Int32@,System.Int32@)">
+            <summary>
+            Gets the extra re-entry effects slider's ceiling and default, scaled by the device's detected hardware tier; mobile detection is coarse (unrecognised GPUs read as low end), so its numbers stay conservative.
+            </summary>
+            <param name="devices">The device flags to size the slider for.</param>
+            <param name="max">The highest number of extra effects the device offers.</param>
+            <param name="defaultValue">The number of extra effects the device starts with.</param>
         </member>
         <member name="M:ModApi.Settings.VisualEffectsQualitySettings.AnisotropicFilteringChanged(System.Object,ModApi.Settings.Core.Events.SettingChangedEventArgs{ModApi.Settings.VisualEffectsQualitySettings.AnisotropicFilteringMode})">
             <summary>

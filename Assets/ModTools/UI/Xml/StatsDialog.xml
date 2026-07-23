@@ -24,7 +24,7 @@
       </VerticalLayout>
       <HorizontalLayout id="button-panel" preferredHeight="30" class="no-image" spacing="10">
         <Button id="button-cancel" class="btn" rectAlignment="LowerCenter" tooltipPosition="Above" onClick="OnCancelClicked();">
-          <TextMeshPro text="CANCEL" />
+          <TextMeshPro text="{Dialog.Cancel}" />
         </Button>
         <Button id="button-left" class="btn" rectAlignment="LowerCenter" tooltipPosition="Above">
           <TextMeshPro />

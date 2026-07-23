@@ -10443,6 +10443,21 @@
             The compiled function.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Career.Milestones.Milestone._localeKeyBase">
+            <summary>
+            The locale key base for this milestone.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Career.Milestones.Milestone._rawDescription">
+            <summary>
+            The raw (English) description from the XML.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Career.Milestones.Milestone._rawName">
+            <summary>
+            The raw (English) name from the XML.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Career.Milestones.Milestone._startValue">
             <summary>
             The start value
@@ -10486,7 +10501,7 @@
         </member>
         <member name="P:Assets.Scripts.Career.Milestones.Milestone.Description">
             <summary>
-            Gets the description.
+            Gets the description, localized on access so it tracks locale and key-display changes.
             </summary>
             <value>
             The description.
@@ -10680,12 +10695,30 @@
             Tier for receiving a reward from a milestone.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Career.Milestones.Milestone.MilestoneTier._rawDescription">
+            <summary>
+            The raw (English) description from the XML.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Career.Milestones.Milestone.MilestoneTier._rawRewardMessage">
+            <summary>
+            The raw (English) reward message from the XML.
+            </summary>
+        </member>
         <member name="P:Assets.Scripts.Career.Milestones.Milestone.MilestoneTier.Description">
             <summary>
-            Gets or sets the description.
+            Gets or sets the description, localized on access.
             </summary>
             <value>
             The description.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Career.Milestones.Milestone.MilestoneTier.LocaleKeyBase">
+            <summary>
+            Gets or sets the locale key base for this tier.
+            </summary>
+            <value>
+            The locale key base.
             </value>
         </member>
         <member name="P:Assets.Scripts.Career.Milestones.Milestone.MilestoneTier.Money">
@@ -10706,7 +10739,7 @@
         </member>
         <member name="P:Assets.Scripts.Career.Milestones.Milestone.MilestoneTier.RewardMessage">
             <summary>
-            Gets or sets the optional message to show in the reward dialog, or null to show the generic reward message.
+            Gets or sets the optional message to show in the reward dialog, localized on access; null shows the generic reward message.
             </summary>
             <value>
             The reward message to show.
@@ -10879,6 +10912,11 @@
             The default value to use when the tech item has not had its value set yet.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Career.Research.TechItem._description">
+            <summary>
+            The explicitly-set description (e.g. designer part items), overriding the localized XML description.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Career.Research.TechItem._iconSprite">
             <summary>
             The sprite.
@@ -10887,6 +10925,26 @@
         <member name="F:Assets.Scripts.Career.Research.TechItem._iconTexture">
             <summary>
             The icon texture
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Career.Research.TechItem._localeKeyBase">
+            <summary>
+            The locale key base for this item, or null when constructed without XML.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Career.Research.TechItem._rawDescription">
+            <summary>
+            The raw (English) description from the XML.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Career.Research.TechItem._rawDisplayValue">
+            <summary>
+            The raw (English) constant display value from the XML.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Career.Research.TechItem._rawName">
+            <summary>
+            The raw (English) name from the XML, or the display format for non-XML items.
             </summary>
         </member>
         <member name="M:Assets.Scripts.Career.Research.TechItem.#ctor(System.Xml.Linq.XElement)">
@@ -10919,7 +10977,7 @@
         </member>
         <member name="P:Assets.Scripts.Career.Research.TechItem.Description">
             <summary>
-            Gets or sets the description.
+            Gets or sets the description, localized on access unless explicitly set.
             </summary>
             <value>
             The description.
@@ -11159,6 +11217,11 @@
             The items
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Career.Research.TechNode._rawName">
+            <summary>
+            The raw (English) node name from the XML.
+            </summary>
+        </member>
         <member name="M:Assets.Scripts.Career.Research.TechNode.#ctor(System.Xml.Linq.XElement,Assets.Scripts.Career.Research.TechTree)">
             <summary>
             Initializes a new instance of the <see cref="T:Assets.Scripts.Career.Research.TechNode" /> class.
@@ -11211,7 +11274,7 @@
         </member>
         <member name="P:Assets.Scripts.Career.Research.TechNode.Name">
             <summary>
-            Gets or sets the name.
+            Gets the name, localized on access so it tracks locale and key-display changes.
             </summary>
             <value>
             The name.
@@ -11791,6 +11854,11 @@
             The padding width
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Career.Research.UI.NodeScript.MinBranchSpacing">
+            <summary>
+            The minimum spacing between sibling branch rows whose subtrees never share a tier.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Career.Research.UI.NodeScript._checkmark">
             <summary>
             The checkmark
@@ -11881,6 +11949,21 @@
             The start y
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Career.Research.UI.NodeScript._layoutOffsetZ">
+            <summary>
+            This node's layout row relative to its parent's, computed by the parent's <see cref="M:Assets.Scripts.Career.Research.UI.NodeScript.ComputeLayout"/>.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Career.Research.UI.NodeScript._layoutMinZ">
+            <summary>
+            The subtree's lowest row relative to this node, from the last <see cref="M:Assets.Scripts.Career.Research.UI.NodeScript.ComputeLayout"/>.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Career.Research.UI.NodeScript._layoutMaxZ">
+            <summary>
+            The subtree's highest row relative to this node, from the last <see cref="M:Assets.Scripts.Career.Research.UI.NodeScript.ComputeLayout"/>.
+            </summary>
+        </member>
         <member name="P:Assets.Scripts.Career.Research.UI.NodeScript.Children">
             <summary>
             Gets the children.
@@ -11896,6 +11979,11 @@
             <value>
             The height.
             </value>
+        </member>
+        <member name="P:Assets.Scripts.Career.Research.UI.NodeScript.LayoutCenterZ">
+            <summary>
+            Gets the center of the laid-out subtree's rows relative to this node, valid after <see cref="M:Assets.Scripts.Career.Research.UI.NodeScript.RefreshLayout(UnityEngine.Vector3,System.Boolean)"/>.
+            </summary>
         </member>
         <member name="P:Assets.Scripts.Career.Research.UI.NodeScript.Parent">
             <summary>
@@ -11923,11 +12011,8 @@
         </member>
         <member name="P:Assets.Scripts.Career.Research.UI.NodeScript.TotalHeight">
             <summary>
-            Gets the height of the node and its children.
+            Gets the laid-out height of the node and its children, valid after <see cref="M:Assets.Scripts.Career.Research.UI.NodeScript.RefreshLayout(UnityEngine.Vector3,System.Boolean)"/>.
             </summary>
-            <value>
-            The height of the node and its children.
-            </value>
         </member>
         <member name="P:Assets.Scripts.Career.Research.UI.NodeScript.TotalWidth">
             <summary>
@@ -11970,7 +12055,8 @@
         </member>
         <member name="M:Assets.Scripts.Career.Research.UI.NodeScript.RefreshLayout(UnityEngine.Vector3,System.Boolean)">
             <summary>
-            Refreshes the layout.
+            Refreshes the layout: packs sibling branches by their per-tier contours (so a branch that
+            dies early lets its deep neighbour tuck alongside), then positions the nodes.
             </summary>
             <param name="position">The position.</param>
             <param name="createLines">if set to <c>true</c> then create lines.</param>
@@ -11988,6 +12074,27 @@
             </summary>
             <param name="duration">The duration.</param>
         </member>
+        <member name="M:Assets.Scripts.Career.Research.UI.NodeScript.ChildTierShift(Assets.Scripts.Career.Research.UI.NodeScript)">
+            <summary>
+            Gets a child's tier gap below its parent (1 plus any authored extra tier offset).
+            </summary>
+            <param name="child">The child node.</param>
+            <returns>The number of tiers the child sits beyond its parent.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Career.Research.UI.NodeScript.ComputeLayout">
+            <summary>
+            Lays out this subtree in local space: packs the children by merging their per-tier row
+            contours, so two branches only push apart where they actually occupy the same tier.
+            </summary>
+            <returns>The subtree's contour: min/max row extents per tier, relative to this node's row.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Career.Research.UI.NodeScript.ApplyLayout(UnityEngine.Vector3,System.Boolean)">
+            <summary>
+            Positions this subtree's nodes from the offsets <see cref="M:Assets.Scripts.Career.Research.UI.NodeScript.ComputeLayout"/> stored, and draws the connector lines.
+            </summary>
+            <param name="position">The node's position.</param>
+            <param name="createLines">if set to <c>true</c> then create lines.</param>
+        </member>
         <member name="M:Assets.Scripts.Career.Research.UI.NodeScript.CreateLine(UnityEngine.Vector2,UnityEngine.Vector2)">
             <summary>
             Creates the line.
@@ -12002,6 +12109,68 @@
             <param name="renderer">The renderer.</param>
             <param name="color">The color.</param>
             <param name="duration">The duration.</param>
+        </member>
+        <member name="T:Assets.Scripts.Career.Research.UI.NodeScript.LayoutContour">
+            <summary>
+            A subtree's silhouette for packing: the min/max row extents it occupies at each tier.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Career.Research.UI.NodeScript.LayoutContour._min">
+            <summary>
+            The lowest occupied row per tier (MaxValue where the tier is skipped by a tier offset).
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Career.Research.UI.NodeScript.LayoutContour._max">
+            <summary>
+            The highest occupied row per tier (MinValue where the tier is skipped by a tier offset).
+            </summary>
+        </member>
+        <member name="P:Assets.Scripts.Career.Research.UI.NodeScript.LayoutContour.Tiers">
+            <summary>
+            Gets the number of tiers the contour spans.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Career.Research.UI.NodeScript.LayoutContour.Include(System.Int32,System.Single,System.Single)">
+            <summary>
+            Grows the contour to cover a row span at a tier.
+            </summary>
+            <param name="tier">The tier index.</param>
+            <param name="min">The span's lowest row.</param>
+            <param name="max">The span's highest row.</param>
+        </member>
+        <member name="M:Assets.Scripts.Career.Research.UI.NodeScript.LayoutContour.Min(System.Int32)">
+            <summary>
+            Gets the lowest occupied row at a tier.
+            </summary>
+            <param name="tier">The tier index.</param>
+            <returns>The lowest row.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Career.Research.UI.NodeScript.LayoutContour.Max(System.Int32)">
+            <summary>
+            Gets the highest occupied row at a tier.
+            </summary>
+            <param name="tier">The tier index.</param>
+            <returns>The highest row.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Career.Research.UI.NodeScript.LayoutContour.MinOverall">
+            <summary>
+            Gets the lowest row over every occupied tier.
+            </summary>
+            <returns>The overall minimum row.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Career.Research.UI.NodeScript.LayoutContour.MaxOverall">
+            <summary>
+            Gets the highest row over every occupied tier.
+            </summary>
+            <returns>The overall maximum row.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Career.Research.UI.NodeScript.LayoutContour.TryGetMax(System.Int32,System.Single@)">
+            <summary>
+            Gets the highest occupied row at a tier, if the contour reaches and occupies it.
+            </summary>
+            <param name="tier">The tier index.</param>
+            <param name="max">The highest occupied row.</param>
+            <returns><c>true</c> when the tier is occupied.</returns>
         </member>
         <member name="T:Assets.Scripts.Career.Research.UI.PartLoaderScript">
             <summary>
@@ -12093,7 +12262,7 @@
         </member>
         <member name="F:Assets.Scripts.Career.Research.UI.TechTreeUIScript._backgroundText">
             <summary>
-            The background description text.
+            The background description text. Declared as TMP_Text because the scene object is a world-space TextMeshPro.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Career.Research.UI.TechTreeUIScript._bounds">
@@ -12438,6 +12607,15 @@
             <param name="format">The format.</param>
             <returns>The formatted string.</returns>
         </member>
+        <member name="M:Assets.Scripts.Career.StringProcessor.TryFormatDouble(System.Double,System.String,System.String@)">
+            <summary>
+            Formats the double when the format is one of the semantic unit names, e.g. "distance".
+            </summary>
+            <param name="value">The value.</param>
+            <param name="format">The format.</param>
+            <param name="result">The formatted string, or null when the format is not semantic.</param>
+            <returns><c>true</c> if the format was a semantic unit name; otherwise, <c>false</c>.</returns>
+        </member>
         <member name="M:Assets.Scripts.Career.StringProcessor.FormatValue(System.String,System.String)">
             <summary>
             Formats the value.
@@ -12521,6 +12699,11 @@
             <summary>
             The minimum impact momentum (real-world kg·m/s: whole-craft mass times impact speed) below which no
             dust disc is thrown. Using the craft mass keeps a light leading body from reading the crash as tiny.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.BodyCollisionHandler.ImpactNormalMinUpDot">
+            <summary>
+            The minimum dot of the terrain contact normal with gravity-up below which the impact particle basis falls back to gravity-up.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Craft.BodyCollisionHandler.JointBreakGraceDuration">
@@ -19931,6 +20114,11 @@
             The camera position transform.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.CameraVantageScript._cameraRemoved">
+            <summary>
+            The flag that indicates the part has opted out of carrying this camera.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Craft.Parts.Modifiers.CameraVantageScript._input">
             <summary>
             The input
@@ -20090,6 +20278,11 @@
             <param name="mode">The symmetry mode.</param>
             <param name="originalPart">The original part.</param>
             <param name="created">if set to <c>true</c> then the part has been created. False indicates the part is being updated.</param>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.CameraVantageScript.RemoveCamera">
+            <summary>
+            Removes this vantage's camera, so it never registers with the camera manager and stops updating.
+            </summary>
         </member>
         <member name="M:Assets.Scripts.Craft.Parts.Modifiers.CameraVantageScript.ModApi#GameLoop#Interfaces#IStart#Start(ModApi.GameLoop.FrameData@)">
             <summary>
@@ -22170,6 +22363,11 @@
             </summary>
             <seealso cref="!:ModApi.Craft.Parts.PartModifierData&lt;Assets.Scripts.Craft.Parts.Modifiers.DockingPortScript&gt;" />
         </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.DockingPortData._camera">
+            <summary>
+            Whether the port carries its built-in camera.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Craft.Parts.Modifiers.DockingPortData._magnetForce">
             <summary>
             The strength scale for the magnet
@@ -22186,6 +22384,14 @@
             </summary>
             <value>
             The price.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.DockingPortData.HasCamera">
+            <summary>
+            Gets a value indicating whether the port carries its built-in camera.
+            </summary>
+            <value>
+              <c>true</c> if the port has a camera; otherwise, <c>false</c>.
             </value>
         </member>
         <member name="P:Assets.Scripts.Craft.Parts.Modifiers.DockingPortData.MagnetForce">
@@ -22240,6 +22446,7 @@
             </summary>
             <seealso cref="!:ModApi.Craft.Parts.PartModifierScript&lt;Assets.Scripts.Craft.Parts.Modifiers.DockingPortData&gt;" />
             <seealso cref="T:ModApi.GameLoop.Interfaces.IFlightFixedUpdate" />
+            <seealso cref="T:ModApi.GameLoop.Interfaces.IFlightStart" />
             <seealso cref="T:ModApi.GameLoop.Interfaces.IFlightUpdate" />
         </member>
         <member name="F:Assets.Scripts.Craft.Parts.Modifiers.DockingPortScript.ResetTime">
@@ -22250,6 +22457,16 @@
         <member name="F:Assets.Scripts.Craft.Parts.Modifiers.DockingPortScript._attachPointPositions">
             <summary>
             The attach point positions
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.DockingPortScript._cameraSuppressed">
+            <summary>
+            A value indicating whether the port's camera is suppressed because the port is docked.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.DockingPortScript._cameraVantage">
+            <summary>
+            The camera vantage on this part, if the docking port has a built-in camera.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Craft.Parts.Modifiers.DockingPortScript._dockingCollider">
@@ -22408,6 +22625,12 @@
             </summary>
             <param name="frame">The flight frame data.</param>
         </member>
+        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.DockingPortScript.ModApi#GameLoop#Interfaces#IFlightStart#FlightStart(ModApi.GameLoop.FlightFrameData@)">
+            <summary>
+            Called once in the flight scene before running any update methods on this object.
+            </summary>
+            <param name="frame">The flight frame data.</param>
+        </member>
         <member name="M:Assets.Scripts.Craft.Parts.Modifiers.DockingPortScript.ModApi#GameLoop#Interfaces#IFlightUpdate#FlightUpdate(ModApi.GameLoop.FlightFrameData@)">
             <summary>
             Update method that is only called in the flight scene when the game is not paused.
@@ -22563,12 +22786,23 @@
             The Unity enumerator.
             </returns>
         </member>
+        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.DockingPortScript.SetCameraSelectable(System.Boolean)">
+            <summary>
+            Sets whether the port's camera can be selected from the camera list and the cycling keybind.
+            </summary>
+            <param name="selectable">if set to <c>true</c> the camera can be selected.</param>
+        </member>
         <member name="M:Assets.Scripts.Craft.Parts.Modifiers.DockingPortScript.SetMagneticJointForces(System.Single,System.Single)">
             <summary>
             Sets the magnetic joint's forces.
             </summary>
             <param name="jointForce">The joint force.</param>
             <param name="angularForce">The angular force.</param>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.DockingPortScript.UpdateCameraAvailability">
+            <summary>
+            Hides the port's built-in camera while it is docked, since all it would show is the inside of the mating part.
+            </summary>
         </member>
         <member name="T:Assets.Scripts.Craft.Parts.Modifiers.EditorScripts.BeaconLightEditorScript">
             <summary>
@@ -28165,6 +28399,11 @@
             Contains data for a mesh that can be manipulated by the fuselage modifier.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.AdaptiveMesh.MinColliderThickness">
+            <summary>
+            The minimum span a collider vertex cloud must have in each direction.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.AdaptiveMesh._designerBaseNormals">
             <summary>
             Stores original normals for smoothing in the designer.
@@ -28264,6 +28503,14 @@
             <summary>
             Reverts the normals to last update.
             </summary>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.AdaptiveMesh.GetConvexSafeColliderMesh(UnityEngine.Mesh,UnityEngine.Vector3[])">
+            <summary>
+            Pads a degenerate collider mesh in place so its convex hull cannot be point, line or plane like.
+            </summary>
+            <param name="mesh">The collider mesh filter's owned mesh.</param>
+            <param name="vertices">The current vertex positions.</param>
+            <returns>The collider mesh, padded when degenerate.</returns>
         </member>
         <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.AdaptiveMesh.GetMeshDataCache">
             <summary>
@@ -45552,6 +45799,11 @@
             Hex override for the soot color. "Default" uses the jet fuel type color.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.JetEngineData._exhaustExpansionRange">
+            <summary>
+            The expansion range for the exhaust. -1 leaves the corresponding bound unclamped.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.JetEngineData._exhaustGlobalIntensity">
             <summary>
             Overall brightness of the exhaust. -1 uses the jet fuel type intensity.
@@ -45822,6 +46074,11 @@
         <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.JetEngineData.ExhaustColorSoot">
             <summary>
             Gets the soot color, falling back to the jet fuel type color.
+            </summary>
+        </member>
+        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.JetEngineData.ExhaustExpansionRange">
+            <summary>
+            Gets the exhaust expansion range override (-1 leaves the corresponding bound unclamped).
             </summary>
         </member>
         <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.JetEngineData.ExhaustGlobalIntensity">
@@ -52596,6 +52853,30 @@
             The top of panels
             </summary>
         </member>
+        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Solar.SolarPanelArrayScript.Efficiency">
+            <summary>
+            Gets the panel efficiency (0 to 1), adjusted for temperature. Read via funky trees expressions.
+            </summary>
+            <value>
+            The panel efficiency.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Solar.SolarPanelArrayScript.PointingEfficiency">
+            <summary>
+            Gets the pointing efficiency (0 to 1): how squarely the array faces the sun. Read via funky trees expressions.
+            </summary>
+            <value>
+            The pointing efficiency.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Solar.SolarPanelArrayScript.PowerGeneration">
+            <summary>
+            Gets the current power generation in watts. Read via funky trees expressions.
+            </summary>
+            <value>
+            The current power generation.
+            </value>
+        </member>
         <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Solar.SolarPanelArrayScript.UsesMachNumber">
             <summary>
             Gets a value indicating whether indicating if the object makes use of the mach number setting.
@@ -53058,6 +53339,30 @@
             <summary>
             The recharge rate
             </summary>
+        </member>
+        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Solar.SolarPanelScript.Efficiency">
+            <summary>
+            Gets the panel efficiency (0 to 1), adjusted for temperature. Read via funky trees expressions.
+            </summary>
+            <value>
+            The panel efficiency.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Solar.SolarPanelScript.PointingEfficiency">
+            <summary>
+            Gets the pointing efficiency (0 to 1): how squarely the panel faces the sun. Read via funky trees expressions.
+            </summary>
+            <value>
+            The pointing efficiency.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Solar.SolarPanelScript.PowerGeneration">
+            <summary>
+            Gets the current power generation in watts. Read via funky trees expressions.
+            </summary>
+            <value>
+            The current power generation.
+            </value>
         </member>
         <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Solar.SolarPanelScript.UsesMachNumber">
             <summary>
@@ -54962,6 +55267,14 @@
             </summary>
             <value>
             The joint creak audio source.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Wing.WingScript.LiftForce">
+            <summary>
+            Gets the current lift force in Newtons, or 0 when the wing physics are disabled. Read via funky trees expressions.
+            </summary>
+            <value>
+            The current lift force.
             </value>
         </member>
         <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Wing.WingScript.LiftUp">
@@ -65375,6 +65688,11 @@
             <summary>
             Shows the cube. Lazily builds it on the first call, otherwise re-enables the canvas and resyncs
             any state (scale, MSAA) that may have changed while hidden.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Design.NavigationCubeController.UpdateWidgetPosition">
+            <summary>
+            Positions the widget against the top-right corner, inset by the safe area borders on mobile.
             </summary>
         </member>
         <member name="T:Assets.Scripts.Design.NavigationCubeRegionScript">
@@ -89585,17 +89903,17 @@
             </summary>
             <param name="canvasScaleFactor">The canvas scale factor.</param>
         </member>
+        <member name="M:Assets.Scripts.Ui.SafeAreaScript.GetSafeAreaBorders">
+            <summary>
+            Gets the safe area borders in screen pixels, including the user's screen margin settings.
+            </summary>
+            <returns>The safe area borders.</returns>
+        </member>
         <member name="M:Assets.Scripts.Ui.SafeAreaScript.RecalculateDimensions(System.Nullable{System.Single})">
             <summary>
             Updates the rect to recalculate its dimension to respect the safe zone.
             </summary>
             <param name="canvasScaleFactor">The canvas scale factor.</param>
-        </member>
-        <member name="M:Assets.Scripts.Ui.SafeAreaScript.GetSafeAreaBorders">
-            <summary>
-            Gets the safe area.
-            </summary>
-            <returns>The safe area rect.</returns>
         </member>
         <member name="M:Assets.Scripts.Ui.SafeAreaScript.Awake">
             <summary>
@@ -98647,6 +98965,11 @@
             Gets the reentry trail manager, which emits reentry particle trails for non-player craft and debris. May be null very early in the flight scene initialization sequence.
             </summary>
         </member>
+        <member name="P:Assets.Scripts.Flight.FlightSceneScript.ReentrySecondaryRendererManager">
+            <summary>
+            Gets the secondary reentry renderer manager, which gives nearby non-player craft and large debris the airstream effect at half resolution, sized by the Extra Plasma Effects slider; null very early in scene initialization.
+            </summary>
+        </member>
         <member name="P:Assets.Scripts.Flight.FlightSceneScript.FixedUpdateFrameCount">
             <summary>
             Gets the number of fixed update frames since the start of this flight.
@@ -102408,6 +102731,21 @@
             Nested helper types for <see cref="T:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer"/>.
             </summary>
         </member>
+        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.TransformAabb(UnityEngine.Bounds,UnityEngine.Matrix4x4)">
+            <summary>
+            Returns the axis-aligned bounds conservatively containing <paramref name="aabb"/> after transform <paramref name="m"/>; shared with <see cref="T:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager"/> for its craft-frame size metric.
+            </summary>
+            <param name="aabb">The source AABB.</param>
+            <param name="m">The affine transform to apply.</param>
+            <returns>The transformed, axis-aligned bounds.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.MedianDimension(UnityEngine.Vector3)">
+            <summary>
+            Returns the median of a size vector's three dimensions: the bulk measure the effect ranks and throttles by, large for anything wide in two axes (tanks, heat shields) and small for long thin parts.
+            </summary>
+            <param name="size">The AABB size.</param>
+            <returns>The median dimension.</returns>
+        </member>
         <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.ToWorldAabb(ModApi.Craft.IBodyScript,UnityEngine.Bounds)">
             <summary>
             Transforms a body's cached local-space AABB into world space using its live pose.
@@ -102415,14 +102753,6 @@
             <param name="bodyScript">The body whose pose to use.</param>
             <param name="local">The cached local-space AABB.</param>
             <returns>The conservative world-space AABB.</returns>
-        </member>
-        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.TransformAabb(UnityEngine.Bounds,UnityEngine.Matrix4x4)">
-            <summary>
-            Returns the axis-aligned bounds conservatively containing <paramref name="aabb"/> after transform <paramref name="m"/>.
-            </summary>
-            <param name="aabb">The source AABB.</param>
-            <param name="m">The affine transform to apply.</param>
-            <returns>The transformed, axis-aligned bounds.</returns>
         </member>
         <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.Encapsulate(UnityEngine.Bounds@,System.Boolean@,UnityEngine.Bounds)">
             <summary>
@@ -102440,13 +102770,12 @@
             <param name="initialized">Whether the bounds have been initialized.</param>
             <param name="renderer">The renderer whose bounds to include.</param>
         </member>
-        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.BoundsContains(UnityEngine.Bounds,UnityEngine.Bounds)">
+        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.CountConnectedBodies(ModApi.Craft.ICraftScript)">
             <summary>
-            Returns true when the inner AABB lies entirely inside the outer AABB.
+            Counts a craft's connected (non-debris, non-disconnected) bodies, used to invalidate a secondary's caches on a structure change (which raises no event for non-player craft).
             </summary>
-            <param name="outer">The outer AABB.</param>
-            <param name="inner">The inner AABB.</param>
-            <returns>True if <paramref name="inner"/> is fully contained in <paramref name="outer"/>.</returns>
+            <param name="craft">The craft to count.</param>
+            <returns>The connected body count.</returns>
         </member>
         <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.OnCraftStructureChanged">
             <summary>
@@ -102466,26 +102795,28 @@
             </summary>
             <param name="craft">The craft to walk.</param>
         </member>
-        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.AddDrawCandidate(ModApi.Craft.Parts.IRendererMaterialMap)">
+        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.AddDrawCandidate(ModApi.Craft.Parts.IRendererMaterialMap,ModApi.Craft.IBodyScript)">
             <summary>
-            Adds a renderer to the draw list with its cached size metric and submesh count for the per-render path.
+            Adds a renderer to the draw list with its owning body, cached size metric and submesh count for the per-render path.
             </summary>
             <param name="renderMap">The renderer material map to draw.</param>
+            <param name="body">The body that owns the renderer.</param>
         </member>
         <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.ComposeWorldBounds(ModApi.Craft.ICraftScript)">
             <summary>
-            Recomposes craft world bounds from cached per-body local AABBs against live poses; connected bodies always contribute, debris only while fitting a 2x expansion of the connected bounds.
+            Recomposes craft world bounds from cached per-body local AABBs against live poses; only connected bodies contribute, so breakup debris never enlarges the airstream frustum (debris trails via <see cref="T:Assets.Scripts.Flight.GameView.ReentryTrailManager"/> instead).
             </summary>
             <param name="craft">The craft.</param>
             <returns>The world bounds.</returns>
         </member>
-        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.ComputeCraftBoundsSize(ModApi.Craft.ICraftScript,UnityEngine.Quaternion)">
+        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.TryComputeCraftFrameBounds(ModApi.Craft.ICraftScript,UnityEngine.Quaternion,UnityEngine.Bounds@)">
             <summary>
-            Returns the connected craft's extents along an arbitrary world frame's axes, from the cached per-body AABBs.
+            Computes the connected craft's AABB in the given rigid craft frame from the cached per-body AABBs; both its diagonal and its world-mapped center are tumble-invariant.
             </summary>
             <param name="craft">The craft.</param>
-            <param name="worldFrame">The world rotation whose local axes the extents are measured along.</param>
-            <returns>The craft bounds size (m) in <paramref name="worldFrame"/>; zero when no connected body has cached renderers.</returns>
+            <param name="worldFrame">The world rotation whose local axes the AABB is measured along.</param>
+            <param name="frameBounds">The craft-frame AABB; world point = <paramref name="worldFrame"/> * center.</param>
+            <returns><c>true</c> when at least one connected body has cached renderers.</returns>
         </member>
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.DragTempLayer">
             <summary>
@@ -102517,9 +102848,69 @@
             The Mach delta since the last seed that forces a reseed.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.FastSpinDegreesPerSecond">
+            <summary>
+            Silhouette angular speed (deg/s, measured in the velocity frame) above which the craft is tumbling fast enough that morphing from the previous cone would smear the reentry into a plasma blob, so the next seed is taken fresh.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.ConeMorphMaxGapSeconds">
+            <summary>
+            Time (s) since the last render beyond which the persisted cone is treated as stale (the effect was culled, heating-gated or paused), so the next seed is taken fresh rather than morphing from it.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.CameraOffset">
             <summary>
             The distance (m) the camera is placed in front of the craft.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.FullRateScreenFraction">
+            <summary>
+            On-screen size (as a fraction of the half-viewport height) at or above which a subject refreshes at its tier's full rate; below it the rate ramps down to <see cref="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.MinRateScale"/>.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.MinRateScale">
+            <summary>
+            Slowest refresh rate, as a fraction of the tier's full rate, applied to a subject sitting at the on-screen cull threshold.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.MediumMinScreenFraction">
+            <summary>
+            On-screen size (as a fraction of the half-viewport height) at which a subject is throttled to <see cref="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.MinRateScale"/>, at the Medium tier; scaled per tier by <see cref="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.MinScreenFractionFor(ModApi.Settings.VisualEffectsQualitySettings.ReEntryQuality)"/>, and the point below which the secondary manager culls a subject outright.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.SecondaryMinMeshResolution">
+            <summary>
+            Floor on a secondary's halved mesh tessellation, so the lowest tier's cone still has enough grid to shape.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.SecondaryMinTextureSize">
+            <summary>
+            Floor on a secondary's halved airstream RT side length.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.SecondaryForwardBiasScale">
+            <summary>
+            Multiplier on a secondary's mesh forward bias, matching the step the per-tier bias takes between two tessellations, since a secondary runs its tier's bias at half resolution.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.UncappedNominalFrameTime">
+            <summary>
+            Nominal refresh interval (s) standing in for an uncapped tier's zero when the rate is scaled down, so Ultra throttles from "every frame" toward this rate divided by the scale.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.UncappedNominalThresholdDegrees">
+            <summary>
+            Nominal rotation-delta threshold (deg) standing in for an uncapped tier's zero when the rate is scaled down, so Ultra's reseed-on-any-motion coarsens with distance instead of staying at zero.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.CameraCullBoundsScale">
+            <summary>
+            Factor the craft world bounds are scaled by before the off-screen cull test, padding for the cone that streaks several craft-lengths behind the craft at high Mach so it is not culled while still visible.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.FrustumCoverageMargin">
+            <summary>
+            Margin on the ortho half-size over the exact craft-frame circumsphere, covering articulated part motion between structure-cache rebuilds.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.MeshHardMachFloor">
@@ -102529,7 +102920,7 @@
         </member>
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.SupersonicOnsetMach">
             <summary>
-            Mach number at or below which there is no cone (<see cref="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.ComputeMachStep"/> returns 0).
+            Mach number at or below which there is no cone (<see cref="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.ComputeMachStep(System.Single)"/> returns 0).
             </summary>
         </member>
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.UpReferenceParallelThreshold">
@@ -102762,6 +103153,11 @@
             Cached drag renderers to draw into the airstream RT, rebuilt only on structure change alongside <see cref="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer._bodyLocalBounds"/>. Capacity is a starting hint; the list grows for larger crafts and retains that capacity across rebuilds.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer._frustumPlanes">
+            <summary>
+            Reusable frustum-plane buffer for the off-screen cull, so the per-frame camera test does not allocate.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer._commandBuffer">
             <summary>
             The command buffer used for sending GPU commands.
@@ -102844,7 +103240,7 @@
         </member>
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer._lastRenderedBoundsMag">
             <summary>
-            The craft AABB diagonal at the time of the last airstream render.
+            The rotation-invariant craft-frame diagonal at the time of the last airstream render; a structural change to it (not a tumble) forces a reseed.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer._lastRenderedMach">
@@ -102862,9 +103258,19 @@
             Whether the last seed ran the pointy-mask pass (i.e. was taken supersonic).
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer._forceFreshSeed">
+            <summary>
+            Set for the next seed when the craft is tumbling fast; makes the seed ignore the previous cone (no morph) so rapidly-changing silhouettes don't smear into a blob.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer._lastRenderTime">
             <summary>
             The real time (s) at which the last airstream render ran.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer._lastActiveTime">
+            <summary>
+            The real time (s) the effect was last driven past its gates (cheap or heavy); a gap here means it was culled, heating-gated or paused, so the held cone is stale.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer._meshObject">
@@ -102914,7 +103320,7 @@
         </member>
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer._gameView">
             <summary>
-            The cached game view, used to unsubscribe on destroy.
+            The cached game view, resolved lazily for the near-camera frustum cull.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer._trailEmissionRate">
@@ -102935,6 +103341,21 @@
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer._structureChangeSource">
             <summary>
             The flight scene whose structure-changed event drives per-body bounds rebuilds.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer._isSecondary">
+            <summary>
+            Whether this is a manager-driven secondary renderer (non-player craft / separated debris) rather than the player's self-driving renderer.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer._secondaryCraft">
+            <summary>
+            The craft a secondary renderer was last driven against; a change (or a connected-body-count change) invalidates the caches, since non-player craft raise no structure-changed event.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer._secondaryConnectedCount">
+            <summary>
+            The secondary craft's connected body count at the last drive, used to detect its staging / breakup.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer._lastDrawnCount">
@@ -102987,12 +103408,44 @@
             <c>true</c> if the debug overlay is shown; otherwise <c>false</c>.
             </value>
         </member>
+        <member name="P:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.NeedsSeed">
+            <summary>
+            Gets a value indicating whether the mesh is hidden awaiting a reseed (up-axis flip), so the manager can fast-track this renderer's next heavy refresh.
+            </summary>
+            <value>
+            <c>true</c> if a reseed is needed to show the mesh again; otherwise <c>false</c>.
+            </value>
+        </member>
         <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.CreateIn(UnityEngine.Transform)">
             <summary>
             Creates a new airstream renderer as a child of the given transform.
             </summary>
             <param name="parent">The parent transform.</param>
             <returns>The instantiated renderer.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.ConfigureAsSecondary(ModApi.Settings.VisualEffectsQualitySettings.ReEntryQuality)">
+            <summary>
+            Marks this renderer as a manager-driven secondary at the player's tier: it stops self-driving, ignores the player's quality setting, halves its mesh/RT resolution, and emits no trail.
+            </summary>
+            <param name="tier">The player's quality tier, which this secondary renders at in half resolution.</param>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.DriveSecondary(ModApi.Craft.ICraftScript,ModApi.Settings.VisualEffectsQualitySettings.ReEntryQuality,System.Boolean)">
+            <summary>
+            Drives one frame of a secondary renderer: always re-anchors the mesh, runs the expensive RT render + reseed + relax only when <paramref name="heavy"/> is set.
+            </summary>
+            <param name="craft">The non-player craft (or separated-debris craft node) to render.</param>
+            <param name="tier">The quality tier to render at; a change (the player switched tiers) rebuilds the mesh.</param>
+            <param name="heavy">Whether this frame may run the expensive RT render + reseed + relax.</param>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.Deactivate">
+            <summary>
+            Hides a secondary renderer that is no longer assigned a subject, keeping it pooled but dropping every reference to the departed craft's object graph.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.HideMesh">
+            <summary>
+            Hides the mesh without touching any cached state, for frames where the manager cannot drive its slots.
+            </summary>
         </member>
         <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.Awake">
             <summary>
@@ -103006,8 +103459,38 @@
         </member>
         <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.LateUpdate">
             <summary>
-            Unity LateUpdate method.
+            Unity LateUpdate method. Drives the effect for the player's own craft (a secondary renderer is driven by <see cref="T:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager"/> instead and skips this).
             </summary>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.RunReentryFrame(ModApi.Craft.ICraftScript,System.Boolean)">
+            <summary>
+            Runs one frame of the airstream effect: camera, mesh and (player) trail always track the craft; the RT render + reseed + relax run only on a heavy frame.
+            </summary>
+            <param name="craft">The craft to render the effect for.</param>
+            <param name="heavy">Whether the expensive RT render + reseed + relax may run this frame.</param>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.EmitPlayerTrailIfNeeded(ModApi.Craft.ICraftScript,UnityEngine.Bounds,UnityEngine.Vector3)">
+            <summary>
+            Emits the player's world-space reentry trail (secondaries are trailed by <see cref="T:Assets.Scripts.Flight.GameView.ReentryTrailManager"/> instead, so this is a no-op for them).
+            </summary>
+            <param name="craft">The craft to trail.</param>
+            <param name="bounds">The craft's world bounds.</param>
+            <param name="craftFrameSize">The precomputed craft-frame bounds size; zero falls back to the world bounds.</param>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.ComputeScreenFraction(UnityEngine.Vector3,UnityEngine.Vector3)">
+            <summary>
+            Returns how big the subject looks, as a fraction of the half-viewport height, measured from its bulk (median) dimension so a long thin craft doesn't read as large; assumes full size when no camera is available.
+            </summary>
+            <param name="center">The subject's world-space center.</param>
+            <param name="size">The subject's AABB size, preferably in its own rigid frame so the value doesn't swing as it tumbles.</param>
+            <returns>The on-screen size fraction.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.IsCulledByCamera(UnityEngine.Bounds)">
+            <summary>
+            Returns true when the craft's padded world bounds fall entirely outside the near camera's frustum; never culls when no camera is available.
+            </summary>
+            <param name="bounds">The craft's world bounds.</param>
+            <returns><c>true</c> if the effect is off-screen and can be skipped.</returns>
         </member>
         <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.OnReEntryQualityChanged(System.Object,ModApi.Settings.Core.Events.SettingChangedEventArgs{ModApi.Settings.VisualEffectsQualitySettings.ReEntryQuality})">
             <summary>
@@ -103020,6 +103503,29 @@
             <summary>
             Unity OnGUI method. Draws the debug overlay when enabled.
             </summary>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.MinScreenFractionFor(ModApi.Settings.VisualEffectsQualitySettings.ReEntryQuality)">
+            <summary>
+            Returns the on-screen size (as a fraction of the half-viewport height) at which a subject is throttled to its slowest rate: <see cref="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.MediumMinScreenFraction"/> at Medium, doubled at Low and halved per tier above. The secondary manager also culls below this.
+            </summary>
+            <param name="quality">The player's reentry quality.</param>
+            <returns>The minimum on-screen size fraction.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.RateScaleFor(System.Single,ModApi.Settings.VisualEffectsQualitySettings.ReEntryQuality)">
+            <summary>
+            Returns the refresh-rate scale for a subject of the given on-screen size: 1 (the tier's full rate) at or above <see cref="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.FullRateScreenFraction"/>, falling linearly to <see cref="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.MinRateScale"/> at the tier's cull threshold. The player's craft and secondaries share this curve, so everything on screen throttles by how big it looks.
+            </summary>
+            <param name="screenFraction">The subject's on-screen size, as a fraction of the half-viewport height.</param>
+            <param name="quality">The player's reentry quality, which sets the low end of the ramp.</param>
+            <returns>The rate scale in [<see cref="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.MinRateScale"/>, 1].</returns>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.RenderIntervalFor(ModApi.Settings.VisualEffectsQualitySettings.ReEntryQuality,System.Single)">
+            <summary>
+            Returns the minimum time between re-renders (s) for the tier, stretched by the subject's rate scale; an uncapped tier stretches from <see cref="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.UncappedNominalFrameTime"/> so it still slows down with distance.
+            </summary>
+            <param name="quality">The reentry quality.</param>
+            <param name="rateScale">The subject's refresh-rate scale.</param>
+            <returns>The minimum interval in seconds.</returns>
         </member>
         <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.CreateQuadGrid(System.Int32)">
             <summary>
@@ -103069,17 +103575,31 @@
             <param name="quality">The reentry quality.</param>
             <returns>The texture size in pixels, or 0.</returns>
         </member>
-        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.ThresholdDegreesForQuality(ModApi.Settings.VisualEffectsQualitySettings.ReEntryQuality)">
+        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.ThresholdDegreesFor(ModApi.Settings.VisualEffectsQualitySettings.ReEntryQuality,System.Single)">
             <summary>
-            Returns the rotation-delta threshold (degrees) for the quality tier.
+            Returns the rotation-delta threshold (degrees) a silhouette must turn through to earn a reseed, for the quality tier, coarsened by the subject's rate scale so a distant craft reseeds only on large attitude changes.
             </summary>
             <param name="quality">The reentry quality.</param>
+            <param name="rateScale">The subject's refresh-rate scale.</param>
             <returns>The threshold in degrees.</returns>
         </member>
-        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.ComputeMachStep">
+        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.ActiveMeshResolution">
+            <summary>
+            Returns this renderer's mesh tessellation: the player's tier, halved for a secondary (the only quality difference between the player's craft and a non-player one).
+            </summary>
+            <returns>The quad-grid resolution.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.ActiveTextureSize">
+            <summary>
+            Returns this renderer's airstream RT side length: the player's tier, halved for a secondary; 0 (unused) is passed through.
+            </summary>
+            <returns>The texture size in pixels, or 0.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.ComputeMachStep(System.Single)">
             <summary>
             Per-grid-step depth01 increment for GPU cone propagation, from the Mach-cone half-angle relation (cot(theta) = sqrt(M^2 - 1)) scaled by mesh resolution for constant UV reach across tiers.
             </summary>
+            <param name="mach">The driven craft's Mach number (a secondary must use its subject's, not the player's).</param>
             <returns>The depth increment per grid step, or 0 below Mach 1.</returns>
         </member>
         <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.EnsureConeFieldBuffers">
@@ -103109,22 +103629,24 @@
             Rebuilds the mesh asset when the quality tier changes its tessellation.
             </summary>
         </member>
-        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.RelaxConeFieldGpu(UnityEngine.Rendering.CommandBuffer)">
+        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.RelaxConeFieldGpu(UnityEngine.Rendering.CommandBuffer,System.Single)">
             <summary>
             Runs a resolution-scaled number of propagation passes with a decay on the first pass
             </summary>
             <param name="cmd">The command buffer to emit commands to.</param>
+            <param name="mach">The driven craft's Mach number.</param>
         </member>
         <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.ReleaseConeFieldRTs">
             <summary>
             Destroys the ping-pong cone-field RTs.
             </summary>
         </member>
-        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.SeedConeFieldGpu(UnityEngine.Rendering.CommandBuffer)">
+        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.SeedConeFieldGpu(UnityEngine.Rendering.CommandBuffer,System.Single)">
             <summary>
-            GPU seed step (once per render): pass 0 refreshes craft cells from the RT but keeps the previous cone for sky cells (continuous morph), pass 1 flags steep interior cells so they don't seed a forward cone; <see cref="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.RelaxConeFieldGpu(UnityEngine.Rendering.CommandBuffer)"/> then relaxes it each frame.
+            GPU seed step (once per render): pass 0 refreshes craft cells from the RT but keeps the previous cone for sky cells (continuous morph), pass 1 flags steep interior cells so they don't seed a forward cone; <see cref="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.RelaxConeFieldGpu(UnityEngine.Rendering.CommandBuffer,System.Single)"/> then relaxes it each frame.
             </summary>
             <param name="cmd">The command buffer to emit commands to.</param>
+            <param name="mach">The driven craft's Mach number.</param>
         </member>
         <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.UpdateMesh(ModApi.Craft.ICraftScript,UnityEngine.Bounds)">
             <summary>
@@ -103166,13 +103688,14 @@
             <param name="velocityWorld">The surface velocity in world space.</param>
             <returns>The basis-predicted projected area (m^2).</returns>
         </member>
-        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.EmitReentryTrail(ModApi.Craft.ICraftScript,UnityEngine.Bounds,Assets.Scripts.Flight.FlightSceneScript)">
+        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.EmitReentryTrail(ModApi.Craft.ICraftScript,UnityEngine.Bounds,Assets.Scripts.Flight.FlightSceneScript,UnityEngine.Vector3)">
             <summary>
             Emits a frame's worth of reentry trail particles behind the craft, gated on the plasma-and-heating intensity with density driving opacity.
             </summary>
             <param name="craft">The craft to emit a trail for.</param>
-            <param name="bounds">The combined-with-cap bounds from <see cref="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.ComposeWorldBounds(ModApi.Craft.ICraftScript)"/>.</param>
+            <param name="bounds">The connected-hull world bounds from <see cref="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.ComposeWorldBounds(ModApi.Craft.ICraftScript)"/>.</param>
             <param name="flightScene">The flight scene that hosts the particle manager.</param>
+            <param name="craftFrameSize">The craft-frame bounds size, precomputed by the caller; zero falls back to the world bounds.</param>
         </member>
         <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.GetCraftPhysicalRotation(ModApi.Craft.ICraftScript)">
             <summary>
@@ -103195,13 +103718,14 @@
             </summary>
             <param name="cmd">The command buffer to emit commands to.</param>
         </member>
-        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.UpdateAirstreamCameraState(ModApi.Craft.ICraftScript,UnityEngine.Vector3,UnityEngine.Bounds)">
+        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.UpdateAirstreamCameraState(ModApi.Craft.ICraftScript,UnityEngine.Vector3,UnityEngine.Vector3,System.Single)">
             <summary>
             Updates the airstream camera's transform and frustum to track the craft.
             </summary>
             <param name="craft">The craft.</param>
             <param name="velocityWorld">The surface velocity in world space.</param>
-            <param name="bounds">The current world bounds of the craft.</param>
+            <param name="anchor">The rigid craft-frame bounds center in world space; the circumsphere about it (radius = half diagonal) exactly contains the craft at any attitude.</param>
+            <param name="stableBoundsMag">The rotation-invariant craft-frame diagonal used to size the frustum, so a tumble does not resize it.</param>
         </member>
         <member name="T:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.UpRefAxis">
             <summary>
@@ -103250,12 +103774,17 @@
         </member>
         <member name="T:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.DrawEntry">
             <summary>
-            A cached draw-list entry: a renderer plus its submesh count and rotation-invariant size metric for the sub-grid detail cull.
+            A cached draw-list entry: a renderer plus its owning body, submesh count and rotation-invariant size metric for the sub-grid detail cull.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.DrawEntry.RenderMap">
             <summary>
             The renderer to draw.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.DrawEntry.Body">
+            <summary>
+            The body that owns the renderer; its live debris/disconnected state is checked each render so broken-off chunks are not drawn into the airstream.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.DrawEntry.SizeMetric">
@@ -103268,11 +103797,12 @@
             The mesh submesh count, cached at rebuild time.
             </summary>
         </member>
-        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.DrawEntry.#ctor(ModApi.Craft.Parts.IRendererMaterialMap,System.Single,System.Int32)">
+        <member name="M:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.DrawEntry.#ctor(ModApi.Craft.Parts.IRendererMaterialMap,ModApi.Craft.IBodyScript,System.Single,System.Int32)">
             <summary>
             Initializes a new instance of the <see cref="T:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer.DrawEntry"/> struct.
             </summary>
             <param name="renderMap">The renderer to draw.</param>
+            <param name="body">The body that owns the renderer.</param>
             <param name="sizeMetric">The rotation-invariant size metric.</param>
             <param name="submeshCount">The mesh submesh count.</param>
         </member>
@@ -105229,6 +105759,275 @@
             Initializes the shader property IDs.
             </summary>
         </member>
+        <member name="T:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager">
+            <summary>
+            Pools secondary <see cref="T:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer"/> instances that give nearby non-player craft and large debris the airstream effect at the player's tier but half resolution, sized by the Extra Plasma Effects slider.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.MaxSecondaryRenderers">
+            <summary>
+            Absolute hard cap on how many secondary renderers can exist at once, matching the Extra Plasma Effects slider's highest per-device maximum and bounding the combined RT / cone-field cost.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.InitialSlotCapacity">
+            <summary>
+            Starting capacity for the slot pool; it grows on hardware whose slider goes higher, so the common case doesn't reserve for the hard cap.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.MinPilotedSize">
+            <summary>
+            Minimum bulk size (m) for a piloted craft to be eligible for a secondary renderer.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.MinDebrisSize">
+            <summary>
+            Minimum bulk size (m) for debris (a craft node with no command pod) to be eligible; larger than <see cref="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.MinPilotedSize"/> so only sizeable chunks get the full effect.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.MaxCameraDistance">
+            <summary>
+            Maximum camera distance (m) beyond which a candidate is culled outright.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.FrustumPadScale">
+            <summary>
+            Padding factor applied to a candidate's bounding sphere before the frustum test, covering the cone that streaks behind the craft at high Mach.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.SelectionHysteresis">
+            <summary>
+            Score bonus an already-assigned craft keeps over challengers (also relaxes its size/distance/screen-size thresholds), so craft near the selection cut-off do not thrash in and out of the pool frame to frame.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.SizeCacheMaxAgeTicks">
+            <summary>
+            Frames a size-cache entry survives unseen (~5 s at 60 fps) before being pruned, so a craft oscillating around the heating gate isn't re-walked every re-entry.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.SizeRecomputeMinTicks">
+            <summary>
+            Minimum frames between size recomputes for one craft (~0.25 s at 60 fps), so a breakup cascade shedding parts every frame doesn't re-walk its renderers every frame.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.CandidateBySortKeyDescending">
+            <summary>
+            Cached comparison that ranks candidates by descending sort key (on-screen size plus the incumbent bonus), avoiding a per-sort delegate allocation.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager._slots">
+            <summary>
+            The active secondary renderer slots (assigned subject + schedule), pooled and reused across subjects.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager._sizeCache">
+            <summary>
+            Per-craft cached size metrics, refreshed only when a craft's body count changes.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager._candidates">
+            <summary>
+            This frame's eligible candidates, rebuilt each LateUpdate.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager._selected">
+            <summary>
+            This frame's selected subjects, used to free slots whose subject dropped out.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager._sizePruneScratch">
+            <summary>
+            Reusable scratch list of stale size-cache keys to prune without mutating during iteration.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager._rendererScratch">
+            <summary>
+            Reusable body-renderer buffer for a radius rebuild, to avoid per-rebuild allocation.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager._frustumPlanes">
+            <summary>
+            Reusable frustum-plane buffer for the off-screen cull, so the per-frame camera test does not allocate.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager._frameTick">
+            <summary>
+            Monotonic per-frame tick stamped onto each visited craft so stale radius-cache entries can be pruned.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager._playerTier">
+            <summary>
+            The player's re-entry tier this frame; secondaries render at it too, at half resolution.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager._minScreenFraction">
+            <summary>
+            This frame's on-screen size cull threshold, derived from the player's re-entry tier.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.CreateIn(UnityEngine.Transform)">
+            <summary>
+            Creates a new secondary renderer manager as a child of the given transform.
+            </summary>
+            <param name="parent">The parent transform.</param>
+            <returns>The instantiated manager.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.LateUpdate">
+            <summary>
+            Unity LateUpdate method.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.OnDestroy">
+            <summary>
+            Unity OnDestroy method.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.BuildCandidates(Assets.Scripts.Flight.FlightSceneScript,ModApi.Flight.IFlightState,UnityEngine.Camera)">
+            <summary>
+            Rebuilds this frame's eligible-candidate list: every loaded, heating, non-player craft that passes the size, distance and frustum filters, ranked (largest on-screen first).
+            </summary>
+            <param name="flightScene">The flight scene.</param>
+            <param name="flightState">The flight state whose craft nodes are scanned.</param>
+            <param name="camera">The near camera used for distance / on-screen size / frustum tests.</param>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.ReconcileSlots(UnityEngine.Transform,System.Int32)">
+            <summary>
+            Frees slots whose subject is no longer selected and assigns free/new slots to the top candidates, up to the current active count.
+            </summary>
+            <param name="poolParent">The transform newly created renderers are parented to.</param>
+            <param name="maxActive">The player-configured number of secondary renderers allowed this frame.</param>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.TrimIdleSlots(System.Int32)">
+            <summary>
+            Destroys idle (unassigned) pooled renderers exceeding the active count, reclaiming their RTs when the player lowers the Extra Plasma Effects slider.
+            </summary>
+            <param name="maxActive">The current active-renderer count.</param>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.DriveSlots">
+            <summary>
+            Anchors every assigned secondary each frame (cheap, no GPU) and gives the single most-urgent one the heavy refresh, keeping the per-frame ceiling at the player plus one secondary.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.FindSlot(ModApi.Craft.ICraftScript)">
+            <summary>
+            Returns the slot currently bound to the given craft, or null.
+            </summary>
+            <param name="craft">The craft to look up.</param>
+            <returns>The bound slot, or null.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.AcquireFreeSlot(UnityEngine.Transform,System.Int32)">
+            <summary>
+            Returns a free (unassigned) slot, reusing a pooled renderer or creating a new one while under the active count; null if the count is reached and none are free.
+            </summary>
+            <param name="poolParent">The transform a newly created renderer is parented to.</param>
+            <param name="maxActive">The current active-renderer count.</param>
+            <returns>A free slot, or null.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.GetCraftSize(ModApi.Craft.ICraftScript)">
+            <summary>
+            Returns a craft's cached size metrics (bulk size for ranking, sphere radius for the frustum bound), recomputed only when its body count changes (staging, breakup).
+            </summary>
+            <param name="craft">The craft.</param>
+            <returns>The cached size metrics.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.PruneSizeCache">
+            <summary>
+            Removes size-cache entries for craft not seen this frame (unloaded / destroyed).
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.Teardown">
+            <summary>
+            Destroys every pooled renderer and clears all state; used on teardown and when extras are switched off (non-airstream tier or the slider at zero).
+            </summary>
+        </member>
+        <member name="T:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.Candidate">
+            <summary>
+            An eligible non-player craft this frame plus its on-screen size and ranking sort key.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.Candidate.Craft">
+            <summary>
+            The candidate craft.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.Candidate.ScreenFraction">
+            <summary>
+            The on-screen size as a fraction of the half-viewport height (drives the refresh interval).
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.Candidate.SortKey">
+            <summary>
+            The ranking key: on-screen size plus the incumbent bonus.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.Candidate.#ctor(ModApi.Craft.ICraftScript,System.Single,System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.Candidate"/> struct.
+            </summary>
+            <param name="craft">The candidate craft.</param>
+            <param name="screenFraction">The on-screen size fraction.</param>
+            <param name="sortKey">The ranking sort key.</param>
+        </member>
+        <member name="T:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.Slot">
+            <summary>
+            A pooled secondary renderer plus the subject it is currently bound to, its on-screen size and its next scheduled refresh time.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.Slot.Renderer">
+            <summary>
+            The pooled renderer.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.Slot.Subject">
+            <summary>
+            The craft this slot is currently rendering, or null when free.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.Slot.ScreenFraction">
+            <summary>
+            The subject's on-screen size fraction this frame, driving the refresh interval.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.Slot.NextDriveTime">
+            <summary>
+            The earliest real time (s) at which this slot may be driven again.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.Slot.#ctor(Assets.Scripts.Flight.GameView.CraftAirstreamRenderer)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.Slot"/> class.
+            </summary>
+            <param name="renderer">The pooled renderer.</param>
+        </member>
+        <member name="T:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.SizeCache">
+            <summary>
+            Cached craft size metrics keyed by the body count they were computed for, mutated in place on the cache.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.SizeCache.BulkSize">
+            <summary>
+            The bulk size (m): half the median AABB dimension, used for ranking and filtering.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.SizeCache.BoundRadius">
+            <summary>
+            The bounding-sphere radius (m), used only for the conservative frustum bound.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.SizeCache.BodyCount">
+            <summary>
+            The body count the metrics were computed for; a change forces a recompute.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.SizeCache.LastSeenTick">
+            <summary>
+            The frame tick this craft was last seen, used to prune stale entries.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.SizeCache.LastComputeTick">
+            <summary>
+            The frame tick the metrics were last recomputed, debouncing cascade recomputes.
+            </summary>
+        </member>
         <member name="T:Assets.Scripts.Flight.GameView.ReentryTrailEmission">
             <summary>
             Shared reentry-trail tuning and emission core, used by the player's <see cref="T:Assets.Scripts.Flight.GameView.CraftAirstreamRenderer"/> and by <see cref="T:Assets.Scripts.Flight.GameView.ReentryTrailManager"/> for every other craft and debris body.
@@ -105328,6 +106127,11 @@
         <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailEmission.FlowParallelThreshold">
             <summary>
             Dot magnitude above which a flow direction is too parallel to the world up to seed a LookRotation, so a fallback up is used.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.GameView.ReentryTrailEmission.TrailMaxSpreadSpeed">
+            <summary>
+            Upper clamp (m/s) on the surface speed used for batch spread and rate, above any real reentry speed.
             </summary>
         </member>
         <member name="M:Assets.Scripts.Flight.GameView.ReentryTrailEmission.EmissionRateForCurrentQuality">
@@ -149944,7 +150748,7 @@
         </member>
         <member name="P:Assets.Scripts.Menu.MenuPlanetScript.CloudOpacity">
             <summary>
-            Gets or sets the cloud opacity multiplier used to fade the fake clouds in and out.
+            Gets or sets the cloud opacity multiplier used to fade the fake clouds in and out. Starts transparent until the menu animation fades the clouds in.
             </summary>
         </member>
         <member name="P:Assets.Scripts.Menu.MenuPlanetScript.Eclipse">
@@ -150868,6 +151672,11 @@
         <member name="M:Assets.Scripts.Menu.ObjectViewerScript.LateUpdate">
             <summary>
             LateUpdate is called every frame after all Update functions have been called if the behavior is enabled.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Menu.ObjectViewerScript.UpdateViewportRect">
+            <summary>
+            Matches the preview camera viewport to the safe area on mobile so the previewed object stays centered on the inset UI.
             </summary>
         </member>
         <member name="T:Assets.Scripts.Menu.Tutorial.MenuTutorialPanelScript">
