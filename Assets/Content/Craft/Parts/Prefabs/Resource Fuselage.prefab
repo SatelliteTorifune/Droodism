@@ -762,7 +762,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3511605228996319921, guid: dbde76ff125d6ed4daed24d007db7d28, type: 3}
       propertyPath: Data._name
-      value: Resource Fuselage
+      value: DesignerParts.ResourcesFuselage.ResourcesFuselage.Name
       objectReference: {fileID: 0}
     - target: {fileID: 3511605228996319921, guid: dbde76ff125d6ed4daed24d007db7d28, type: 3}
       propertyPath: Data._category
@@ -770,8 +770,7 @@ PrefabInstance:
       objectReference: {fileID: 11400000, guid: 7d2b6f557b8767544a162f30e61d22b6, type: 2}
     - target: {fileID: 3511605228996319921, guid: dbde76ff125d6ed4daed24d007db7d28, type: 3}
       propertyPath: Data._description
-      value: Versatile fuel tank that can be resized into many shapes and can hold
-        many different types of <color=green>Life Support Resources.
+      value: DesignerParts.ResourcesFuselage.ResourcesFuselage.Description
       objectReference: {fileID: 0}
     - target: {fileID: 3756693084313625935, guid: dbde76ff125d6ed4daed24d007db7d28, type: 3}
       propertyPath: Data._fuel

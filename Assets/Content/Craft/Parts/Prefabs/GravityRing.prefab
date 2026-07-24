@@ -3228,7 +3228,7 @@ GameObject:
   - component: {fileID: 385607454257519991}
   - component: {fileID: 37582400079518772}
   m_Layer: 0
-  m_Name: GravityRing 1
+  m_Name: GravityRing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5416,6 +5416,10 @@ PrefabInstance:
     - target: {fileID: 6122200776467757557, guid: 9681a9416d63ca64587bfa89899c447b, type: 3}
       propertyPath: m_Name
       value: Default
+      objectReference: {fileID: 0}
+    - target: {fileID: 7990908676862513522, guid: 9681a9416d63ca64587bfa89899c447b, type: 3}
+      propertyPath: Data._description
+      value: DesignerParts.GravityRing.GravityRing.Description
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

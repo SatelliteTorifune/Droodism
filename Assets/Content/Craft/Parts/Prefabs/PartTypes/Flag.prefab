@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &6122200776467757557
+--- !u!1 &4651729800310436599
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,25 +8,25 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3031615147948435644}
-  - component: {fileID: 5967344306734885689}
-  - component: {fileID: 7990908676862513522}
-  - component: {fileID: 5537895469188553751}
-  - component: {fileID: 1720888872350123655}
+  - component: {fileID: 4497507623935534014}
+  - component: {fileID: 5091436713104957499}
+  - component: {fileID: 8835296840558254704}
+  - component: {fileID: 6386843307881502485}
+  - component: {fileID: 3113030047440322370}
   m_Layer: 0
-  m_Name: GravityRing
+  m_Name: Flag
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &3031615147948435644
+--- !u!4 &4497507623935534014
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6122200776467757557}
+  m_GameObject: {fileID: 4651729800310436599}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -35,13 +35,13 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5967344306734885689
+--- !u!114 &5091436713104957499
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6122200776467757557}
+  m_GameObject: {fileID: 4651729800310436599}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 1298369543, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
@@ -55,23 +55,23 @@ MonoBehaviour:
     _defaultColorIndexTrim2: 2
     _defaultColorIndexTrim3: 3
     _defaultColorIndexTrim4: 4
-    _id: GravityRing
+    _id: Flag
     _includeInBodyDrag: 1
     _mirrorConfig:
       _hasRotationOffset: 0
       _rotationOffsetEuler: {x: 0, y: 0, z: 0}
-    _name: DesignerParts.GravityRing.GravityRing.Name
+    _name: Flag
     _partCollisionHandling: 0
     _price: 1
     _unscaledMass: 1
     _usePreferredNodeName: 1
---- !u!114 &7990908676862513522
+--- !u!114 &8835296840558254704
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6122200776467757557}
+  m_GameObject: {fileID: 4651729800310436599}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: -631517893, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
@@ -80,26 +80,26 @@ MonoBehaviour:
   Data:
     _activationGroup: 0
     _category: {fileID: 11400000, guid: 4bfc71c0b9c1253428ca08e136ecc26f, type: 2}
-    _description: DesignerParts.GravityRing.GravityRing.Description
+    _description: Flag
     _displayOrder: 0
-    _iconPath: Assets/Content/Craft/Parts/GravityRingIcon.png
-    _iconType: 2
-    _name: DesignerParts.GravityRing.GravityRing.Name
+    _iconPath: 
+    _iconType: 0
+    _name: Flag
     _partTypeOverrides: []
     _position: {x: 0, y: 0, z: 0}
     _rotation: {x: 0, y: 0, z: 0}
-    _showInDesigner: 1
+    _showInDesigner: 0
     _snapshotDistanceScaler: 100
     _snapshotPartOffset: {x: 0, y: 0, z: 0}
     _snapshotPartRotation: {x: 0, y: 0, z: 0}
     _snapshotRotation: {x: 30, y: 30, z: 0}
---- !u!114 &5537895469188553751
+--- !u!114 &6386843307881502485
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6122200776467757557}
+  m_GameObject: {fileID: 4651729800310436599}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: -841283480, guid: 43320b5f70320504aa4b1543184e13b2, type: 3}
@@ -160,16 +160,16 @@ MonoBehaviour:
     _supportsTransparency: 1
     _thermalMassRatio: 1
     _tutorialId: 
---- !u!114 &1720888872350123655
+--- !u!114 &3113030047440322370
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6122200776467757557}
+  m_GameObject: {fileID: 4651729800310436599}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f6b401299e81d4b44b1e255a27e61bd2, type: 3}
+  m_Script: {fileID: 11500000, guid: 68faf4cb371f33a419ecea4f66fe4367, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Data:
@@ -181,10 +181,9 @@ MonoBehaviour:
     _version: 1
     _versionLast: 1
     _versionsAllowed: 
-    IsReverse: 0
-    CurrentRotation: 90
     ExtendSpeed: 0.2
     deployRotationSpeed: 15
     isDeployed: 0
     stayDeployed: 0
+    flagContent: 
     RotationSpeed: 0

@@ -30,6 +30,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         [SerializeField] [PartModifierProperty]
         private bool stayDeployed;
+
+        [SerializeField] [PartModifierProperty]
+        private string flagContent;
        
         public float RotationSpeed = 0.75f;
         
@@ -69,6 +72,20 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             get => stayDeployed;
             set => stayDeployed = value;
+        }
+        
+        public string FlagContent
+        {
+            get => flagContent;
+        }
+
+        public void SetFlagContent(string incomingFlagContent)
+        {
+            if (incomingFlagContent==null)
+            {
+                return;
+            }
+            this.flagContent = incomingFlagContent;
         }
     }
 }

@@ -163,6 +163,9 @@
 
     <!-- FlagScript -->
     <s id="Droodism.FlagScript.LoadImage">加载图片</s>
+    <s id="Droodism.FlagScript.FlagMessage">旗帜信息</s>
+    <s id="Droodism.FlagScript.EditMessage">编辑信息</s>
+    <s id="Droodism.FlagScript.EditMessageToolTip">编辑旗帜留言</s>
 
     <!-- GasDealerScript -->
     <s id="Droodism.GasDealerScript.ActionIrreversible">此操作 &lt;color=red&gt;&lt;size=110%&gt;不可逆&lt;/size&gt;&lt;/color&gt;</s>
