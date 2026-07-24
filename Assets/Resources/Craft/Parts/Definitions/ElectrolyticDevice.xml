@@ -13,7 +13,7 @@
     </SubpartTypes>
   </PartType>
   <DesignerParts>
-    <DesignerPart name="Electrolytic Device" category="LifeSupport" description="Electrolytic Device,which turns &lt;color=yellow&gt;water&lt;/color&gt; to &lt;color=green&gt;oxygen&lt;/color&gt;,require electricity to run" order="0" showInDesigner="true" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
+    <DesignerPart name="DesignerParts.ElectrolyticDevice.ElectrolyticDevice.Name" category="LifeSupport" description="DesignerParts.ElectrolyticDevice.ElectrolyticDevice.Description" order="0" showInDesigner="true" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
       <Assembly>
         <Parts>
           <Part id="1" partType="ElectrolyticDevice" position="0,0,0" rotation="0,0,0">

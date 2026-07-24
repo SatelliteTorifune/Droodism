@@ -15,7 +15,7 @@
     </SubpartTypes>
   </PartType>
   <DesignerParts>
-    <DesignerPart name="Drood Organic Classification and Recycling Device" category="LifeSupport" description="&lt;color=red&gt;&lt;size=150%&gt;Sometime, for the greater good ,your crew need to SACRIFICE themselves......" order="0" showInDesigner="true" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
+    <DesignerPart name="DesignerParts.DOCRDevice.DOCRDevice.Name" category="LifeSupport" description="DesignerParts.DOCRDevice.DOCRDevice.Description" order="0" showInDesigner="true" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
       <Assembly>
         <Parts>
           <Part id="1" partType="DOCRDevice" position="0,0,0" rotation="0,0,0">

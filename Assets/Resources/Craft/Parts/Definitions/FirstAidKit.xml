@@ -13,7 +13,7 @@
     </SubpartTypes>
   </PartType>
   <DesignerParts>
-    <DesignerPart name="First Aid Kit" category="LifeSupport" description="Heal Drood" order="0" showInDesigner="true" iconType="Resource" iconPath="Assets/Content/Craft/Parts/FirstAidKit.png" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
+    <DesignerPart name="DesignerParts.FirstAidKit.FirstAidKit.Name" category="LifeSupport" description="DesignerParts.FirstAidKit.FirstAidKit.Description" order="0" showInDesigner="true" iconType="Resource" iconPath="Assets/Content/Craft/Parts/FirstAidKit.png" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
       <Assembly>
         <Parts>
           <Part id="1" partType="FirstAidKit" position="0,0,0" rotation="0,0,0">

@@ -476,4 +476,66 @@
     <s id="Fuel.Solid Waste.Description">Solid Waste Drood Generated,or you can call it sh1t</s>
     <s id="Fuel.LPN2.Name">Gas Nitrogen</s>
     <s id="Fuel.LPN2.Description">Nitrogen, scooped from the atmosphere of any world that has one. Nothing burns it directly, but combine it with hydrogen in a converter and you can synthesize hydrazine, a potent storable propellant.</s>
+    
+    
+    <!--Designer-->
+    <s id="DesignerParts.CarbonDioxideFilter.CarbonDioxideFilter.Name">Carbon Dioxide Filter</s>
+    <s id="DesignerParts.CarbonDioxideFilter.CarbonDioxideFilter.Description">A Filter to remove &lt;color=red&gt;Carbon Dioxide&lt;/color&gt; when you don't want to make use of it, the device simply throws the waste CarbonDioxide out of craft using electricity charge to operate</s>
+    
+    <s id="DesignerParts.ChemicalReactor.ChemicalReactor.Name">Chemical Reactor</s>
+    <s id="DesignerParts.ChemicalReactor.ChemicalReactor.Description">A Tiny Chemical Reactor for ISRU use, pick the right reaction type before putting it into use.</s>
+    
+    <s id="DesignerParts.DOCRDevice.DOCRDevice.Name">&lt;color=red&gt;&lt;size=150%&gt;Drood Organic Classification and Recycling Device</s>
+    <s id="DesignerParts.DOCRDevice.DOCRDevice.Description">&lt;color=red&gt;&lt;size=150%&gt;Sometimes, for the greater good, your crew need to SACRIFICE themselves......&lt;/size&gt;&lt;/color&gt;</s>
+    
+    <s id="DesignerParts.ElectrolyticDevice.ElectrolyticDevice.Name">Electrolytic Device</s>
+    <s id="DesignerParts.ElectrolyticDevice.ElectrolyticDevice.Description">Electrolytic Device, which turns &lt;color=yellow&gt;water&lt;/color&gt; to &lt;color=green&gt;oxygen&lt;/color&gt;, requires electricity to run</s>
+    
+    <s id="DesignerParts.FoodTank.FoodTank.Name">Food Tank</s>
+    <s id="DesignerParts.FoodTank.FoodTank.Description">A container with &lt;color=yellow&gt;food&lt;/color&gt;</s>
+    
+    <s id="DesignerParts.GasDepressurizeDevice.GasDepressurizeDevice.Name">Gas Depressurize Device</s>
+    <s id="DesignerParts.GasDepressurizeDevice.GasDepressurizeDevice.Description">Used to Depressurize high pressure gas or liquid gas to low pressure gas.</s>
+    
+    <s id="DesignerParts.GasPressurizeDevice.GasPressurizeDevice.Name">Gas Pressurize Device</s>
+    <s id="DesignerParts.GasPressurizeDevice.GasPressurizeDevice.Description">Used to compress the low density gas to high pressure gas or Liquid Gas</s>
+    
+    <s id="DesignerParts.HibernatingChamber.HibernatingChamber.Name">Hibernating Chamber</s>
+    <s id="DesignerParts.HibernatingChamber.HibernatingChamber.Description">Wanna make your crew sleep for a little bit longer? This is what you want</s>
+    
+    <s id="DesignerParts.MethaloxGenerator.MethaloxGenerator.Name">Methalox Generator</s>
+    <s id="DesignerParts.MethaloxGenerator.MethaloxGenerator.Description">A device turning &lt;color=red&gt;High Pressure CO2&lt;/color&gt;, &lt;color=red&gt;Water&lt;/color&gt; into &lt;color=green&gt;Methalox&lt;/color&gt;</s>
+    
+    <s id="DesignerParts.PhotoBioReactor.PhotoBioReactor.Name">PhotoBio Reactor</s>
+    <s id="DesignerParts.PhotoBioReactor.PhotoBioReactor.Description">When &lt;color=green&gt;Active&lt;/color&gt;, turning CO2/Water to Oxygen and Food, powered by solar or electricity. Solid Waste will boost the food generation</s>
+    
+    <s id="DesignerParts.ResourcesFuselage.ResourcesFuselage.Name">Resources Fuselage</s>
+    <s id="DesignerParts.ResourcesFuselage.ResourcesFuselage.Description">Versatile fuel tank that can be resized into many shapes and can hold many different types of &lt;color=green&gt;Life Support Resources&lt;/color&gt;</s>
+    
+    <s id="DesignerParts.ResourcesPack.ResourcesPack.Name">Resources Pack</s>
+    <s id="DesignerParts.ResourcesPack.ResourcesPack.Description">A quicker choice if you don't want to spend time setting and placing the life support resources tanks one by one, this part integrates necessary resources for &lt;color=green&gt;a single Drood&lt;/color&gt; to consume in 24 hours.</s>
+    
+    <s id="DesignerParts.SewageTreatDevice.SewageTreatDevice.Name">Sewage Treat Device</s>
+    <s id="DesignerParts.SewageTreatDevice.SewageTreatDevice.Description">A Device which processes &lt;color=red&gt;Wasted Water&lt;/color&gt; to Clean &lt;color=green&gt;Drinking Water&lt;/color&gt;. Powered by Electricity</s>
+    
+    <s id="DesignerParts.SodiumPeroxideContainer.SodiumPeroxideContainer.Name">Sodium Peroxide Container</s>
+    <s id="DesignerParts.SodiumPeroxideContainer.SodiumPeroxideContainer.Description">Taking in CO2/Wasted Water and giving out &lt;color=green&gt;Oxygen&lt;/color&gt; in an emergency, does not require electricity charge to work</s>
+    
+    <s id="DesignerParts.ToolKit.ToolKit.Name">Tool Kit</s>
+    <s id="DesignerParts.ToolKit.ToolKit.Description">A tool kit which resupplies engineers' repair tools</s>
+    
+    <s id="DesignerParts.WaterPump.WaterPump.Name">Water Pump</s>
+    <s id="DesignerParts.WaterPump.WaterPump.Description">Put this into water to refill the water</s>
+    
+    <s id="DesignerParts.WaterTank.WaterTank.Name">Water Tank</s>
+    <s id="DesignerParts.WaterTank.WaterTank.Description">A Container with &lt;color=green&gt;Water&lt;/color&gt;</s>
+    
+    <s id="DesignerParts.FirstAidKit.FirstAidKit.Name">First Aid Kit</s>
+    <s id="DesignerParts.FirstAidKit.FirstAidKit.Description">Heal Drood</s>
+    
+    <s id="DesignerParts.GravityRing.GravityRing.Name">&lt;color=green&gt;Gravity Ring&lt;/color&gt;</s>
+    <s id="DesignerParts.GravityRing.GravityRing.Description">A huge gravity ring which could bring a comfortable living environment using artificial gravity, need Nitrogen to Deploy</s>
+    <!--category-->
+    <s id="Design.PartsList.Category.LifeSupport.Name">Life Support</s>
+    <s id="Design.PartsList.Category.ISRU.Name">In-Situ Resource Utilization</s>
 </Strings>

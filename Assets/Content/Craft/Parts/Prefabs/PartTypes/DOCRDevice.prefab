@@ -81,12 +81,11 @@ MonoBehaviour:
   Data:
     _activationGroup: 0
     _category: {fileID: 11400000, guid: 7d2b6f557b8767544a162f30e61d22b6, type: 2}
-    _description: <color=red><size=150%>Sometime, for the greater good ,your crew
-      need to SACRIFICE themselves......
+    _description: DesignerParts.DOCRDevice.DOCRDevice.Description
     _displayOrder: 0
     _iconPath: 
     _iconType: 0
-    _name: Drood Organic Classification and Recycling Device
+    _name: DesignerParts.DOCRDevice.DOCRDevice.Name
     _partTypeOverrides: []
     _position: {x: 0, y: 0, z: 0}
     _rotation: {x: 0, y: 0, z: 0}

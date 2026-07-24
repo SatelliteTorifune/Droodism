@@ -80,16 +80,11 @@ MonoBehaviour:
   Data:
     _activationGroup: 0
     _category: {fileID: 11400000, guid: 2d849a06cee127543a64b34a37e37bc1, type: 2}
-    _description: 'When<color=green>Active</color>,turning CO2/Water to Oxygen and
-      Food,powered by solar or electricity
-
-
-      Solid Waste Will boost the food
-      generation'
+    _description: DesignerParts.PhotoBioReactor.PhotoBioReactor.Description
     _displayOrder: 0
     _iconPath: 
     _iconType: 0
-    _name: PhotoBio Reactor
+    _name: DesignerParts.PhotoBioReactor.PhotoBioReactor.Name
     _partTypeOverrides: []
     _position: {x: 0, y: 0, z: 0}
     _rotation: {x: 0, y: 0, z: 0}

@@ -80,14 +80,11 @@ MonoBehaviour:
   Data:
     _activationGroup: 0
     _category: {fileID: 11400000, guid: 7d2b6f557b8767544a162f30e61d22b6, type: 2}
-    _description: 'Used to Depressurize high pressure gas or liquid gas to low pressure
-      gas.
-
-'
+    _description: DesignerParts.GasDepressurizeDevice.GasDepressurizeDevice.Description
     _displayOrder: 0
     _iconPath: Assets/Content/Craft/Parts/GasDepressure.png
     _iconType: 2
-    _name: Gas Depressurize Device
+    _name: DesignerParts.GasDepressurizeDevice.GasDepressurizeDevice.Name
     _partTypeOverrides: []
     _position: {x: 0, y: 0, z: 0}
     _rotation: {x: 0, y: 0, z: 0}

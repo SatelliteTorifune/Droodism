@@ -81,12 +81,11 @@ MonoBehaviour:
   Data:
     _activationGroup: 0
     _category: {fileID: 11400000, guid: 4bfc71c0b9c1253428ca08e136ecc26f, type: 2}
-    _description: Wanna make your crew sleep for a little bit longer? this is what
-      you want
+    _description: DesignerParts.HibernatingChamber.HibernatingChamber.Description
     _displayOrder: 0
     _iconPath: 
     _iconType: 0
-    _name: HibernatingChamber
+    _name: DesignerParts.HibernatingChamber.HibernatingChamber.Name
     _partTypeOverrides: []
     _position: {x: 0, y: 0, z: 0}
     _rotation: {x: 0, y: 0, z: 0}

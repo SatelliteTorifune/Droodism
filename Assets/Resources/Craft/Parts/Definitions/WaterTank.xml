@@ -15,7 +15,7 @@
     </SubpartTypes>
   </PartType>
   <DesignerParts>
-    <DesignerPart name="WaterTank" category="LifeSupport" description="A Container with &lt;color=green&gt;Water" order="0" showInDesigner="true" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
+    <DesignerPart name="DesignerParts.WaterTank.WaterTank.Name" category="LifeSupport" description="DesignerParts.WaterTank.WaterTank.Description" order="0" showInDesigner="true" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
       <Assembly>
         <Parts>
           <Part id="1" partType="WaterTank" position="0,0,0" rotation="0,0,0">
