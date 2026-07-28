@@ -1,7 +1,9 @@
 using System;
 using System.Xml.Linq;
 using Assets.Scripts.Craft.Parts.Modifiers;
+using Assets.Scripts.Craft.Parts.Modifiers.Mfd;
 using Assets.Scripts.Flight;
+using Assets.Scripts.Vizzy.UI;
 using ModApi;
 using ModApi.Craft.Parts;
 using ModApi.Flight.Sim;

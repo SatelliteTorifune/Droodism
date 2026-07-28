@@ -176,13 +176,13 @@ namespace Assets.Scripts
                 RadiationBeltDebugUI.Instance.OnToggleInspectorPanelState();
             });
 
-
             
             DevConsoleApi.RegisterCommand("RebuildFuelSource",()=>
             {
                 var fs = ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.FuelSources as CraftFuelSources;
                 fs.Rebuild(ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript);
             });
+            
 
         }
 
