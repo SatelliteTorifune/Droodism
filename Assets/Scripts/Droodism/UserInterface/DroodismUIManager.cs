@@ -397,7 +397,7 @@ namespace Assets.Scripts.Droodism.UserInterface
                         DroodType.Scientist ? "#62BF05" : droodismCrewData.CrewRole == DroodType.Pilot?"#FF0003":"white";
                     CrewInspectorGroup.Add<TextModel>(new TextModel(droodismCrewData == null
                         ? Locale.GetString("Droodism.DroodismUIManager.UnknownRole")
-                        : $"<color={color}>{droodismCrewData.CrewRole.ToString()}</color>", () => eva.Data.CrewName));
+                        : $"<color={color}>{GetLocalizedCrewRole(droodismCrewData.CrewRole)}</color>", () => eva.Data.CrewName));
                     CrewInspectorGroup.Add<TextModel>(new TextModel(Locale.GetString("Droodism.DroodismUIManager.MissionTime"),
                         (Func<string>)(() => Units.GetStopwatchTimeString(supportLifeScript.MissionDurationTime)),
                         tooltip: string.Format(Locale.GetString("Droodism.DroodismUIManager.MissionTimeTooltip"), eva.Data.CrewName)));
@@ -702,6 +702,16 @@ namespace Assets.Scripts.Droodism.UserInterface
 
             return null;
 
+        }
+        private static string GetLocalizedCrewRole(DroodType role)
+        {
+            switch (role)
+            {
+                case DroodType.Engineer: return Locale.GetString("Droodism.SupportLifeData.CrewRoleEngineer");
+                case DroodType.Scientist: return Locale.GetString("Droodism.SupportLifeData.CrewRoleScientist");
+                case DroodType.Pilot: return Locale.GetString("Droodism.SupportLifeData.CrewRolePilot");
+                default: return role.ToString();
+            }
         }
     }
 }
