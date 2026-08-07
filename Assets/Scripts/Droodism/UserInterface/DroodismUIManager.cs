@@ -665,7 +665,7 @@ namespace Assets.Scripts.Droodism.UserInterface
 
 
         #endregion
-
+        
      
         public IFuelSource GetIFuelSourceByID(string fuelTypeId)
         {
@@ -713,5 +713,6 @@ namespace Assets.Scripts.Droodism.UserInterface
                 default: return role.ToString();
             }
         }
+        
     }
 }
