@@ -49,7 +49,6 @@ namespace Assets.Scripts
 
         public BoolSetting ReceiveCraftRadiation { get; set; }
         
-        public BoolSetting LegacyPauseResume { get; set; }
         public BoolSetting FixAngularDragInVacuum { get; set; }
 
         /// <summary>
@@ -84,8 +83,6 @@ namespace Assets.Scripts
             ResourceCriticalThreshold = CreateNumeric<float>("CriticalThreshold",0.05f,0.2f,0.01f)
                 .SetDescription(Locale.GetString("Droodism.ModSettings.CriticalThresholdDesc"))
                 .SetDefault(0.10f);
-            LegacyPauseResume=CreateBool("LegacyPauseResume")
-                .SetDefault(false);
             FixAngularDragInVacuum=CreateBool("FixAngularDragInVacuum")
                 .SetDescription(Locale.GetString("Droodism.ModSettings.FixAngularDragInVacuumDesc"))
                 .SetDefault(false);

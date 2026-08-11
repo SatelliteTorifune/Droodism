@@ -23315,10 +23315,10 @@
             Adds the property.
             </summary>
             <param name="category">The category.</param>
-            <param name="name">The name.</param>
+            <param name="name">Ignored. The display name is the locale key derived from <paramref name="xmlName"/>.</param>
             <param name="xmlName">Name of the XML.</param>
             <param name="itemType">Type of the item.</param>
-            <param name="tooltip">The tooltip.</param>
+            <param name="tooltip">Ignored. The tooltip is the locale key derived from <paramref name="xmlName"/>.</param>
             <returns>
             The craft property.
             </returns>
@@ -26377,6 +26377,12 @@
             The expression result.
             </returns>
         </member>
+        <member name="M:ModApi.Craft.Program.VariableExpression.OnDeserialized(System.Xml.Linq.XElement)">
+            <summary>
+            Called when the node has been deserialized.
+            </summary>
+            <param name="xml">The node's XML element.</param>
+        </member>
         <member name="T:ModApi.Craft.Program.FlightProgram">
             <summary>
             Flight program.
@@ -29165,6 +29171,13 @@
             The thread context.
             </returns>
         </member>
+        <member name="M:ModApi.Craft.Program.ThreadContext.ResolveVariableName(System.String)">
+            <summary>
+            Resolves an event-variable locale-key name to its invariant English id; plain names pass through.
+            </summary>
+            <param name="name">The variable name from the program.</param>
+            <returns>The invariant English variable id.</returns>
+        </member>
         <member name="M:ModApi.Craft.Program.ThreadContext.BreakExecution(ModApi.Craft.Program.BreakExecutionType)">
             <summary>
             Signals to the program that it should break execution.
@@ -29260,13 +29273,6 @@
             </summary>
             <param name="instruction">The program instruction.</param>
             <param name="state">The state.</param>
-        </member>
-        <member name="M:ModApi.Craft.Program.ThreadContext.ResolveVariableName(System.String)">
-            <summary>
-            Resolves an event-variable locale-key name to its invariant English id; plain names pass through.
-            </summary>
-            <param name="name">The variable name from the program.</param>
-            <returns>The invariant English variable id.</returns>
         </member>
         <member name="T:ModApi.Craft.Program.Variable">
             <summary>
@@ -46038,6 +46044,11 @@
             controls whether those components react to clicks.
             </summary>
         </member>
+        <member name="F:ModApi.Locale.UnformattableStrings">
+            <summary>
+            The argument count each id failed to format with, cleared when the language changes.
+            </summary>
+        </member>
         <member name="F:ModApi.Locale._currentStringLocales">
             <summary>
             The string locales for the current language, overlaid on its fallback chain.
@@ -46175,6 +46186,15 @@
             <param name="fallback">The text to use when the id has no entry.</param>
             <returns>The localized string, the id when <see cref="F:ModApi.Locale.ShowKeys"/> is enabled and the id is authored, or the fallback.</returns>
         </member>
+        <member name="M:ModApi.Locale.GetLocalizedDisplayName(System.String,System.String,System.String)">
+            <summary>
+            Gets the localized display name for a name authored in game data.
+            </summary>
+            <param name="keyPrefix">The locale key prefix, including the trailing dot.</param>
+            <param name="displayName">The raw (English) display name.</param>
+            <param name="keySuffix">The locale key suffix, including the leading dot, or <c>null</c> for none.</param>
+            <returns>The localized name, or <paramref name="displayName"/> if none is authored.</returns>
+        </member>
         <member name="M:ModApi.Locale.GetXmlReadyString(System.String)">
             <summary>
             Gets the localized string in the currently selected language, if it exists, ready to be parsed as XML.
@@ -46207,6 +46227,23 @@
             <param name="modName">The name of the mod whose installed string files should be removed.</param>
             <returns><c>true</c> if at least one file was removed.</returns>
         </member>
+        <member name="M:ModApi.Locale.IsKnownUnformattable(System.String,System.Int32)">
+            <summary>
+            Determines whether the id already failed to format with this many arguments.
+            </summary>
+            <param name="id">The local string identifier.</param>
+            <param name="argCount">The number of arguments the caller is formatting with.</param>
+            <returns><c>true</c> when formatting the id would throw again.</returns>
+        </member>
+        <member name="M:ModApi.Locale.TryFormat(System.String,System.Object[],System.String@)">
+            <summary>
+            Formats the template with the arguments, reporting failure instead of throwing.
+            </summary>
+            <param name="template">The format template.</param>
+            <param name="args">The format arguments.</param>
+            <param name="result">The formatted string, or <c>null</c> when it could not be formatted.</param>
+            <returns><c>true</c> if the template was formatted.</returns>
+        </member>
         <member name="M:ModApi.Locale.ParseStringLocales(System.Xml.Linq.XElement)">
             <summary>
             Parses the &lt;s&gt; entries of a Strings.xml document into an id -&gt; value table.
@@ -46220,6 +46257,13 @@
             </summary>
             <param name="modName">The name of the mod.</param>
             <returns>The file name to use for the mod's supplementary strings file.</returns>
+        </member>
+        <member name="M:ModApi.Locale.SanitizeDisplayNameSegment(System.String)">
+            <summary>
+            Strips everything but letters and digits so a data name maps to a stable key segment (<c>T.T.</c> becomes <c>TT</c>).
+            </summary>
+            <param name="name">The name to sanitize.</param>
+            <returns>The sanitized key segment.</returns>
         </member>
         <member name="M:ModApi.Locale.SanitizeFileToken(System.String)">
             <summary>
@@ -53054,6 +53098,12 @@
             <param name="input">The input data needed to generate vertex data.</param>
             <param name="data">The vertex data object to be updated.</param>
         </member>
+        <member name="M:ModApi.Planet.Modifiers.VertexData.BasicArithmetic.Initialize(ModApi.Planet.IPlanetData)">
+            <summary>
+            Initializes the modifier.
+            </summary>
+            <param name="planetData">The planet data.</param>
+        </member>
         <member name="M:ModApi.Planet.Modifiers.VertexData.BasicArithmetic.SaveXml(System.Xml.Linq.XElement)">
             <summary>
             Saves the modifier as XML.
@@ -53359,6 +53409,12 @@
             </summary>
             <param name="input">The input data needed to generate vertex data.</param>
             <param name="data">The vertex data object to be updated.</param>
+        </member>
+        <member name="M:ModApi.Planet.Modifiers.VertexData.Biomes.AddBiome.Initialize(ModApi.Planet.IPlanetData)">
+            <summary>
+            Initializes the modifier.
+            </summary>
+            <param name="planetData">The planet data.</param>
         </member>
         <member name="M:ModApi.Planet.Modifiers.VertexData.Biomes.AddBiome.OnBiomeAdded(System.Int32)">
             <summary>
@@ -53704,6 +53760,12 @@
             <param name="input">The input data needed to generate vertex data.</param>
             <param name="data">The vertex data object to be updated.</param>
         </member>
+        <member name="M:ModApi.Planet.Modifiers.VertexData.Biomes.GetBiomeStrength.Initialize(ModApi.Planet.IPlanetData)">
+            <summary>
+            Initializes the modifier.
+            </summary>
+            <param name="planetData">The planet data.</param>
+        </member>
         <member name="M:ModApi.Planet.Modifiers.VertexData.Biomes.GetBiomeStrength.OnBiomeAdded(System.Int32)">
             <summary>
             Called when a biome has been added.
@@ -53783,6 +53845,12 @@
             </summary>
             <param name="input">The input data needed to generate vertex data.</param>
             <param name="data">The vertex data object to be updated.</param>
+        </member>
+        <member name="M:ModApi.Planet.Modifiers.VertexData.Biomes.GetCombinedBiomeStrength.Initialize(ModApi.Planet.IPlanetData)">
+            <summary>
+            Initializes the modifier.
+            </summary>
+            <param name="planetData">The planet data.</param>
         </member>
         <member name="M:ModApi.Planet.Modifiers.VertexData.Biomes.GetCombinedBiomeStrength.OnBiomeAdded(System.Int32)">
             <summary>
@@ -53978,6 +54046,12 @@
             </summary>
             <param name="input">The input data needed to generate vertex data.</param>
             <param name="data">The vertex data object to be updated.</param>
+        </member>
+        <member name="M:ModApi.Planet.Modifiers.VertexData.Biomes.HemisphereBiomeSwap.Initialize(ModApi.Planet.IPlanetData)">
+            <summary>
+            Initializes the modifier.
+            </summary>
+            <param name="planetData">The planet data.</param>
         </member>
         <member name="M:ModApi.Planet.Modifiers.VertexData.Biomes.HemisphereBiomeSwap.OnBiomeAdded(System.Int32)">
             <summary>
@@ -60613,6 +60687,20 @@
             </summary>
             <param name="vertexDataType">The type of the vertex data.</param>
             <returns>True if the specified vertex data is supported.</returns>
+        </member>
+        <member name="M:ModApi.Planet.Modifiers.VertexData.VertexDataPlanetModifier.ValidateDataSlots">
+            <summary>
+            Validates the data slot indices, throwing when malformed planet data would index outside the vertex data array.
+            </summary>
+            <exception cref="T:System.InvalidOperationException">A data slot index is outside its valid range.</exception>
+        </member>
+        <member name="M:ModApi.Planet.Modifiers.VertexData.VertexDataPlanetModifier.ValidateBiomeIndex(System.Int32,System.String)">
+            <summary>
+            Validates a biome index, throwing when malformed planet data references a biome that doesn't exist.
+            </summary>
+            <param name="index">The biome index to validate.</param>
+            <param name="name">The name of the index used in the error message.</param>
+            <exception cref="T:System.InvalidOperationException">The biome index is outside the valid range.</exception>
         </member>
         <member name="T:ModApi.Planet.Modifiers.VertexData.VertexDataPlanetModifier.ModifierBenchmarkItem">
             <summary>

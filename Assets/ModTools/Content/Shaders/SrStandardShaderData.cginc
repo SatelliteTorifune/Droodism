@@ -20,6 +20,9 @@
     float _scaleOverScaleDepth;
     sampler2D _ScaledSpaceTerrainTexture;
 
+    // 1 while a scene camera renders; 0 for cameras that bypass OnPreRender (e.g. reflection probes)
+    float _sceneCameraRendering;
+
     #if UNDERWATER
         float _underwaterLightFadeDepth;
         float _underwaterLightFadeDistance;
