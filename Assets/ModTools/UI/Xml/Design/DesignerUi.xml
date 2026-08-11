@@ -21,7 +21,7 @@
           <Image class="toggle-button-icon" sprite="Ui/Sprites/Design/IconButtonMenu" />
         </Panel>
         <Panel internalId="flyout-tools" class="toggle-button toggle-flyout audio-btn-click" name="ButtonPanel.Tools" tooltip="{Design.ToolPanel.Tooltip}" onClick="OnToggleFlyoutButtonClicked(this);">
-          <Image class="toggle-button-icon" sprite="Ui/Sprites/Design/IconButtonMovePartTool" id="active-tool-icon" />
+          <Image class="toggle-button-icon toggle-button-icon-white" sprite="Ui/Sprites/Design/IconButtonMovePartTool" id="active-tool-icon" />
         </Panel>
         <Panel internalId="flyout-part-list" class="toggle-button toggle-flyout audio-btn-click" name="ButtonPanel.AddPart" tooltip="{Design.PartsList.Tooltip}" onClick="OnToggleFlyoutButtonClicked(this);">
           <Image class="toggle-button-icon" sprite="Ui/Sprites/Design/IconButtonParts" />

@@ -20,11 +20,14 @@ namespace Assets.Scripts
         private static readonly string EvaPartName = "Eva";
         private static readonly string EvaTouristPartName = "Eva-Tourist";
         private static readonly string GeneratorPartName = "Generator1";
+        private static readonly string RTGPartName = "Generator2";
         private static readonly string EvaDataModifierName = "EvaData";
         private static readonly string ChairPartName = "Chair";
         private static readonly string Cockpit = "Cockpit1";
         private static readonly string SupportLifeDataModifierName = "SupportLifeData";
         private static readonly string RagdollModifierName = "RagdollModifier";
+        private static readonly string DockingPortModifierName = "Docking Port";
+        private static readonly string ParachutePartName = "DroodParachute";
 
         
 
@@ -53,11 +56,18 @@ namespace Assets.Scripts
                 AddLifeSupportGeneratorModifiers(part);
             }
 
+            // Process RTG parts
+            foreach (var part in GetPartsByType(craftScript, RTGPartName))
+            {
+                AddLifeSupportRTGModifiers(part);
+            }
+
+
             // Process Command Pods
-            foreach (var part in craftScript.Data.Assembly.Parts.Where(part => part.PartType.IsCommandPod&&!part.PartType.Name.Contains(Cockpit) && !part.PartType.Name.Contains(EvaPartName)).ToList())
+            foreach (var part in GetCommandPods(craftScript))
             {
                 PatchCommandPod(part);
-                if (part.GetModifier<CrewCompartmentData>() != null)
+                if (part.GetModifier<CrewCompartmentData>() != null&&part.PartType.Name!=ParachutePartName)
                 {
                     AddCrewCompartmentPatch(part);
                 }
@@ -65,7 +75,7 @@ namespace Assets.Scripts
             }
             
             // Process Crew Compartments
-            foreach (var part in craftScript.Data.Assembly.Parts.Where(part => part.GetModifier<CrewCompartmentData>() != null&&!part.PartType.Name.Contains(ChairPartName)&&!part.PartType.Name.Contains(Cockpit) && !part.PartType.Name.Contains(EvaPartName)).ToList())
+            foreach (var part in craftScript.Data.Assembly.Parts.Where(part => part.GetModifier<CrewCompartmentData>() != null&&!part.PartType.Name.Contains(ChairPartName)&&!part.PartType.Name.Contains(Cockpit) && !part.PartType.Name.Contains(EvaPartName)&&part.PartType.Name!=ParachutePartName).ToList())
             {
                 AddCrewCompartmentPatch(part);
             }
@@ -77,6 +87,11 @@ namespace Assets.Scripts
             
         }
 
+        private List<PartData> GetCommandPods(CraftScript craft)
+        {
+            return craft.Data.Assembly.Parts.Where(part => part.PartType.IsCommandPod && !part.PartType.Name.Contains(EvaPartName)).ToList();
+        }
+
         /// <summary>
         /// Called when a part is added to the craft. Adds appropriate modifiers based on part type.
         /// </summary>
@@ -84,7 +99,7 @@ namespace Assets.Scripts
         {
             var part = e.Part;
             if (part == null) return;
-            if (part.PartType.Name=="Docking Port")
+            if (part.PartType.Name==DockingPortModifierName)
             {
                 try
                 {
@@ -93,7 +108,7 @@ namespace Assets.Scripts
                     cam.IsNight = false;
                     if (ModSettings.Instance.RemoveDockingPortCamera)
                     {
-                        cam.RemoveModifier();
+                        cam.Script.CameraController?.SetEnabled(false, false);
                     }
                 }
                 catch (Exception)
@@ -112,15 +127,19 @@ namespace Assets.Scripts
             {
                 AddLifeSupportGeneratorModifiers(part);
             }
-            else if (part.PartType.IsCommandPod && !part.PartType.Name.Contains(EvaPartName)&&!part.PartType.Name.Contains(ChairPartName)&&!part.PartType.Name.Contains(Cockpit))
+            else if (part.Name == RTGPartName)
+            {
+                AddLifeSupportRTGModifiers(part);
+            }
+            else if (part.PartType.IsCommandPod && !part.PartType.Name.Contains(EvaPartName))
             {
                 PatchCommandPod(part);
-                if (part.GetModifier<CrewCompartmentData>() != null)
+                if (part.GetModifier<CrewCompartmentData>() != null&&part.PartType.Name!=ParachutePartName)
                 {
                     AddCrewCompartmentPatch(part);
                 }
             }
-            else if (part.GetModifier<CrewCompartmentData>() != null && !part.PartType.Name.Contains(EvaPartName)&&!part.PartType.Name.Contains(ChairPartName)&&!part.PartType.Name.Contains(Cockpit)&&!part.PartType.Name.Contains(ChairPartName))
+            else if (part.GetModifier<CrewCompartmentData>() != null && !part.PartType.Name.Contains(EvaPartName)&&!part.PartType.Name.Contains(ChairPartName)&&!part.PartType.Name.Contains(Cockpit)&&!part.PartType.Name.Contains(ChairPartName)&&part.PartType.Name!=ParachutePartName)
             {
                 AddCrewCompartmentPatch(part);
             }
@@ -201,6 +220,18 @@ namespace Assets.Scripts
                 waterData = PartModifierData.CreateFromDefaultXml<Water_DesalinationData>(part);
                 waterData.PartPropertiesEnabled = true;
                 waterData.InspectorEnabled = true;
+            }
+        }
+        
+        private static void AddLifeSupportRTGModifiers(PartData part)
+        {
+            if (part == null) return;
+            var rtgPowerFallData = part.GetModifier<RTGPowerFallData>();
+            if (rtgPowerFallData == null)
+            {
+                rtgPowerFallData = PartModifierData.CreateFromDefaultXml<RTGPowerFallData>(part);
+                rtgPowerFallData.PartPropertiesEnabled = false;
+                rtgPowerFallData.InspectorEnabled = true;
             }
         }
 

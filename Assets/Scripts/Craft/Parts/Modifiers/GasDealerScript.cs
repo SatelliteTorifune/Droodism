@@ -170,12 +170,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                         lowPressureGasSource=patchScript.OxygenFuelSource;
                         break;
                     case "CO2" :
-                        highPressureGasSource = GetCraftFuelSource("HPCO2");
+                        highPressureGasSource = GetCraftFuelSource("CO2");
                         lowPressureGasSource =  patchScript.CO2FuelSource;
                         break;
                     case "N2" :
-                        highPressureGasSource = GetCraftFuelSource("HPN2");
-                        lowPressureGasSource =  GetCraftFuelSource("N2");
+                        highPressureGasSource = GetCraftFuelSource("N2");
+                        lowPressureGasSource =  GetCraftFuelSource("LPN2");
                         break;
                 }
             }
@@ -215,32 +215,32 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public override void OnGenerateInspectorModel(PartInspectorModel model)
         {
             base.OnGenerateInspectorModel(model);
-            var engaging = new LabelButtonModel("<color=yellow>Emergency Depressurization", b =>
+            var engaging = new LabelButtonModel(Locale.GetString("Droodism.GasDealerScript.EmergencyDepressurization"), b =>
             {
                 if (isFunctional)
                 {
                     emergencyGasDepressurization = true;
-                    string msg = "<color=yellow>Emergency Depressurization Sequence Initiated<br>All " +
-                                 this.Data.GetSpinnerNames() +
-                                 " in the High Pressure Gas Tank and Low Pressure Gas Tank is releasing</color>.<br>This action is <color=red><size=110%>irreversible</size></color>";
+                    string msg = Locale.GetString("Droodism.GasDealerScript.SequenceInitiated") + "<br>" +
+                                 string.Format(Locale.GetString("Droodism.GasDealerScript.GasReleasing"), this.Data.GetSpinnerNames()) +
+                                 "<br>" + Locale.GetString("Droodism.GasDealerScript.ActionIrreversible");
                     Game.Instance.FlightScene.FlightSceneUI.ShowMessage(msg,false,10);
                 }
 
                 if (!isFunctional)
                 {
-                    Game.Instance.FlightScene.FlightSceneUI.ShowMessage("<color=red>This part is malfunctioning and cannot be used.</color>",false,10);
+                    Game.Instance.FlightScene.FlightSceneUI.ShowMessage(Locale.GetString("Droodism.GasDealerScript.Malfunctioning"),false,10);
                 }
-                
+
             });
-            engaging.ButtonLabel ="<color=yellow>Engage";
-            engaging.Tooltip="Release All Gas in the High Pressure Gas Tank and Low Pressure Gas Tank,this action is <color=red><size=110%>irreversible</size></color> and will disable all other functions of this part. use it with caution.";
+            engaging.ButtonLabel = Locale.GetString("Droodism.GasDealerScript.Engage");
+            engaging.Tooltip = Locale.GetString("Droodism.GasDealerScript.EngageTooltip");
             if (!isPressuring)
             {
                 if (!isFunctional)
                 {
-                    engaging.Label = "<color=red>Malfunction</color>";
+                    engaging.Label = Locale.GetString("Droodism.GasDealerScript.Malfunction");
                     engaging.ButtonLabel = "";
-                    engaging.Tooltip = "<color=red>Emergency Depressurization Sequence had been completed, this part is malfunctioning and cannot be used.";
+                    engaging.Tooltip = Locale.GetString("Droodism.GasDealerScript.MalfunctionTooltip");
                 }
                 model.Add(engaging);
             }

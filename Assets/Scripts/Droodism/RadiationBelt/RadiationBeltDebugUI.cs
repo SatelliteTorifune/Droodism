@@ -1,6 +1,7 @@
 using System;
 using System.Windows.Forms;
 using Assets.Scripts;
+using ModApi;
 using ModApi.GameLoop;
 using ModApi.Scenes;
 using ModApi.Scenes.Events;
@@ -8,7 +9,7 @@ using ModApi.Ui.Inspector;
 using UnityEngine;
 
 
-namespace Droodism.RadiationBelt
+namespace Assets.Scripts.Droodism.RadiationBelt
 {
     public class RadiationBeltDebugUI : MonoBehaviourBase
     {
@@ -34,10 +35,18 @@ namespace Droodism.RadiationBelt
 
         private void OnSceneLoaded(object sender, SceneEventArgs e)
         {
-            
-            if (e.Scene != "Flight")
+            // 在 Flight 和 Menu 场景都可以使用 DebugUI
+            if (e.Scene != "Flight" && e.Scene != "Menu")
             {
                 return;
+            }
+
+            // Menu 场景加载时，如果已有旧的 InspectorPanel 则关闭它
+            if (e.Scene == "Menu" && inspectorPanel != null)
+            {
+                try { inspectorPanel.Close(); } catch { }
+                inspectorPanel = null;
+                inspectorModel = null;
             }
         }
 
@@ -56,105 +65,179 @@ namespace Droodism.RadiationBelt
         }
          public void CreateInspectorPanel()
          {
-             inspectorModel = new InspectorModel("Radiation Belt Inspector", "<color=red>Radiation Belt Debug Inspector");
+             inspectorModel = new InspectorModel(Locale.GetString("Droodism.RadiationBeltDebugUI.InspectorTitle"), "<color=red>" + Locale.GetString("Droodism.RadiationBeltDebugUI.DebugInspectorTitle"));
 
              #region Debug
-             inspectorModel.Add(new TextButtonModel("Force Rebuild Inspector", (b) =>
+             inspectorModel.Add(new TextButtonModel(Locale.GetString("Droodism.RadiationBeltDebugUI.ForceRebuildInspector"), (b) =>
              {
                  this.inspectorPanel.Visible = false;
                  this.inspectorPanel = null;
                  CreateInspectorPanel();
              }));
-             inspectorModel.Add(new TextButtonModel("ReGenerate Belt Mesh", (b) =>
+             inspectorModel.Add(new TextButtonModel(Locale.GetString("Droodism.RadiationBeltDebugUI.ReGenerateBeltMesh"), (b) =>
              {
-                 RadiationBeltManager.Instance.ReGenerateMeshes();
+                 if (Game.InMenuScene && MenuMapRadiationBeltManager.Instance != null)
+                 {
+                     MenuMapRadiationBeltManager.Instance.ReGenerateCurrentMeshes();
+                 }
+                 else
+                 {
+                     RadiationBeltManager.Instance.ReGenerateMeshes();
+                 }
              }));
-             inspectorModel.Add(new TextButtonModel("Save Current Config", (Action<TextButtonModel>)(b => 
-             {
-                 RadiationBeltManager.Instance.CurrentConfig.SaveToFile(RadiationBeltManager.Instance.CurrentFocusPlanet);
-             })));
-             inspectorModel.Add(new TextButtonModel("Load Current Config", (Action<TextButtonModel>)(b => 
-             {
-                 RadiationBeltManager.Instance.ReFreshCurrentConfig();
-                 RadiationBeltManager.Instance.ReGenerateMeshes();
-             })));
+             inspectorModel.Add(new TextButtonModel(Locale.GetString("Droodism.RadiationBeltDebugUI.SaveCurrentConfig"), (Action<TextButtonModel>)(b =>
+            {
+                if (Game.InMenuScene && MenuMapRadiationBeltManager.Instance != null)
+                {
+                    if (RadiationBeltManager.Instance?.CurrentConfig != null)
+                    {
+                        RadiationBeltManager.Instance.CurrentConfig.SaveToFile(RadiationBeltManager.Instance.CurrentFocusPlanet);
+                    }
+                }
+                else
+                {
+                    RadiationBeltManager.Instance.CurrentConfig.SaveToFile(RadiationBeltManager.Instance.CurrentFocusPlanet);
+                }
+            })));
+             inspectorModel.Add(new TextButtonModel(Locale.GetString("Droodism.RadiationBeltDebugUI.LoadCurrentConfig"), (Action<TextButtonModel>)(b =>
+            {
+                if (Game.InMenuScene && MenuMapRadiationBeltManager.Instance != null)
+                {
+                    MenuMapRadiationBeltManager.Instance.ReGenerateCurrentMeshes();
+                }
+                else
+                {
+                    RadiationBeltManager.Instance.ReFreshCurrentConfig();
+                    RadiationBeltManager.Instance.ReGenerateMeshes();
+                }
+            })));
              
-             inspectorModel.Add(new TextButtonModel("Return to Default Preset", (Action<TextButtonModel>)(b =>
-             {
-                 var manager = RadiationBeltManager.Instance;
-                 if (manager.CurrentConfig == null) return;
-                 manager.CurrentConfig.ApplyDefaultPreset();
-                 manager.ReGenerateMeshes();
-             })));
-             inspectorModel.Add(new TextButtonModel("Apply Giant Preset", (Action<TextButtonModel>)(b =>
-             {
-                 var manager = RadiationBeltManager.Instance;
-                 if (manager.CurrentConfig == null) return;
-                 manager.CurrentConfig.ApplyGiantPreset();
-                 manager.ReGenerateMeshes();
-             })));
-             inspectorModel.Add(new TextButtonModel("Apply Metallic Preset", (Action<TextButtonModel>)(b =>
-             {
-                 var manager = RadiationBeltManager.Instance;
-                 if (manager.CurrentConfig == null) return;
-                 manager.CurrentConfig.ApplyMetallicPreset();
-                 manager.ReGenerateMeshes();
-             })));
-             inspectorModel.Add(new TextButtonModel("Apply SolidIron Preset", (Action<TextButtonModel>)(b =>
-             {
-                 var manager = RadiationBeltManager.Instance;
-                 if (manager.CurrentConfig == null) return;
-                 manager.CurrentConfig.ApplySolidIronPreset();
-                 manager.ReGenerateMeshes();
-             })));
-             inspectorModel.Add(new TextButtonModel("Apply Anomaly Preset", (Action<TextButtonModel>)(b =>
-             {
-                 var manager = RadiationBeltManager.Instance;
-                 if (manager.CurrentConfig == null) return;
-                 manager.CurrentConfig.ApplyAnomalyPreset();
-                 manager.ReGenerateMeshes();
-             })));
-             inspectorModel.Add(new ToggleModel("show",()=>ShowGeneral,(b =>
+             inspectorModel.Add(new TextButtonModel(Locale.GetString("Droodism.RadiationBeltDebugUI.ReturnToDefaultPreset"), (Action<TextButtonModel>)(b =>
+            {
+                if (Game.InMenuScene && MenuMapRadiationBeltManager.Instance != null)
+                {
+                    var config = RadiationBeltManager.Instance?.CurrentConfig;
+                    if (config == null) return;
+                    config.ApplyDefaultPreset();
+                    MenuMapRadiationBeltManager.Instance.ReGenerateCurrentMeshes();
+                }
+                else
+                {
+                    var manager = RadiationBeltManager.Instance;
+                    if (manager.CurrentConfig == null) return;
+                    manager.CurrentConfig.ApplyDefaultPreset();
+                    manager.ReGenerateMeshes();
+                }
+            })));
+             inspectorModel.Add(new TextButtonModel(Locale.GetString("Droodism.RadiationBeltDebugUI.ApplyGiantPreset"), (Action<TextButtonModel>)(b =>
+            {
+                if (Game.InMenuScene && MenuMapRadiationBeltManager.Instance != null)
+                {
+                    var config = RadiationBeltManager.Instance?.CurrentConfig;
+                    if (config == null) return;
+                    config.ApplyGiantPreset();
+                    MenuMapRadiationBeltManager.Instance.ReGenerateCurrentMeshes();
+                }
+                else
+                {
+                    var manager = RadiationBeltManager.Instance;
+                    if (manager.CurrentConfig == null) return;
+                    manager.CurrentConfig.ApplyGiantPreset();
+                    manager.ReGenerateMeshes();
+                }
+            })));
+             inspectorModel.Add(new TextButtonModel(Locale.GetString("Droodism.RadiationBeltDebugUI.ApplyMetallicPreset"), (Action<TextButtonModel>)(b =>
+            {
+                if (Game.InMenuScene && MenuMapRadiationBeltManager.Instance != null)
+                {
+                    var config = RadiationBeltManager.Instance?.CurrentConfig;
+                    if (config == null) return;
+                    config.ApplyMetallicPreset();
+                    MenuMapRadiationBeltManager.Instance.ReGenerateCurrentMeshes();
+                }
+                else
+                {
+                    var manager = RadiationBeltManager.Instance;
+                    if (manager.CurrentConfig == null) return;
+                    manager.CurrentConfig.ApplyMetallicPreset();
+                    manager.ReGenerateMeshes();
+                }
+            })));
+             inspectorModel.Add(new TextButtonModel(Locale.GetString("Droodism.RadiationBeltDebugUI.ApplySolidIronPreset"), (Action<TextButtonModel>)(b =>
+            {
+                if (Game.InMenuScene && MenuMapRadiationBeltManager.Instance != null)
+                {
+                    var config = RadiationBeltManager.Instance?.CurrentConfig;
+                    if (config == null) return;
+                    config.ApplySolidIronPreset();
+                    MenuMapRadiationBeltManager.Instance.ReGenerateCurrentMeshes();
+                }
+                else
+                {
+                    var manager = RadiationBeltManager.Instance;
+                    if (manager.CurrentConfig == null) return;
+                    manager.CurrentConfig.ApplySolidIronPreset();
+                    manager.ReGenerateMeshes();
+                }
+            })));
+             inspectorModel.Add(new TextButtonModel(Locale.GetString("Droodism.RadiationBeltDebugUI.ApplyAnomalyPreset"), (Action<TextButtonModel>)(b =>
+            {
+                if (Game.InMenuScene && MenuMapRadiationBeltManager.Instance != null)
+                {
+                    var config = RadiationBeltManager.Instance?.CurrentConfig;
+                    if (config == null) return;
+                    config.ApplyAnomalyPreset();
+                    MenuMapRadiationBeltManager.Instance.ReGenerateCurrentMeshes();
+                }
+                else
+                {
+                    var manager = RadiationBeltManager.Instance;
+                    if (manager.CurrentConfig == null) return;
+                    manager.CurrentConfig.ApplyAnomalyPreset();
+                    manager.ReGenerateMeshes();
+                }
+            })));
+             inspectorModel.Add(new ToggleModel(Locale.GetString("Droodism.RadiationBeltDebugUI.Show"),()=>ShowGeneral,(b =>
              {
                  ShowGeneral = b;
              })));
-             inspectorModel.Add(new ToggleModel("show inner",()=>ShowInner,b =>
+             inspectorModel.Add(new ToggleModel(Locale.GetString("Droodism.RadiationBeltDebugUI.ShowInner"),()=>ShowInner,b =>
              {
                  ShowInner = b;
              }));
-             inspectorModel.Add(new ToggleModel("show outer",()=>ShowOuter,b =>
+             inspectorModel.Add(new ToggleModel(Locale.GetString("Droodism.RadiationBeltDebugUI.ShowOuter"),()=>ShowOuter,b =>
              {
                  ShowOuter = b;
              }));
              #endregion
 
-             #region General
-             GroupModel GeneralGroupModel = new GroupModel("General");
+            #region General
+            GroupModel GeneralGroupModel = new GroupModel(Locale.GetString("Droodism.RadiationBeltDebugUI.General"));
 
-             GeneralGroupModel.Add(new TextModel("Current Planet", ()=>
-             
-                 RadiationBeltManager.Instance.CurrentFocusPlanet
-             ));
-             GeneralGroupModel.Add(new ToggleModel("Main Enabled",()=> RadiationBeltManager.Instance.CurrentConfig.Enabled,b =>
-             {
-                 RadiationBeltManager.Instance.CurrentConfig.Enabled = b;
-             }));
-             
-             var renderMetersPerUnit = new SliderModel("Render Meters Per Unit", () => RadiationBeltManager.Instance.CurrentConfig.renderMetersPerUnit,
+            GeneralGroupModel.Add(new TextModel(Locale.GetString("Droodism.RadiationBeltUI.CurrentPlanet"), ()=>
+            
+                RadiationBeltManager.Instance.CurrentFocusPlanet
+            ));
+            GeneralGroupModel.Add(new ToggleModel(Locale.GetString("Droodism.RadiationBeltDebugUI.MainEnabled"),()=> RadiationBeltManager.Instance.CurrentConfig.Enabled,b =>
+            {
+                RadiationBeltManager.Instance.CurrentConfig.Enabled = b;
+            }));
+            
+            var renderMetersPerUnit = new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.RenderMetersPerUnit"), () => RadiationBeltManager.Instance.CurrentConfig.renderMetersPerUnit,
                  s => { RadiationBeltManager.Instance.CurrentConfig.renderMetersPerUnit = s; }, 10000f, 10000000f, false);
              renderMetersPerUnit.ValueFormatter = f => FormatValue(f, 0);
              GeneralGroupModel.Add(renderMetersPerUnit);
              inspectorModel.AddGroup(GeneralGroupModel);
              #endregion
-             #region Tilt
-             GroupModel TiltGroupModel = new GroupModel("Tilt Group");
+            #region Tilt
+            GroupModel TiltGroupModel = new GroupModel(Locale.GetString("Droodism.RadiationBeltDebugUI.TiltGroup"));
 
-             var beltTilt = new SliderModel("Belt Tilt (Deg)", () => RadiationBeltManager.Instance.CurrentConfig.beltTiltDegrees,
+            var beltTilt = new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.BeltTiltDeg"), () => RadiationBeltManager.Instance.CurrentConfig.beltTiltDegrees,
                  s => { RadiationBeltManager.Instance.CurrentConfig.beltTiltDegrees = s; }, -90f, 90f);
              beltTilt.ValueFormatter = f => FormatValue(f, 2);
              TiltGroupModel.Add(beltTilt);
 
-             var beltTiltAxisX = new SliderModel("Belt Tilt Axis X", () => RadiationBeltManager.Instance.CurrentConfig.beltTiltAxis.x,
+             var beltTiltAxisX = new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.BeltTiltAxisX"), () => RadiationBeltManager.Instance.CurrentConfig.beltTiltAxis.x,
                  s =>
                  {
                      var axis = RadiationBeltManager.Instance.CurrentConfig.beltTiltAxis;
@@ -164,7 +247,7 @@ namespace Droodism.RadiationBelt
              beltTiltAxisX.ValueFormatter = f => FormatValue(f, 3);
              TiltGroupModel.Add(beltTiltAxisX);
 
-             var beltTiltAxisY = new SliderModel("Belt Tilt Axis Y", () => RadiationBeltManager.Instance.CurrentConfig.beltTiltAxis.y,
+             var beltTiltAxisY = new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.BeltTiltAxisY"), () => RadiationBeltManager.Instance.CurrentConfig.beltTiltAxis.y,
                  s =>
                  {
                      var axis = RadiationBeltManager.Instance.CurrentConfig.beltTiltAxis;
@@ -174,7 +257,7 @@ namespace Droodism.RadiationBelt
              beltTiltAxisY.ValueFormatter = f => FormatValue(f, 3);
              TiltGroupModel.Add(beltTiltAxisY);
 
-             var beltTiltAxisZ = new SliderModel("Belt Tilt Axis Z", () => RadiationBeltManager.Instance.CurrentConfig.beltTiltAxis.z,
+             var beltTiltAxisZ = new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.BeltTiltAxisZ"), () => RadiationBeltManager.Instance.CurrentConfig.beltTiltAxis.z,
                  s =>
                  {
                      var axis = RadiationBeltManager.Instance.CurrentConfig.beltTiltAxis;
@@ -184,71 +267,71 @@ namespace Droodism.RadiationBelt
              beltTiltAxisZ.ValueFormatter = f => FormatValue(f, 3);
              TiltGroupModel.Add(beltTiltAxisZ);
 
-             var beltSpinSpeed = new SliderModel("Belt Spin Speed (Deg/s)", () => RadiationBeltManager.Instance.CurrentConfig.beltSpinSpeedDegPerSec,
+             var beltSpinSpeed = new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.BeltSpinSpeedDegPerSec"), () => RadiationBeltManager.Instance.CurrentConfig.beltSpinSpeedDegPerSec,
                  s => { RadiationBeltManager.Instance.CurrentConfig.beltSpinSpeedDegPerSec = s; }, -90f, 90f);
              beltSpinSpeed.ValueFormatter = f => FormatValue(f, 2);
              TiltGroupModel.Add(beltSpinSpeed);
 
-             var beltSpinPhase = new SliderModel("Belt Spin Phase (Deg)", () => RadiationBeltManager.Instance.CurrentConfig.beltSpinPhaseDeg,
+             var beltSpinPhase = new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.BeltSpinPhaseDeg"), () => RadiationBeltManager.Instance.CurrentConfig.beltSpinPhaseDeg,
                  s => { RadiationBeltManager.Instance.CurrentConfig.beltSpinPhaseDeg = s; }, -180f, 180f);
              beltSpinPhase.ValueFormatter = f => FormatValue(f, 2);
              TiltGroupModel.Add(beltSpinPhase);
              #endregion
              
              inspectorModel.AddGroup(TiltGroupModel);
-             #region Inner
-             GroupModel InnerInspectorGroup = new GroupModel("Inner");
-             
-             
-             InnerInspectorGroup.Add( new SliderModel("Inner Dist", () => RadiationBeltManager.Instance.CurrentConfig.innerDist,
+            #region Inner
+            GroupModel InnerInspectorGroup = new GroupModel(Locale.GetString("Droodism.RadiationBeltDebugUI.Inner"));
+            
+            
+            InnerInspectorGroup.Add( new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.InnerDist"), () => RadiationBeltManager.Instance.CurrentConfig.innerDist,
                  s => { RadiationBeltManager.Instance.CurrentConfig.innerDist = s;}, 0.1f, 3f)
              {
                  ValueFormatter = (f) => FormatValue(f, 4)
              });
-             InnerInspectorGroup.Add( new SliderModel("Inner Radius", () => RadiationBeltManager.Instance.CurrentConfig.innerRadius,
+             InnerInspectorGroup.Add( new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.InnerRadius"), () => RadiationBeltManager.Instance.CurrentConfig.innerRadius,
                  s => { RadiationBeltManager.Instance.CurrentConfig.innerRadius = s;}, 0.1f, 3f)
              {
                  ValueFormatter = (f) => FormatValue(f, 4)
              });
              
              
-             InnerInspectorGroup.Add( new SliderModel("Inner Border Dist", () => RadiationBeltManager.Instance.CurrentConfig.innerBorderDist,
+             InnerInspectorGroup.Add( new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.InnerBorderDist"), () => RadiationBeltManager.Instance.CurrentConfig.innerBorderDist,
                  s => { RadiationBeltManager.Instance.CurrentConfig.innerBorderDist = s;}, 0.0001f, 3f)
              {
                  ValueFormatter = (f) => FormatValue(f, 4)
              });
              
-             InnerInspectorGroup.Add( new SliderModel("Inner Border Radius", () => RadiationBeltManager.Instance.CurrentConfig.innerBorderRadius,
+             InnerInspectorGroup.Add( new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.InnerBorderRadius"), () => RadiationBeltManager.Instance.CurrentConfig.innerBorderRadius,
                  s => { RadiationBeltManager.Instance.CurrentConfig.innerBorderRadius = s;}, -3f, 3f)
              {
                  ValueFormatter = (f) => FormatValue(f, 4)
              });
              
-             InnerInspectorGroup.Add( new SliderModel("Inner Deform", () => RadiationBeltManager.Instance.CurrentConfig.innerDeform,
+             InnerInspectorGroup.Add( new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.InnerDeform"), () => RadiationBeltManager.Instance.CurrentConfig.innerDeform,
                  s => { RadiationBeltManager.Instance.CurrentConfig.innerDeform = s;}, -3f, 3f)
              {
                  ValueFormatter = (f) => FormatValue(f, 4)
              });
 
-             InnerInspectorGroup.Add(new SliderModel("Inner Deform XY", () => RadiationBeltManager.Instance.CurrentConfig.innerDeformXY,
+             InnerInspectorGroup.Add(new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.InnerDeformXY"), () => RadiationBeltManager.Instance.CurrentConfig.innerDeformXY,
                  s => { RadiationBeltManager.Instance.CurrentConfig.innerDeformXY = s; }, 0.05f, 4f)
              {
                  ValueFormatter = (f) => FormatValue(f, 4)
              });
 
-             InnerInspectorGroup.Add(new SliderModel("Inner Border Deform XY", () => RadiationBeltManager.Instance.CurrentConfig.innerBorderDeformXY,
+             InnerInspectorGroup.Add(new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.InnerBorderDeformXY"), () => RadiationBeltManager.Instance.CurrentConfig.innerBorderDeformXY,
                  s => { RadiationBeltManager.Instance.CurrentConfig.innerBorderDeformXY = s; }, 0.05f, 4f)
              {
                  ValueFormatter = (f) => FormatValue(f, 4)
              });
 
-             InnerInspectorGroup.Add(new SliderModel("Inner Compression", () => RadiationBeltManager.Instance.CurrentConfig.innerCompression,
+             InnerInspectorGroup.Add(new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.InnerCompression"), () => RadiationBeltManager.Instance.CurrentConfig.innerCompression,
                  s => { RadiationBeltManager.Instance.CurrentConfig.innerCompression = s; }, 0.1f, 4f)
              {
                  ValueFormatter = (f) => FormatValue(f, 4)
              });
 
-             InnerInspectorGroup.Add(new SliderModel("Inner Extension", () => RadiationBeltManager.Instance.CurrentConfig.innerExtension,
+             InnerInspectorGroup.Add(new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.InnerExtension"), () => RadiationBeltManager.Instance.CurrentConfig.innerExtension,
                  s => { RadiationBeltManager.Instance.CurrentConfig.innerExtension = s; }, 0.1f, 4f)
              {
                  ValueFormatter = (f) => FormatValue(f, 4)
@@ -256,44 +339,44 @@ namespace Droodism.RadiationBelt
              
              
              
-             InnerInspectorGroup.Add(new SliderModel("Inner Height Scale", () => RadiationBeltManager.Instance.CurrentConfig.innerHeightScale,
+             InnerInspectorGroup.Add(new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.InnerHeightScale"), () => RadiationBeltManager.Instance.CurrentConfig.innerHeightScale,
                  s => { RadiationBeltManager.Instance.CurrentConfig.innerHeightScale = s;}, 0f, 2f,false)
              {
                  ValueFormatter = (f) => FormatValue(f, 3)
              });
              
            
-             InnerInspectorGroup.Add(new SliderModel("Inner Particle Count", () => RadiationBeltManager.Instance.CurrentConfig.innerParticleCount,
+             InnerInspectorGroup.Add(new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.InnerParticleCount"), () => RadiationBeltManager.Instance.CurrentConfig.innerParticleCount,
                  s => { RadiationBeltManager.Instance.CurrentConfig.innerParticleCount = (int)s;}, 0f, 20000f,true)
              {
                  ValueFormatter = (f) => FormatValue(f, 1)
              });
              
-             InnerInspectorGroup.Add(new SliderModel("Inner Quality", () => RadiationBeltManager.Instance.CurrentConfig.innerQuality,
+             InnerInspectorGroup.Add(new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.InnerQuality"), () => RadiationBeltManager.Instance.CurrentConfig.innerQuality,
                  s => { RadiationBeltManager.Instance.CurrentConfig.innerQuality = (int)s;}, 0f, 50f,true)
              {
                  ValueFormatter = (f) => FormatValue(f, 1)
              });
 
-             InnerInspectorGroup.Add(new SliderModel("Inner Base Intensity", () => RadiationBeltManager.Instance.CurrentConfig.innerBaseIntensity,
+             InnerInspectorGroup.Add(new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.InnerBaseIntensity"), () => RadiationBeltManager.Instance.CurrentConfig.innerBaseIntensity,
                  s => { RadiationBeltManager.Instance.CurrentConfig.innerBaseIntensity = s;}, 0f, 5f)
              {
                  ValueFormatter = (f) => FormatValue(f, 3)
              });
 
-             InnerInspectorGroup.Add(new SliderModel("Inner Intensity Edge Width", () => RadiationBeltManager.Instance.CurrentConfig.innerIntensityEdgeWidth,
+             InnerInspectorGroup.Add(new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.InnerIntensityEdgeWidth"), () => RadiationBeltManager.Instance.CurrentConfig.innerIntensityEdgeWidth,
                  s => { RadiationBeltManager.Instance.CurrentConfig.innerIntensityEdgeWidth = s;}, 0.001f, 1f)
              {
                  ValueFormatter = (f) => FormatValue(f, 4)
              });
 
-             InnerInspectorGroup.Add(new SliderModel("Inner Intensity Exponent", () => RadiationBeltManager.Instance.CurrentConfig.innerIntensityExponent,
+             InnerInspectorGroup.Add(new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.InnerIntensityExponent"), () => RadiationBeltManager.Instance.CurrentConfig.innerIntensityExponent,
                  s => { RadiationBeltManager.Instance.CurrentConfig.innerIntensityExponent = s;}, 0.1f, 5f)
              {
                  ValueFormatter = (f) => FormatValue(f, 3)
              });
 
-             InnerInspectorGroup.Add(new SliderModel("Inner Peak Dose Rate (rad/h)", () => RadiationBeltManager.Instance.CurrentConfig.innerPeakDoseRateRadPerHour,
+             InnerInspectorGroup.Add(new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.InnerPeakDoseRateRadPerHour"), () => RadiationBeltManager.Instance.CurrentConfig.innerPeakDoseRateRadPerHour,
                  s => { RadiationBeltManager.Instance.CurrentConfig.innerPeakDoseRateRadPerHour = s;}, 0f, 200f)
              {
                  ValueFormatter = (f) => FormatValue(f, 2)
@@ -302,102 +385,102 @@ namespace Droodism.RadiationBelt
              inspectorModel.AddGroup(InnerInspectorGroup);
              #endregion
 
-             #region Outer
-             GroupModel OuterInspectorGroup = new GroupModel("Outer");
-             
-             OuterInspectorGroup.Add(new SliderModel("Outer Dist", () => RadiationBeltManager.Instance.CurrentConfig.outerDist,
+            #region Outer
+            GroupModel OuterInspectorGroup = new GroupModel(Locale.GetString("Droodism.RadiationBeltDebugUI.Outer"));
+            
+            OuterInspectorGroup.Add(new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.OuterDist"), () => RadiationBeltManager.Instance.CurrentConfig.outerDist,
                  s => { RadiationBeltManager.Instance.CurrentConfig.outerDist = s;},  0.1f, 5f)
              {
                  ValueFormatter = (f) => FormatValue(f, 4)
              });
              
-             OuterInspectorGroup.Add(new SliderModel("Outer Radius", () => RadiationBeltManager.Instance.CurrentConfig.outerRadius,
+             OuterInspectorGroup.Add(new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.OuterRadius"), () => RadiationBeltManager.Instance.CurrentConfig.outerRadius,
                  s => { RadiationBeltManager.Instance.CurrentConfig.outerRadius = s;},  0.1f, 5f)
              {
                  ValueFormatter = (f) => FormatValue(f, 4)
              });
              
-             OuterInspectorGroup.Add(new SliderModel("Outer Border Dist", () => RadiationBeltManager.Instance.CurrentConfig.outerBorderDist,
+             OuterInspectorGroup.Add(new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.OuterBorderDist"), () => RadiationBeltManager.Instance.CurrentConfig.outerBorderDist,
                  s => { RadiationBeltManager.Instance.CurrentConfig.outerBorderDist = s;},  0.0001f, 5f)
              {
                  ValueFormatter = (f) => FormatValue(f, 4)
              });
              
              
-             OuterInspectorGroup.Add(new SliderModel("Outer Border Radius", () => RadiationBeltManager.Instance.CurrentConfig.outerBorderRadius,
+             OuterInspectorGroup.Add(new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.OuterBorderRadius"), () => RadiationBeltManager.Instance.CurrentConfig.outerBorderRadius,
                  s => { RadiationBeltManager.Instance.CurrentConfig.outerBorderRadius =s;},  0.0001f, 5f)
              {
                  ValueFormatter = (f) => FormatValue(f, 4)
              });
              
-             OuterInspectorGroup.Add(new SliderModel("Outer Compression", () => RadiationBeltManager.Instance.CurrentConfig.outerCompression,
+             OuterInspectorGroup.Add(new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.OuterCompression"), () => RadiationBeltManager.Instance.CurrentConfig.outerCompression,
                  s => { RadiationBeltManager.Instance.CurrentConfig.outerCompression = s;},  0.1f, 3f)
              {
                  ValueFormatter = (f) => FormatValue(f, 4)
              });
              
-             OuterInspectorGroup.Add(new SliderModel("Outer Extension", () => RadiationBeltManager.Instance.CurrentConfig.outerExtension,
+             OuterInspectorGroup.Add(new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.OuterExtension"), () => RadiationBeltManager.Instance.CurrentConfig.outerExtension,
                  s => { RadiationBeltManager.Instance.CurrentConfig.outerExtension = s;},  0.1f, 3f)
              {
                  ValueFormatter = (f) => FormatValue(f, 4)
              });
 
-             OuterInspectorGroup.Add(new SliderModel("Outer Deform XY", () => RadiationBeltManager.Instance.CurrentConfig.outerDeformXY,
+             OuterInspectorGroup.Add(new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.OuterDeformXY"), () => RadiationBeltManager.Instance.CurrentConfig.outerDeformXY,
                  s => { RadiationBeltManager.Instance.CurrentConfig.outerDeformXY = s;},  0.05f, 4f)
              {
                  ValueFormatter = (f) => FormatValue(f, 4)
              });
 
-             OuterInspectorGroup.Add(new SliderModel("Outer Border Deform XY", () => RadiationBeltManager.Instance.CurrentConfig.outerBorderDeformXY,
+             OuterInspectorGroup.Add(new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.OuterBorderDeformXY"), () => RadiationBeltManager.Instance.CurrentConfig.outerBorderDeformXY,
                  s => { RadiationBeltManager.Instance.CurrentConfig.outerBorderDeformXY = s;},  0.05f, 4f)
              {
                  ValueFormatter = (f) => FormatValue(f, 4)
              });
              
              
-             OuterInspectorGroup.Add(new SliderModel("Outer Deform", () => RadiationBeltManager.Instance.CurrentConfig.outerDeform,
+             OuterInspectorGroup.Add(new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.OuterDeform"), () => RadiationBeltManager.Instance.CurrentConfig.outerDeform,
                  s => { RadiationBeltManager.Instance.CurrentConfig.outerDeform = s;}, 0.0f, 3f)
              {
                  ValueFormatter = (f) => FormatValue(f, 4)
              });  
              
-             OuterInspectorGroup.Add(new SliderModel("Outer Height Scale ", () => RadiationBeltManager.Instance.CurrentConfig.outerHeightScale,
+             OuterInspectorGroup.Add(new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.OuterHeightScale"), () => RadiationBeltManager.Instance.CurrentConfig.outerHeightScale,
                  s => { RadiationBeltManager.Instance.CurrentConfig.outerHeightScale = s;}, 0f, 2f)
              {
                  ValueFormatter = (f) => FormatValue(f, 3)
              });
              
-             OuterInspectorGroup.Add(new SliderModel("Outer Particle Count", () => RadiationBeltManager.Instance.CurrentConfig.outerParticleCount,
+             OuterInspectorGroup.Add(new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.OuterParticleCount"), () => RadiationBeltManager.Instance.CurrentConfig.outerParticleCount,
                  s => { RadiationBeltManager.Instance.CurrentConfig.outerParticleCount = (int)s;}, 0f, 20000f,true)
              {
                  ValueFormatter = (f) => FormatValue(f, 1)
              });
              
-             OuterInspectorGroup.Add(new SliderModel("Outer Quality", () => RadiationBeltManager.Instance.CurrentConfig.outerQuality,
+             OuterInspectorGroup.Add(new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.OuterQuality"), () => RadiationBeltManager.Instance.CurrentConfig.outerQuality,
                  s => { RadiationBeltManager.Instance.CurrentConfig.outerQuality = (int)s;}, 0f, 50f,true)
              {
                  ValueFormatter = (f) => FormatValue(f, 4)
              });
 
-             OuterInspectorGroup.Add(new SliderModel("Outer Base Intensity", () => RadiationBeltManager.Instance.CurrentConfig.outerBaseIntensity,
+             OuterInspectorGroup.Add(new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.OuterBaseIntensity"), () => RadiationBeltManager.Instance.CurrentConfig.outerBaseIntensity,
                  s => { RadiationBeltManager.Instance.CurrentConfig.outerBaseIntensity = s;}, 0f, 5f)
              {
                  ValueFormatter = (f) => FormatValue(f, 3)
              });
 
-             OuterInspectorGroup.Add(new SliderModel("Outer Intensity Edge Width", () => RadiationBeltManager.Instance.CurrentConfig.outerIntensityEdgeWidth,
+             OuterInspectorGroup.Add(new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.OuterIntensityEdgeWidth"), () => RadiationBeltManager.Instance.CurrentConfig.outerIntensityEdgeWidth,
                  s => { RadiationBeltManager.Instance.CurrentConfig.outerIntensityEdgeWidth = s;}, 0.001f, 1.5f)
              {
                  ValueFormatter = (f) => FormatValue(f, 4)
              });
 
-             OuterInspectorGroup.Add(new SliderModel("Outer Intensity Exponent", () => RadiationBeltManager.Instance.CurrentConfig.outerIntensityExponent,
+             OuterInspectorGroup.Add(new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.OuterIntensityExponent"), () => RadiationBeltManager.Instance.CurrentConfig.outerIntensityExponent,
                  s => { RadiationBeltManager.Instance.CurrentConfig.outerIntensityExponent = s;}, 0.1f, 5f)
              {
                  ValueFormatter = (f) => FormatValue(f, 3)
              });
 
-             OuterInspectorGroup.Add(new SliderModel("Outer Peak Dose Rate (rad/h)", () => RadiationBeltManager.Instance.CurrentConfig.outerPeakDoseRateRadPerHour,
+             OuterInspectorGroup.Add(new SliderModel(Locale.GetString("Droodism.RadiationBeltDebugUI.OuterPeakDoseRateRadPerHour"), () => RadiationBeltManager.Instance.CurrentConfig.outerPeakDoseRateRadPerHour,
                  s => { RadiationBeltManager.Instance.CurrentConfig.outerPeakDoseRateRadPerHour = s;}, 0f, 50f)
              {
                  ValueFormatter = (f) => FormatValue(f, 2)

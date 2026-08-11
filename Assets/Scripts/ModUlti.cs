@@ -1,14 +1,45 @@
 using System;
+using System.Xml.Linq;
 using Assets.Scripts.Craft.Parts.Modifiers;
+using Assets.Scripts.Flight;
+using ModApi;
 using ModApi.Craft.Parts;
 using ModApi.Flight.Sim;
 using ModApi.Math;
+using ModApi.State;
 using UnityEngine;
 
 namespace Assets.Scripts
 {
     public partial class Mod
     {
+       
+        public void SpawnFlag() 
+        {
+            var templateText = Mod.ResourceLoader.LoadAsset<TextAsset>("Assets/Content/Resources/flag.xml");
+            var craftData = Game.Instance.CraftLoader.LoadCraftImmediate(XDocument.Parse(templateText.text).Root);
+            var xml = craftData.GenerateXml((Transform)null, false, true);
+            Vector3d position = Game.Instance.FlightScene.CraftNode.Position;
+            double latitude = ConvertPlanetPositionToLatLongAgl(position).x;
+            double longitude=ConvertPlanetPositionToLatLongAgl(position).y;
+            var location = new LaunchLocation(
+                "location",
+                LaunchLocationType.SurfaceLockedGround,
+                Game.Instance.FlightScene.CraftNode.Parent.PlanetData.Name,
+                latitude,
+                longitude,
+                new Vector3d(0.0, 0.0, 3000.0),
+                0,
+                0.2);
+            var flag = ((FlightSceneScript)Game.Instance.FlightScene).SpawnCraft($"Flag at {Game.Instance.FlightScene.CraftNode.Parent.Name},{(ConvertPlanetPositionToLatLongAgl(position).x)} ,{(ConvertPlanetPositionToLatLongAgl(position).y)}", craftData, location, xml);
+            flag.AllowPlayerControl = true;
+            Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
+                string.Format(Locale.GetString("Droodism.ModUlti.FlagPlanted"),
+                    Game.Instance.FlightScene.CraftNode.Parent.Name,
+                    ConvertPlanetPositionToLatLongAgl(position).x,
+                    ConvertPlanetPositionToLatLongAgl(position).y),
+                true, 120f);
+        }
         public Vector3d ConvertPlanetPositionToLatLongAgl(Vector3d position)
         {
             if (double.IsNaN(position.x) || double.IsNaN(position.y) || double.IsNaN(position.z))
@@ -26,43 +57,7 @@ namespace Assets.Scripts
             return new Vector3d(latitude * 57.29578, longitude * 57.29578,
                 position.magnitude - (parent.PlanetData.Radius + num));
         }
-
-        //傻逼jundroo害我还要帮他们擦屁股
-        public static string GetStopwatchTimeString(double seconds)
-        {
-            if (!Units.IsFinite(seconds))
-                return "N/A";
-            string empty = string.Empty;
-            if (seconds > 31536000.0)
-            {
-                long num = (long)(seconds / 31536000.0);
-                seconds -= (double)(num * 31536000L);
-                empty += string.Format("{0:n0}y ", (object)num);
-            }
-
-            if (seconds > 86400.0)
-            {
-                long num = (long)(seconds / 86400.0);
-                seconds -= (double)(num * 86400L);
-                empty += string.Format("{0:n0}d ", (object)num);
-            }
-
-            if (seconds > 3600.0)
-            {
-                long num = (long)(seconds / 3600.0);
-                seconds -= (double)(num * 3600L);
-                empty += string.Format("{0:n0}h ", (object)num);
-            }
-
-            if (seconds > 60.0)
-            {
-                long num = (long)(seconds / 60.0);
-                seconds -= (double)(num * 60L);
-                empty += string.Format("{0:n0}m ", (object)num);
-            }
-
-            return empty + string.Format("{0:n2}s", (object)seconds);
-        }
+        
 
         public string FormatFuel(double totalFuel, string[] format)
         {

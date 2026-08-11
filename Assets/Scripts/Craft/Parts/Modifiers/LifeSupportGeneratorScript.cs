@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using Assets.Scripts.Menu.ListView;
 using HarmonyLib;
+using ModApi;
 using ModApi.Craft.Propulsion;
 using UnityEngine;
 
@@ -33,11 +34,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public override void FlightStart(in FlightFrameData frame)
         {
-            _generatorScript = GetComponent<GeneratorScript>();
+            _generatorScript = PartScript.GetModifier<GeneratorScript>();
             var fuelTypeId = _generatorScript.Data.FuelType.Id;
             IsHydroloxFunctional = fuelTypeId == "LOX/LH2";
-            FossilFuelTypeIndex =
-                fuelTypeId == "LOX/RP1" ? 1 : fuelTypeId == "LOX/CH4" ? 2 : fuelTypeId == "Jet" ? 3 : 0;
+            FossilFuelTypeIndex = fuelTypeId == "LOX/RP1" ? 1 : fuelTypeId == "LOX/CH4" ? 2 : fuelTypeId == "Jet" ? 3 : 0;
             UpdateFuelSources();
         }
 
@@ -135,8 +135,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             base.OnGenerateInspectorModel(model);
             if (FossilFuelTypeIndex != 0)
             {
-                var changePollution = new ToggleModel("Release CO2 Externally", () => Data.IsPollution, (Action<bool>)(b => { Data.IsPollution = b; }),
-                    "Determines whether release CO2 externally or internally to the craft. ");
+                var changePollution = new ToggleModel(Locale.GetString("Droodism.LifeSupportGeneratorScript.ReleaseCO2Externally"), () => Data.IsPollution, (Action<bool>)(b => { Data.IsPollution = b; }),
+                Locale.GetString("Droodism.LifeSupportGeneratorScript.ReleaseCO2ExternallyTooltip"));
                 model.Add(changePollution);
             }
         }

@@ -6,6 +6,7 @@ using Assets.Scripts.Craft.Fuel;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using Assets.Scripts.Droodism.Crew;
+using ModApi;
 using ModApi.Ui;
 using ModApi.Craft;
 using ModApi.Craft.Parts;
@@ -16,6 +17,7 @@ using ModApi.GameLoop.Interfaces;
 using ModApi.Math;
 using ModApi.Scenes.Events;
 using ModApi.Ui.Inspector;
+using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace Assets.Scripts.Droodism.UserInterface
@@ -42,13 +44,30 @@ namespace Assets.Scripts.Droodism.UserInterface
             { "Oxygen", (0, 0) },
             { "H2O", (0, 0) },
             { "Food", (0, 0) },
-            { "CO2", (0, 0) },
+            { "LPCO2", (0, 0) },
             { "Wasted Water", (0, 0) },
             { "Solid Waste", (0, 0) }
         };
 
+        /// <summary>
+        /// 使用指数移动平均(EMA)平滑后的各燃料消耗率，Key = fuelTypeId, Value = 平滑后的消耗率(单位/秒)
+        /// </summary>
+        private Dictionary<string, double> _smoothedRates = new Dictionary<string, double>();
+
+        /// <summary>
+        /// EMA 平滑因子（alpha）。值越小曲线越平滑，值越大响应越快。
+        /// 0.1 表示新原始值占 10% 权重，历史平滑值占 90%，可有效过滤高频噪声。
+        /// </summary>
+        private const double SmoothingFactor = 0.2f;
+
+        /// <summary>
+        /// 高帧率阈值（秒）。当 deltaTime 小于此值（即帧率 > 120 FPS）时启用 EMA 平滑，
+        /// 否则直接使用原始帧率计算值以保证低帧率下的响应速度。
+        /// </summary>
+        private const float HighFpsThreshold = 1f / 60f;
+
         private List<string> fuelTypeIDList = new List<string>
-            { "Oxygen", "H2O", "Food", "CO2", "Wasted Water", "Solid Waste" };
+            { "Oxygen", "H2O", "Food", "LPCO2", "Wasted Water", "Solid Waste" };
 
         private struct FuelUIData
         {
@@ -63,7 +82,7 @@ namespace Assets.Scripts.Droodism.UserInterface
             { "Oxygen", new FuelUIData() },
             { "H2O", new FuelUIData() },
             { "Food", new FuelUIData() },
-            { "CO2", new FuelUIData() },
+            { "LPCO2", new FuelUIData() },
             { "Wasted Water", new FuelUIData() },
             { "Solid Waste", new FuelUIData() }
         };
@@ -123,6 +142,7 @@ namespace Assets.Scripts.Droodism.UserInterface
             double currentFuel, previousFuel;
             string fuelTypeId = fuelSource.FuelType.Id;
             float fuelDensity = fuelSource.FuelType.Density;
+            double totalCapacity = fuelSource.TotalCapacity;
             if (FuelMap.ContainsKey(fuelTypeId))
             {
                 currentFuel = fuelSource.TotalFuel;
@@ -135,21 +155,47 @@ namespace Assets.Scripts.Droodism.UserInterface
                 previousFuel = 0;
             }
 
-            double fuelPercentage = (currentFuel / fuelSource.TotalCapacity);
-            bool isWasted = (fuelTypeId.Contains("Waste") || fuelTypeId.Contains("CO2"));
+            double fuelPercentage = (currentFuel / totalCapacity);
+            bool isWasted = (fuelTypeId.Contains("Waste") || fuelTypeId.Contains("LPCO2"));
             string FuelAmountPercentagestr = Mod.Instance.FormatFuel(fuelSource.TotalFuel * fuelDensity, _massTypes) +
-                                             "/" + Mod.Instance.FormatFuel(fuelSource.TotalCapacity * fuelDensity,
+                                             "/" + Mod.Instance.FormatFuel(totalCapacity * fuelDensity,
                                                  _massTypes);
-            double fuelConsumption = (currentFuel - previousFuel) / Game.Instance.FlightScene.TimeManager.DeltaTime;
+            float deltaTime = (float)Game.Instance.FlightScene.TimeManager.DeltaTime;
+
+            // 仅在帧率 > 120 FPS (deltaTime < 1/120s) 时启用 EMA 平滑，
+            // 低帧率下直接使用原始帧率值以保证响应速度。
+            double fuelConsumption;
+            bool hasSmoothed = _smoothedRates.ContainsKey(fuelTypeId);
+
+            if (deltaTime <= 0f)
+            {
+                // deltaTime 为零或负值时复用上一帧的平滑值，避免零除
+                fuelConsumption = hasSmoothed ? _smoothedRates[fuelTypeId] : 0.0;
+            }
+            else if (deltaTime < HighFpsThreshold && hasSmoothed)
+            {
+                // 高帧率：应用 EMA 平滑，过滤单帧噪声
+                double rawRate = (currentFuel - previousFuel) / deltaTime;
+                fuelConsumption = rawRate * SmoothingFactor + _smoothedRates[fuelTypeId] * (1.0 - SmoothingFactor);
+                _smoothedRates[fuelTypeId] = fuelConsumption;
+            }
+            else
+            {
+                // 低帧率或首次初始化，直接使用原始值
+                double rawRate = (currentFuel - previousFuel) / deltaTime;
+                _smoothedRates[fuelTypeId] = rawRate;
+                fuelConsumption = rawRate;
+            }
+
             string fuelConsumptionStr = Mod.Instance.FormatFuel(fuelConsumption * fuelDensity, _massTypes) + "/s";
 
             string timeLeft = isWasted
                 ? (fuelConsumption >= 0
-                    ? $"<color=#E05D6A>{Mod.GetStopwatchTimeString(Math.Abs((fuelSource.TotalCapacity - fuelSource.TotalFuel) / fuelConsumption))}</color>"
-                    : $"<color=#81EE80>{Mod.GetStopwatchTimeString(Math.Abs(fuelSource.TotalFuel / fuelConsumption))}</color>")
+                    ? $"<color=#E05D6A>{Units.GetStopwatchTimeString(Math.Abs((fuelSource.TotalCapacity - fuelSource.TotalFuel) / fuelConsumption))}</color>"
+                    : $"<color=#81EE80>{Units.GetStopwatchTimeString(Math.Abs(fuelSource.TotalFuel / fuelConsumption))}</color>")
                 : (fuelConsumption >= 0
-                    ? $"<color=#81EE80>{Mod.GetStopwatchTimeString(Math.Abs((fuelSource.TotalCapacity - fuelSource.TotalFuel) / fuelConsumption))}</color>"
-                    : $"<color=#E05D6A>{Mod.GetStopwatchTimeString(Math.Abs(fuelSource.TotalFuel / fuelConsumption))}</color>");
+                    ? $"<color=#81EE80>{Units.GetStopwatchTimeString(Math.Abs((fuelSource.TotalCapacity - fuelSource.TotalFuel) / fuelConsumption))}</color>"
+                    : $"<color=#E05D6A>{Units.GetStopwatchTimeString(Math.Abs(fuelSource.TotalFuel / fuelConsumption))}</color>");
             ;
             string color = isWasted
                 ? fuelConsumption > 0 ? "E05D6A" : fuelConsumption < 0 ? "81EE80" : "FF9900"
@@ -185,7 +231,7 @@ namespace Assets.Scripts.Droodism.UserInterface
                     ns + "ContentButton",
                     new XAttribute("id", droodismBottomId),
                     new XAttribute("class", "panel-button audio-btn-click"),
-                    new XAttribute("tooltip", "Toggle Droodism UI."),
+                    new XAttribute("tooltip", Locale.GetString("Droodism.DroodismUIManager.ToggleDroodismUI")),
                     new XAttribute("name", "NavPanel.ToggleDroodismInspector"),
                     new XElement(
                         ns + "Image",
@@ -257,6 +303,7 @@ namespace Assets.Scripts.Droodism.UserInterface
             }
 
             UpdateInfo();
+            //别想了,这个做不到
             //CraftFuelSources craftFuelSource = craftScript.FuelSources as CraftFuelSources;
             //craftFuelSource?.Rebuild(craftScript);
             
@@ -304,17 +351,17 @@ namespace Assets.Scripts.Droodism.UserInterface
         {
             // 清空 FuelButtonRows 以避免重复添加
             FuelButtonRows.Clear();
-
+            
             // 大家好啊,我是分割线
-            inspectorModel = new InspectorModel("Droodism Resources Inspector", "<color=green>Life Support Inspector");
+            inspectorModel = new InspectorModel(Locale.GetString("Droodism.DroodismUIManager.InspectorTitle"), "<color=green>" + Locale.GetString("Droodism.DroodismUIManager.LifeSupportInspector"));
 
-            inspectorModel.Add(new TextModel("Crew Count", () => DroodCountTotal.ToString()));
-            inspectorModel.Add(new TextModel("Astronaut Count", () => AstronautCount.ToString()));
-            inspectorModel.Add(new TextModel("Tourist Count", () => TouristCount.ToString()));
+            inspectorModel.Add(new TextModel(Locale.GetString("Droodism.DroodismUIManager.CrewCount"), () => DroodCountTotal.ToString()));
+            inspectorModel.Add(new TextModel(Locale.GetString("Droodism.DroodismUIManager.AstronautCount"), () => AstronautCount.ToString()));
+            inspectorModel.Add(new TextModel(Locale.GetString("Droodism.DroodismUIManager.TouristCount"), () => TouristCount.ToString()));
 
             #region FuelSourceManagerGroup
 
-            CraftFuelSourceInspectorModel = new GroupModel("Craft Resources Inspector");
+            CraftFuelSourceInspectorModel = new GroupModel(Locale.GetString("Droodism.DroodismUIManager.CraftResourcesInspector"));
 
             // 大家好啊,我是分割线
             foreach (var fuelTypeId in fuelTypeIDList)
@@ -323,11 +370,11 @@ namespace Assets.Scripts.Droodism.UserInterface
             }
 
             CraftFuelSourceInspectorModel.Add(
-                new TextButtonModel("Resources Fill,Waste Drain", b => setAllReciveMode()));
-            CraftFuelSourceInspectorModel.Add(new TextButtonModel("Resources Drain,Waste Fill", b => setAllSendMode()));
-            CraftFuelSourceInspectorModel.Add(new TextButtonModel("Reset All Transfer Mode",
+                new TextButtonModel(Locale.GetString("Droodism.DroodismUIManager.ResourcesFillWasteDrain"), b => setAllReciveMode()));
+            CraftFuelSourceInspectorModel.Add(new TextButtonModel(Locale.GetString("Droodism.DroodismUIManager.ResourcesDrainWasteFill"), b => setAllSendMode()));
+            CraftFuelSourceInspectorModel.Add(new TextButtonModel(Locale.GetString("Droodism.DroodismUIManager.ResetAllTransferMode"),
                 b => resetAllReciveMode()));
-            CraftFuelSourceInspectorModel.Add(new TextButtonModel("Toggle Single Type Transfer Mode",
+            CraftFuelSourceInspectorModel.Add(new TextButtonModel(Locale.GetString("Droodism.DroodismUIManager.ToggleSingleTypeTransferMode"),
                 b => SwitchFuelTransferVisibility()));
             CraftFuelSourceInspectorModel.Add(new TextModel("", () => ""));
 
@@ -337,7 +384,7 @@ namespace Assets.Scripts.Droodism.UserInterface
 
             #endregion
 
-            GroupModel CrewInspectorGroup = new GroupModel("Crew Inspector");
+            GroupModel CrewInspectorGroup = new GroupModel(Locale.GetString("Droodism.DroodismUIManager.CrewInspector"));
             foreach (EvaScript eva in DroodScriptsList)
             {
                 SupportLifeScript supportLifeScript = eva.PartScript?.GetModifier<SupportLifeScript>();
@@ -349,12 +396,12 @@ namespace Assets.Scripts.Droodism.UserInterface
                         droodismCrewData.CrewRole == 
                         DroodType.Scientist ? "#62BF05" : droodismCrewData.CrewRole == DroodType.Pilot?"#FF0003":"white";
                     CrewInspectorGroup.Add<TextModel>(new TextModel(droodismCrewData == null
-                        ? "Unknow Role"
+                        ? Locale.GetString("Droodism.DroodismUIManager.UnknownRole")
                         : $"<color={color}>{droodismCrewData.CrewRole.ToString()}</color>", () => eva.Data.CrewName));
-                    CrewInspectorGroup.Add<TextModel>(new TextModel("Mission Time",
-                        (Func<string>)(() => Mod.GetStopwatchTimeString(supportLifeScript.MissionDurationTime)),
-                        tooltip: eva.Data.CrewName + ";s mission time since launch."));
-                    CrewInspectorGroup.Add<TextModel>(new TextModel("Remain Oxygen", (Func<string>)(() =>
+                    CrewInspectorGroup.Add<TextModel>(new TextModel(Locale.GetString("Droodism.DroodismUIManager.MissionTime"),
+                        (Func<string>)(() => Units.GetStopwatchTimeString(supportLifeScript.MissionDurationTime)),
+                        tooltip: string.Format(Locale.GetString("Droodism.DroodismUIManager.MissionTimeTooltip"), eva.Data.CrewName)));
+                    CrewInspectorGroup.Add<TextModel>(new TextModel(Locale.GetString("Droodism.DroodismUIManager.RemainOxygen"), (Func<string>)(() =>
                     {
                         if (supportLifeScript.UsingInternalOxygen())
                         {
@@ -365,14 +412,14 @@ namespace Assets.Scripts.Droodism.UserInterface
                         }
                         else if (!supportLifeScript.UsingInternalOxygen())
                         {
-                            return "<color=green>Using External Oxygen</color>";
+                            return "<color=green>" + Locale.GetString("Droodism.DroodismUIManager.UsingExternalOxygen") + "</color>";
                         }
 
-                        return "<color=purple>N/A</color>";
+                        return "<color=purple>" + Locale.GetString("Droodism.DroodismUIManager.NotAvailable") + "</color>";
                     })));
 
 
-                    CrewInspectorGroup.Add<TextModel>(new TextModel("Remain Water", (Func<string>)(() =>
+                    CrewInspectorGroup.Add<TextModel>(new TextModel(Locale.GetString("Droodism.DroodismUIManager.RemainWater"), (Func<string>)(() =>
                     {
                         float waterPercentage = (float)(supportLifeScript.Data._waterAmountBuffer /
                                                         supportLifeScript.Data.DesireWaterCapacity);
@@ -381,7 +428,7 @@ namespace Assets.Scripts.Droodism.UserInterface
                         return $"<color={waterTextColor}>{Units.GetPercentageString(waterPercentage)}</color>";
                     })));
 
-                    CrewInspectorGroup.Add<TextModel>(new TextModel("Remain Food", (Func<string>)(() =>
+                    CrewInspectorGroup.Add<TextModel>(new TextModel(Locale.GetString("Droodism.DroodismUIManager.RemainFood"), (Func<string>)(() =>
                     {
                         float foodPercentage = (float)(supportLifeScript.Data._foodAmountBuffer /
                                                        supportLifeScript.Data.DesireFoodCapacity);
@@ -391,7 +438,7 @@ namespace Assets.Scripts.Droodism.UserInterface
                     })));
 
 
-                    CrewInspectorGroup.Add<TextModel>(new TextModel("CO2 Level", (Func<string>)(() =>
+                    CrewInspectorGroup.Add<TextModel>(new TextModel(Locale.GetString("Droodism.DroodismUIManager.CO2Level"), (Func<string>)(() =>
                     {
                         if (supportLifeScript.UsingInternalOxygen())
                         {
@@ -402,39 +449,44 @@ namespace Assets.Scripts.Droodism.UserInterface
                         }
                         else
                         {
-                            return "<color=green>Using External Oxygen</color>";
+                            return "<color=green>" + Locale.GetString("Droodism.DroodismUIManager.UsingExternalOxygen") + "</color>";
                         }
                     })));
-                    CrewInspectorGroup.Add<TextModel>(new TextModel("Wasted Water Level", (Func<string>)(() =>
+                    CrewInspectorGroup.Add<TextModel>(new TextModel(Locale.GetString("Droodism.DroodismUIManager.WastedWaterLevel"), (Func<string>)(() =>
                     {
                         float Percentage = (float)(supportLifeScript.Data._wastedWaterAmountBuffer /
                                                    supportLifeScript.Data.DesireWastedWaterCapacity);
                         string color = Percentage > 0.85 ? "red" : Percentage >= 0.6 ? "yellow" : "green";
                         return $"<color={color}>{Units.GetPercentageString(Percentage)}</color>";
                     })));
-                    CrewInspectorGroup.Add<TextModel>(new TextModel("Solid Waste Level", (Func<string>)(() =>
+                    CrewInspectorGroup.Add<TextModel>(new TextModel(Locale.GetString("Droodism.DroodismUIManager.SolidWasteLevel"), (Func<string>)(() =>
                     {
                         float Percentage = (float)(supportLifeScript.Data._solidWasteAmountBuffer /
                                                    supportLifeScript.Data.DesireSolidWasteCapacity);
                         string color = Percentage > 0.85 ? "red" : Percentage >= 0.6 ? "yellow" : "green";
                         return $"<color={color}>{Units.GetPercentageString(Percentage)}</color>";
                     })));
-                    CrewInspectorGroup.Add<TextModel>(new TextModel("Radiation Dose",
+                    CrewInspectorGroup.Add<TextModel>(new TextModel(Locale.GetString("Droodism.DroodismUIManager.RadiationDose"),
                         (Func<string>)(() => $"{supportLifeScript.Data.CumulativeRad:F4} rad"),
-                        tooltip:  $"{eva.Data.CrewName} ;s Current Radiation Dose",determineVisibility:() => supportLifeScript.Data.CumulativeRad>0f));
-                    CrewInspectorGroup.Add<TextModel>(new TextModel("Radiation Stats",
+                        tooltip:  string.Format(Locale.GetString("Droodism.DroodismUIManager.RadiationDoseTooltip"), eva.Data.CrewName),determineVisibility:() => supportLifeScript.Data.CumulativeRad>0f));
+                    CrewInspectorGroup.Add<TextModel>(new TextModel(Locale.GetString("Droodism.DroodismUIManager.RadiationStats"),
                         (Func<string>)(() => $"{supportLifeScript.CurrentCumulativeRadiationStats}"),
-                        tooltip:  $"{eva.Data.CrewName} ;s Current Radiation Cumulative Does Stats",determineVisibility:() => supportLifeScript.Data.CumulativeRad >0f));
-                    CrewInspectorGroup.Add<TextModel>(new TextModel("Radiation Rate",
+                        tooltip:  string.Format(Locale.GetString("Droodism.DroodismUIManager.RadiationStatsTooltip"), eva.Data.CrewName),determineVisibility:() => supportLifeScript.Data.CumulativeRad >0f));
+                    CrewInspectorGroup.Add<TextModel>(new TextModel(Locale.GetString("Droodism.DroodismUIManager.RadiationRate"),
                         (Func<string>)(() => $"{supportLifeScript.RadiationDoseRateRadPerHour:F2} rad/h"),
-                        tooltip:  $"{eva.Data.CrewName} ;s Current Radiation Increase Rate Per Hour",determineVisibility:() => supportLifeScript.RadiationDoseRateRadPerHour>0f));
-                    CrewInspectorGroup.Add<TextModel>(new TextModel("Radiation Rate Stats",
+                        tooltip:  string.Format(Locale.GetString("Droodism.DroodismUIManager.RadiationRateTooltip"), eva.Data.CrewName),determineVisibility:() => supportLifeScript.RadiationDoseRateRadPerHour>0f));
+                    CrewInspectorGroup.Add<TextModel>(new TextModel(Locale.GetString("Droodism.DroodismUIManager.RadiationRateStats"),
                         (Func<string>)(() => $"{supportLifeScript.CurrentRadiationRateStats}"),
-                        tooltip: $"{eva.Data.CrewName} ;s Current Radiation Rate Stats,if it's red, watch out!",determineVisibility:() => supportLifeScript.RadiationDoseRateRadPerHour>0f));
-                    TextButtonModel textButtonModel2 = new TextButtonModel("Crew Eva", (Action<TextButtonModel>) (b => eva.CrewCompartment.UnloadCrewMember(eva,true)), determineVisiblity:  (() =>  eva.CrewCompartment !=  null));
-                    textButtonModel2.Style = ButtonModel.ButtonStyle.Primary;
-                    CrewInspectorGroup.Add<TextButtonModel>(textButtonModel2);
+                        tooltip: string.Format(Locale.GetString("Droodism.DroodismUIManager.RadiationRateStatsTooltip"), eva.Data.CrewName),determineVisibility:() => supportLifeScript.RadiationDoseRateRadPerHour>0f));
+                    TextButtonModel evaButtonModel = new TextButtonModel(Locale.GetString("Parts.EvaScript.Eva"), (Action<TextButtonModel>) (b => eva.CrewCompartment.UnloadCrewMember(eva,true)), determineVisiblity:  (() =>  eva.CrewCompartment !=  null));
+                    evaButtonModel.Style = ButtonModel.ButtonStyle.Primary;
+                    CrewInspectorGroup.Add<TextButtonModel>(evaButtonModel);
+                    TextButtonModel selectPartButtonModel = new TextButtonModel(Locale.GetString("Droodism.DroodismUIManager.SelectDrood"), (Action<TextButtonModel>) (b =>
+                    {
+                        Game.Instance.FlightScene.ViewManager.GameView.SelectedPart = eva.PartScript;
 
+                    }), determineVisiblity:  (() =>  eva.CrewCompartment !=  null));
+                    CrewInspectorGroup.Add<TextButtonModel>(selectPartButtonModel);
                     //分割线!
                     CrewInspectorGroup.Add<TextModel>(new TextModel("", () => ""));
                 }
@@ -457,10 +509,10 @@ namespace Assets.Scripts.Droodism.UserInterface
                 CraftFuelSourceInspectorModel.Add(new TextModel("", () => ""));
                 // 添加燃料名称和数据（燃料量、消耗率、剩余时间）
                 CraftFuelSourceInspectorModel.Add(new TextModel(
-                    ModApi.Common.Game.Instance.PropulsionData.GetFuelType(fuelTypeId).Name,
+                    Locale.GetString($"Fuel.{fuelTypeId}.Name"),
                     () => FuelUIDataMap.ContainsKey(fuelTypeId)
                         ? $"{FuelUIDataMap[fuelTypeId].TimeLeft}"
-                        : "empty"));
+                        : Locale.GetString("Droodism.DroodismUIManager.Empty")));
 
                 // 添加进度条
                 CraftFuelSourceInspectorModel.Add(new ProgressBarModel(
@@ -474,15 +526,15 @@ namespace Assets.Scripts.Droodism.UserInterface
                 IconButtonModel fuelTransferButtonNone = new IconButtonModel(
                     "Ui/Sprites/Flight/IconFuelTransferNone",
                     (Action<IconButtonModel>)(x => SetFuelTransferMode(FuelTransferMode.None, fuelSource.FuelType.Id)),
-                    "Disable fuel transfer.");
+                    Locale.GetString("Flight.Inspector.FuelTank.FuelTransfer.None.Tooltip"));
                 IconButtonModel fuelTransferButtonFill = new IconButtonModel(
                     "Ui/Sprites/Flight/IconFuelTransferFill",
                     (Action<IconButtonModel>)(x => SetFuelTransferMode(FuelTransferMode.Fill, fuelSource.FuelType.Id)),
-                    "Fills the tank during fuel transfer. Requires at least one other tank to be set to Drain.");
+                    Locale.GetString("Flight.Inspector.FuelTank.FuelTransfer.Fill.Tooltip"));
                 IconButtonModel fuelTransferButtonDrain = new IconButtonModel(
                     "Ui/Sprites/Flight/IconFuelTransferDrain",
                     (Action<IconButtonModel>)(x => SetFuelTransferMode(FuelTransferMode.Drain, fuelSource.FuelType.Id)),
-                    "Drains this tank during fuel transfer. Requires at least one other tank to be set to Fill.");
+                    Locale.GetString("Flight.Inspector.FuelTank.FuelTransfer.Drain.Tooltip"));
                 iconButtonRowModel.Add(fuelTransferButtonFill);
                 iconButtonRowModel.Add(fuelTransferButtonNone);
                 iconButtonRowModel.Add(fuelTransferButtonDrain);
@@ -515,7 +567,7 @@ namespace Assets.Scripts.Droodism.UserInterface
                 if (ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.RootPart.Data.PartType.Name.Contains("Eva")&&ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.Data.Assembly.Parts.Count==1)
                 {
                     ModApi.Common.Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
-                        "Cannot set fuel transfer mode to a single Drood.");
+                        Locale.GetString("Droodism.DroodismUIManager.CannotSetFuelTransferSingleDrood"));
                     return;
                 }
 
@@ -527,7 +579,7 @@ namespace Assets.Scripts.Droodism.UserInterface
                 SetFuelTransferMode(FuelTransferMode.Fill, "Oxygen");
                 SetFuelTransferMode(FuelTransferMode.Fill, "H2O");
                 SetFuelTransferMode(FuelTransferMode.Fill, "Food");
-                SetFuelTransferMode(FuelTransferMode.Drain, "CO2");
+                SetFuelTransferMode(FuelTransferMode.Drain, "LPCO2");
                 SetFuelTransferMode(FuelTransferMode.Drain, "Wasted Water");
                 SetFuelTransferMode(FuelTransferMode.Drain, "Solid Waste");
             }
@@ -537,7 +589,7 @@ namespace Assets.Scripts.Droodism.UserInterface
                 SetFuelTransferMode(FuelTransferMode.Drain, "Oxygen");
                 SetFuelTransferMode(FuelTransferMode.Drain, "H2O");
                 SetFuelTransferMode(FuelTransferMode.Drain, "Food");
-                SetFuelTransferMode(FuelTransferMode.Fill, "CO2");
+                SetFuelTransferMode(FuelTransferMode.Fill, "LPCO2");
                 SetFuelTransferMode(FuelTransferMode.Fill, "Wasted Water");
                 SetFuelTransferMode(FuelTransferMode.Fill, "Solid Waste");
             }
@@ -547,7 +599,7 @@ namespace Assets.Scripts.Droodism.UserInterface
                 SetFuelTransferMode(FuelTransferMode.None, "Oxygen");
                 SetFuelTransferMode(FuelTransferMode.None, "H2O");
                 SetFuelTransferMode(FuelTransferMode.None, "Food");
-                SetFuelTransferMode(FuelTransferMode.None, "CO2");
+                SetFuelTransferMode(FuelTransferMode.None, "LPCO2");
                 SetFuelTransferMode(FuelTransferMode.None, "Wasted Water");
                 SetFuelTransferMode(FuelTransferMode.None, "Solid Waste");
             }
@@ -635,7 +687,7 @@ namespace Assets.Scripts.Droodism.UserInterface
                         return patchScript.WaterFuelSource;
                     case "Food":
                         return patchScript.FoodFuelSource;
-                    case "CO2":
+                    case "LPCO2":
                         return patchScript.CO2FuelSource;
                     case "Wasted Water":
                         return patchScript.WastedWaterFuelSource;

@@ -86,13 +86,11 @@ MonoBehaviour:
   Data:
     _activationGroup: 0
     _category: {fileID: 11400000, guid: 7d2b6f557b8767544a162f30e61d22b6, type: 2}
-    _description: A quicker choice if you don't want to spend time set and place
-      the life support resources tanks one by one,this part integrated necessary
-      resources for <color=green>a single Drood</color> in 24 hours.
+    _description: DesignerParts.ResourcesPack.ResourcesPack.Description
     _displayOrder: 0
     _iconPath: 
     _iconType: 0
-    _name: ResourcesPack
+    _name: DesignerParts.ResourcesPack.ResourcesPack.Name
     _partTypeOverrides: []
     _position: {x: 0, y: 0, z: 0}
     _rotation: {x: 0, y: 0, z: 0}
@@ -305,7 +303,7 @@ MonoBehaviour:
     _autoFuelType: 1
     _capacity: 300
     _fuel: 0
-    _fuelType: CO2
+    _fuelType: LPCO2
     _fuelTypeDescription: 
     _fuelTypeReadOnly: 
     _priority: 0

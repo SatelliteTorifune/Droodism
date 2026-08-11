@@ -6,7 +6,7 @@ using System.IO;
 using Assets.Scripts;
 using Application = UnityEngine.Application;
 
-namespace Droodism.RadiationBelt
+namespace Assets.Scripts.Droodism.RadiationBelt
 {
     public class RadiationBeltConfig
     {

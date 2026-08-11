@@ -60,7 +60,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             else
             {
-                deviceStatus = "<color=yellow>Device is Offline</color>";
+                deviceStatus = "<color=yellow>" + Locale.GetString("Droodism.PhotoBioReactorScript.StatusOffline") + "</color>";
                 Data.stayDeployed = false;
             }
             
@@ -79,7 +79,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 if (usingArtificialLight)
                 {
-                    deviceStatus = "<color=green>Using Artificial Light,Generating Food</color>";
+                    deviceStatus = "<color=green>" + Locale.GetString("Droodism.PhotoBioReactorScript.StatusArtificialLight") + "</color>";
                     isBoosted = false;
                     _co2Source.RemoveFuel(Data.Co2ConsumptionRate * frame.DeltaTimeWorld);
                     _waterSource.RemoveFuel(Data.WaterConsumptionRate * frame.DeltaTimeWorld);
@@ -116,10 +116,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                         {
                             growProgress -= Data.DecaySpeed;
                         }
-                        deviceStatus = "<color=red>Unable to generate food:Unable to get solar radiation</color>";
+                        deviceStatus = "<color=red>" + Locale.GetString("Droodism.PhotoBioReactorScript.StatusNoSolarRadiation") + "</color>";
                         return;
                     }
-                    deviceStatus = "<color=green>Using Solar Light,Generating Food</color>";
+                    deviceStatus = "<color=green>" + Locale.GetString("Droodism.PhotoBioReactorScript.StatusSolarLight") + "</color>";
                     isBoosted = false;
                     _co2Source.RemoveFuel(Data.Co2ConsumptionRate*_rechargePointingEfficiency * frame.DeltaTimeWorld);
                     _waterSource.RemoveFuel(Data.WaterConsumptionRate*_rechargePointingEfficiency* frame.DeltaTimeWorld);
@@ -144,7 +144,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 {
                     growProgress -= Data.DecaySpeed;
                 }
-                deviceStatus = "<color=red>Unable to generate food:Lack of Resources</color>";
+                deviceStatus = "<color=red>" + Locale.GetString("Droodism.PhotoBioReactorScript.StatusLackResources") + "</color>";
                 return;
             }
             
@@ -154,7 +154,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 {
                     growProgress -= Data.DecaySpeed;
                 }
-                deviceStatus = "<color=red>Unable to generate food:Wasted Water is full</color>";
+                deviceStatus = "<color=red>" + Locale.GetString("Droodism.PhotoBioReactorScript.StatusWasteFull") + "</color>";
                 return;
             }
             
@@ -322,17 +322,17 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public override void OnGenerateInspectorModel(PartInspectorModel model)
         {
             base.OnGenerateInspectorModel(model);
-            var pointingEfficiencyModel = new TextModel("Pointing Efficiency", (Func<string>) (() => Units.GetPercentageString(this._rechargePointingEfficiency)));
-            var GrowProgressPercentModel = new TextModel("Food Generation Percentage", (Func<string>) (() => Units.GetPercentageString(growProgress/Data.GrowProgressTotal)));
-            var GrowProgressBarModel = new ProgressBarModel("Food Generation Progress", () =>
+            var pointingEfficiencyModel = new TextModel(Locale.GetString("Droodism.PhotoBioReactorScript.PointingEfficiency"), (Func<string>) (() => Units.GetPercentageString(this._rechargePointingEfficiency)));
+            var GrowProgressPercentModel = new TextModel(Locale.GetString("Droodism.PhotoBioReactorScript.FoodGenerationPercentage"), (Func<string>) (() => Units.GetPercentageString(growProgress/Data.GrowProgressTotal)));
+            var GrowProgressBarModel = new ProgressBarModel(Locale.GetString("Droodism.PhotoBioReactorScript.FoodGenerationProgress"), () =>
                 (float)(growProgress/Data.GrowProgressTotal));
-            var statues=new TextModel("Status",()=> deviceStatus);
-            var toggleArtificialLight = new ToggleModel("Use Artificial Light", () => usingArtificialLight, (Action<bool>) (b=>
+            var statues=new TextModel(Locale.GetString("Droodism.PhotoBioReactorScript.Status"),()=> deviceStatus);
+            var toggleArtificialLight = new ToggleModel(Locale.GetString("Droodism.PhotoBioReactorScript.UseArtificialLight"), () => usingArtificialLight, (Action<bool>) (b=>
             {
                 usingArtificialLight = b;
                 pointingEfficiencyModel.Visible = !b;
 
-            }),"Using Electronic Artificial Light to Working");
+            }), Locale.GetString("Droodism.PhotoBioReactorScript.ArtificialLightTooltip"));
             model.Add(pointingEfficiencyModel);
             model.Add(GrowProgressBarModel);
             model.Add(GrowProgressPercentModel);

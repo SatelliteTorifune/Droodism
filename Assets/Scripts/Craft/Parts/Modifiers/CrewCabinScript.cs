@@ -1,6 +1,6 @@
 using Assets.Scripts.Craft.Parts.Modifiers.Fuselage;
 using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
-using Droodism.RadiationBelt;
+using Assets.Scripts.Droodism.RadiationBelt;
 using ModApi;
 using ModApi.Craft;
 using ModApi.Design;
@@ -57,11 +57,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public override void OnGenerateInspectorModel(PartInspectorModel model)
         {
             base.OnGenerateInspectorModel(model);
-            model.Add<TextModel>(new TextModel("<color=yellow>Radiation Shield Type ", (Func<string>) (() =>this.Data.RadiationShieldType)));
-            model.Add<TextModel>(new TextModel("<color=yellow>Radiation Shield Duration ", (Func<string>) (() =>Data.RadiationShieldDurationUpperLimit==0?"NaN":Units.GetPercentageString((float)(this.Data.RadiationShieldDuration/this.Data.RadiationShieldDurationUpperLimit)))));
+            model.Add<TextModel>(new TextModel("<color=yellow>" + Locale.GetString("Droodism.CrewCabinScript.RadiationShieldType"), (Func<string>) (() =>CrewCabinData.GetLocalizedShieldType(this.Data.RadiationShieldType))));
+            model.Add<TextModel>(new TextModel("<color=yellow>" + Locale.GetString("Droodism.CrewCabinScript.RadiationShieldDuration"), (Func<string>) (() =>Data.RadiationShieldDurationUpperLimit==0?Locale.GetString("Droodism.DroodismUIManager.NotAvailable"):Units.GetPercentageString((float)(this.Data.RadiationShieldDuration/this.Data.RadiationShieldDurationUpperLimit)))));
             if (this.Data.RadiationShieldType == "Water" || Data.RadiationShieldType == "Liquid Hydrogen")
             {
-                model.Add<TextButtonModel>(new TextButtonModel("Refill Shield", (Action<TextButtonModel>)(b => this.RefillWater())));
+                model.Add<TextButtonModel>(new TextButtonModel(Locale.GetString("Droodism.CrewCabinScript.RefillShield"), (Action<TextButtonModel>)(b => this.RefillWater())));
             }
         }
 
@@ -74,21 +74,29 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         protected override void UpdateFuelSources()
         {
             var patchScript = this.PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
-            if (patchScript==null)
-            {
-                Mod.Log("CrewCabinScript.UpdateFuelSources: patchScript is null");
-                return;
-            }
-
             try
             {
-                BatterySource = PartScript.BatteryFuelSource;
-                WaterSource = patchScript.WaterFuelSource;
-                LiquidHydrogenSouce = this.GetRegularCraftFuelSource("LH2");
+                if (patchScript==null)
+                {
+                    Mod.Log("CrewCabinScript.UpdateFuelSources: patchScript is null");
+                    return;
+                }
+
+                try
+                {
+                    BatterySource = PartScript.BatteryFuelSource;
+                    WaterSource = patchScript.WaterFuelSource;
+                    LiquidHydrogenSouce = this.GetRegularCraftFuelSource("LH2");
+                }
+                catch (Exception e)
+                {
+                }
             }
             catch (Exception e)
             {
+              
             }
+           
             
         }
         
@@ -288,9 +296,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public override void OnGeneratePerformanceAnalysisModel(GroupModel groupModel)
         {
-            groupModel.Add<TextModel>(new TextModel("<color=yellow>Radiation Shield Type</color>",(Func<string>) (()=> this.Data.RadiationShieldType),tooltip: "Current Crew Compartment's Ant-Radiation Material Type"));
+            groupModel.Add<TextModel>(new TextModel("<color=yellow>" + Locale.GetString("Droodism.CrewCabinScript.RadiationShieldType") + "</color>",(Func<string>) (()=> CrewCabinData.GetLocalizedShieldType(this.Data.RadiationShieldType)),tooltip: Locale.GetString("Droodism.CrewCabinScript.RadiationShieldTypeTooltip")));
             groupModel.Add<ProgressBarModel>(new ProgressBarModel(()=>
-                "Radiation Duration", 
+                Locale.GetString("Droodism.CrewCabinScript.RadiationDuration"), 
                 () => (float)(this.Data.RadiationShieldDuration / this.Data.RadiationShieldDurationUpperLimit)));
         }
 

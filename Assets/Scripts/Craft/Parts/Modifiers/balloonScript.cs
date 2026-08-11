@@ -11,22 +11,19 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
 
-    public class balloonScript : PartModifierScript<balloonData>,IFlightFixedUpdate,IFlightStart
+    public class balloonScript : PartModifierScript<balloonData>,IFlightFixedUpdate,IFlightStart,IFlightUpdate
     {
         private Transform _sphere;
+        private Transform _offset;
         public void FlightStart(in FlightFrameData frame)
         {
-            UpdateComponent();
+            UpdateComponents();
         }
 
-        private void UpdateComponent()
+        public void FlightUpdate(in FlightFrameData frame)
         {
-            _sphere=Utilities.FindFirstGameObjectMyselfOrChildren("Sphere",this.gameObject).transform;
-        }
-
-        public void FlightFixedUpdate(in FlightFrameData frame)
-        {
-            UpdateScale(_sphere.transform.localScale.x,PartScript.Data.Activated ? 5f:1f);
+            //UpdateScale(_sphere.transform.localScale.x,PartScript.Data.Activated ? 5f:1f);
+            _sphere.localScale = (this.PartScript.Data.Activated ? 8f : 1f) * Vector3.one;
             if (PartScript.Data.Activated)
             {
                 float floatingFocrce = Game.Instance.FlightScene.CraftNode.CraftScript.FlightData.AtmosphereSample
@@ -34,6 +31,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                
                 this.PartScript.BodyScript.RigidBody.AddForceAtPosition(Data.FloatingForceMultiplier * floatingFocrce*PartScript.CraftScript.FlightData.GravityFrameNormalized*-1, PartScript.Transform.position);
             }
+        }
+
+
+        public void FlightFixedUpdate(in FlightFrameData frame)
+        {
+            
 
            
         }
@@ -51,6 +54,35 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             
             
+        }
+        protected void UpdateComponents()
+        {
+            string[] strArray = "Sphere".Split('/', StringSplitOptions.None);
+            Transform subPart = this.transform;
+            foreach (string n in strArray)
+                subPart = subPart.Find(n) ?? subPart;
+            if (subPart.name == strArray[strArray.Length - 1])
+                this.SetSubPart(subPart);
+            else
+                this.SetSubPart(Utilities.FindFirstGameObjectMyselfOrChildren("Sphere", this.gameObject)?.transform);
+           
+            
+        }
+
+
+        private void SetSubPart(Transform subPart)
+        {
+            if ((UnityEngine.Object) this._offset != (UnityEngine.Object) null)
+            {
+                UnityEngine.Object.Destroy((UnityEngine.Object) this._offset.gameObject);
+                this._offset = (Transform) null;
+            }
+            this._sphere = subPart;
+            if (!((UnityEngine.Object) this._sphere != (UnityEngine.Object) null) || (double) this.Data.PositionOffset1.magnitude <= 0.0)
+                return;
+            this._offset = new GameObject("SubPartRotatorOffset").transform;
+            this._offset.SetParent(this._sphere.parent, false);
+            this._offset.position = this._sphere.TransformPoint(Data.PositionOffset1);
         }
     }
 }

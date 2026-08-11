@@ -74,8 +74,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private bool FuckOff2=true;
         public void FlightUpdate(in FlightFrameData frame)
         {
-            if (_pilot == null)
+            if (_pilot == null||_crewCompartment.Crew.Count==0)
             {
+                this.PartScript.BodyScript.ExplodePart(this.PartScript, -1);
                 return;
             }
             
@@ -96,10 +97,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     foreach (var eva in _crewCompartment.Crew)
                     {
                     
-                        _crewCompartment.UnloadCrewMember(eva,this.PartScript.CraftScript.CraftNode.IsPlayer || (!PartScript.CraftScript.CraftNode.IsPlayer && Game.Instance.FlightScene.CraftNode
-                            .CraftScript.ActiveCommandPod.EvaScript.IsFpsActive));
+                        _crewCompartment.UnloadCrewMember(eva,this.PartScript.CraftScript.CraftNode.IsPlayer);
                         eva.PartScript.GetModifier<SupportLifeScript>().Data.AutoDeployEnabled = false;
-                        ui.ShowMessage($"{eva.Data.CrewMember.Name} has landed on the ground");
+                        ui.ShowMessage($"{eva.Data.CrewMember.Name} {Locale.GetString("Droodism.Glider.HasLanded")}");
                     }
                     FuckOff2 = false;
                     return;
@@ -110,10 +110,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
             }
             
-            if (_crewCompartment.Crew.Count==0)
-            {
-                this.PartScript.BodyScript.ExplodePart(this.PartScript, -1);
-            }
+            
             
             OpenPercent = (parachuteMeshTransform.transform.localScale.x * parachuteMeshTransform.transform.localScale.y)/ 1e4f;
             

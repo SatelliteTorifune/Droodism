@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8899794942044307992}
   - component: {fileID: 7704964190223306942}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: PlanetBelt
   m_TagString: Untagged
   m_Icon: {fileID: 0}

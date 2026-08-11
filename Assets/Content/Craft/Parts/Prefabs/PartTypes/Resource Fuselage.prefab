@@ -86,12 +86,11 @@ MonoBehaviour:
   Data:
     _activationGroup: 0
     _category: {fileID: 11400000, guid: 7d2b6f557b8767544a162f30e61d22b6, type: 2}
-    _description: Versatile fuel tank that can be resized into many shapes and can
-      hold many different types of<color=green>Life Support Resources
+    _description: DesignerParts.ResourcesFuselage.ResourcesFuselage.Description
     _displayOrder: 0
     _iconPath: 
     _iconType: 0
-    _name: Resources Fuselage
+    _name: DesignerParts.ResourcesFuselage.ResourcesFuselage.Name
     _partTypeOverrides: []
     _position: {x: 0, y: 0, z: 0}
     _rotation: {x: 0, y: 0, z: 0}
@@ -354,7 +353,7 @@ MonoBehaviour:
     _autoFuelType: 1
     _capacity: 150
     _fuel: 0
-    _fuelType: CO2
+    _fuelType: LPCO2
     _fuelTypeDescription: 
     _fuelTypeReadOnly: true
     _priority: 0

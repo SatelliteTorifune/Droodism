@@ -170,7 +170,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
                 if (data._co2AmountBuffer>0)
                 {
-                    data.AddLifeSupportFuel("CO2", -amount);
+                    data.AddLifeSupportFuel("LPCO2", -amount);
                     _co2Source?.AddFuel(amount*1.1);
                 }
 

@@ -7,7 +7,7 @@
       <FuelTank autoFuelType="true" capacity="610" fuel="610" fuelType="Oxygen" priority="0" subPriority="0" utilization="-1" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
       <FuelTank autoFuelType="true" capacity="3" fuel="3" fuelType="H2O" priority="0" subPriority="0" utilization="-1" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
       <FuelTank autoFuelType="true" capacity="0.5" fuel="0.5" fuelType="Food" priority="0" subPriority="0" utilization="-1" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
-      <FuelTank autoFuelType="true" capacity="300" fuel="0" fuelType="CO2" priority="0" subPriority="0" utilization="-1" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
+      <FuelTank autoFuelType="true" capacity="300" fuel="0" fuelType="LPCO2" priority="0" subPriority="0" utilization="-1" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
       <FuelTank autoFuelType="true" capacity="1.25" fuel="0" fuelType="Wasted Water" priority="0" subPriority="0" utilization="-1" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
       <FuelTank autoFuelType="true" capacity="0.8" fuel="0" fuelType="Solid Waste" priority="0" subPriority="0" utilization="-1" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
     </Modifiers>
@@ -20,7 +20,7 @@
     </SubpartTypes>
   </PartType>
   <DesignerParts>
-    <DesignerPart name="ResourcesPack" category="LifeSupport" description="A quicker choice if you don't want to spend time set and place the life support resources tanks one by one,this part integrated necessary resources for &lt;color=green&gt;a single Drood&lt;/color&gt;to consume in 24 hours." order="0" showInDesigner="true" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
+    <DesignerPart name="DesignerParts.ResourcesPack.ResourcesPack.Name" category="LifeSupport" description="DesignerParts.ResourcesPack.ResourcesPack.Description" order="0" showInDesigner="true" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
       <Assembly>
         <Parts>
           <Part id="1" partType="ResourcesPack" position="0,0,0" rotation="0,0,0">

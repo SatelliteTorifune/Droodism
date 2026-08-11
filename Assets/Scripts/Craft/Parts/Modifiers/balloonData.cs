@@ -21,5 +21,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             get =>floatingForceMultiplier; 
         }
+
+        public Vector3 PositionOffset1;
     }
 }

@@ -15,6 +15,7 @@
     <TextMeshProInputField class="spinner-texture-input" offsetMin="10 0" offsetMax="-10 0" />
     <Panel class="read-only" color="Red" />
     <Spinner class="read-only:@Spinner" interactable="false" />
+    <TextMeshProDropdown class="read-only:@TextMeshProDropdown" interactable="false" />
     <Toggle class="read-only:@Toggle" interactable="false" />
     <Button class="read-only:@Button" interactable="false" />
     <TextMeshProInputField class="read-only:@TextMeshProInputField" interactable="false" />
@@ -86,6 +87,21 @@
             </PartPropertySpinnerInputField>
           </Spinner>
         </Panel>
+        <Panel id="template-dropdown" class="property-row spinner row" active="false">
+          <TextMeshPro internalId="label" class="label" text="Target" />
+          <HorizontalLayout internalId="dropdown-group" class="no-image" rectAlignment="MiddleRight" width="65%" height="100%" spacing="0" childForceExpandWidth="false" childForceExpandHeight="true" childControlWidth="true" childControlHeight="true" childAlignment="MiddleCenter">
+            <Button internalId="dropdown-prev" class="btn" sprite="Ui/Sprites/Design/IconSpinnerArrowLeft" colors="ButtonHover|Primary|Button|Button" preserveAspect="true" minWidth="40" preferredWidth="40" flexibleWidth="0">
+              <TextMeshPro text="" raycastTarget="false" />
+            </Button>
+            <TextMeshProDropdown internalId="dropdown" class="designer-dropdown" minWidth="40" flexibleWidth="1">
+              <TMP_OptionTextTemplate enableWordWrapping="false" alignment="Center" padding="10 10 0 0" />
+              <TMP_DropdownLabel enableWordWrapping="false" alignment="Center" />
+            </TextMeshProDropdown>
+            <Button internalId="dropdown-next" class="btn" sprite="Ui/Sprites/Design/IconSpinnerArrowRight" colors="ButtonHover|Primary|Button|Button" preserveAspect="true" minWidth="40" preferredWidth="40" flexibleWidth="0">
+              <TextMeshPro text="" raycastTarget="false" />
+            </Button>
+          </HorizontalLayout>
+        </Panel>
         <Panel id="template-text-input" class="property-row row" active="false">
           <TextMeshPro internalId="label" class="label" width="35%" />
           <TextMeshProInputField internalId="input-field" width="65%" height="100%" rectAlignment="MiddleRight">
@@ -146,15 +162,33 @@
         </Panel>
         <Panel id="style" class="spinner row">
           <TextMeshPro internalId="label" class="label" text="{Design.PartProperties.Style.Label}" />
-          <Spinner internalId="spinner">
-            <TextMeshPro />
-          </Spinner>
+          <HorizontalLayout internalId="dropdown-group" class="no-image" rectAlignment="MiddleRight" width="65%" height="100%" spacing="0" childForceExpandWidth="false" childForceExpandHeight="true" childControlWidth="true" childControlHeight="true" childAlignment="MiddleCenter">
+            <Button internalId="dropdown-prev" class="btn" sprite="Ui/Sprites/Design/IconSpinnerArrowLeft" colors="ButtonHover|Primary|Button|Button" preserveAspect="true" minWidth="40" preferredWidth="40" flexibleWidth="0">
+              <TextMeshPro text="" raycastTarget="false" />
+            </Button>
+            <TextMeshProDropdown internalId="dropdown" class="designer-dropdown" minWidth="40" flexibleWidth="1">
+              <TMP_OptionTextTemplate enableWordWrapping="false" alignment="Center" padding="10 10 0 0" />
+              <TMP_DropdownLabel enableWordWrapping="false" alignment="Center" />
+            </TextMeshProDropdown>
+            <Button internalId="dropdown-next" class="btn" sprite="Ui/Sprites/Design/IconSpinnerArrowRight" colors="ButtonHover|Primary|Button|Button" preserveAspect="true" minWidth="40" preferredWidth="40" flexibleWidth="0">
+              <TextMeshPro text="" raycastTarget="false" />
+            </Button>
+          </HorizontalLayout>
         </Panel>
         <Panel id="texture-style" class="spinner row">
           <TextMeshPro internalId="label" class="label" text="{Design.PartProperties.Texture.Label}" />
-          <Spinner internalId="spinner">
-            <TextMeshPro />
-          </Spinner>
+          <HorizontalLayout internalId="dropdown-group" class="no-image" rectAlignment="MiddleRight" width="65%" height="100%" spacing="0" childForceExpandWidth="false" childForceExpandHeight="true" childControlWidth="true" childControlHeight="true" childAlignment="MiddleCenter">
+            <Button internalId="dropdown-prev" class="btn" sprite="Ui/Sprites/Design/IconSpinnerArrowLeft" colors="ButtonHover|Primary|Button|Button" preserveAspect="true" minWidth="40" preferredWidth="40" flexibleWidth="0">
+              <TextMeshPro text="" raycastTarget="false" />
+            </Button>
+            <TextMeshProDropdown internalId="dropdown" class="designer-dropdown" minWidth="40" flexibleWidth="1">
+              <TMP_OptionTextTemplate enableWordWrapping="false" alignment="Center" padding="10 10 0 0" />
+              <TMP_DropdownLabel enableWordWrapping="false" alignment="Center" />
+            </TextMeshProDropdown>
+            <Button internalId="dropdown-next" class="btn" sprite="Ui/Sprites/Design/IconSpinnerArrowRight" colors="ButtonHover|Primary|Button|Button" preserveAspect="true" minWidth="40" preferredWidth="40" flexibleWidth="0">
+              <TextMeshPro text="" raycastTarget="false" />
+            </Button>
+          </HorizontalLayout>
         </Panel>
         <Panel id="texture-tile-x" class="spinner row">
           <TextMeshPro class="label" text="{Design.PartProperties.TextureTilingX.Label}" width="60%" />

@@ -1,7 +1,9 @@
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using HarmonyLib;
 using ModApi;
+using ModApi.Craft;
 using ModApi.GameLoop;
+using System;
 using System.Reflection;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using UnityEngine;
@@ -20,6 +22,7 @@ namespace Assets.Scripts.HarmonyPatches
         private static bool IsRagdollActive(EvaScript eva)
         {
             if (!Game.InFlightScene) return false;
+            if (eva?.PartScript?.GetModifier<RagdollModifierScript>() == null) return false;
             return eva?.PartScript?.GetModifier<RagdollModifierScript>().Data.EnableRagdoll ?? false;
         }
 
@@ -36,9 +39,9 @@ namespace Assets.Scripts.HarmonyPatches
 
             public static bool Prefix(EvaScript __instance, out Vector3 totalForce, out Vector3 totalForceJetpack)
             {
+               
                 totalForce = Vector3.Zero;
                 totalForceJetpack = Vector3.Zero;
-                
                 if (IsRagdollActive(__instance))
                 {
                     return false;

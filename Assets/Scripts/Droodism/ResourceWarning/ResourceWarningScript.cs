@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
+using ModApi;
 using ModApi.Craft.Parts;
 using ModApi.Flight;
 using ModApi.Flight.Events;
@@ -160,7 +161,7 @@ namespace Assets.Scripts.Droodism.ResourceWarning
                     supportLifeData._foodAmountBuffer, supportLifeData.DesireFoodCapacity, false,
                     true, gameTime);
 
-                CheckResource(droodName, droodId, "CO2",
+                CheckResource(droodName, droodId, "LPCO2",
                     supportLifeData._co2AmountBuffer, supportLifeData.DesireCO2Capacity, true,
                     usingInternalOxygen, gameTime);
 
@@ -250,18 +251,20 @@ namespace Assets.Scripts.Droodism.ResourceWarning
 
             var ui = Game.Instance.FlightScene.FlightSceneUI;
             string color = status.Level == WarningLevel.Critical ? "red" : "yellow";
-            string levelStr = status.Level == WarningLevel.Critical ? "CRITICAL" : "WARNING";
+            string levelStr = status.Level == WarningLevel.Critical
+                ? Locale.GetString("Droodism.ResourceWarning.Critical")
+                : Locale.GetString("Droodism.ResourceWarning.Warning");
 
             if (isWaste)
             {
                 ui.ShowMessage(
-                    $"<size=120%><color={color}>[{levelStr}] {status.DroodName}: {resourceId} level at {Units.GetPercentageString(percentage)}!",
+                    $"<size=120%><color={color}>[{levelStr}] {status.DroodName}: {resourceId} {Locale.GetString("Droodism.ResourceWarning.LevelAt")} {Units.GetPercentageString(percentage)}!",
                     false, 5f);
             }
             else
             {
                 ui.ShowMessage(
-                    $"<size=120%><color={color}>[{levelStr}] {status.DroodName}: {resourceId} at {Units.GetPercentageString(percentage)} remaining!",
+                    $"<size=120%><color={color}>[{levelStr}] {status.DroodName}: {resourceId} {Locale.GetString("Droodism.ResourceWarning.At")} {Units.GetPercentageString(percentage)} {Locale.GetString("Droodism.ResourceWarning.Remaining")}",
                     false, 5f);
             }
         }
@@ -289,7 +292,7 @@ namespace Assets.Scripts.Droodism.ResourceWarning
                 _hasCriticalPauseThisSession = true;
                 tm.RequestPauseChange(true, false);
                 Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
-                    "<size=120%><color=red>Resource critical! Time paused.</color>", false, 5f);
+                    $"<size=120%><color=red>{Locale.GetString("Droodism.ResourceWarning.ResourceCriticalTimePaused")}</color>", false, 5f);
                 return;
             }
 
@@ -316,7 +319,7 @@ namespace Assets.Scripts.Droodism.ResourceWarning
                             currentMultiplier = (float)tm.CurrentMode.TimeMultiplier;
                         }
                         Game.Instance.FlightScene.FlightSceneUI.ShowMessage(
-                            "<size=120%><color=orange>Resource warning! Warp speed reduced.</color>", false, 3f);
+                            $"<size=120%><color=orange>{Locale.GetString("Droodism.ResourceWarning.WarpSpeedReduced")}</color>", false, 3f);
                     }
                 }
             }

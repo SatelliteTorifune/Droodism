@@ -66,9 +66,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     public override void OnGenerateInspectorModel(PartInspectorModel model)
     {
         base.OnGenerateInspectorModel(model);
-        model.Add<TextModel>(new TextModel("<color=yellow>Water Consumption Rate ", (Func<string>)(() => Units.GetMassString(PartScript.Data.Activated?(float)Data.WaterComsuptionRate*_waterSource.FuelType.Density*0.00025f:0))));
-        model.Add<TextModel>(new TextModel("<color=yellow>Oxygen Generation Rate ", (Func<string>)(() => Units.GetMassString(PartScript.Data.Activated?(float)Data.OxygenGenerationRate*_oxygenSource.FuelType.Density*0.145f:0))));
-        model.Add<TextModel>(new TextModel("<color=green>Power Consumption Rate ", (Func<string>)(() => Units.GetPowerString(PartScript.Data.Activated?(float)Data.PowerConsumptionRate*231f:0))));
+        model.Add<TextModel>(new TextModel("<color=yellow>" + Locale.GetString("Droodism.ElectrolyticDeviceScript.WaterConsumptionRate") + " ", (Func<string>)(() => Units.GetMassString(PartScript.Data.Activated?(float)Data.WaterComsuptionRate*_waterSource.FuelType.Density*0.00025f:0))));
+        model.Add<TextModel>(new TextModel("<color=yellow>" + Locale.GetString("Droodism.ElectrolyticDeviceScript.OxygenGenerationRate") + " ", (Func<string>)(() => Units.GetMassString(PartScript.Data.Activated?(float)Data.OxygenGenerationRate*_oxygenSource.FuelType.Density*0.145f:0))));
+        model.Add<TextModel>(new TextModel("<color=green>" + Locale.GetString("Droodism.ElectrolyticDeviceScript.PowerConsumptionRate") + " ", (Func<string>)(() => Units.GetPowerString(PartScript.Data.Activated?(float)Data.PowerConsumptionRate*231f:0))));
 
     }
 

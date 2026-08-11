@@ -1,4 +1,4 @@
-using System.Windows.Forms;
+using ModApi;
 using ModApi.Design.PartProperties;
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
@@ -13,15 +13,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using UnityEngine;
 
     [Serializable]
-    [DesignerPartModifier("GasDealer")]
+    [DesignerPartModifier("Droodism.GasDealerData.Header")]
     [PartModifierTypeId("GasDealer")]
     public class GasDealerData : PartModifierData<GasDealerScript>
     {
-        [SerializeField] [DesignerPropertySlider( 0.1f, 1f, 10,Label="Gas Flow Rate",Tooltip="Determines the rate which High Pressure gas is released/compressed by the part.")]
+        [SerializeField] [DesignerPropertySlider(0.1f, 1f, 10, Label = "Droodism.GasDealerData.GasFlowRate", Tooltip = "Droodism.GasDealerData.GasFlowRateTooltip")]
         private float gasFlowRate = 1f;
         [SerializeField] [PartModifierProperty]
         private float batteryConsumption = 1;
-        [SerializeField]  [DesignerPropertySpinner(Label = "Gas Type", Order = 0, Tooltip = "The type of Gas of This Part Works")]
+        [SerializeField] [DesignerPropertySpinner(Label = "Droodism.GasDealerData.GasType", Order = 0, Tooltip = "Droodism.GasDealerData.GasTypeTooltip")]
         private string gasType = "O2";
 
         public float GasFlowRate
@@ -58,15 +58,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             switch (this.gasType)
              {
                  case "O2":
-                     return "<color=green>Oxygen</color>";
+                     return "<color=green>" + Locale.GetString("Droodism.GasDealerData.GasOxygen") + "</color>";
                  case "CO2":
-                     return "<color=green>Carbon Dioxide</color>";
+                     return "<color=green>" + Locale.GetString("Droodism.GasDealerData.GasCarbonDioxide") + "</color>";
                  case "N2":
-                     return "<color=green>Nitrogen</color>";
+                     return "<color=green>" + Locale.GetString("Droodism.GasDealerData.GasNitrogen") + "</color>";
                  default:
                      return this.gasType;
              }
-           
+            
         }
         
     }

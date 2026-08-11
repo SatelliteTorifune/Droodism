@@ -8,8 +8,9 @@ using ModApi.GameLoop.Interfaces;
 using ModApi.Planet;
 using ModApi.Scenes.Events;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-namespace Droodism.RadiationBelt
+namespace Assets.Scripts.Droodism.RadiationBelt
 {
     
     public class RadiationBeltManager : MonoBehaviourBase
@@ -18,11 +19,14 @@ namespace Droodism.RadiationBelt
         public RadiationBeltConfig CurrentConfig;
 
         private GameObject currentRadiationBeltObject;
+        
         public ProceduralRadiationBelt BeltInstance;
-
-        public RadiationBeltCameraRenderer  CameraRenderer;
+        public string CurrentFocusPlanet { get; internal set; }
+        
+        public RadiationBeltCameraRenderer  FlightCameraRenderer;
         
         public List<ProceduralRadiationBelt> BeltList=new List<ProceduralRadiationBelt>();
+        
         private readonly Dictionary<string, double> planetRadiusMetersByName = new Dictionary<string, double>();
         private readonly Dictionary<string, double> planetRadiusScaledByName = new Dictionary<string, double>();
             
@@ -37,90 +41,95 @@ namespace Droodism.RadiationBelt
         { 
             Instance = this;
             Game.Instance.SceneManager.SceneTransitionCompleted += OnSceneTransitionCompleted;
-
         }
-
-        
 
         public void OnSceneTransitionCompleted(object sender, SceneTransitionEventArgs e)
         {
-            if (e.TransitionToScene!="Flight")
+            if (e.TransitionToScene == "Flight")
             {
-                return;
-            }
-            this.BeltList.Clear();
-            this.planetRadiusMetersByName.Clear();
-            this.planetRadiusScaledByName.Clear();
-            CurrentFocusPlanet = Game.Instance.FlightScene.CraftNode.Parent.Name;
-            foreach (IPlanetData planetData in Game.Instance.FlightScene.CraftNode.Parent.PlanetData.SolarSystemData.Planets)
-            {
-                planetRadiusMetersByName[planetData.Name] = planetData.Radius;
-                planetRadiusScaledByName[planetData.Name] = planetData.RadiusScaledSpace;
-                AddPlanetRadiationBelt(planetData.Name);
-            }
 
-            this.CurrentConfig = RadiationBeltConfig.LoadFromFile(CurrentFocusPlanet);
-            var currentRadiationBelt = GetCurrentRadiationBelt(CurrentFocusPlanet);
-            this.currentRadiationBeltObject = currentRadiationBelt.gameObject;
-            this.CameraRenderer =
-                Game.Instance.FlightScene.ViewManager.MapViewManager.MapViewCamera.gameObject
-                    .GetComponent<RadiationBeltCameraRenderer>() == null
-                    ? Game.Instance.FlightScene.ViewManager.MapViewManager.MapViewCamera.gameObject
-                        .AddComponent<RadiationBeltCameraRenderer>()
-                    : Game.Instance.FlightScene.ViewManager.MapViewManager.MapViewCamera.gameObject
-                        .GetComponent<RadiationBeltCameraRenderer>();
-            CameraRenderer.beltRenderer = currentRadiationBelt;
-            this.BeltInstance = GetCurrentRadiationBelt(CurrentFocusPlanet);
+
+                this.BeltList.Clear();
+                this.planetRadiusMetersByName.Clear();
+                this.planetRadiusScaledByName.Clear();
+                CurrentFocusPlanet = Game.Instance.FlightScene.CraftNode.Parent.Name;
+                foreach (IPlanetData planetData in Game.Instance.FlightScene.CraftNode.Parent.PlanetData.SolarSystemData
+                             .Planets)
+                {
+                    planetRadiusMetersByName[planetData.Name] = planetData.Radius;
+                    planetRadiusScaledByName[planetData.Name] = planetData.RadiusScaledSpace;
+                    AddPlanetRadiationBelt(planetData.Name);
+                }
+
+                this.CurrentConfig = RadiationBeltConfig.LoadFromFile(CurrentFocusPlanet);
+                var currentRadiationBelt = GetCurrentRadiationBelt(CurrentFocusPlanet);
+                this.currentRadiationBeltObject = currentRadiationBelt.gameObject;
+                this.FlightCameraRenderer =
+                    Game.Instance.FlightScene.ViewManager.MapViewManager.MapViewCamera.gameObject
+                        .GetComponent<RadiationBeltCameraRenderer>() == null
+                        ? Game.Instance.FlightScene.ViewManager.MapViewManager.MapViewCamera.gameObject
+                            .AddComponent<RadiationBeltCameraRenderer>()
+                        : Game.Instance.FlightScene.ViewManager.MapViewManager.MapViewCamera.gameObject
+                            .GetComponent<RadiationBeltCameraRenderer>();
+                FlightCameraRenderer.beltRenderer = currentRadiationBelt;
+                this.BeltInstance = GetCurrentRadiationBelt(CurrentFocusPlanet);
+
+            }
             
         }
+
         #endregion
 
        
         
-        public string CurrentFocusPlanet { get; private set; }
         //这个其实很蠢,我手动写了一个切换时更新的
         void Update()
         {
-            if (!Game.InFlightScene)
-            {  
-                return;
-            }
-            if (!Game.Instance.FlightScene.ViewManager.MapViewManager.MapView.Visible)
+            //我在思考要不要新增一个class
+            if (Game.InFlightScene)
             {
-                return;
-            }
-            var currentName = GetCurrentFocusPlanet();
 
-            if (this.CurrentConfig==null)
-            {
-                Mod.Log("currentConfig is null");
-                CurrentConfig = RadiationBeltConfig.LoadFromFile(currentName);
-                return;
-            }
-            
-            
-         
-            if (currentRadiationBeltObject==null)
-            {
-                Mod.Log("CurrentRadiationBeltObject is null.");
-                return;
-            }
-            try
-            {
-                // Keep belt scale neutral so visual boundary matches physics query.
-                this.currentRadiationBeltObject.transform.localScale = Vector3.one;
-                if (CurrentFocusPlanet != currentName)
+                if (!Game.Instance.FlightScene.ViewManager.MapViewManager.MapView.Visible)
                 {
-                    OnFocusPlanetChanged(currentName);
+                    return ;
                 }
-                CurrentFocusPlanet =currentName;
-            }
 
-          
-            catch (Exception e)
-            {
-               Mod.LogError("fucked1111 "+e.StackTrace);
+                var currentName = GetCurrentFocusPlanet();
+
+                if (this.CurrentConfig == null)
+                {
+                    Mod.Log("currentConfig is null");
+                    CurrentConfig = RadiationBeltConfig.LoadFromFile(currentName);
+                    return;
+                }
+
+
+
+                if (currentRadiationBeltObject == null)
+                {
+                    Mod.Log("CurrentRadiationBeltObject is null.");
+                    return;
+                }
+
+                try
+                {
+                    // Keep belt scale neutral so visual boundary matches physics query.
+                    this.currentRadiationBeltObject.transform.localScale = Vector3.one;
+                    if (CurrentFocusPlanet != currentName)
+                    {
+                        OnFocusPlanetChanged(currentName);
+                    }
+
+                    CurrentFocusPlanet = currentName;
+                }
+
+
+                catch (Exception e)
+                {
+                    Mod.LogError("fucked1111 " + e.StackTrace);
+                }
             }
+            
         }
        
         private void OnFocusPlanetChanged(string currentName)
@@ -130,7 +139,7 @@ namespace Droodism.RadiationBelt
             CurrentConfig = RadiationBeltConfig.LoadFromFile(currentName);
             BeltInstance = GetCurrentRadiationBelt(currentName);
             currentRadiationBeltObject = BeltInstance.gameObject;
-            this.CameraRenderer.beltRenderer = BeltInstance;
+            this.FlightCameraRenderer.beltRenderer = BeltInstance;
             // Ensure meshes exist for the newly focused planet if enabled.
             if (CurrentConfig.Enabled)
             {
@@ -226,26 +235,21 @@ namespace Droodism.RadiationBelt
             }
             catch (Exception e)
             {
+                
             }
             return null;
             
         }
 
-        private static GameObject GetMapPlanet(string PlanetName)
+        private static GameObject GetMapPlanet(string planetName)
         {
-            foreach (Transform t in GameObject.FindObjectsOfType<Transform>(true))
+            var mapView = Game.Instance.FlightScene.ViewManager.MapViewManager.MapView;
+            foreach (var planetNode in mapView.GetCelestialBodies())
             {
-                if (t.name == PlanetName)
+                if (planetNode.Name == planetName)
                 {
-                    Transform parent = t.parent;
-                    if (parent != null && parent.name == "Planets")
-                    {
-                        Transform mapView = parent.parent;
-                        if (mapView != null && mapView.name.Contains("MapView"))
-                        {
-                            return t.gameObject;
-                        }
-                    }
+                    var celestialTransform = mapView.GetCelestialBodyTransform(planetNode);
+                    return celestialTransform != null ? celestialTransform.gameObject : null;
                 }
             }
             return null;

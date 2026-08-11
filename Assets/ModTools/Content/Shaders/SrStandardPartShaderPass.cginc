@@ -7,11 +7,11 @@
 float4 _MaterialColors[50];
 float4 _MaterialData[50];
 float4 _PartData[25];
-// Per-part nozzle glow. x: nozzle wall temperature in Kelvin (0 = no glow). y: Trim 4 material index. z: inner-wall temperature in Kelvin.
+// Per-part nozzle glow. x: nozzle wall temperature in Kelvin (0 = no glow). y: unused. z: inner-wall temperature in Kelvin.
 float4 _PartNozzleData[25];
-// Per-renderer nozzle axial bounds (mesh-local min/max Y) used to normalize the glow gradient.
+// Per-renderer nozzle data. xy: axial bounds; z: 1 on nozzle renderers.
 float4 _NozzleAxis;
-float  _EmissiveOverride;
+float  _EmissiveOverride = -1;
 float  _AlphaOverride = -1;
 float  _IsFlightScene;
 UNITY_DECLARE_TEX2DARRAY(_DetailTextures);
@@ -147,22 +147,28 @@ FragmentOutput frag(v2f INPUT)
     float heat = max(0, partData.y - 700.0) / 1500.0;
     emission += BlackbodyEmission(partData.y) * BlackbodyIntensity(heat);
 
-    // Nozzle wall glow: only fragments using the part's Trim 4 material glow. "along" is the axial
-    // position from object-space Y (0 at the exit, 1 at the throat), independent of the mesh UVs.
+    // Glow only on nozzle renderers (_NozzleAxis.z) and only on authored nozzle-interior (Trim4) geometry.
+    // That geometry is tagged paint-independently in uv1.w, surfacing here as frac(ids.x) ~0.7 (vs ~0.3 otherwise).
     float4 partNozzle = _PartNozzleData[INPUT.ids.w];
     UNITY_BRANCH
-    if ((partNozzle.x > 670.0 || partNozzle.z > 670.0) && abs(floor(INPUT.ids.x) - partNozzle.y) < 0.5)
+    if ((partNozzle.x > 670.0 || partNozzle.z > 670.0) && _NozzleAxis.z > 0.5 && frac(INPUT.ids.x) > 0.5)
     {
         float3 nozzleObjPos = mul(unity_WorldToObject, float4(INPUT.worldPosition.xyz, 1.0)).xyz;
         float along = saturate((nozzleObjPos.y - _NozzleAxis.x) / max(1e-4, _NozzleAxis.y - _NozzleAxis.x));
 
+        float3 worldNormal = normalize(INPUT.worldNormal);
         float3 radialDir = mul((float3x3)unity_ObjectToWorld, float3(nozzleObjPos.x, 0.0, nozzleObjPos.z));
-        float inner = saturate(dot(normalize(INPUT.worldNormal), normalize(radialDir)) * -4.0);
+        float inner = saturate(dot(worldNormal, radialDir / max(1e-4, length(radialDir))) * -4.0);
+
+        // Throat: down-facing disc at the top; the "along" gate excludes the down-facing exit lips.
+        float3 axisDown = normalize(mul((float3x3)unity_ObjectToWorld, float3(0.0, -1.0, 0.0)));
+        float throat = saturate(dot(worldNormal, axisDown)) * smoothstep(0.6, 0.9, along);
+
         float gradientTemp = lerp(670.0, partNozzle.x, along);
-        float nozzleTemp = lerp(gradientTemp, max(gradientTemp, partNozzle.z), inner);
+        float nozzleTemp = lerp(gradientTemp, max(gradientTemp, partNozzle.z), max(inner, throat));
 
         float nozzleHeat = max(0, nozzleTemp - 700.0) / 1500.0;
-        emission += BlackbodyEmission(nozzleTemp) * BlackbodyIntensity(nozzleHeat);
+        emission += BlackbodyEmission(nozzleTemp) * BlackbodyIntensity(nozzleHeat) * (1.0 + throat * 2.0);
     }
 
     // Update our normal based on the normal map

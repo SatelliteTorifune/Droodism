@@ -1,13 +1,13 @@
 using System;
 using Assets.Scripts.Design;
 using HarmonyLib;
+using ModApi;
 using ModApi.Mods;
 using ModApi.Ui.Inspector;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.HarmonyPatches
 {
-    public partial class Mod : GameMod
-    {
+   
 
 
         [HarmonyPatch(typeof(CraftPerformanceAnalysis), "RefreshInspectorPanel", new Type[] { typeof(bool) })]
@@ -28,37 +28,49 @@ namespace Assets.Scripts
 
                     if (inspectorPanel == null)
                     {
-                        LogError("InspectorPanel is null, cannot add TEXT group.");
+                        Mod.LogError("InspectorPanel is null, cannot add TEXT group.");
                         return;
                     }
 
                     var inspectorModel = inspectorPanel.Model;
                     if (inspectorModel == null)
                     {
-                        LogError("InspectorModel is null, cannot add TEXT group.");
+                        Mod.LogError("InspectorModel is null, cannot add TEXT group.");
                         return;
                     }
 
-                    GroupModel textGroup = new GroupModel("<color=green>Life Support Resources Info");
+                    GroupModel textGroup = new GroupModel("<color=green>" + Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.LifeSupportResourcesInfo"));
 
-                    textGroup.Add<TextModel>(new TextModel("Drood Count",
+                    textGroup.Add<TextModel>(new TextModel(Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.DroodCount"),
                         () => Scripts.Mod.Instance.GetDroodCountInDesigner()));
-                    foreach (var var in fuelTypes)
+                    foreach (var var in Mod.fuelTypes)
                     {
                         AddStuff(var);
                     }
 
                     void AddStuff(String fuelType)
                     {
-                        bool isWaste = fuelType.Contains("Waste") || fuelType == "CO2";
-                        string name = "";
+                        bool isWaste = fuelType.Contains("Waste") || fuelType == "LPCO2";
+                        string name;
                         switch (fuelType)
                         {
-                            case "H2O":
-                                name = "Water";
+                            case "Oxygen":
+                                name= Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.Oxygen");
                                 break;
-                            case "CO2":
-                                name = "Carbon Dioxide";
+                            case "H2O":
+                                name = Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.Water");
+                                break;
+                            case "Food":
+                                name = Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.Food");
+                                break;
+                            case "LPCO2":
+                                name = Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.CarbonDioxide");
+                                break;
+                            case "Wasted Water":
+                                name = Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.WastedWater");
+                                break;
+                            case "Solid Waste":
+                                name = Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.SolidWaste");
                                 break;
 
                             default:
@@ -67,8 +79,11 @@ namespace Assets.Scripts
 
                         }
 
-                        textGroup.Add<TextModel>(new TextModel(name + (isWaste ? " Capacity" : " Amount"),
-                            () => GetFuelAmountInDesigner(fuelType, isWaste)));
+                        string suffix = isWaste
+                            ? " " + Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.Capacity")
+                            : " " + Locale.GetString("Droodism.CraftPerformanceAnalysisPatch.Amount");
+                        textGroup.Add<TextModel>(new TextModel(name + suffix,
+                            () => Mod.GetFuelAmountInDesigner(fuelType)));
                     }
 
                     // 将新组添加到 InspectorModel
@@ -76,9 +91,9 @@ namespace Assets.Scripts
                 }
                 catch (Exception e)
                 {
-                    Log("Droodism.CraftPerformanceAnalysis failed", e);
+                    Mod.Log("Droodism.CraftPerformanceAnalysis failed", e);
                 }
             }
         }
-    }
+    
 }

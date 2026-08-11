@@ -13,7 +13,7 @@
     </SubpartTypes>
   </PartType>
   <DesignerParts>
-    <DesignerPart name="SewageTreatDevice" category="LifeSupport" description="A Device which process &lt;color=red&gt;Wasted Water&lt;/color&gt; to Clean &lt;color=green&gt;Drinking Water &lt;/color&gt;.Powered by Electricity" order="0" showInDesigner="true" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
+    <DesignerPart name="DesignerParts.SewageTreatDevice.SewageTreatDevice.Name" category="LifeSupport" description="DesignerParts.SewageTreatDevice.SewageTreatDevice.Description" order="0" showInDesigner="true" snapshotDistanceScaler="1" snapshotRotation="30,30,0">
       <Assembly>
         <Parts>
           <Part id="1" partType="SewageTreatDevice" position="0,0,0" rotation="0,0,0">

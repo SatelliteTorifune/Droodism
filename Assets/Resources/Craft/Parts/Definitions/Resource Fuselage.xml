@@ -7,7 +7,7 @@
       <FuelTank autoFuelType="false" capacity="200" fuel="200" fuelType="Oxygen" priority="0" subPriority="0" utilization="-1" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
       <FuelTank autoFuelType="true" capacity="10" fuel="10" fuelType="Food" priority="0" subPriority="0" utilization="-1" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
       <FuelTank autoFuelType="true" capacity="100" fuel="100" fuelType="H2O" priority="0" subPriority="0" utilization="-1" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
-      <FuelTank autoFuelType="true" capacity="150" fuel="0" fuelType="CO2" priority="0" subPriority="0" utilization="-1" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
+      <FuelTank autoFuelType="true" capacity="150" fuel="0" fuelType="LPCO2" priority="0" subPriority="0" utilization="-1" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
       <FuelTank autoFuelType="true" capacity="100" fuel="0" fuelType="Wasted Water" priority="0" subPriority="0" utilization="-1" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
       <FuelTank autoFuelType="true" capacity="5" fuel="0" fuelType="Solid Waste" priority="0" subPriority="0" utilization="-1" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
     </Modifiers>
@@ -24,7 +24,7 @@
     </SubpartTypes>
   </PartType>
   <DesignerParts>
-    <DesignerPart name="Resource Fuselage" category="LifeSupport" description="Versatile fuel tank that can be resized into many shapes and can hold many different types of &lt;color=green&gt;Life Support Resources." order="0" showInDesigner="true" snapshotDistanceScaler="1.1" snapshotRotation="30,30,0">
+    <DesignerPart name="DesignerParts.ResourcesFuselage.ResourcesFuselage.Name" category="LifeSupport" description="DesignerParts.ResourcesFuselage.ResourcesFuselage.Description" order="0" showInDesigner="true" snapshotDistanceScaler="1.1" snapshotRotation="30,30,0">
       <Assembly>
         <Parts>
           <Part id="1" partType="Resource Fuselage" position="0,0,0" rotation="0,0,0">

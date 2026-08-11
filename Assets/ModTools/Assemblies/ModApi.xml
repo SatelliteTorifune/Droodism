@@ -8650,6 +8650,11 @@
             The transparent render queue.
             </summary>
         </member>
+        <member name="F:ModApi.Constants.Rendering.AtmosphereRenderQueue">
+            <summary>
+            The transparent render queue.
+            </summary>
+        </member>
         <member name="F:ModApi.Constants.Rendering.AmbientLightInSpace">
             <summary>
             The default ambient light in space.
@@ -10290,6 +10295,14 @@
             </summary>
             <value>
               <c>true</c> if manual inputs are allowed; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:ModApi.Craft.Parts.Attributes.DesignerPropertySpinnerAttribute.Dropdown">
+            <summary>
+            Gets or sets a value indicating whether the property is displayed as a dropdown instead of a spinner (text spinners only).
+            </summary>
+            <value>
+              <c>true</c> if the property is displayed as a dropdown; otherwise, <c>false</c>.
             </value>
         </member>
         <member name="P:ModApi.Craft.Parts.Attributes.DesignerPropertySpinnerAttribute.IsTextSpinner">
@@ -12374,6 +12387,12 @@
             <param name="activationGroup">The activation group.</param>
             <returns>The state of the activation group. True indicates the group is active.</returns>
         </member>
+        <member name="M:ModApi.Craft.Parts.ICommandPod.OverridePilotSeatOrientation(UnityEngine.Quaternion)">
+            <summary>
+            Overrides the pilot seat orientation, persisting it in saves.
+            </summary>
+            <param name="worldRotation">The world-space orientation to use as the craft's control frame.</param>
+        </member>
         <member name="M:ModApi.Craft.Parts.ICommandPod.SetActivationGroupState(System.Int32,System.Boolean)">
             <summary>
             Sets the activation group state.
@@ -13910,7 +13929,7 @@
             The renderer maps part.
             </value>
         </member>
-        <member name="M:ModApi.Craft.Parts.IPartMaterialScript.AddRenderer(UnityEngine.Renderer,System.Nullable{System.Boolean},System.Nullable{System.Boolean},UnityEngine.Material[])">
+        <member name="M:ModApi.Craft.Parts.IPartMaterialScript.AddRenderer(UnityEngine.Renderer,System.Nullable{System.Boolean},System.Nullable{System.Boolean},UnityEngine.Material[],System.Boolean)">
             <summary>
             Adds the renderer to the list of renderers for this part.
             </summary>
@@ -13918,6 +13937,7 @@
             <param name="excludeFromCombine">If set to <c>true</c>, the renderer will be excluded from mesh combining.</param>
             <param name="excludeFromDrag">If set to <c>true</c>, the renderer will be excluded from the drag model (unless the mesh is combined).</param>
             <param name="originalMaterials">The original materials.</param>
+            <param name="isNozzle">If set to <c>true</c>, the renderer is marked as a nozzle renderer and may render the nozzle glow.</param>
         </member>
         <member name="M:ModApi.Craft.Parts.IPartMaterialScript.GetPartMaterial(System.Int32)">
             <summary>
@@ -14271,6 +14291,13 @@
             Gets the estimated drag force in scaled Newtons.
             </summary>
         </member>
+        <member name="M:ModApi.Craft.Parts.IPartScript.GetFuelSource(ModApi.Craft.Propulsion.FuelType)">
+            <summary>
+            Resolves the fuel source for the given fuel: the region pool for craft-wide-pool fuels, else the matching craft source, else empty.
+            </summary>
+            <param name="fuelType">The fuel type to resolve.</param>
+            <returns>The fuel source for that fuel, or an empty source.</returns>
+        </member>
         <member name="M:ModApi.Craft.Parts.IPartScript.GetModifier``1">
             <summary>
             Gets the modifier script of the specified type, or null if it does not exist.
@@ -14541,6 +14568,12 @@
             Gets a value indicating whether this renderer has transparency.
             </summary>
             <value><c>true</c> if this renderer has transparency; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:ModApi.Craft.Parts.IRendererMaterialMap.IsNozzle">
+            <summary>
+            Gets a value indicating whether this renderer is part of an engine nozzle and may render the nozzle glow.
+            </summary>
+            <value><c>true</c> if this renderer is a nozzle renderer; otherwise, <c>false</c>.</value>
         </member>
         <member name="P:ModApi.Craft.Parts.IRendererMaterialMap.IsTMProRenderer">
             <summary>
@@ -16110,6 +16143,14 @@
               <c>true</c> if [break on start]; otherwise, <c>false</c>.
             </value>
         </member>
+        <member name="P:ModApi.Craft.Parts.PartConnection.HasFusedAttachment">
+            <summary>
+            Gets a value indicating whether any attachment in this connection rigidly fuses the two parts.
+            </summary>
+            <value>
+              <c>true</c> if it has a fused attachment; otherwise, <c>false</c>.
+            </value>
+        </member>
         <member name="P:ModApi.Craft.Parts.PartConnection.Invalid">
             <summary>
             Gets a value indicating whether this <see cref="T:ModApi.Craft.Parts.PartConnection"/> is invalid.
@@ -16156,6 +16197,14 @@
             </summary>
             <value>
             The symmetry identifier.
+            </value>
+        </member>
+        <member name="P:ModApi.Craft.Parts.PartConnection.Welded">
+            <summary>
+            Gets or sets a value indicating whether this connection has been welded, fusing its two parts into one rigid body with no joint.
+            </summary>
+            <value>
+              <c>true</c> if welded; otherwise, <c>false</c>.
             </value>
         </member>
         <member name="M:ModApi.Craft.Parts.PartConnection.GetPartConnectionsBetweenParts(ModApi.Craft.Parts.PartData,ModApi.Craft.Parts.PartData)">
@@ -18015,6 +18064,12 @@
             <summary>
             End method called when the part is being removed from the flight scene.
             </summary>
+        </member>
+        <member name="M:ModApi.Craft.Parts.PartModifierScript.GetDesiredControlOrientation">
+            <summary>
+            Gets the orientation this modifier wants to use as the craft's forward direction, or <c>null</c> if unsupported.
+            </summary>
+            <returns>The world-space control orientation, or <c>null</c> if unsupported.</returns>
         </member>
         <member name="M:ModApi.Craft.Parts.PartModifierScript.GetData">
             <summary>
@@ -20827,6 +20882,14 @@
             Allows manually handling a collision that was generated outside of the physics engine.
             </summary>
             <param name="collision">The collision.</param>
+        </member>
+        <member name="M:ModApi.Craft.IBodyCollisionHandler.DeferJointBreak(UnityEngine.Joint,System.Single,System.Single)">
+            <summary>
+            Defers a joint's break thresholds until a grace period elapses, keeping it unbreakable meanwhile so transient load forces can't snap it.
+            </summary>
+            <param name="joint">The joint.</param>
+            <param name="breakForce">The break force to apply after the grace period, or zero to leave it unbreakable.</param>
+            <param name="breakTorque">The break torque to apply after the grace period, or zero to leave it unbreakable.</param>
         </member>
         <member name="M:ModApi.Craft.IBodyCollisionHandler.DisconnectPart(ModApi.Craft.Parts.IPartScript)">
             <summary>
@@ -29198,6 +29261,13 @@
             <param name="instruction">The program instruction.</param>
             <param name="state">The state.</param>
         </member>
+        <member name="M:ModApi.Craft.Program.ThreadContext.ResolveVariableName(System.String)">
+            <summary>
+            Resolves an event-variable locale-key name to its invariant English id; plain names pass through.
+            </summary>
+            <param name="name">The variable name from the program.</param>
+            <returns>The invariant English variable id.</returns>
+        </member>
         <member name="T:ModApi.Craft.Program.Variable">
             <summary>
             Variable used in a program.
@@ -29593,7 +29663,7 @@
         <member name="P:ModApi.Craft.Propulsion.FuelType.IsMonopropellant">
             <summary>
             Gets a value indicating whether this fuel type is a monopropellant (decomposes via a catalyst, no oxidizer required).
-            Authoring flag, not yet consumed by the base game. Defaults to true for the legacy "Monopropellant" id.
+            Defaults to true for the legacy "Monopropellant" id.
             </summary>
         </member>
         <member name="P:ModApi.Craft.Propulsion.FuelType.Harvestable">
@@ -29773,6 +29843,11 @@
         <member name="P:ModApi.Craft.Propulsion.FuelType.DisplayName">
             <summary>
             Gets the localized display name, resolved from "Fuel.&lt;Id&gt;.Name" and falling back to <see cref="P:ModApi.Craft.Propulsion.FuelType.Name"/>.
+            </summary>
+        </member>
+        <member name="P:ModApi.Craft.Propulsion.FuelType.DisplayDescription">
+            <summary>
+            Gets the localized description, resolved from "Fuel.&lt;Id&gt;.Description" and falling back to <see cref="P:ModApi.Craft.Propulsion.FuelType.Description"/>.
             </summary>
         </member>
         <member name="P:ModApi.Craft.Propulsion.FuelType.Price">
@@ -37354,7 +37429,7 @@
             <param name="emitParams">The per-emit parameters.</param>
             <param name="count">The number of particles to emit.</param>
         </member>
-        <member name="M:ModApi.Flight.IFlightScene.TryGetTerrainParticleColor(ModApi.Flight.Sim.IPlanetNode,ModApi.Flight.GameView.IReferenceFrame,UnityEngine.Vector3,UnityEngine.Color@)">
+        <member name="M:ModApi.Flight.IFlightScene.TryGetTerrainParticleColor(ModApi.Flight.Sim.IPlanetNode,ModApi.Flight.GameView.IReferenceFrame,UnityEngine.Vector3,UnityEngine.Vector3,UnityEngine.Color@)">
             <summary>
             Gets the sub-biome particle color under a terrain point, reusing a shared cache of recent samples.
             </summary>
@@ -37362,6 +37437,7 @@
             <param name="planet">The planet whose terrain is being sampled.</param>
             <param name="referenceFrame">The reference frame the point is expressed in.</param>
             <param name="framePoint">The terrain point, in frame (world) space.</param>
+            <param name="frameNormal">The surface normal at the point, in frame (world) space; drives the flat/slope blend to match the terrain shading.</param>
             <param name="color">The sampled terrain particle color, valid only when this returns <c>true</c>.</param>
             <returns><c>true</c> if a color could be sampled.</returns>
         </member>
@@ -38123,6 +38199,19 @@
               <c>true</c> if visible; otherwise, <c>false</c>.
             </value>
         </member>
+        <member name="M:ModApi.Flight.MapView.IMapView.GetCelestialBodies">
+            <summary>
+            Gets the celestial bodies (planets and moons) currently present in this map view.
+            </summary>
+            <returns>The celestial bodies currently present in this map view.</returns>
+        </member>
+        <member name="M:ModApi.Flight.MapView.IMapView.GetCelestialBodyTransform(ModApi.Flight.Sim.IPlanetNode)">
+            <summary>
+            Gets the map view game object transform for the specified celestial body, or <c>null</c> if it is not present.
+            </summary>
+            <param name="planetNode">The celestial body to get the map view transform for.</param>
+            <returns>The map view transform for the celestial body, or <c>null</c> if it is not present.</returns>
+        </member>
         <member name="M:ModApi.Flight.MapView.IMapView.SetCameraFocus(ModApi.Flight.MapView.ICameraFocusable,ModApi.Flight.MapView.CameraTransitionSpeed,System.Boolean)">
             <summary>
             Sets the camera focus.
@@ -38324,6 +38413,38 @@
             <value>
               <c>true</c> if the targeting system should use a binary search for finding closest encounter with target instead regular step intervals; otherwise, <c>false</c>.
             </value>
+        </member>
+        <member name="T:ModApi.Flight.MapView.MapViewManagers">
+            <summary>
+            Provides mods with access to the map view currently loaded, in any scene (flight, main menu, or planet studio).
+            </summary>
+        </member>
+        <member name="F:ModApi.Flight.MapView.MapViewManagers._getCurrent">
+            <summary>
+            The cached accessor that reads the game's current map view manager.
+            </summary>
+        </member>
+        <member name="P:ModApi.Flight.MapView.MapViewManagers.Current">
+            <summary>
+            Gets the map view manager for the map view currently loaded, or <c>null</c> when none is.
+            </summary>
+            <value>
+            The current map view manager, or <c>null</c> when no map view is loaded.
+            </value>
+        </member>
+        <member name="P:ModApi.Flight.MapView.MapViewManagers.IsMapViewActive">
+            <summary>
+            Gets a value indicating whether a map view is currently being displayed to the player.
+            </summary>
+            <value>
+              <c>true</c> if a map view is currently being displayed; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="M:ModApi.Flight.MapView.MapViewManagers.GetAccessor">
+            <summary>
+            Resolves and caches a reflective accessor for the game's current map view manager.
+            </summary>
+            <returns>The accessor, or <c>null</c> if it could not be resolved.</returns>
         </member>
         <member name="T:ModApi.Flight.ParticleCategory">
             <summary>
@@ -45978,6 +46099,11 @@
             The root &lt;Strings&gt; attribute naming a language's preferred fallback (e.g. ZH-TW -&gt; ZH-CN).
             </summary>
         </member>
+        <member name="F:ModApi.Locale.ModStringsFilePrefix">
+            <summary>
+            The prefix for a mod's installed supplementary strings file (<c>Strings_&lt;ModName&gt;.xml</c>).
+            </summary>
+        </member>
         <member name="P:ModApi.Locale.Languages">
             <summary>
             Gets the languages.
@@ -45985,6 +46111,11 @@
             <value>
             The languages.
             </value>
+        </member>
+        <member name="F:ModApi.Locale.EmptyLanguages">
+            <summary>
+            Empty fallback list for when the language data has not yet been loaded
+            </summary>
         </member>
         <member name="P:ModApi.Locale.LocalizationPath">
             <summary>
@@ -46036,6 +46167,14 @@
             <param name="args">The arguments to pass to <c>string.Format</c>.</param>
             <returns>Localized (and optionally formatted) string.</returns>
         </member>
+        <member name="M:ModApi.Locale.GetStringOrFallback(System.String,System.String)">
+            <summary>
+            Gets the localized string for the id, or the fallback when the id has no entry in the current language.
+            </summary>
+            <param name="id">The local string identifier.</param>
+            <param name="fallback">The text to use when the id has no entry.</param>
+            <returns>The localized string, the id when <see cref="F:ModApi.Locale.ShowKeys"/> is enabled and the id is authored, or the fallback.</returns>
+        </member>
         <member name="M:ModApi.Locale.GetXmlReadyString(System.String)">
             <summary>
             Gets the localized string in the currently selected language, if it exists, ready to be parsed as XML.
@@ -46053,12 +46192,41 @@
             Updates the XmlLayoutLocalization.
             </summary>
         </member>
+        <member name="M:ModApi.Locale.InstallModStrings(System.String,System.String,System.String)">
+            <summary>
+            Installs a mod's string table as <c>Languages/&lt;language&gt;/Strings_&lt;modName&gt;.xml</c>, overwriting any existing file.
+            </summary>
+            <param name="modName">The name of the mod supplying the strings; used to name the file.</param>
+            <param name="language">The language code the strings target (e.g. EN-US).</param>
+            <param name="xmlContent">The contents of the Strings.xml document to install.</param>
+        </member>
+        <member name="M:ModApi.Locale.RemoveModStrings(System.String)">
+            <summary>
+            Removes every string file the specified mod previously installed, across all language folders.
+            </summary>
+            <param name="modName">The name of the mod whose installed string files should be removed.</param>
+            <returns><c>true</c> if at least one file was removed.</returns>
+        </member>
         <member name="M:ModApi.Locale.ParseStringLocales(System.Xml.Linq.XElement)">
             <summary>
             Parses the &lt;s&gt; entries of a Strings.xml document into an id -&gt; value table.
             </summary>
             <param name="definitions">The root element of a parsed Strings.xml document.</param>
             <returns>The string table for the document.</returns>
+        </member>
+        <member name="M:ModApi.Locale.GetModStringsFileName(System.String)">
+            <summary>
+            Builds a mod's supplementary strings file name, sanitizing the mod name for the filesystem.
+            </summary>
+            <param name="modName">The name of the mod.</param>
+            <returns>The file name to use for the mod's supplementary strings file.</returns>
+        </member>
+        <member name="M:ModApi.Locale.SanitizeFileToken(System.String)">
+            <summary>
+            Replaces characters that are invalid in a file or folder name with underscores.
+            </summary>
+            <param name="token">The token to sanitize.</param>
+            <returns>The sanitized token.</returns>
         </member>
         <member name="M:ModApi.Locale.TryLoadLanguages">
             <summary>
@@ -46097,6 +46265,13 @@
             </summary>
             <param name="language">The language.</param>
             <returns>The Strings.xml contents, or <c>null</c>.</returns>
+        </member>
+        <member name="M:ModApi.Locale.ReadAdditionalLanguageStrings(System.String)">
+            <summary>
+            Merges supplementary Strings*.xml files (excluding Strings.xml) in the language folder, in filename order.
+            </summary>
+            <param name="language">The language code.</param>
+            <returns>Merged string table from all supplementary files.</returns>
         </member>
         <member name="M:ModApi.Locale.EnsureFallbackStringLocales">
             <summary>
@@ -53382,12 +53557,13 @@
             <param name="input">The input data needed to generate vertex data.</param>
             <param name="data">The vertex data object to be updated.</param>
         </member>
-        <member name="M:ModApi.Planet.Modifiers.VertexData.Biomes.ApplyBiomeData.UpdateBiomeData(ModApi.Planet.PlanetVertexData,ModApi.Planet.SubBiomeTerrainData,System.Single)">
+        <member name="M:ModApi.Planet.Modifiers.VertexData.Biomes.ApplyBiomeData.UpdateBiomeData(ModApi.Planet.PlanetVertexData,ModApi.Planet.SubBiomeTerrainData,ModApi.Planet.SubBiomeTerrainData,System.Single)">
             <summary>
             Updates the biome data.
             </summary>
             <param name="data">The data to update.</param>
             <param name="biomeData">The biome data to which to apply.</param>
+            <param name="slopeData">The sub-biome's slope data, used as the particle color default when <paramref name="biomeData"/> does not override it.</param>
             <param name="strength">The strength of the biome data to apply.</param>
         </member>
         <member name="M:ModApi.Planet.Modifiers.VertexData.Biomes.ApplyBiomeData.UpdateBiomeData(ModApi.Planet.PlanetBiomeVertexData,ModApi.Planet.SubBiomeTerrainData,System.Single)">
@@ -54746,6 +54922,21 @@
         <member name="P:ModApi.Planet.Modifiers.VertexData.Clouds.CloudLayer.RotationSpeed">
             <summary>
             Gets or sets the rotation speed of the layer in radians per second.
+            </summary>
+        </member>
+        <member name="P:ModApi.Planet.Modifiers.VertexData.Clouds.CloudLayer.SeasonalMaskInfluence">
+            <summary>
+            Gets or sets this layer's seasonal mask erosion by orbital position (-1 to 1; 0 = none).
+            </summary>
+        </member>
+        <member name="P:ModApi.Planet.Modifiers.VertexData.Clouds.CloudLayer.TerrainDisplacement">
+            <summary>
+            Gets or sets how strongly this layer follows the terrain height (0 = flat shell, 1 = fully terrain-following).
+            </summary>
+        </member>
+        <member name="P:ModApi.Planet.Modifiers.VertexData.Clouds.CloudLayer.Thickness">
+            <summary>
+            Gets or sets the thickness of the layer in meters (5 to 100), separating the ground cloud shells while the camera is near the layer.
             </summary>
         </member>
         <member name="P:ModApi.Planet.Modifiers.VertexData.Clouds.CloudLayer.Tint">
@@ -61262,6 +61453,11 @@
             Gets or sets the height of the layer above sea level, in meters.
             </summary>
         </member>
+        <member name="P:ModApi.Planet.CloudLayerRenderInfo.Thickness">
+            <summary>
+            Gets or sets the thickness of the layer in meters, separating the ground cloud shells while the camera is near the layer. Ground view only.
+            </summary>
+        </member>
         <member name="P:ModApi.Planet.CloudLayerRenderInfo.Tint">
             <summary>
             Gets or sets the tint of the layer; alpha is an overall opacity multiplier.
@@ -61275,6 +61471,16 @@
         <member name="P:ModApi.Planet.CloudLayerRenderInfo.MaskInfluence">
             <summary>
             Gets or sets how strongly the mask affects this layer's opacity (0 = ignore, 1 = fully masked).
+            </summary>
+        </member>
+        <member name="P:ModApi.Planet.CloudLayerRenderInfo.SeasonalMaskInfluence">
+            <summary>
+            Gets or sets this layer's seasonal mask erosion by orbital position (-1 to 1; 0 = none).
+            </summary>
+        </member>
+        <member name="P:ModApi.Planet.CloudLayerRenderInfo.TerrainDisplacement">
+            <summary>
+            Gets or sets how strongly this layer follows the terrain height (0 = flat shell, 1 = fully terrain-following).
             </summary>
         </member>
         <member name="P:ModApi.Planet.CloudLayerRenderInfo.DetailScale">
@@ -61485,6 +61691,16 @@
         <member name="P:ModApi.Planet.PlanetCubemapData.CloudLayerData.MaskInfluence">
             <summary>
             Gets or sets how strongly the mask layer affects this layer's opacity (0 = ignore the mask, 1 = fully masked).
+            </summary>
+        </member>
+        <member name="P:ModApi.Planet.PlanetCubemapData.CloudLayerData.SeasonalMaskInfluence">
+            <summary>
+            Gets or sets this layer's seasonal mask erosion by orbital position (-1 to 1; 0 = none).
+            </summary>
+        </member>
+        <member name="P:ModApi.Planet.PlanetCubemapData.CloudLayerData.TerrainDisplacement">
+            <summary>
+            Gets or sets how strongly this layer follows the terrain height (0 = flat shell, 1 = fully terrain-following).
             </summary>
         </member>
         <member name="T:ModApi.Planet.PlanetCubemapManager">
@@ -63914,6 +64130,16 @@
             The options
             </summary>
         </member>
+        <member name="F:ModApi.Planet.PlanetShaderData._ozoneAbsorption">
+            <summary>
+            The color removed from the sky by ozone absorption, scaled by <see cref="P:ModApi.Planet.PlanetShaderData.OzoneStrength"/>.
+            </summary>
+        </member>
+        <member name="F:ModApi.Planet.PlanetShaderData._ozoneStrength">
+            <summary>
+            The overall strength of ozone absorption, multiplied into <see cref="P:ModApi.Planet.PlanetShaderData.OzoneAbsorption"/>.
+            </summary>
+        </member>
         <member name="F:ModApi.Planet.PlanetShaderData._samples">
             <summary>
             The samples
@@ -64095,6 +64321,22 @@
             The options.
             </value>
         </member>
+        <member name="P:ModApi.Planet.PlanetShaderData.OzoneAbsorption">
+            <summary>
+            Gets or sets the color removed from the sky by ozone absorption, scaled by <see cref="P:ModApi.Planet.PlanetShaderData.OzoneStrength"/>.
+            </summary>
+            <value>
+            The color removed by ozone absorption.
+            </value>
+        </member>
+        <member name="P:ModApi.Planet.PlanetShaderData.OzoneStrength">
+            <summary>
+            Gets or sets the overall strength of ozone absorption, multiplied into <see cref="P:ModApi.Planet.PlanetShaderData.OzoneAbsorption"/>.
+            </summary>
+            <value>
+            The overall strength of ozone absorption.
+            </value>
+        </member>
         <member name="P:ModApi.Planet.PlanetShaderData.Samples">
             <summary>
             Gets or sets the samples.
@@ -64187,6 +64429,11 @@
             height within the atmosphere, using AtmosScaleSurface/Space, or whether AtmosScale should be statically used.
             </summary>
         </member>
+        <member name="F:ModApi.Planet.PlanetShaderOptionsData._chapmanOpticalDepth">
+            <summary>
+            Whether to use the Chapman grazing-incidence function for atmospheric optical depth.
+            </summary>
+        </member>
         <member name="F:ModApi.Planet.PlanetShaderOptionsData._legacySkyShader">
             <summary>
             The sky shader was tweaked for how it handles transparency.  This would change the look of existing skies, so this property is used to render existing skies with
@@ -64214,6 +64461,11 @@
             The value indicating whether AtmosScale should be automatically calculated based on
             height within the atmosphere, using AtmosScaleSurface/Space, or whether AtmosScale should be statically used.
             </value>
+        </member>
+        <member name="P:ModApi.Planet.PlanetShaderOptionsData.ChapmanOpticalDepth">
+            <summary>
+            Gets or sets a value indicating whether to use the Chapman grazing-incidence function for atmospheric optical depth.
+            </summary>
         </member>
         <member name="P:ModApi.Planet.PlanetShaderOptionsData.LegacySkyShader">
             <summary>
@@ -66802,6 +67054,11 @@
         <member name="T:ModApi.Planet.SubBiomeTerrainData">
             <summary>
             Terrain data related to a sub-biome.
+            </summary>
+        </member>
+        <member name="F:ModApi.Planet.SubBiomeTerrainData.DefaultParticleAlpha">
+            <summary>
+            The particle intensity (alpha) assumed for sub-biomes that do not override the particle color.
             </summary>
         </member>
         <member name="F:ModApi.Planet.SubBiomeTerrainData._color">
@@ -76388,6 +76645,22 @@
             The re-entry effects quality.
             </value>
         </member>
+        <member name="P:ModApi.Settings.VisualEffectsQualitySettings.ReEntryPlasmaBias">
+            <summary>
+            Gets the re-entry plasma bias, a multiplier applied to the plasma-effect Mach thresholds.
+            </summary>
+            <value>
+            The re-entry plasma bias.
+            </value>
+        </member>
+        <member name="P:ModApi.Settings.VisualEffectsQualitySettings.ReEntryExtraEffects">
+            <summary>
+            Gets the maximum number of extra re-entry effects rendered for nearby non-player craft and large debris (at half the player craft's resolution).
+            </summary>
+            <value>
+            The maximum number of extra re-entry effects.
+            </value>
+        </member>
         <member name="P:ModApi.Settings.VisualEffectsQualitySettings.TireTracks">
             <summary>
             Gets the tire tracks quality.
@@ -76420,6 +76693,14 @@
             <summary>
             Called when all settings categories (that are loaded as part of the same group) have been initialized, loaded, and committed.
             </summary>
+        </member>
+        <member name="M:ModApi.Settings.VisualEffectsQualitySettings.GetExtraEffectsRange(ModApi.Settings.Core.DeviceFlags,System.Int32@,System.Int32@)">
+            <summary>
+            Gets the extra re-entry effects slider's ceiling and default, scaled by the device's detected hardware tier; mobile detection is coarse (unrecognised GPUs read as low end), so its numbers stay conservative.
+            </summary>
+            <param name="devices">The device flags to size the slider for.</param>
+            <param name="max">The highest number of extra effects the device offers.</param>
+            <param name="defaultValue">The number of extra effects the device starts with.</param>
         </member>
         <member name="M:ModApi.Settings.VisualEffectsQualitySettings.AnisotropicFilteringChanged(System.Object,ModApi.Settings.Core.Events.SettingChangedEventArgs{ModApi.Settings.VisualEffectsQualitySettings.AnisotropicFilteringMode})">
             <summary>
@@ -79029,6 +79310,11 @@
             The default values to be used for planet <see cref="T:ModApi.State.MapView.MapItemData"/> unless the user has overridden.
             </value>
         </member>
+        <member name="P:ModApi.State.MapView.MapItemDataSet.PreserveUnloadedItemData">
+            <summary>
+            Gets or sets a value indicating whether to re-emit overrides for items whose node isn't currently loaded.
+            </summary>
+        </member>
         <member name="P:ModApi.State.MapView.MapItemDataSet.StructureDefaults">
             <summary>
             Gets the default values to be used for structure <see cref="T:ModApi.State.MapView.MapItemData"/> unless the user has overridden.
@@ -79166,6 +79452,11 @@
             <value>
               <c>true</c> if this instance has been changed since being loaded; otherwise, <c>false</c>.
             </value>
+        </member>
+        <member name="P:ModApi.State.MapView.MapViewData.LoadedWithMapItemData">
+            <summary>
+            Gets a value indicating whether the loaded state contained persisted map item data.
+            </summary>
         </member>
         <member name="P:ModApi.State.MapView.MapViewData.MapItemDataSet">
             <summary>
@@ -79764,7 +80055,7 @@
             Loads the fonts from the path/Fonts.xml.
             </summary>
             <param name="path">The folder path containing Fonts.xml.</param>
-            <returns><c>true</c> if we parsed Fonts.xml under the path, otherwise <c>false</c>.</returns>
+            <returns><c>true</c> if a Fonts.xml exists under the path, otherwise <c>false</c>.</returns>
         </member>
         <member name="M:ModApi.Ui.IFontCache.TryGetFont(System.String,System.Object@)">
             <summary>
@@ -84480,6 +84771,11 @@
             The crew assignment dialog XML ID.
             </summary>
         </member>
+        <member name="F:ModApi.Ui.UserInterfaceIds.FpsOverlay">
+            <summary>
+            The FPS overlay XML ID.
+            </summary>
+        </member>
         <member name="F:ModApi.Ui.UserInterfaceIds.InputDialog">
             <summary>
             The input dialog XML ID.
@@ -85578,6 +85874,14 @@
             Gets the percentage of fuel remaining in the fuel source.
             </summary>
             <param name="fuelSource">The fuel source.</param>
+            <returns>The percentage of fuel remaining.</returns>
+        </member>
+        <member name="M:ModApi.Utilities.GetRemainingPercentage(System.Double,System.Double)">
+            <summary>
+            Gets the percentage of fuel remaining for the given totals, flooring near-empty amounts to zero.
+            </summary>
+            <param name="totalFuel">The total fuel remaining.</param>
+            <param name="totalCapacity">The total fuel capacity.</param>
             <returns>The percentage of fuel remaining.</returns>
         </member>
         <member name="M:ModApi.Utilities.GetRootGameObjects">

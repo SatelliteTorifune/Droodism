@@ -22,7 +22,7 @@
     <!-- Log Scrollview Panel -->
     <VerticalScrollView class="no-image" internalId="scroll-view-log" pivot="0 1" preferredHeight="200" contentSizeFitter="vertical">
       <Panel name="Log Entries" internalId="log-entries-content" width="100%" height="500" offsetXY="5 0">
-        <TextMeshPro internalId="template-log-entry" text="Testing 123" height="20" width="100%" alignment="Left" rectAlignment="UpperCenter" overflowMode="Ellipsis" active="false">
+        <TextMeshPro internalId="template-log-entry" text="Testing 123" height="26" width="100%" alignment="Left" rectAlignment="UpperCenter" overflowMode="Ellipsis" active="false">
           <Image class="log-entry" onClick="OnLogEntryClicked(this)" />
         </TextMeshPro>
       </Panel>

@@ -1,3 +1,84 @@
+## 2026 7 18
+> 增加了零件分类名称,零件显示名称和描述的本地化
+
+## 2026 7 15
+> 增加了更多的本地化
+
+## 2026 7 14
+> 替换并移除了Override的fuelType
+> >移除了高压二氧化碳和高压氮气
+>
+> 完成了UI本地化
+
+## 2026 7 13
+> 修复了PartAddingManager中不给cockpit添加STCommandPodPatch的bug
+
+## 2026 7 11
+> 为menuMapView添加了辐射带支持
+> 
+> 修复了一处CraftFuelSourcesPatches中的空引用导致游戏无法进入FlightScene的bug
+
+## 2026 7 9
+> 使用EMA算法对UI中的消耗速率进行了平滑处理,以减少UI中消耗速率显示的波动
+> 
+> 优化了一点点SupportLifeScript中RemoveFuelAmountInstantly的计算
+> >虽然也没好到哪里去
+
+## 2026 7 8
+> 加入了回到旧版暂停逻辑的功能
+> 
+
+## 2026 7 7
+> 加入了通过钩爪补充氧气的功能
+> >顺便加入了通过钩爪移除二氧化碳的功能
+
+## 2026 7 5
+> 移植了JetEngineScript的大气组分扫描逻辑到SupportLifeScript
+> 
+> > SupportLifeScript.UsingInternalOxygen() 改为优先通过分析行星大气组分中的氧气质量分数来判断是否可呼吸
+> > 
+> > 新增 IsBreathableByComposition() 和 ComputeBreathable() 方法，带缓存机制
+> > 
+> > 行星大气中 LOX质量分数 >= 0.1即可呼吸
+> > 
+> > 保留原有 IsBreathablePlanet 名称白名单作为回退兼容
+> 
+>  提高了SupportLifeScript中可呼吸大气密度的阈值,密度必须大于0.4方可判定为使用外部氧气
+> 
+>增加了RTG功率衰减
+## 2026 7 4
+> 更新了SRCraftFuelSources.cs中的部分函数以适配新版本的CraftFuelSources和全局资源系统
+> 
+> 修复DesignerUI中部分空引用导致的数据显示异常
+> 
+> 增加自动本地化文件功能
+
+## 2026 6 29
+> 修改了SRCraftFuelSources中的部分函数以修复JetFuel和Mono无法被读取的错误
+> 
+> 增加部分本地化信息
+> 
+> UI中加入了新的按钮,可以直接选中Drood
+## 2026 6 27
+> 修复了IsRagdollActive的判定问题
+> 
+> 给工具箱新增了连接点
+## 2026 6 27
+> 修复了_crewCompartment.UnloadCrewMember的参数判定
+> 
+> 增加初步本地化选项
+
+## 2026 6 26
+> 更新modTool到 1.4版本
+> 
+> 根据新版本变动修改了SRCraftFuelSources中的部分函数以适配更新后的CraftFuelSources和全局资源系统
+> 
+> 对Propulsion.xml进行了密度调整,并覆写了部分1.4更新后新增的FuelType
+> 
+> 优化文件结构
+> 
+> 关于Mod.GetStopwatchTimeString的bug已经修复,故移除了此函数,改为Units.GetStopwatchTimeString()便于本地化
+
 # V0.797 发布
 
 ## 2026 6 16

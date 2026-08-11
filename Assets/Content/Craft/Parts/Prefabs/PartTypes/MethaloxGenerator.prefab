@@ -80,14 +80,11 @@ MonoBehaviour:
   Data:
     _activationGroup: 0
     _category: {fileID: 11400000, guid: 2d849a06cee127543a64b34a37e37bc1, type: 2}
-    _description: 'A device turnning <color=red>High Pressure CO2</color>,<color=red>Water
-      </color>into
-
-      <color=green>Methalox'
+    _description: DesignerParts.MethaloxGenerator.MethaloxGenerator.Description
     _displayOrder: 0
     _iconPath: 
     _iconType: 0
-    _name: MethaloxGenerator
+    _name: DesignerParts.MethaloxGenerator.MethaloxGenerator.Name
     _partTypeOverrides: []
     _position: {x: 0, y: 0, z: 0}
     _rotation: {x: 0, y: 0, z: 0}

@@ -44,8 +44,10 @@ MonoBehaviour:
   - {fileID: 4900000, guid: 9c0e7356cda286d45b9cf18b10908010, type: 3}
   - {fileID: 102900000, guid: 4d8bd615a0d7a3940bb55e30d2f4842c, type: 3}
   - {fileID: 4900000, guid: aa57c81b02dc2df42b6f180e1afb387f, type: 3}
+  - {fileID: 2800000, guid: e5deade6f1b0e2549a7e30a9fa064c81, type: 3}
   - {fileID: 2800000, guid: c2503f6c8b1301f47931ce7891b9443b, type: 3}
   - {fileID: 4900000, guid: defa62275b295804c9359b2b6b3dbbc4, type: 3}
+  - {fileID: 4900000, guid: a2a006cd484213e4c875ebe0f9a7a219, type: 3}
   - {fileID: 2800000, guid: bbbf447dfa6de66488b7d4dbaad573a5, type: 3}
   - {fileID: 2800000, guid: 85e5c48d53f5af94b986fba4776fb375, type: 3}
   - {fileID: 4900000, guid: 2f28744980bce6a46b09955e6f949278, type: 3}
@@ -65,7 +67,8 @@ MonoBehaviour:
   - {fileID: 4900000, guid: 1b87b766ef5290c459a41c9d42d58a00, type: 3}
   - {fileID: 4900000, guid: 8e05abe55ae087640b2ec015f9084e19, type: 3}
   - {fileID: 4900000, guid: 0f6c1b451e38ed4478c29273cb4093ac, type: 3}
-  - {fileID: 2800000, guid: b1f0a6c051971b74e9b3158740cab2f2, type: 3}
+  - {fileID: 4900000, guid: cd5f037fd7af32847b0bfd0332c549c9, type: 3}
+  - {fileID: 4900000, guid: ef8c8fd9da0a53740b847ee2c87bdec6, type: 3}
   _prefabs:
   - {fileID: 6120232750499223712, guid: 3901511f82c8ad64d9248847de594d84, type: 3}
   _steamDescription: 
@@ -75,11 +78,10 @@ MonoBehaviour:
   _steamTitle: 
   _steamVisibility: 0
   _versionMajor: 0
-  _versionMinor: 8
+  _versionMinor: 82
   _partCategories:
   - {fileID: 11400000, guid: 2d849a06cee127543a64b34a37e37bc1, type: 2}
   - {fileID: 11400000, guid: 7d2b6f557b8767544a162f30e61d22b6, type: 2}
-  - {fileID: 11400000, guid: 05c2cf017b5bdba44b9f571f2c06bfb4, type: 2}
   _parts:
   - {fileID: 4900000, guid: 5292d75e4a1ffe2499d9f89dbff145c7, type: 3}
   - {fileID: 4900000, guid: 31490106fb7b35346a5dd4a598ffc6da, type: 3}
@@ -106,7 +108,6 @@ MonoBehaviour:
   - {fileID: 4900000, guid: 62fc707502e4fdf46846d1bc5c46426e, type: 3}
   - {fileID: 4900000, guid: 3187f51072da32145ad84924d186c061, type: 3}
   - {fileID: 0}
-  - {fileID: 4900000, guid: ba467d2740a3cc64bbffaa09ba7b4213, type: 3}
   _partStyleExtensions: []
   _partTextureStyles: []
   _persistentObjects: []

@@ -10,19 +10,19 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using UnityEngine;
 
     [Serializable]
-    [DesignerPartModifier("GravityRing")]
+    [DesignerPartModifier("Droodism.GravityRingData.Header")]
     [PartModifierTypeId("GravityRing")]
     public class GravityRingData : PartModifierData<GravityRingScript>
     {
-        [SerializeField] [DesignerPropertyToggleButton(Label = "Reverse the Rotation Direction")]
+        [SerializeField] [DesignerPropertyToggleButton(Label = "Droodism.GravityRingData.ReverseRotation")]
         public bool IsReverse = false;
         private Vector3 positionOffset1 = Vector3.zero;
         private float currentExtentPercent = 0;
         public float CurrentRotation = 90f;
         [SerializeField]
-        [DesignerPropertySlider(0.1f, 1f,10, Label = "Extend Speed")]
+        [DesignerPropertySlider(0.1f, 1f,10, Label = "Droodism.GravityRingData.ExtendSpeed")]
         public float ExtendSpeed = 0.2f;
-        [SerializeField] [DesignerPropertySlider(1f, 30f,30, Label = "Deploy Rotation Speed")]
+        [SerializeField] [DesignerPropertySlider(1f, 30f,30, Label = "Droodism.GravityRingData.DeployRotationSpeed")]
         private float deployRotationSpeed = 15f;
 
         [SerializeField] [PartModifierProperty]

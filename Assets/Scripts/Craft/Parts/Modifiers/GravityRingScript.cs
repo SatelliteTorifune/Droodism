@@ -255,7 +255,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         protected override void UpdateFuelSources()
         {
             base.UpdateFuelSources();
-            hPN2Source = GetRegularCraftFuelSource("HPN2");
+            hPN2Source = GetRegularCraftFuelSource("N2");
         }
         
 

@@ -6,7 +6,9 @@
       <Flag ExtendSpeed="0.2" deployRotationSpeed="15" isDeployed="false" stayDeployed="false" inspectorEnabled="true" partPropertiesEnabled="true" staticPriceAndMass="false" version="1" versionLast="1" versionsAllowed="" />
     </Modifiers>
     <AttachPoints>
-      <AttachPoint name="AttachPoint2" displayName="Bottom" position="0,-0.542,0" rotation="90,0,0" positionOffset="0,0,0" rotationOffset="0,0,0" allowRotation="false" allowInvertedConnection="false" canReceive="true" canSeek="true" ignoreSurfaces="false" radius="1" crewTraversable="true" fuelLine="true" />
+      <AttachPoint name="AttachPoint1" displayName="Top" position="0,6,0" rotation="270,0,0" positionOffset="0,0,0" rotationOffset="0,0,0" allowRotation="false" allowInvertedConnection="false" canReceive="true" canSeek="true" ignoreSurfaces="false" radius="1" crewTraversable="true" />
+      <AttachPoint name="AttachPoint2" displayName="Bottom" position="0,-6,0" rotation="90,0,0" positionOffset="0,0,0" rotationOffset="0,0,0" allowRotation="false" allowInvertedConnection="false" canReceive="true" canSeek="true" ignoreSurfaces="false" radius="1" crewTraversable="true" fuelLine="true" />
+      <AttachPoint name="AttachPoint3" displayName="Crew" position="-1.94,0,-1.92" rotation="0,0,0" positionOffset="0,0,0" rotationOffset="0,0,0" allowRotation="false" allowInvertedConnection="false" canReceive="true" canSeek="true" ignoreSurfaces="false" radius="1" connectionType="Eva" crewTraversable="true" fuelLine="true" />
     </AttachPoints>
     <SubpartTypes>
       <SubpartType index="0" xmlName="" displayName="Part" />
