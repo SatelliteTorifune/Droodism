@@ -1,7 +1,9 @@
 using System;
 using System.Xml.Linq;
 using Assets.Scripts.Craft.Parts.Modifiers;
+using Assets.Scripts.Craft.Parts.Modifiers.Mfd;
 using Assets.Scripts.Flight;
+using Assets.Scripts.Vizzy.UI;
 using ModApi;
 using ModApi.Craft.Parts;
 using ModApi.Flight.Sim;
@@ -30,7 +32,7 @@ namespace Assets.Scripts
                 longitude,
                 new Vector3d(0.0, 0.0, 3000.0),
                 0,
-                0.2);
+                0.5);
             var flag = ((FlightSceneScript)Game.Instance.FlightScene).SpawnCraft($"Flag at {Game.Instance.FlightScene.CraftNode.Parent.Name},{(ConvertPlanetPositionToLatLongAgl(position).x)} ,{(ConvertPlanetPositionToLatLongAgl(position).y)}", craftData, location, xml);
             flag.AllowPlayerControl = true;
             Game.Instance.FlightScene.FlightSceneUI.ShowMessage(

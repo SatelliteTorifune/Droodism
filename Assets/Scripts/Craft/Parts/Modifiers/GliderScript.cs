@@ -97,8 +97,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     foreach (var eva in _crewCompartment.Crew)
                     {
                     
-                        _crewCompartment.UnloadCrewMember(eva,this.PartScript.CraftScript.CraftNode.IsPlayer);
                         eva.PartScript.GetModifier<SupportLifeScript>().Data.AutoDeployEnabled = false;
+                        _crewCompartment.UnloadCrewMember(eva,this.PartScript.CraftScript.CraftNode.IsPlayer);
                         ui.ShowMessage($"{eva.Data.CrewMember.Name} {Locale.GetString("Droodism.Glider.HasLanded")}");
                     }
                     FuckOff2 = false;

@@ -259,7 +259,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
             }
         }
-
+        
         private float GetRTGRadiationDoseRate()
         {
             if (!ModSettings.Instance.ReceiveCraftRadiation || RTGParts.Count == 0)

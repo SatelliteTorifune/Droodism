@@ -2,6 +2,7 @@ using System.Windows.Forms;
 using ModApi.GameLoop;
 using Assets.Scripts.Droodism.RadiationBelt;
 using ModApi.Flight.Sim;
+using ModApi.Ui.Inspector;
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {

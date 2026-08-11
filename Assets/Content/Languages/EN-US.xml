@@ -424,6 +424,9 @@
 
     <!-- FlagScript -->
     <s id="Droodism.FlagScript.LoadImage">Load Image</s>
+    <s id="Droodism.FlagScript.FlagMessage">Flag Message</s>
+    <s id="Droodism.FlagScript.EditMessage">Edit Message</s>
+    <s id="Droodism.FlagScript.EditMessageToolTip">Edit what You want to leave</s>
     <s id="Droodism.Glider.HasLanded">has landed</s>
 
     <!-- GasDealerScript -->

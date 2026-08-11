@@ -68,6 +68,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                    2,2,2);
                 
 
+                
             }
         }
 
@@ -211,7 +212,25 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public override void OnGenerateInspectorModel(PartInspectorModel model)
         {
             base.OnGenerateInspectorModel(model);
+            model.Add(new TextModel(Locale.GetString("Droodism.FlagScript.FlagMessage"),()=>Data.FlagContent));
+            model.Add(new TextButtonModel(Locale.GetString("Droodism.FlagScript.EditMessage"), (b) =>
+            {
+                CallDialog();
+            }));
             model.Add(new TextButtonModel(Locale.GetString("Droodism.FlagScript.LoadImage"),(b)=>SetFlagPhoto()));
+        }
+
+        private void CallDialog()
+        {
+            global::ModApi.Ui.InputDialogScript dialog = Game.Instance.UserInterface.CreateInputDialog(null);
+            dialog.MessageText = Locale.GetString("Droodism.FlagScript.EditMessageToolTip");
+            dialog.InputText = "";
+            dialog.OkayClicked += delegate(global::ModApi.Ui.InputDialogScript d)
+            {
+                d.Close();
+                Data.SetFlagContent(dialog.InputText);
+                
+            };
         }
 
         #region PrefabSetup Methods
