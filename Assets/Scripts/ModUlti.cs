@@ -93,44 +93,24 @@ namespace Assets.Scripts
             return deltaSeconds / 3600f;
         }
 
-        public static void Log(object message)
-        {
-            if (ModSettings.Instance.DebugMode)
-            {
-                Debug.unityLogger.Log(message);
-            }
-        }
+        
 
         public static void Log(string format, params object[] args)
         {
             if (ModSettings.Instance.DebugMode)
             {
-                Debug.unityLogger.LogFormat(LogType.Log, format, args);
+                Debug.unityLogger.LogFormat(LogType.Log, "[DroodismDebug]"+format, args);
             }
         }
 
-        public static void LogWarning(string format, params object[] args)
-        {
-            if (ModSettings.Instance.DebugMode)
-            {
-                Debug.unityLogger.LogFormat(LogType.Log, format, args);
-            }
-        }
+        
 
         public static void LogError(string format, params object[] args)
         {
             if (ModSettings.Instance.DebugMode)
             {
-                Debug.unityLogger.LogFormat(LogType.Log, format, args);
+                Debug.unityLogger.LogFormat(LogType.Log, "[DroodismDebug]"+format, args);
                 Debug.LogFormat(Environment.StackTrace);
-            }
-        }
-
-        public static void Log(UnityEngine.Object context, string format, params object[] args)
-        {
-            if (ModSettings.Instance.DebugMode)
-            {
-                Debug.unityLogger.LogFormat(LogType.Log, context, format, args);
             }
         }
         

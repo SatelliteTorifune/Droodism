@@ -246,27 +246,56 @@ namespace Assets.Scripts.Droodism.UserInterface
             if (e.Scene == "Flight")
             {
 
-                UpdateInfo();
-                inspectorPanel.Visible = false;
-                inspectorPanel.CloseButtonClicked += OnCloseButtonClicked;
-                ModApi.Common.Game.Instance.FlightScene.CraftChanged += OnCraftChanged;
-                ModApi.Common.Game.Instance.FlightScene.CraftStructureChanged += OnCraftStructureChanged;
-                ModApi.Common.Game.Instance.FlightScene.Initialized += OnSceneInitialized;
-                ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.ActiveCommandPodChanged +=
-                    OnActiveCommandPodChanged;
-                Game.Instance.FlightScene.FlightEnded += FlightSceneEnded;
+                try
+                {
+                    UpdateInfo();
+                    // 修复:inspectorPanel 在从未打开过 Droodism 面板时为 null,
+                    // 直接解引用会 NRE 并中断 SceneLoaded 事件链(其后 mod 的处理器全部被跳过)。
+                    if (inspectorPanel != null)
+                    {
+                        inspectorPanel.Visible = false;
+                        inspectorPanel.CloseButtonClicked += OnCloseButtonClicked;
+                    }
+                    var flightScene = ModApi.Common.Game.Instance.FlightScene;
+                    if (flightScene != null)
+                    {
+                        flightScene.CraftChanged += OnCraftChanged;
+                        flightScene.CraftStructureChanged += OnCraftStructureChanged;
+                        flightScene.Initialized += OnSceneInitialized;
+                        flightScene.FlightEnded += FlightSceneEnded;
+                        if (flightScene.CraftNode?.CraftScript != null)
+                        {
+                            flightScene.CraftNode.CraftScript.ActiveCommandPodChanged += OnActiveCommandPodChanged;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Mod.Log("DroodismUIManager: OnSceneLoaded error: " + ex);
+                }
 
             }
         }
 
         private void FlightSceneEnded(object sender, FlightEndedEventArgs e)
         {
-            Game.Instance.FlightScene.CraftStructureChanged -= OnCraftStructureChanged;
-            Game.Instance.FlightScene.CraftChanged -= OnCraftChanged;
-            Game.Instance.FlightScene.Initialized -= OnSceneInitialized;
-            Game.Instance.FlightScene.FlightEnded -= FlightSceneEnded;
-            ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.ActiveCommandPodChanged -=
-                OnActiveCommandPodChanged;
+            try
+            {
+                var flightScene = Game.Instance?.FlightScene;
+                if (flightScene == null) return;
+                flightScene.CraftStructureChanged -= OnCraftStructureChanged;
+                flightScene.CraftChanged -= OnCraftChanged;
+                flightScene.Initialized -= OnSceneInitialized;
+                flightScene.FlightEnded -= FlightSceneEnded;
+                if (flightScene.CraftNode?.CraftScript != null)
+                {
+                    flightScene.CraftNode.CraftScript.ActiveCommandPodChanged -= OnActiveCommandPodChanged;
+                }
+            }
+            catch (Exception ex)
+            {
+                Mod.Log("DroodismUIManager: FlightSceneEnded error: " + ex);
+            }
         }
 
         private void OnCloseButtonClicked(IInspectorPanel inspectorPanel)

@@ -106,7 +106,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
                 catch (Exception e)
                 {
-                    Mod.Log(e);
+                    Mod.Log(e.StackTrace);
                 }
             }
             
