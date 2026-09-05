@@ -11,10 +11,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
 
-    public class balloonScript : PartModifierScript<balloonData>,IFlightFixedUpdate,IFlightStart,IFlightUpdate
+    public class balloonScript : PartModifierScript<balloonData>,IFlightFixedUpdate,IFlightStart,IFlightUpdate,IPartSubPartSetUp
     {
         private Transform _sphere;
         private Transform _offset;
+
+        public Transform SubPart => _sphere;
         public void FlightStart(in FlightFrameData frame)
         {
             UpdateComponents();
@@ -57,32 +59,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         protected void UpdateComponents()
         {
-            string[] strArray = "Sphere".Split('/', StringSplitOptions.None);
-            Transform subPart = this.transform;
-            foreach (string n in strArray)
-                subPart = subPart.Find(n) ?? subPart;
-            if (subPart.name == strArray[strArray.Length - 1])
-                this.SetSubPart(subPart);
-            else
-                this.SetSubPart(Utilities.FindFirstGameObjectMyselfOrChildren("Sphere", this.gameObject)?.transform);
-           
-            
+            SetSubPart(IPartSubPartSetUp.FindSubPart(this, "Sphere"));
         }
 
 
-        private void SetSubPart(Transform subPart)
+        public void SetSubPart(Transform subPart)
         {
-            if ((UnityEngine.Object) this._offset != (UnityEngine.Object) null)
-            {
-                UnityEngine.Object.Destroy((UnityEngine.Object) this._offset.gameObject);
-                this._offset = (Transform) null;
-            }
-            this._sphere = subPart;
-            if (!((UnityEngine.Object) this._sphere != (UnityEngine.Object) null) || (double) this.Data.PositionOffset1.magnitude <= 0.0)
-                return;
-            this._offset = new GameObject("SubPartRotatorOffset").transform;
-            this._offset.SetParent(this._sphere.parent, false);
-            this._offset.position = this._sphere.TransformPoint(Data.PositionOffset1);
+            _sphere = subPart;
+            _offset = IPartSubPartSetUp.ApplySubPart(_offset, _sphere, Data.PositionOffset1, out _);
         }
     }
 }

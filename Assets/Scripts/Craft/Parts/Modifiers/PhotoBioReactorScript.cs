@@ -17,7 +17,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using UnityEngine;
 
     public class PhotoBioReactorScript : PartModifierScript<PhotoBioReactorData>, IFlightStart, IFlightUpdate,
-        IDesignerStart
+        IDesignerStart, IPartSubPartSetUp
     {
         private IFuelSource _battery,_co2Source,_waterSource,_foodSource,_solidWastedSource,_oxygenSource,_wastedWaterSource;
         public float _efficiency, _rechargeRate, _rechargePointingEfficiency;
@@ -30,6 +30,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private string deviceStatus = "";
         public bool usingArtificialLight = false;
         private float growProgress;
+
+        public Transform SubPart => MainPipe;
         public void FlightStart(in FlightFrameData frame)
         {
             _efficiency = 0;
@@ -222,14 +224,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private void UpdateComponents()
         {
-            string[] strArray = this.Data.SubPartPath.Split('/', StringSplitOptions.None);
-            Transform subPart = this.transform;
-            foreach (string n in strArray)
-                subPart = subPart.Find(n) ?? subPart;
-            if (subPart.name == strArray[strArray.Length - 1])
-                this.SetSubPart(subPart);
-            else
-                this.SetSubPart(Utilities.FindFirstGameObjectMyselfOrChildren(this.Data.SubPartPath, this.gameObject)?.transform);
+            SetSubPart(IPartSubPartSetUp.FindSubPart(this, Data.SubPartPath));
             if (MainPipe != null)
             {
                 _panel = MainPipe.Find("PipeMesh1");
@@ -245,18 +240,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         public void SetSubPart(Transform subPart)
         {
-            if ((UnityEngine.Object) this._offset != (UnityEngine.Object) null)
-            {
-                UnityEngine.Object.Destroy((UnityEngine.Object) this._offset.gameObject);
-                this._offset = (Transform) null;
-            }
-            this.MainPipe = subPart;
-            if (!((UnityEngine.Object) this.MainPipe != (UnityEngine.Object) null) || (double) this.Data.PositionOffset1.magnitude <= 0.0)
-                return;
-            this._offset = new GameObject("SubPartRotatorOffset").transform;
-            this._offset.SetParent(this.MainPipe.parent, false);
-            this._offset.position = this.MainPipe.TransformPoint(Data.PositionOffset1);
-            this._offsetPositionInverse = this._offset.InverseTransformPoint(this.MainPipe.position);
+            MainPipe = subPart;
+            _offset = IPartSubPartSetUp.ApplySubPart(_offset, MainPipe, Data.PositionOffset1, out _offsetPositionInverse);
         }
         public float AngleMultiplier { get; set; } = 1f;
         private void DeployAnimate(float percent)

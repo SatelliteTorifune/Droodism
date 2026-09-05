@@ -14,11 +14,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using UnityEngine;
 
    
-    public class ChemicalReactorScript : ResourceProcessorPartScript<ChemicalReactorData>
+    public class ChemicalReactorScript : ResourceProcessorPartScript<ChemicalReactorData>, IPartSubPartSetUp
     {
         private IFuelSource LqdOxygenSource,HPco2Source,lH2Source,hydroloxSource,monoSource,methaneloxSource,HPNitrogenSource,waterSource;
         private Transform _particleSystemTransform;
         private ParticleSystem _particleSystem;
+
+        public Transform SubPart => _particleSystemTransform;
         
         public override void FlightUpdate(in FlightFrameData frame)
         {
@@ -151,18 +153,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         protected override void UpdateComponents()
         {
-            string[]	strArray	= "Device/ParticleSystem".Split( '/', StringSplitOptions.None );
-            Transform	subPart		= this.transform;
-            foreach ( string n in strArray )
-                subPart = subPart.Find( n ) ?? subPart;
-            if ( subPart.name == strArray[strArray.Length - 1] )
-                this.SetSubPart(subPart);
-            else
-                this.SetSubPart( ModApi.Utilities.FindFirstGameObjectMyselfOrChildren( "Device/ParticleSystem/", this.gameObject ) ?.transform );
+            SetSubPart(IPartSubPartSetUp.FindSubPart(this, "Device/ParticleSystem"));
             _particleSystem = _particleSystemTransform.GetComponent<ParticleSystem>();
             
         }
-        private void SetSubPart( Transform subPart )
+
+        public void SetSubPart( Transform subPart )
         {
             this._particleSystemTransform = subPart;
         }

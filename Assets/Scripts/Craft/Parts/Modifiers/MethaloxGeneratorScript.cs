@@ -10,11 +10,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
 
-    public class MethaloxGeneratorScript : ResourceProcessorPartScript<MethaloxGeneratorData>
+    public class MethaloxGeneratorScript : ResourceProcessorPartScript<MethaloxGeneratorData>, IPartSubPartSetUp
     {
         private IFuelSource HPco2Source,waterSource,methaneloxSource;
         private ParticleSystem _particleSystem;
         private Transform _particleSystemTransform;
+
+        public Transform SubPart => _particleSystemTransform;
         
         
 
@@ -75,18 +77,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         protected override void UpdateComponents()
         {
-            string[]	strArray	= "Device/ParticleSystem".Split( '/', StringSplitOptions.None );
-            Transform	subPart		= this.transform;
-            foreach ( string n in strArray )
-                subPart = subPart.Find( n ) ?? subPart;
-            if ( subPart.name == strArray[strArray.Length - 1] )
-                this.SetSubPart(subPart);
-            else
-                this.SetSubPart( ModApi.Utilities.FindFirstGameObjectMyselfOrChildren( "Device/ParticleSystem/", this.gameObject ) ?.transform );
+            SetSubPart(IPartSubPartSetUp.FindSubPart(this, "Device/ParticleSystem"));
             _particleSystem = _particleSystemTransform.GetComponent<ParticleSystem>();
             
         }
-        private void SetSubPart( Transform subPart )
+
+        public void SetSubPart( Transform subPart )
         {
             this._particleSystemTransform = subPart;
         }

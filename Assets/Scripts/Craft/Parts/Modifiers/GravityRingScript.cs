@@ -15,7 +15,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
 
-    public class GravityRingScript : ResourceProcessorPartScript<GravityRingData>
+    public class GravityRingScript : ResourceProcessorPartScript<GravityRingData>, IPartSubPartSetUp
     {
         private Transform _mainBase, _rotateBase;
         private Transform _sideA, _struc1A, _struc2A, _struc3A,_struc4A, _ringA;
@@ -23,6 +23,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private Transform _sideC,_struc1C, _struc2C, _struc3C,_struc4C, _ringC;
         private Transform _sideD, _struc1D, _struc2D, _struc3D,_struc4D, _ringD;
         private Transform _offset;
+
+        public Transform SubPart => _rotateBase;
 
         private IFuelSource hPN2Source;
         
@@ -191,14 +193,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         #region PrefabSetup Methods
         protected override void UpdateComponents()
         {
-            string[] strArray = "Base/RotateBase".Split('/', StringSplitOptions.None);
-            Transform subPart = this.transform;
-            foreach (string n in strArray)
-                subPart = subPart.Find(n) ?? subPart;
-            if (subPart.name == strArray[strArray.Length - 1])
-                this.SetSubPart(subPart);
-            else
-                this.SetSubPart(Utilities.FindFirstGameObjectMyselfOrChildren("Base/RotateBase", this.gameObject)?.transform);
+            SetSubPart(IPartSubPartSetUp.FindSubPart(this, "Base/RotateBase"));
             if (_rotateBase != null)
             {
                 _sideA= _rotateBase.Find("SideA");
@@ -235,19 +230,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
 
 
-        private void SetSubPart(Transform subPart)
+        public void SetSubPart(Transform subPart)
         {
-            if ((UnityEngine.Object) this._offset != (UnityEngine.Object) null)
-            {
-                UnityEngine.Object.Destroy((UnityEngine.Object) this._offset.gameObject);
-                this._offset = (Transform) null;
-            }
-            this._rotateBase = subPart;
-            if (!((UnityEngine.Object) this._rotateBase != (UnityEngine.Object) null) || (double) this.Data.PositionOffset1.magnitude <= 0.0)
-                return;
-            this._offset = new GameObject("SubPartRotatorOffset").transform;
-            this._offset.SetParent(this._rotateBase.parent, false);
-            this._offset.position = this._rotateBase.TransformPoint(Data.PositionOffset1);
+            _rotateBase = subPart;
+            _offset = IPartSubPartSetUp.ApplySubPart(_offset, _rotateBase, Data.PositionOffset1, out _);
         }
 
         #endregion

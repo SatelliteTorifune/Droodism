@@ -15,10 +15,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
 
-    public class FlagScript : ResourceProcessorPartScript<FlagData>
+    public class FlagScript : ResourceProcessorPartScript<FlagData>, IPartSubPartSetUp
     {
         private Transform _mainBase, _rotateBase, p2, p3, flagDown, flagFace;
         private Transform _offset;
+
+        public Transform SubPart => _rotateBase;
 
         private float _poleVel;
         private float _hingeVel;
@@ -236,14 +238,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         #region PrefabSetup Methods
         protected override void UpdateComponents()
         {
-            string[] strArray = "Base/RotateBase".Split('/', StringSplitOptions.None);
-            Transform subPart = this.transform;
-            foreach (string n in strArray)
-                subPart = subPart.Find(n) ?? subPart;
-            if (subPart.name == strArray[strArray.Length - 1])
-                this.SetSubPart(subPart);
-            else
-                this.SetSubPart(Utilities.FindFirstGameObjectMyselfOrChildren("Base/RotateBase", this.gameObject)?.transform);
+            SetSubPart(IPartSubPartSetUp.FindSubPart(this, "Base/RotateBase"));
             if (_rotateBase != null)
             {
                 p2 = _rotateBase.Find("P2");
@@ -255,19 +250,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
 
 
-        private void SetSubPart(Transform subPart)
+        public void SetSubPart(Transform subPart)
         {
-            if ((UnityEngine.Object) this._offset != (UnityEngine.Object) null)
-            {
-                UnityEngine.Object.Destroy((UnityEngine.Object) this._offset.gameObject);
-                this._offset = (Transform) null;
-            }
-            this._rotateBase = subPart;
-            if (!((UnityEngine.Object) this._rotateBase != (UnityEngine.Object) null) || (double) this.Data.PositionOffset1.magnitude <= 0.0)
-                return;
-            this._offset = new GameObject("SubPartRotatorOffset").transform;
-            this._offset.SetParent(this._rotateBase.parent, false);
-            this._offset.position = this._rotateBase.TransformPoint(Data.PositionOffset1);
+            _rotateBase = subPart;
+            _offset = IPartSubPartSetUp.ApplySubPart(_offset, _rotateBase, Data.PositionOffset1, out _);
         }
 
         #endregion

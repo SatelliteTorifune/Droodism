@@ -1,3 +1,15 @@
+## 2026 9 5
+> 抽象出IPartSubPartSetUp接口,统一了9个零件脚本的SetSubPart逻辑
+> 
+> > 将路径解析(FindSubPart)和偏移枢轴重建(ApplySubPart)合并进接口作为静态成员
+> > 
+> > CarbonDeoxideFilter / balloon / ElectrolyticDevice / ChemicalReactor / GasDealer / Flag / GravityRing / PhotoBioReactor / MethaloxGenerator 全部实现该接口
+> > 
+> > 顺手修了粒子系统路径尾斜杠导致直接查找失败的隐患,以及CarbonDeoxideFilterScript中UpdateComponents隐藏基类虚方法的问题
+> > 
+> > 接口内不再声明UpdateComponents,避免与基类生命周期钩子重复,每个脚本只保留一个UpdateComponents
+
+
 ## 2026 8 12
 > 移除了legacyPause的补丁
 

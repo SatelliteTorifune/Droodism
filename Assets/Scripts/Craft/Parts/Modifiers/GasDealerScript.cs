@@ -15,6 +15,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using UnityEngine;
 
     public class GasDealerScript : PartModifierScript<GasDealerData>,
+        IPartSubPartSetUp,
         IDesignerStart,
         IFlightStart,
         IFlightUpdate
@@ -26,6 +27,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
        
         
         private Transform _particleSystemTransform;
+
+        public Transform SubPart => _particleSystemTransform;
         
         private IFuelSource highPressureGasSource;
         private IFuelSource lowPressureGasSource;
@@ -195,14 +198,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         #endregion
         private void UpdateComponents()
         {
-            string[]	strArray	= "Device/ParticleSystem".Split( '/', StringSplitOptions.None );
-            Transform	subPart		= this.transform;
-            foreach ( string n in strArray )
-                subPart = subPart.Find( n ) ?? subPart;
-            if ( subPart.name == strArray[strArray.Length - 1] )
-                this.SetSubPart( subPart );
-            else
-                this.SetSubPart( Utilities.FindFirstGameObjectMyselfOrChildren( "Device/ParticleSystem/", this.gameObject ) ?.transform );
+            SetSubPart(IPartSubPartSetUp.FindSubPart(this, "Device/ParticleSystem"));
             _particleSystem = _particleSystemTransform.GetComponent<ParticleSystem>();
             this._particleSystemEmission = this._particleSystem.emission;
             this._particleSystemMain = this._particleSystem.main;

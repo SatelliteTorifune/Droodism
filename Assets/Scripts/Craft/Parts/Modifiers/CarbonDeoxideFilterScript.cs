@@ -10,7 +10,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 	using ModApi.GameLoop.Interfaces;
 	using UnityEngine;
 
-	public class CarbonDeoxideFilterScript : ResourceProcessorPartScript<CarbonDeoxideFilterData>,
+	public class CarbonDeoxideFilterScript : ResourceProcessorPartScript<CarbonDeoxideFilterData>,IPartSubPartSetUp,
 		IDesignerStart
 	{
 		private IFuelSource co2Source;
@@ -78,37 +78,21 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 		}
 
 
-		private void UpdateComponents()
+		public Transform SubPart => FanA;
+
+		protected override void UpdateComponents()
 		{
-			string[]	strArray	= "DeviceBase/DeviceFanA".Split( '/', StringSplitOptions.None );
-			Transform	subPart		= this.transform;
-			foreach ( string n in strArray )
-				subPart = subPart.Find( n ) ?? subPart;
-			if ( subPart.name == strArray[strArray.Length - 1] )
-				this.SetSubPart( subPart );
-			else
-				this.SetSubPart( Utilities.FindFirstGameObjectMyselfOrChildren( "DeviceBase/DeviceFanA", this.gameObject ) ?.transform );
+			SetSubPart( IPartSubPartSetUp.FindSubPart( this, "DeviceBase/DeviceFanA" ) );
 			if ( this.FanA != null )
 			{
 				FanB = FanA.Find( "DeviceFanB" );
 			}
 		}
 
-
 		public void SetSubPart( Transform subPart )
 		{
-			if ( (UnityEngine.Object) this._offset != (UnityEngine.Object) null )
-			{
-				UnityEngine.Object.Destroy( (UnityEngine.Object) this._offset.gameObject );
-				this._offset = (Transform) null;
-			}
 			this.FanA = subPart;
-			if ( !( (UnityEngine.Object) this.FanA != (UnityEngine.Object) null) || (double) this.Data.PositionOffset1.magnitude <= 0.0 )
-				return;
-			this._offset = new GameObject( "SubPartRotatorOffset" ).transform;
-			this._offset.SetParent( this.FanA.parent, false );
-			this._offset.position		= this.FanA.TransformPoint( Data.PositionOffset1 );
-			this._offsetPositionInverse	= this._offset.InverseTransformPoint( this.FanA.position );
+			this._offset = IPartSubPartSetUp.ApplySubPart( this._offset, this.FanA, Data.PositionOffset1, out this._offsetPositionInverse );
 		}
 
 
