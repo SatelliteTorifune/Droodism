@@ -1,16 +1,11 @@
-using System.Net.NetworkInformation;
 using ModApi;
 using ModApi.GameLoop;
 using ModApi.Ui.Inspector;
-using UnityEngine.Rendering;
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
-    using System.Text;
     using ModApi.Craft.Parts;
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
@@ -186,7 +181,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             catch (Exception e)
             {
-                Debug.LogError("[FlagScript] Failed to read flag image at '" + imgPath + "': " + e);
+                Mod.LogError("[FlagScript] Failed to read flag image at '" + imgPath + "': " + e);
                 return;
             }
 
@@ -194,7 +189,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             tex.name = "FlagCustomImage";
             if (!tex.LoadImage(imgBytes))
             {
-                Debug.LogError("[FlagScript] Failed to decode image bytes from '" + imgPath + "'.");
+                Mod.LogError("[FlagScript] Failed to decode image bytes from '" + imgPath + "'.");
                 UnityEngine.Object.Destroy(tex);
                 return;
             }
@@ -253,7 +248,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public void SetSubPart(Transform subPart)
         {
             _rotateBase = subPart;
-            _offset = IPartSubPartSetUp.ApplySubPart(_offset, _rotateBase, Data.PositionOffset1, out _);
+            _offset = IPartSubPartSetUp.ApplySubPart(_offset, _rotateBase, Data.PositionOffset, out _);
         }
 
         #endregion

@@ -39,19 +39,30 @@ namespace Assets.Scripts.HarmonyPatches
             {
                 Game.Instance.UserInterface.CreateMessageDialog().MessageText = Locale.GetString("Crew.Assignment.CrewFull");
             }
-            //目前为止一切正常,下面开始
+            //先走原版的资金确认提示(花多少钱雇佣),确认后才弹出职业选择
             else
             {
-                var dialog = Game.Instance.UserInterface.CreateMessageDialog(MessageDialogType.ThreeButtons);
-                dialog.MessageText = $"<size=125%>{Locale.GetString("Droodism.OnHireButtonClickedPatch.ChooseDroodType")}</size>";
-                dialog.OkayButtonText = Locale.GetString("Droodism.OnHireButtonClickedPatch.Pilot");
-                dialog.MiddleButtonText = Locale.GetString("Droodism.OnHireButtonClickedPatch.Engineer");
-                dialog.CancelButtonText = Locale.GetString("Droodism.OnHireButtonClickedPatch.Scientist");
-                dialog.OkayClicked += d => OnRoleSelected(__instance, d, DroodType.Pilot, hireCostScaled);
-                dialog.MiddleClicked += d => OnRoleSelected(__instance, d, DroodType.Engineer, hireCostScaled);
-                dialog.CancelClicked += d => OnRoleSelected(__instance, d, DroodType.Scientist, hireCostScaled);
+                var confirmDialog = Game.Instance.UserInterface.CreateMessageDialog(MessageDialogType.OkayCancel, null, true);
+                confirmDialog.MessageText = string.Format(Locale.GetString("Crew.Assignment.HireConfirm"), Units.GetMoneyString((long)hireCostScaled));
+                confirmDialog.OkayClicked += d =>
+                {
+                    d.Close();
+                    ShowRoleSelectionDialog(__instance, hireCostScaled);
+                };
             }
             return false;
+        }
+
+        static void ShowRoleSelectionDialog(CrewAssignmentDialogScript instance, long hireCost)
+        {
+            var dialog = Game.Instance.UserInterface.CreateMessageDialog(MessageDialogType.ThreeButtons);
+            dialog.MessageText = $"<size=125%>{Locale.GetString("Droodism.OnHireButtonClickedPatch.ChooseDroodType")}</size>";
+            dialog.OkayButtonText = Locale.GetString("Droodism.OnHireButtonClickedPatch.Pilot");
+            dialog.MiddleButtonText = Locale.GetString("Droodism.OnHireButtonClickedPatch.Engineer");
+            dialog.CancelButtonText = Locale.GetString("Droodism.OnHireButtonClickedPatch.Scientist");
+            dialog.OkayClicked += d => OnRoleSelected(instance, d, DroodType.Pilot, hireCost);
+            dialog.MiddleClicked += d => OnRoleSelected(instance, d, DroodType.Engineer, hireCost);
+            dialog.CancelClicked += d => OnRoleSelected(instance, d, DroodType.Scientist, hireCost);
         }
 
         static void OnRoleSelected(CrewAssignmentDialogScript instance, MessageDialogScript dialog, DroodType role, long hireCost)
@@ -69,7 +80,7 @@ namespace Assets.Scripts.HarmonyPatches
             }
             else
             {
-                Debug.LogWarning($"[Droodism] Could not read crew Id from newly created CrewMember '{crewMember.Name}'");
+                Mod.LogWarning($"[Droodism] Could not read crew Id from newly created CrewMember '{crewMember.Name}'");
                 DroodismCrewDataManager.Instance.RecordCrewMemberRole(crewMember.Name, role);
             }
 

@@ -1,16 +1,11 @@
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using Assets.Scripts.Vizzy.UI.Elements;
-using ModApi;
 using ModApi.Craft.Parts.Attributes;
 using ModApi.Flight.Events;
 using ModApi.GameLoop;
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using ModApi.Craft.Parts;
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
@@ -233,7 +228,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public void SetSubPart(Transform subPart)
         {
             _rotateBase = subPart;
-            _offset = IPartSubPartSetUp.ApplySubPart(_offset, _rotateBase, Data.PositionOffset1, out _);
+            _offset = IPartSubPartSetUp.ApplySubPart(_offset, _rotateBase, Data.PositionOffset, out _);
         }
 
         #endregion

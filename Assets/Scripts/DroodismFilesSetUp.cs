@@ -58,12 +58,12 @@ namespace Assets.Scripts
                 if (!File.Exists(targetPath))
                 {
                     File.WriteAllText(targetPath, asset.text, Encoding.UTF8);
-                     Debug.LogFormat($"[Droodism] Copied BreathablePlanets.xml to: {targetPath}");
+                     Log($"[Droodism] Copied BreathablePlanets.xml to: {targetPath}");
                 }
             }
             else
             {
-                Debug.LogErrorFormat("[Droodism] Failed to load BreathablePlanets.xml from Resources!");
+                LogError("[Droodism] Failed to load BreathablePlanets.xml from Resources!");
             }
         }
         private  static string GetRadiationBeltConfigFolderPath()

@@ -1,7 +1,4 @@
-using ModApi;
-using ModApi.Craft;
 using ModApi.GameLoop;
-using RootMotion.FinalIK;
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
@@ -92,7 +89,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 		public void SetSubPart( Transform subPart )
 		{
 			this.FanA = subPart;
-			this._offset = IPartSubPartSetUp.ApplySubPart( this._offset, this.FanA, Data.PositionOffset1, out this._offsetPositionInverse );
+			this._offset = IPartSubPartSetUp.ApplySubPart( this._offset, this.FanA, Data.PositionOffset, out this._offsetPositionInverse );
 		}
 
 
@@ -102,7 +99,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 			base.UpdateFuelSources();
 			try
 			{
-				var patchScript = PartScript?.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+				var patchScript = GetCommandPodPatch();
 				if (patchScript == null)
 				{
 					co2Source = null;

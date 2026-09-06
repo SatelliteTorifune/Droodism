@@ -8,9 +8,6 @@ using ModApi.Ui.Inspector;
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using ModApi.Craft.Parts;
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
@@ -27,7 +24,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             base.UpdateFuelSources();
             try
             {
-                var patchScript = PartScript?.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+                var patchScript = GetCommandPodPatch();
                 if (patchScript == null)
                 {
                     wastedWaterSource= _oxygenSource= _co2Source=null;

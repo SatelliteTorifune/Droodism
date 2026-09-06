@@ -1,3 +1,35 @@
+## 2026 9 7
+> Debug 日志清理:
+> 
+> - 所有裸 Debug.Log*/Console.WriteLine 统一改走 Mod.Log/LogWarning/LogError(新增 LogWarning,LogError 改为 LogType.Error 级别)
+> - 三个日志入口全部受 ModSettings.Instance.DebugMode 门控,关闭时零日志;IsDebugMode 空安全(早期初始化取不到设置时静默)
+> - 清理 QuickSaveDealer 的 Console.WriteLine、Mod 初始化异常、DroodismFilesSetUp、OnHireButtonClickedPatch、FlagScript 的裸日志
+> - 顺带改掉了 RadiationBeltManager 里的调试脏话日志"fucked1111"
+> 
+> 性能优化:
+> 
+> - DroodismUIManager.Update 的每帧燃料数据刷新(GetIFuelSourceByID+UpdateFuelTemplateItem,约6类型×每秒数十次字符串分配)改为只在 Droodism 面板可见时执行,面板关闭时零开销;打开面板时立即刷新一次避免显示旧数据
+> 
+> 适配游戏更新(设置本地化新模式):
+> 
+> - 背景:游戏更新后 ModSettings 本地化失效——原代码在 InitializeSettings 时用 Locale.GetString 把名称/描述烤进 Setting,加载时序变化后设置显示为键名/空白
+> - ModSettings.cs 全部10个设置改为游戏新版模式:CreateBool("{Droodism.ModSettings.Xxx}") + SetDescription("{...XxxDesc}") 键引用,由设置系统渲染时惰性解析(对齐游戏 CreateBool("{Settings.General.RunInBackground}"))
+> - 关键修复:显式固定每个设置的 xmlName(CreateBool/CreateNumeric 的 xmlName 参数,沿用旧派生键如 toggleDebugMode)——存储键不再从本地化显示名派生,修复切换语言时设置被重置的问题,且兼容玩家已保存的设置
+> - 本地化键(10名称+10描述)在 ZH-CN.xml / EN-US.xml 均已存在,无需新增
+> 
+> 修复 OnHireButtonClickedPatch 删掉原版资金确认提示的问题:恢复原版 "Crew.Assignment.HireConfirm" 的 OkayCancel 确认框(显示雇佣花费,可取消),确认后才弹出职业类型选择
+> > 后续清理:
+> >
+> > 1. 其余5处硬编码路径解析(strArray+Split+逐级Find)统一改用 IPartSubPartSetUp.FindSubPart(MiningMachine/Sacrifice/Glider/HibernatingChamber/ResourcePack)
+> > 2. 移除重构后残留的未使用 using(含 GliderScript 里一串 System.Windows.Forms 之类的垃圾引用)
+> > 3. 修正类内部命名(不动类名):_particalSystemTransform→_particleSystemTransform / floatingFocrce→floatingForce / groudFix→groundFix / drillStut→drillStrut / LiquidHydrogenSouce→LiquidHydrogenSource,粗俗的 region 名改中性
+> > 4. PositionOffset1 统一更名为 PositionOffset(5个Data + 5个Script + balloon.prefab 同步)
+> > 5. FirstAddKit 命名问题已加 TODO 注释,待手动修正
+> > 6. 冗余去重:新增 PartScriptUtilities(FindCraftFuelSource/GetCommandPodPatch),Modifiers 内12处 GetModifier<STCommandPodPatchScript> 长链改用 GetCommandPodPatch();GasDealer 的 GetCraftFuelSource 循环体改委托共享实现;Sacrifice 血粒子9字段改数组循环;ChemicalReactor 去掉重复的 monoSource 赋值
+> > 7. 死代码清理:PhotoBioReactor 空 UpdateScale、MiningMachine 空 Test()、balloon 死 UpdateScale+空 FlightFixedUpdate(连带移除 IFlightFixedUpdate 接口),balloon 补 _sphere 空判
+
+
+
 ## 2026 9 5
 > 抽象出IPartSubPartSetUp接口,统一了9个零件脚本的SetSubPart逻辑
 > 

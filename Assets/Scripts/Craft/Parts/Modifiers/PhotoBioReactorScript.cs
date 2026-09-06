@@ -1,4 +1,3 @@
-using System.Numerics;
 using ModApi;
 using ModApi.Craft;
 using ModApi.Design;
@@ -9,9 +8,6 @@ using ModApi.Ui.Inspector;
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using ModApi.Craft.Parts;
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
@@ -189,7 +185,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 _foodSource.AddFuel(Data.FoodGeneratedScale);
             }
         }        
-        #region 路边一条
+        #region 生命周期
         
         public void DesignerStart(in DesignerFrameData frame)
         {
@@ -205,15 +201,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         public override void OnSymmetry(SymmetryMode mode, IPartScript originalPart, bool created)
         {
-            
-            this.UpdateScale();
-           
         }
         
         protected override void OnInitialized()
         {
             base.OnInitialized();
-            this.UpdateScale();
             UpdateComponents();
             
         }
@@ -241,7 +233,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public void SetSubPart(Transform subPart)
         {
             MainPipe = subPart;
-            _offset = IPartSubPartSetUp.ApplySubPart(_offset, MainPipe, Data.PositionOffset1, out _offsetPositionInverse);
+            _offset = IPartSubPartSetUp.ApplySubPart(_offset, MainPipe, Data.PositionOffset, out _offsetPositionInverse);
         }
         public float AngleMultiplier { get; set; } = 1f;
         private void DeployAnimate(float percent)
@@ -273,7 +265,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             _battery = PartScript.BatteryFuelSource;
             try
             {
-                var patchScript = PartScript?.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+                var patchScript = PartScriptUtilities.GetCommandPodPatch(PartScript);
                 if (patchScript == null)
                 {
                     _waterSource=_wastedWaterSource=_battery=_solidWastedSource=_oxygenSource=_co2Source=null;
@@ -297,12 +289,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             
             
         }
-        
 
-        private void UpdateScale()
-        {
-            
-        }
         #endregion
         public override void OnGenerateInspectorModel(PartInspectorModel model)
         {

@@ -46,13 +46,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         [SerializeField] [PartModifierProperty(true, false)]
         internal bool stayDeployed;
         
-        private Vector3 _positionOffset1 = new Vector3(0f, 0f, 0.65f);
+        private Vector3 _positionOffset = new Vector3(0f, 0f, 0.65f);
         public SubPartRotatorData.AngleLerpType AngleLerp => SubPartRotatorData.AngleLerpType.Euler;
         public SubPartRotatorData.AngleLerpType AngleLerp2 => SubPartRotatorData.AngleLerpType.Quaternion;
-        public Vector3 PositionOffset1
+        public Vector3 PositionOffset
         {
-            get => this._positionOffset1;
-            set => this._positionOffset1 = value;
+            get => this._positionOffset;
+            set => this._positionOffset = value;
         }
         private Vector3 _disabledRotation = Vector3.zero;
         public Vector3 DisabledRotation

@@ -2,10 +2,6 @@ using ModApi.GameLoop;
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using ModApi.Craft.Parts;
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
@@ -24,7 +20,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             base.UpdateFuelSources();
             HPco2Source = GetRegularCraftFuelSource("HPCO2");
-            waterSource = this.PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>()
+            waterSource = GetCommandPodPatch()
                 .WaterFuelSource;
             methaneloxSource = GetRegularCraftFuelSource("LOX/CH4");
         }

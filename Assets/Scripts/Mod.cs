@@ -76,7 +76,7 @@ namespace Assets.Scripts
             {
                 string s = $"Mod {Mod.ModInfo.Name} failed to Initialize. Verify all depencencies installed and enabled.<br><color=red><size=200%>你他妈加Juno Harmony了吗?";
                 Game.Instance.UserInterface.CreateMessageDialog(s);
-                Debug.LogErrorFormat($"Exception occurred while initializing Droodism: {{0}}", exception);
+                LogError("Exception occurred while initializing Droodism: {0}", exception);
             }
             Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
             Game.Instance.SceneManager.SceneTransitionCompleted+=OnSceneTransitionCompleted;

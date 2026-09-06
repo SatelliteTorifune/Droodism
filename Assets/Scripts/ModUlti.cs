@@ -97,20 +97,41 @@ namespace Assets.Scripts
 
         public static void Log(string format, params object[] args)
         {
-            if (ModSettings.Instance.DebugMode)
+            if (IsDebugMode)
             {
-                Debug.unityLogger.LogFormat(LogType.Log, "[DroodismDebug]"+format, args);
+                Debug.unityLogger.LogFormat(LogType.Log, "[DroodismDebug] " + format, args);
             }
         }
 
-        
+        public static void LogWarning(string format, params object[] args)
+        {
+            if (IsDebugMode)
+            {
+                Debug.unityLogger.LogFormat(LogType.Warning, "[DroodismDebug] " + format, args);
+            }
+        }
 
         public static void LogError(string format, params object[] args)
         {
-            if (ModSettings.Instance.DebugMode)
+            if (IsDebugMode)
             {
-                Debug.unityLogger.LogFormat(LogType.Log, "[DroodismDebug]"+format, args);
-                Debug.LogFormat(Environment.StackTrace);
+                Debug.unityLogger.LogFormat(LogType.Error, "[DroodismDebug] " + format, args);
+                Debug.unityLogger.Log(LogType.Error, Environment.StackTrace);
+            }
+        }
+        
+        private static bool IsDebugMode
+        {
+            get
+            {
+                try
+                {
+                    return ModSettings.Instance?.DebugMode;
+                }
+                catch
+                {
+                    return false;
+                }
             }
         }
         

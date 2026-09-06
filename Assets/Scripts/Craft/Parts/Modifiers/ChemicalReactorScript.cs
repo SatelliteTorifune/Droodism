@@ -6,9 +6,6 @@ using ModApi.Ui.Inspector;
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using ModApi.Craft.Parts;
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
@@ -134,7 +131,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 case "H2O+CO2=Methanelox":
                     HPco2Source = GetRegularCraftFuelSource("CO2");
-                    waterSource=this.PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>().WaterFuelSource;
+                    waterSource=GetCommandPodPatch().WaterFuelSource;
                     methaneloxSource = GetRegularCraftFuelSource("LOX/CH4");
                     break;
                 case "N2+LH2=N2H4":
@@ -149,7 +146,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     break;
                     
             }
-            monoSource = this.PartScript.CommandPod.MonoFuelSource;
         }
         protected override void UpdateComponents()
         {

@@ -114,6 +114,21 @@ namespace Assets.Scripts.Droodism.UserInterface
                 CraftFuelSourceInspectorModel.Visible = Game.Instance.FlightScene.CraftNode.CraftScript.ActiveCommandPod.Part.GetModifier<EvaData>()==null&&Game.Instance.FlightScene.CraftNode.CraftScript.Data.Assembly.Parts.Count>1;
             }*/
 
+            // 面板不可见时无需刷新燃料数据:GetIFuelSourceByID / UpdateFuelTemplateItem 都不执行,消除每帧开销
+            if (inspectorPanel == null || !inspectorPanel.Visible)
+            {
+                return;
+            }
+
+            RefreshFuelUIData();
+        }
+
+        /// <summary>
+        /// 重新计算所有燃料类型的显示数据(用量、消耗率、剩余时间、百分比),供面板模型惰性读取。
+        /// 只在 Droodism 面板可见时调用。
+        /// </summary>
+        private void RefreshFuelUIData()
+        {
             foreach (var id in fuelTypeIDList)
             {
                 var source = GetIFuelSourceByID(id);
@@ -369,6 +384,12 @@ namespace Assets.Scripts.Droodism.UserInterface
             {
                 CreateInspectorPanel();
                 inspectorPanel.Visible =  !inspectorPanel.Visible;
+            }
+
+            // 刚打开时立即刷新一次燃料数据,避免显示面板隐藏前的旧值
+            if (inspectorPanel != null && inspectorPanel.Visible)
+            {
+                RefreshFuelUIData();
             }
         }
 

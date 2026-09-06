@@ -7,9 +7,6 @@ using ModApi.Ui.Inspector;
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using ModApi.Craft.Parts;
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
@@ -22,7 +19,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
     {
         private ParticleSystem _particleSystem;
-        private ParticleSystem.EmissionModule _particleSystemEmission;
         private ParticleSystem.MainModule _particleSystemMain;
        
         
@@ -99,14 +95,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         private IFuelSource GetCraftFuelSource(string fuelType)
         {
-            foreach (var source in PartScript.CraftScript.FuelSources.FuelSources)
-            {
-                if (source.FuelType.Id== fuelType)
-                {
-                    return source;
-                }
-            }
-            return null;
+            return PartScriptUtilities.FindCraftFuelSource(PartScript, fuelType);
         }
 
         private void EmergencyDepressurization(in FlightFrameData frame)
@@ -144,7 +133,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         }
         
-        #region 路边一条
+        #region 工具方法
 
 
         private void UpdatePartType()
@@ -163,7 +152,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public void RefreshFuelSources()
         {
             batterySource = PartScript.BatteryFuelSource;
-            var patchScript = PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+            var patchScript = PartScriptUtilities.GetCommandPodPatch(PartScript);
             try
             {
                 switch (this.Data.GasType)
@@ -200,7 +189,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             SetSubPart(IPartSubPartSetUp.FindSubPart(this, "Device/ParticleSystem"));
             _particleSystem = _particleSystemTransform.GetComponent<ParticleSystem>();
-            this._particleSystemEmission = this._particleSystem.emission;
             this._particleSystemMain = this._particleSystem.main;
         }
         public void SetSubPart( Transform subPart )
