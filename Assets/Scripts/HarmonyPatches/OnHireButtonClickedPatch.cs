@@ -80,7 +80,7 @@ namespace Assets.Scripts.HarmonyPatches
             }
             else
             {
-                Mod.LogWarning($"[Droodism] Could not read crew Id from newly created CrewMember '{crewMember.Name}'");
+                Mod.LogWarning($" Could not read crew Id from newly created CrewMember '{crewMember.Name}'");
                 DroodismCrewDataManager.Instance.RecordCrewMemberRole(crewMember.Name, role);
             }
 

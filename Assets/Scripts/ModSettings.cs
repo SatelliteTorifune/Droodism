@@ -49,7 +49,6 @@ namespace Assets.Scripts
 
         public BoolSetting ReceiveCraftRadiation { get; set; }
         
-        public BoolSetting FixAngularDragInVacuum { get; set; }
 
         /// <summary>
         /// Initializes the settings in the category.
@@ -86,9 +85,6 @@ namespace Assets.Scripts
             ResourceCriticalThreshold = CreateNumeric<float>("{Droodism.ModSettings.CriticalThreshold}", 0.05f, 0.2f, 0.01f, "criticalThreshold")
                 .SetDescription("{Droodism.ModSettings.CriticalThresholdDesc}")
                 .SetDefault(0.10f);
-            FixAngularDragInVacuum = (BoolSetting)CreateBool("{Droodism.ModSettings.FixAngularDragInVacuum}", "fixAngularDragInVacuum")
-                .SetDescription("{Droodism.ModSettings.FixAngularDragInVacuumDesc}")
-                .SetDefault(false);
         }
     }
 }

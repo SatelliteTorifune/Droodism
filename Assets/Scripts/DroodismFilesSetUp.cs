@@ -58,12 +58,12 @@ namespace Assets.Scripts
                 if (!File.Exists(targetPath))
                 {
                     File.WriteAllText(targetPath, asset.text, Encoding.UTF8);
-                     Log($"[Droodism] Copied BreathablePlanets.xml to: {targetPath}");
+                     Log($"Copied BreathablePlanets.xml to: {targetPath}");
                 }
             }
             else
             {
-                LogError("[Droodism] Failed to load BreathablePlanets.xml from Resources!");
+                LogError("Failed to load BreathablePlanets.xml from Resources!");
             }
         }
         private  static string GetRadiationBeltConfigFolderPath()
@@ -110,18 +110,18 @@ namespace Assets.Scripts
             }
             catch (Exception e)
             {
-                LogError($"[Droodism] Failed to load default flag image asset at '{defaultImageResourcePath}': {e}");
+                LogError($"Failed to load default flag image asset at '{defaultImageResourcePath}': {e}");
             }
             
 
             try
             {
                 File.WriteAllBytes(targetPath, defaultImageAsset.bytes);
-                Log($"[Droodism] Wrote default flag image to: {targetPath}");
+                Log($"Wrote default flag image to: {targetPath}");
             }
             catch (Exception e)
             {
-                LogError($"[Droodism] Failed to write default flag image to '{targetPath}': {e}");
+                LogError($"Failed to write default flag image to '{targetPath}': {e}");
             }
         }
 
