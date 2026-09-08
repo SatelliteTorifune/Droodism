@@ -1,3 +1,13 @@
+## 2026 9 8
+> 加入通用更新检查 + 提醒弹窗(移植自 Volken2 的 ModUpdater.cs,按 Droodism 适配)
+> 
+> - 双通道获取网站最新版本:通道1 GitHub Releases API(tag_name)为主;通道2 raw 直链 version.txt 兜底(API 限流/断网/还没建过 release 时自动启用)
+> - 网站最新 > 本地版本 且玩家没点过"不再提醒"时,等进主菜单弹三按钮弹窗:下载更新 / 稍后再说 / 不再提醒
+> - "不再提醒"用 PlayerPrefs 记住跳过的版本,出现更新版本前不再弹;每次游戏会话只检查一次
+> - 本地版本读 ModInfo.Version:Mod.cs 新增 ModVersion 属性,在 OnModLoaded 末尾先赋值再触发检查
+> - 弹窗文案本地化:EN-US.xml / ZH-CN.xml 新增 Droodism.UI.Update* 共 6 个 key
+> - 仓库根目录新增 version.txt(0.88),发版时需与 ModData.asset 版本号保持同步并推送到 main 分支
+
 ## 2026 9 7
 > Debug 日志清理:
 > 

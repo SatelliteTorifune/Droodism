@@ -536,4 +536,12 @@
     <!--category-->
     <s id="Design.PartsList.Category.LifeSupport.Name">维生资源</s>
     <s id="Design.PartsList.Category.ISRU.Name">原位资源利用</s>
+
+    <!-- ModUpdater -->
+    <s id="Droodism.UI.UpdateAvailable">Droodism 有可用更新！</s>
+    <s id="Droodism.UI.UpdateNewVersion">新版本：{0}</s>
+    <s id="Droodism.UI.UpdateCurrentVersion">当前版本：{0}</s>
+    <s id="Droodism.UI.UpdateDownload">下载更新</s>
+    <s id="Droodism.UI.UpdateLater">稍后再说</s>
+    <s id="Droodism.UI.UpdateDismiss">不再提醒</s>
 </Strings>

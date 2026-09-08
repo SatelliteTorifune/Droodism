@@ -56,6 +56,11 @@ namespace Assets.Scripts
 
         public static Mod Instance { get; } = GetModInstance<Mod>();
 
+        /// <summary>
+        /// Gets the mod version as reported by the mod manifest (ModInfo.Version), e.g. 0.88.
+        /// </summary>
+        public Version ModVersion { get; private set; }
+
         private CraftScript CurrentCraft()
         {
             return InFlightScene ?ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript as CraftScript:Game.Instance.Designer.CraftScript as CraftScript;
@@ -106,8 +111,12 @@ namespace Assets.Scripts
             CheckDefaultPlanetRadiationBeltConfig();
             CheckDefaultBreathablePlanetConfig();
             CheckDefaultFlagImage();
-            
-            
+
+            // 本地版本 = ModInfo.Version(System.Version,如 0.88)
+            this.ModVersion = this.ModInfo.Version;
+
+            // 更新检查(双通道:GitHub Releases API + version.txt 兜底,有新版时进主菜单弹提醒)
+            new ModUpdater().CheckForUpdate();
 
         }
         

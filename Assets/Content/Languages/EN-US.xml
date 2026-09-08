@@ -541,4 +541,12 @@
     <!--category-->
     <s id="Design.PartsList.Category.LifeSupport.Name">Life Support</s>
     <s id="Design.PartsList.Category.ISRU.Name">In-Situ Resource Utilization</s>
+
+    <!-- ModUpdater -->
+    <s id="Droodism.UI.UpdateAvailable">A new version of Droodism is available!</s>
+    <s id="Droodism.UI.UpdateNewVersion">New version: {0}</s>
+    <s id="Droodism.UI.UpdateCurrentVersion">Current version: {0}</s>
+    <s id="Droodism.UI.UpdateDownload">Download Update</s>
+    <s id="Droodism.UI.UpdateLater">Later</s>
+    <s id="Droodism.UI.UpdateDismiss">Don't remind me</s>
 </Strings>
