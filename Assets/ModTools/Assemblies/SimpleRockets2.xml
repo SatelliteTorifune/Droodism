@@ -2598,6 +2598,11 @@
             The ground-cloud near/far overlap split sign (+1 near, -1 far, 0 otherwise) shader property ID.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Cameras.SceneCameraScript.ShaderPropertyIds.SceneCameraRendering">
+            <summary>
+            The scene-camera-rendering flag (1 during a scene camera render, 0 otherwise) shader property ID.
+            </summary>
+        </member>
         <member name="T:Assets.Scripts.Cameras.SceneMasterCameraScript">
             <summary>
             The camera that is responsible for managing the rendering of the scene.
@@ -2943,22 +2948,32 @@
             <param name="displayValue">The raw (English) category label.</param>
             <returns>The localized label, or <paramref name="displayValue"/>.</returns>
         </member>
-        <member name="M:Assets.Scripts.Career.CareerUtilities.GetLocalizedDisplayName(System.String,System.String)">
+        <member name="M:Assets.Scripts.Career.CareerUtilities.GetLocalizedCareerModeName(System.String)">
             <summary>
-            Localizes a display name via the key prefix plus the sanitized name, falling back to the raw name when there is no translation or no key-safe characters.
+            Gets the localized display name for a stock career mode.
             </summary>
-            <param name="keyPrefix">The locale key prefix, including the trailing dot.</param>
-            <param name="displayName">The raw (English) display name.</param>
-            <returns>The localized name, or <paramref name="displayName"/>.</returns>
+            <param name="careerFolderName">The career's folder name.</param>
+            <returns>The localized career mode name, or <paramref name="careerFolderName"/> if none is authored.</returns>
         </member>
-        <member name="M:Assets.Scripts.Career.CareerUtilities.GetLocalizedAttributeTemplate(System.Xml.Linq.XElement,System.String,System.String)">
+        <member name="M:Assets.Scripts.Career.CareerUtilities.BuildAttributeLocaleKeys(System.Xml.Linq.XElement,System.String)">
             <summary>
-            Gets the localized template (still containing @token placeholders) for a localizable contract attribute, or null when the attribute is not localizable or has no translation.
+            Builds the locale key of every localizable attribute in a contract's XML.
             </summary>
-            <param name="element">The XML element the attribute belongs to.</param>
+            <remarks>
+            Keys are derived from the identifier attributes along an element's path, so the XML must still be
+            pristine: substituting <c>@tokens</c> first rewrites those identifiers (e.g. <c>payloadId="@ID"</c>).
+            </remarks>
+            <param name="contractXml">The contract XML element.</param>
             <param name="contractId">The contract id.</param>
-            <param name="attributeName">The attribute's local name.</param>
-            <returns>The localized template, or <c>null</c>.</returns>
+            <returns>A map of localizable attribute to locale key.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Career.CareerUtilities.LocalizeLevelContractText(System.Xml.Linq.XElement,System.String)">
+            <summary>
+            Localizes the text of a contract that a level authored into its game state.
+            </summary>
+            <remarks>Levels hold generated snapshots, so a value still holding <c>@tokens</c> is a template and is skipped.</remarks>
+            <param name="contractXml">The level's contract XML element, which is modified in place.</param>
+            <param name="contractId">The contract id.</param>
         </member>
         <member name="M:Assets.Scripts.Career.CareerUtilities.BuildRequirementKey(System.Xml.Linq.XElement,System.String,System.String)">
             <summary>
@@ -3012,13 +3027,6 @@
             </summary>
             <param name="value">The raw attribute value.</param>
             <returns>The sanitized segment.</returns>
-        </member>
-        <member name="M:Assets.Scripts.Career.CareerUtilities.SanitizeNameSegment(System.String)">
-            <summary>
-            Strips whitespace and punctuation from a display name so it can be used as a locale key segment (e.g. <c>T.T.</c> becomes <c>TT</c>).
-            </summary>
-            <param name="name">The raw display name.</param>
-            <returns>The sanitized key segment.</returns>
         </member>
         <member name="T:Assets.Scripts.Career.Contracts.ContractStatus">
             <summary>
@@ -3889,6 +3897,11 @@
             Called when during the flight scene update.
             </summary>
         </member>
+        <member name="M:Assets.Scripts.Career.Contracts.ContractContext.OnPlanetarySystemLoaded">
+            <summary>
+            Called when a planetary system becomes available.
+            </summary>
+        </member>
         <member name="M:Assets.Scripts.Career.Contracts.ContractContext.PopulateContracts">
             <summary>
             Ensures the player's contract list has ample contracts ready for viewing/accepting.
@@ -4195,6 +4208,11 @@
             The element name.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Career.Contracts.ContractTemplate.EmptyLocaleKeys">
+            <summary>
+            The locale key map used for template params, whose values are not localized.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Career.Contracts.ContractTemplate._originalContractXml">
             <summary>
             The contract's original XML
@@ -4281,7 +4299,16 @@
             </returns>
             <exception cref="T:System.NotImplementedException">Unknown contract param type: {xml.Name.LocalName}</exception>
         </member>
-        <member name="M:Assets.Scripts.Career.Contracts.ContractTemplate.ProcessAttributes(System.Xml.Linq.XElement,Assets.Scripts.Career.StringProcessor,System.String,Assets.Scripts.Career.Contracts.ContractParamContext)">
+        <member name="M:Assets.Scripts.Career.Contracts.ContractTemplate.MapLocaleKeys(System.Xml.Linq.XElement,System.Xml.Linq.XElement,System.Collections.Generic.Dictionary{System.Xml.Linq.XAttribute,System.String})">
+            <summary>
+            Transfers the pristine locale keys onto the attributes of a deep copy of an element.
+            </summary>
+            <param name="original">The element the copy was made from.</param>
+            <param name="copy">The deep copy, whose attributes are fresh instances.</param>
+            <param name="localeKeys">The locale key of each localizable attribute in the pristine tree.</param>
+            <returns>The locale key of each localizable attribute in the copy.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Career.Contracts.ContractTemplate.ProcessAttributes(System.Xml.Linq.XElement,Assets.Scripts.Career.StringProcessor,System.String,Assets.Scripts.Career.Contracts.ContractParamContext,System.Collections.Generic.Dictionary{System.Xml.Linq.XAttribute,System.String})">
             <summary>
             Recursively processes all attributes in the contract XML and its child elements.
             </summary>
@@ -4289,6 +4316,7 @@
             <param name="stringProcessor">The string processor.</param>
             <param name="contractTemplateId">The contract template identifier.</param>
             <param name="paramContext">The contract param context.</param>
+            <param name="localeKeys">The locale key of each localizable attribute, built before any substitution.</param>
         </member>
         <member name="M:Assets.Scripts.Career.Contracts.ContractTemplate.ProcessParams(System.Xml.Linq.XElement,Assets.Scripts.Career.Contracts.ContractParamContext,Assets.Scripts.Career.StringProcessor,System.String)">
             <summary>
@@ -5287,6 +5315,11 @@
             </summary>
             <param name="craftNode">The craft node.</param>
             <param name="parentsPassing">if set to <c>true</c> then all parents are currently passing.</param>
+        </member>
+        <member name="M:Assets.Scripts.Career.Contracts.Requirements.ContractRequirement.OnPlanetarySystemLoaded">
+            <summary>
+            Called when a planetary system becomes available.
+            </summary>
         </member>
         <member name="M:Assets.Scripts.Career.Contracts.Requirements.ContractRequirement.OnRequirementsCreated">
             <summary>
@@ -6309,9 +6342,19 @@
             </summary>
             <seealso cref="T:Assets.Scripts.Career.Contracts.Requirements.ContractRequirement" />
         </member>
+        <member name="F:Assets.Scripts.Career.Contracts.Requirements.OrbitRequirement._authoredValue">
+            <summary>
+            The value as authored, which every clamp against a planet starts from.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Career.Contracts.Requirements.OrbitRequirement._comparisonType">
             <summary>
             The comparison type
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Career.Contracts.Requirements.OrbitRequirement._descriptionGenerated">
+            <summary>
+            Whether the description is generated from the value rather than authored.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Career.Contracts.Requirements.OrbitRequirement._displayValue">
@@ -6334,7 +6377,7 @@
         </member>
         <member name="F:Assets.Scripts.Career.Contracts.Requirements.OrbitRequirement._maxValue">
             <summary>
-            The maximum value to be considered valid
+            The maximum value to be considered valid. Unbounded until the target planet has been resolved.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Career.Contracts.Requirements.OrbitRequirement._planetName">
@@ -6431,6 +6474,16 @@
             Called when the flight scene has ended.
             </summary>
         </member>
+        <member name="M:Assets.Scripts.Career.Contracts.Requirements.OrbitRequirement.OnPlanetarySystemLoaded">
+            <summary>
+            Re-resolves the apsis bounds against the planetary system that just loaded.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Career.Contracts.Requirements.OrbitRequirement.OnRequirementsCreated">
+            <summary>
+            Resolves the apsis bounds now that the requirement has a parent to read the planet from.
+            </summary>
+        </member>
         <member name="M:Assets.Scripts.Career.Contracts.Requirements.OrbitRequirement.OnTheFlyUpdateFromTargetRequirement(Assets.Scripts.Career.Contracts.Requirements.ContractRequirement)">
             <summary>
             Updates some properties of this contract to match the target contract. This is intended for use when debugging contracts
@@ -6446,6 +6499,24 @@
             <returns>
             True if it passes, or false if it does not.
             </returns>
+        </member>
+        <member name="M:Assets.Scripts.Career.Contracts.Requirements.OrbitRequirement.FindPlanetNode(System.String)">
+            <summary>
+            Finds a planet by name, using the flight context when one is running and the menu's hierarchy otherwise.
+            </summary>
+            <param name="planetName">The name of the planet.</param>
+            <returns>The planet node, or <c>null</c> if no planetary system is loaded to search.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Career.Contracts.Requirements.OrbitRequirement.ResolvePlanetBounds">
+            <summary>
+            Resolves the apsis bounds against the planet the enclosing planet requirement names.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Career.Contracts.Requirements.OrbitRequirement.SetPlanetBounds(ModApi.Flight.Sim.IPlanetNode)">
+            <summary>
+            Adopts the planet's apsis bounds and rebuilds the description around them.
+            </summary>
+            <param name="planet">The planet the orbit is measured around.</param>
         </member>
         <member name="M:Assets.Scripts.Career.Contracts.Requirements.OrbitRequirement.UpdateDescription">
             <summary>
@@ -14631,6 +14702,11 @@
             The squared distance that debris should be unloaded.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Craft.CraftScript._bodySeparated">
+            <summary>
+            The flag set when a body separation still owes listeners a structure changed event.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Craft.CraftScript._cameraFocus">
             <summary>
             The camera focus transform.  This is an optional transform which when is used to focus the camera on.
@@ -21749,6 +21825,13 @@
             <summary>
             Called when the part modifier script is initialized.
             </summary>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.CommandPodScript.HasBatteryInPartIsland(ModApi.Craft.Parts.PartData)">
+            <summary>
+            Determines whether any part connected to the specified part holds battery.
+            </summary>
+            <param name="part">The part whose connected island is searched.</param>
+            <returns><c>true</c> if a battery tank in the island holds fuel; otherwise, <c>false</c>.</returns>
         </member>
         <member name="M:Assets.Scripts.Craft.Parts.Modifiers.CommandPodScript.SynchronizeActivationGroups(ModApi.Craft.Parts.ICommandPod,ModApi.Craft.Parts.ICommandPod)">
             <summary>
@@ -32729,6 +32812,11 @@
             <seealso cref="T:ModApi.Craft.Parts.Input.IInputController" />
             <seealso cref="T:ModApi.GameLoop.Interfaces.IFlightUpdate" />
         </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Input.InputControllerScript._calculatingActive">
+            <summary>
+            Whether the active state is being calculated, since an input chain can lead back here.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Input.InputControllerScript._craftControlsChangedMigrator">
             <summary>
             The event migrator for the craft's ControlsChanged event.
@@ -32870,6 +32958,18 @@
             <param name="mode">The symmetry mode.</param>
             <param name="originalPart">The original part.</param>
             <param name="created">if set to <c>true</c> then the part has been created. False indicates the part is being updated.</param>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Input.InputControllerScript.CalculateActive">
+            <summary>
+            Calculates whether the control associated with the input controller is currently active.
+            </summary>
+            <returns><c>true</c> if the control is active; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Input.InputControllerScript.GetActiveInput">
+            <summary>
+            Gets the input that is currently driving the input controller.
+            </summary>
+            <returns>The override input, the primary input, or <c>null</c> if neither is enabled.</returns>
         </member>
         <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Input.InputControllerScript.Initialize">
             <summary>
@@ -59041,6 +59141,11 @@
             The quadsphere culling mask for real time reflections.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Craft.ReflectionProbeScript._quadsphereVisible">
+            <summary>
+            A value indicating whether the probe is currently configured for a visible quadsphere.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Craft.ReflectionProbeScript._realtimeReflections">
             <summary>
             The current real time reflections setting.
@@ -67895,6 +68000,14 @@
             The part properties script associated with the part modifier.
             </value>
         </member>
+        <member name="P:Assets.Scripts.Design.PartProperties.ConfigurableProperty.ElementName">
+            <summary>
+            Gets the locale-independent name identifying this property's UI element.
+            </summary>
+            <value>
+            The locale-independent name identifying this property's UI element.
+            </value>
+        </member>
         <member name="P:Assets.Scripts.Design.PartProperties.ConfigurableProperty.Field">
             <summary>
             Gets the field associated with the property.
@@ -67905,10 +68018,10 @@
         </member>
         <member name="P:Assets.Scripts.Design.PartProperties.ConfigurableProperty.FieldName">
             <summary>
-            Gets the name of the field.
+            Gets the displayed name of the field.
             </summary>
             <value>
-            The name of the field.
+            The displayed name of the field.
             </value>
         </member>
         <member name="P:Assets.Scripts.Design.PartProperties.ConfigurableProperty.Row">
@@ -71604,6 +71717,13 @@
             and therefore part B will also be affected by this call even though it was not explicitly passed in.
             </summary>
             <param name="parts">The parts.</param>
+        </member>
+        <member name="M:Assets.Scripts.Design.Symmetry.RemoveSymmetryGroupsWithDestroyedRoots(ModApi.Craft.ICraftScript)">
+            <summary>
+            Removes the symmetry groups whose root part no longer exists.
+            </summary>
+            <remarks>A group's root is not in its own slices, so no other cleanup reaches the group through it.</remarks>
+            <param name="craftScript">The craft to search for orphaned symmetry groups.</param>
         </member>
         <member name="M:Assets.Scripts.Design.Symmetry.SetSymmetryMode(ModApi.Craft.Parts.IPartScript,ModApi.Design.SymmetryMode,ModApi.Design.IDesignerUi,System.Int32)">
             <summary>
@@ -90068,6 +90188,11 @@
             The panel
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Ui.BindInputDialogScript._replaceOrRemoveMode">
+            <summary>
+            A value indicating whether the dialog is offering to replace or remove an existing binding.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Ui.BindInputDialogScript._row">
             <summary>
             The row we're currently listening for
@@ -91020,13 +91145,6 @@
         <member name="F:Assets.Scripts.Ui.Settings.SettingsDialogScript.CustomPresetName">
             <summary>
             The custom preset name
-            </summary>
-        </member>
-        <member name="F:Assets.Scripts.Ui.Settings.SettingsDialogScript.DebugLocale">
-            <summary>
-            The name of the internal debug locale used for translator length-budget
-            calibration. Hidden from the language dropdown unless the user has
-            explicitly opted in via the <c>SetLocale</c> dev-console command.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Ui.Settings.SettingsDialogScript.DiscardOrApplyMessageKey">
@@ -97066,6 +97184,13 @@
             <summary>
             Initializes the dev console.
             </summary>
+        </member>
+        <member name="M:Assets.Scripts.DevConsole.DevConsoleManagerScript.LocalizeButtonText(System.String,System.String)">
+            <summary>
+            Localizes the caption of the named button in the dev console.
+            </summary>
+            <param name="buttonName">The name of the button game object.</param>
+            <param name="localeId">The locale identifier for the caption.</param>
         </member>
         <member name="M:Assets.Scripts.DevConsole.DevConsoleManagerScript.Update">
             <summary>
@@ -104550,6 +104675,14 @@
               <c>true</c> if the sun is occluded by terrain; otherwise, <c>false</c>.
             </value>
         </member>
+        <member name="P:Assets.Scripts.Flight.GameView.ImageEffectsScript.ToneMappingEnabled">
+            <summary>
+            Gets a value indicating whether a tone mapping LUT is selected in the quality settings.
+            </summary>
+            <value>
+              <c>true</c> if a tone mapping LUT is selected; otherwise, <c>false</c>.
+            </value>
+        </member>
         <member name="P:Assets.Scripts.Flight.GameView.ImageEffectsScript.Underwater">
             <summary>
             Gets the underwater image effect.
@@ -105430,9 +105563,9 @@
             Minimum bulk size (m) for a piloted craft to be eligible for a secondary renderer.
             </summary>
         </member>
-        <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.MinDebrisSize">
+        <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.MinDebrisSizeFraction">
             <summary>
-            Minimum bulk size (m) for debris (a craft node with no command pod) to be eligible; larger than <see cref="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.MinPilotedSize"/> so only sizeable chunks get the full effect.
+            Fraction of the player craft's bulk size a debris chunk (a craft node with no command pod) must reach, floored at <see cref="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.MinPilotedSize"/>.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.MaxCameraDistance">
@@ -105572,6 +105705,13 @@
             <param name="poolParent">The transform a newly created renderer is parented to.</param>
             <param name="maxActive">The current active-renderer count.</param>
             <returns>A free slot, or null.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.CalculateMinDebrisSize(ModApi.Craft.ICraftScript)">
+            <summary>
+            Returns the eligibility bar for debris, scaled off the player craft's bulk size and floored at the piloted bar.
+            </summary>
+            <param name="playerCraft">The player craft the bar is measured against.</param>
+            <returns>The minimum bulk size a debris chunk must reach.</returns>
         </member>
         <member name="M:Assets.Scripts.Flight.GameView.ReentrySecondaryRendererManager.GetCraftSize(ModApi.Craft.ICraftScript)">
             <summary>
@@ -105818,13 +105958,14 @@
             <param name="flowDir">The prograde (flow) direction in world space.</param>
             <returns>The signed roll angle in degrees.</returns>
         </member>
-        <member name="M:Assets.Scripts.Flight.GameView.ReentryTrailEmission.Emit(Assets.Scripts.Flight.FlightSceneScript,System.Single@,System.Single,UnityEngine.Vector3,UnityEngine.Vector3,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+        <member name="M:Assets.Scripts.Flight.GameView.ReentryTrailEmission.Emit(Assets.Scripts.Flight.FlightSceneScript,System.Single@,System.Single,System.Single,UnityEngine.Vector3,UnityEngine.Vector3,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
             <summary>
             Emits a frame's worth of reentry trail particles behind a source, accumulating sub-particle rates against <paramref name="carry"/>.
             </summary>
             <param name="flightScene">The flight scene that hosts the particle manager.</param>
             <param name="carry">The source's fractional emission-rate carry, advanced across frames.</param>
             <param name="emissionRate">The base emission rate (particles/sec at full intensity) from the quality setting.</param>
+            <param name="throttle">The pool-fill throttle (0..1) scaling the emission rate.</param>
             <param name="emitPosition">The trail head: the source's flow-anchor centre offset back along the trail.</param>
             <param name="surfaceVelocity">The source's surface velocity; sets the trail direction and batch-spread speed.</param>
             <param name="crossSize">The source's frontal extent (m); drives particle size and the size-based rate scale.</param>
@@ -105916,22 +106057,24 @@
             Unity LateUpdate method.
             </summary>
         </member>
-        <member name="M:Assets.Scripts.Flight.GameView.ReentryTrailManager.EmitCraftTrail(Assets.Scripts.Flight.FlightSceneScript,ModApi.Craft.ICraftScript,System.Int32,System.Single)">
+        <member name="M:Assets.Scripts.Flight.GameView.ReentryTrailManager.EmitCraftTrail(Assets.Scripts.Flight.FlightSceneScript,ModApi.Craft.ICraftScript,System.Int32,System.Single,System.Single)">
             <summary>
             Emits a whole-hull trail for a craft from its connected-body bounding sphere.
             </summary>
             <param name="flightScene">The flight scene that hosts the particle manager.</param>
             <param name="craft">The craft to trail.</param>
             <param name="connectedCount">The craft's connected body count, used to detect a structural change since the radius was cached.</param>
+            <param name="throttle">The frame's reentry pool-fill throttle (0..1).</param>
             <param name="dt">The frame time in seconds.</param>
         </member>
-        <member name="M:Assets.Scripts.Flight.GameView.ReentryTrailManager.EmitBodyTrail(Assets.Scripts.Flight.FlightSceneScript,ModApi.Craft.ICraftScript,ModApi.Craft.IBodyScript,System.Single)">
+        <member name="M:Assets.Scripts.Flight.GameView.ReentryTrailManager.EmitBodyTrail(Assets.Scripts.Flight.FlightSceneScript,ModApi.Craft.ICraftScript,ModApi.Craft.IBodyScript,System.Single,System.Single)">
             <summary>
             Emits a trail for a single debris/disconnected body from its own bounding sphere; air density is borrowed from the owning craft's sample.
             </summary>
             <param name="flightScene">The flight scene that hosts the particle manager.</param>
             <param name="ownerCraft">The craft whose assembly the body belongs to, used for the shared atmosphere sample.</param>
             <param name="body">The debris body to trail.</param>
+            <param name="throttle">The frame's reentry pool-fill throttle (0..1).</param>
             <param name="dt">The frame time in seconds.</param>
         </member>
         <member name="M:Assets.Scripts.Flight.GameView.ReentryTrailManager.GetCraftRadius(ModApi.Craft.ICraftScript,Assets.Scripts.Flight.GameView.ReentryTrailManager.TrailState,System.Int32)">
@@ -121960,6 +122103,11 @@
             </summary>
             <param name="newItem">The new item.</param>
         </member>
+        <member name="M:Assets.Scripts.Flight.MapView.UI.Inspector.ItemVisibilityModel.ShowOrbitLinesLockedDialog">
+            <summary>
+            Shows the dialog explaining that orbit lines are locked.
+            </summary>
+        </member>
         <member name="M:Assets.Scripts.Flight.MapView.UI.Inspector.ItemVisibilityModel.UpdateVisibilityButton(ModApi.Ui.Inspector.LabelButtonModel,System.Nullable{System.Boolean},System.Boolean)">
             <summary>
             Updates the orbit line visibility button.
@@ -130972,6 +131120,11 @@
             </summary>
             <seealso cref="T:Assets.Scripts.Flight.UI.ContractsPanel.RequirementElement" />
         </member>
+        <member name="F:Assets.Scripts.Flight.UI.ContractsPanel.DeadlineRequirementElement._label">
+            <summary>
+            The label shown in place of a requirement description.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Flight.UI.ContractsPanel.DeadlineRequirementElement._daysUntilDeadline">
             <summary>
             The days until deadline.
@@ -130985,6 +131138,11 @@
         <member name="F:Assets.Scripts.Flight.UI.ContractsPanel.DeadlineRequirementElement._status">
             <summary>
             The contract status
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Flight.UI.ContractsPanel.DeadlineRequirementElement._value">
+            <summary>
+            The last value text written to the row.
             </summary>
         </member>
         <member name="M:Assets.Scripts.Flight.UI.ContractsPanel.DeadlineRequirementElement.#ctor(UI.Xml.XmlElement,Assets.Scripts.Career.Contracts.Contract)">
@@ -144926,11 +145084,6 @@
             The planet
             </summary>
         </member>
-        <member name="F:Assets.Scripts.Menu.GameMenuScript._planetNodes">
-            <summary>
-            The planet nodes
-            </summary>
-        </member>
         <member name="F:Assets.Scripts.Menu.GameMenuScript._rocketText">
             <summary>
             The rocket text
@@ -150543,6 +150696,11 @@
             A value indicating whether the play button has been clicked or activated.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Menu.MenuScript._planetNodes">
+            <summary>
+            The planet node hierarchy, built on demand from the loaded solar system data.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Menu.MenuScript._suppressDialogBasedServiceInitialization">
             <summary>
             A flag used to suppress dialog based service initialization.
@@ -150563,6 +150721,12 @@
             Gets or sets the error dialog message to show the next time the menu is loaded.
             </summary>
             <value>The error dialog message to show the next time the menu is loaded.</value>
+        </member>
+        <member name="P:Assets.Scripts.Menu.MenuScript.Instance">
+            <summary>
+            Gets the menu script for the current scene, or <c>null</c> when the menu scene is not loaded.
+            </summary>
+            <value>The menu script for the current scene.</value>
         </member>
         <member name="P:Assets.Scripts.Menu.MenuScript.PreviousCrashDetected">
             <summary>
@@ -150629,6 +150793,13 @@
             <value>
             The solar system data.
             </value>
+        </member>
+        <member name="M:Assets.Scripts.Menu.MenuScript.FindPlanet(System.String)">
+            <summary>
+            Finds a planet in the current game state's planetary system by name.
+            </summary>
+            <param name="planetName">The name of the planet to find.</param>
+            <returns>The planet node, or <c>null</c> if the system is unavailable or has no such planet.</returns>
         </member>
         <member name="M:Assets.Scripts.Menu.MenuScript.LoadSelectedCraft(System.Boolean)">
             <summary>
@@ -167793,6 +167964,14 @@
             The exploration context.
             </value>
         </member>
+        <member name="P:Assets.Scripts.State.CareerState.IsLevel">
+            <summary>
+            Gets a value indicating whether this career belongs to a level's game state rather than a played career.
+            </summary>
+            <value>
+              <c>true</c> if this career belongs to a level; otherwise, <c>false</c>.
+            </value>
+        </member>
         <member name="P:Assets.Scripts.State.CareerState.IsStock">
             <summary>
             Gets a value indicating whether this is the stock career mode.
@@ -182122,6 +182301,14 @@
             The format.
             </value>
         </member>
+        <member name="P:Assets.Scripts.Vizzy.UI.Elements.BlockElementScript.IsDestroyed">
+            <summary>
+            Gets a value indicating whether this element has been destroyed.
+            </summary>
+            <value>
+              <c>true</c> if this instance has been destroyed; otherwise, <c>false</c>.
+            </value>
+        </member>
         <member name="P:Assets.Scripts.Vizzy.UI.Elements.BlockElementScript.IsDragging">
             <summary>
             Gets a value indicating whether this element is currently being dragged by the user.
@@ -183216,6 +183403,12 @@
             <summary>
             Unity Start method.
             </summary>
+        </member>
+        <member name="M:Assets.Scripts.Vizzy.UI.Elements.VariableElementScript.GetDisplayName">
+            <summary>
+            Gets the localized display name for the variable. Only local variables can be event variables.
+            </summary>
+            <returns>The display name.</returns>
         </member>
         <member name="M:Assets.Scripts.Vizzy.UI.Elements.VariableElementScript.RenameLocalVariableInScope(ModApi.Craft.Program.Instructions.ProgramInstruction,System.String,System.String)">
             <summary>

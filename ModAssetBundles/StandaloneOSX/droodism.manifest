@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 26721498
+CRC: 2263581079
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 4dbe55103c644896810ac9b6ebd8c96f
+    Hash: 2ab16a694229ab8bc8f1552910905257
   TypeTreeHash:
     serializedVersion: 2
     Hash: 267d6d4ac618512c2ea1b371381ff4dd
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 4dbe55103c644896810ac9b6ebd8c96f
+    Hash: 2ab16a694229ab8bc8f1552910905257
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -84,6 +84,7 @@ Assets:
 - Assets/Resources/Craft/Parts/Definitions/GasDepressurizeDevice.xml
 - Assets/Resources/Craft/Parts/Prefabs/DroodParachute.prefab
 - Assets/Resources/Craft/Parts/Prefabs/ChemicalReactor.prefab
+- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/Content/Resources/flag.xml
 - Assets/Resources/Craft/Parts/Prefabs/ElectrolyticDevice.prefab
 - Assets/Resources/DefaultRadiationBeltConfigs/Nebra.xml
@@ -98,7 +99,6 @@ Assets:
 - Assets/Content/Craft/Parts/Categories/LifeSupport.asset
 - Assets/Resources/BreathablePlanets.xml
 - Assets/Resources/Craft/Parts/Definitions/ElectrolyticDevice.xml
-- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/Resources/Craft/Parts/Definitions/GravityRing.xml
 - Assets/Resources/Craft/Parts/Definitions/MethaloxGenerator.xml
 - Assets/Resources/Craft/Parts/Definitions/MiningMachine.xml
@@ -109,14 +109,14 @@ Assets:
 - Assets/Resources/Craft/Parts/Prefabs/MethaloxGenerator.prefab
 - Assets/Resources/Craft/Parts/Definitions/PhotoBioReactor.xml
 - Assets/Resources/Craft/Parts/Prefabs/ToolKit.prefab
-- Assets/_ModAssets_/Droodism.dll.bytes
+- Assets/Resources/Craft/Parts/Definitions/Resource Fuselage.xml
 - Assets/Resources/Craft/Parts/Prefabs/GasDepressurizeDevice.prefab
 - Assets/Content/Craft/Parts/Categories/Icons/DroodsimCatIcon.png
 - Assets/Resources/Craft/Parts/Prefabs/DOCRDevice.prefab
-- Assets/Resources/Craft/Parts/Definitions/Resource Fuselage.xml
 - Assets/Resources/Craft/Parts/Definitions/SewageTreatDevice.xml
 - Assets/Content/Craft/Parts/GravityRingIcon.png
 - Assets/Resources/Craft/Parts/Prefabs/ResourcesPack.prefab
+- Assets/_ModAssets_/Droodism.dll.bytes
 - Assets/Resources/Craft/Parts/Prefabs/WaterTank.prefab
 - Assets/Resources/DefaultRadiationBeltConfigs/Vulco.xml
 - Assets/Resources/Craft/Parts/Definitions/HibernatingChamber.xml

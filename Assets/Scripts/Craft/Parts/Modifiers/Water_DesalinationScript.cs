@@ -6,10 +6,6 @@ using ModApi.Ui.Inspector;
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using ModApi.Craft.Parts;
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
@@ -35,7 +31,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         protected override void UpdateFuelSources()
         {
             base.UpdateFuelSources();
-            waterFuelSource = PartScript?.CommandPod?.Part.PartScript.GetModifier<STCommandPodPatchScript>()?.WaterFuelSource;
+            waterFuelSource = GetCommandPodPatch()?.WaterFuelSource;
         }
         
 

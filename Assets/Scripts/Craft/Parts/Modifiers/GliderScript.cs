@@ -1,6 +1,4 @@
-using System.Linq.Expressions;
-using System.Runtime.InteropServices.ComTypes;
-using System.Windows.Forms;
+using System;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using Assets.Scripts.Craft.Parts.Modifiers.Input;
 using ModApi;
@@ -10,14 +8,9 @@ using ModApi.GameLoop;
 using RootMotion.FinalIK;
 using ModApi.Flight.UI;
 using Panteleymonov;
-using UnityEditor;
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using ModApi.Craft.Parts;
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
@@ -106,7 +99,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 }
                 catch (Exception e)
                 {
-                    Mod.Log(e);
+                    Mod.Log(e.StackTrace);
                 }
             }
             
@@ -354,7 +347,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         #endregion
         #endregion
-        #region 傻逼
+        #region 初始化
         protected override void OnInitialized()
         {
             this._seatAttachPoint = this.PartScript.Data.GetAttachPoint("AttachPointSeat");
@@ -363,8 +356,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private void UpdateComponents()
         {
             
-            BaseLKTransform = Utilities.FindFirstGameObjectMyselfOrChildren("BodyBase", this.gameObject).transform;
-            parachuteMeshTransform=Utilities.FindFirstGameObjectMyselfOrChildren("ParachuteMesh", this.gameObject).transform;
+            BaseLKTransform = IPartSubPartSetUp.FindSubPart(this, "BodyBase");
+            parachuteMeshTransform=IPartSubPartSetUp.FindSubPart(this, "ParachuteMesh");
             if (BaseLKTransform == null)
             {
                 Mod.LogError("GliderScript: Could not find BodyBase transform");

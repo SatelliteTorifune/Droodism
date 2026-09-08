@@ -93,44 +93,45 @@ namespace Assets.Scripts
             return deltaSeconds / 3600f;
         }
 
-        public static void Log(object message)
-        {
-            if (ModSettings.Instance.DebugMode)
-            {
-                Debug.unityLogger.Log(message);
-            }
-        }
+        
 
         public static void Log(string format, params object[] args)
         {
-            if (ModSettings.Instance.DebugMode)
+            if (IsDebugMode)
             {
-                Debug.unityLogger.LogFormat(LogType.Log, format, args);
+                Debug.unityLogger.LogFormat(LogType.Log, "[DroodismDebug] " + format, args);
             }
         }
 
         public static void LogWarning(string format, params object[] args)
         {
-            if (ModSettings.Instance.DebugMode)
+            if (IsDebugMode)
             {
-                Debug.unityLogger.LogFormat(LogType.Log, format, args);
+                Debug.unityLogger.LogFormat(LogType.Warning, "[DroodismDebug] " + format, args);
             }
         }
 
         public static void LogError(string format, params object[] args)
         {
-            if (ModSettings.Instance.DebugMode)
+            if (IsDebugMode)
             {
-                Debug.unityLogger.LogFormat(LogType.Log, format, args);
-                Debug.LogFormat(Environment.StackTrace);
+                Debug.unityLogger.LogFormat(LogType.Error, "[DroodismDebug] " + format, args);
+                Debug.unityLogger.Log(LogType.Error, Environment.StackTrace);
             }
         }
-
-        public static void Log(UnityEngine.Object context, string format, params object[] args)
+        
+        private static bool IsDebugMode
         {
-            if (ModSettings.Instance.DebugMode)
+            get
             {
-                Debug.unityLogger.LogFormat(LogType.Log, context, format, args);
+                try
+                {
+                    return ModSettings.Instance?.DebugMode;
+                }
+                catch
+                {
+                    return false;
+                }
             }
         }
         

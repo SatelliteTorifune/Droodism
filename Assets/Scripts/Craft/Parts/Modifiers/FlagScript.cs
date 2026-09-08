@@ -1,24 +1,21 @@
-using System.Net.NetworkInformation;
 using ModApi;
 using ModApi.GameLoop;
 using ModApi.Ui.Inspector;
-using UnityEngine.Rendering;
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
-    using System.Text;
     using ModApi.Craft.Parts;
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
 
-    public class FlagScript : ResourceProcessorPartScript<FlagData>
+    public class FlagScript : ResourceProcessorPartScript<FlagData>, IPartSubPartSetUp
     {
         private Transform _mainBase, _rotateBase, p2, p3, flagDown, flagFace;
         private Transform _offset;
+
+        public Transform SubPart => _rotateBase;
 
         private float _poleVel;
         private float _hingeVel;
@@ -184,7 +181,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             catch (Exception e)
             {
-                Debug.LogError("[FlagScript] Failed to read flag image at '" + imgPath + "': " + e);
+                Mod.LogError("[FlagScript] Failed to read flag image at '" + imgPath + "': " + e);
                 return;
             }
 
@@ -192,7 +189,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             tex.name = "FlagCustomImage";
             if (!tex.LoadImage(imgBytes))
             {
-                Debug.LogError("[FlagScript] Failed to decode image bytes from '" + imgPath + "'.");
+                Mod.LogError("[FlagScript] Failed to decode image bytes from '" + imgPath + "'.");
                 UnityEngine.Object.Destroy(tex);
                 return;
             }
@@ -236,14 +233,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         #region PrefabSetup Methods
         protected override void UpdateComponents()
         {
-            string[] strArray = "Base/RotateBase".Split('/', StringSplitOptions.None);
-            Transform subPart = this.transform;
-            foreach (string n in strArray)
-                subPart = subPart.Find(n) ?? subPart;
-            if (subPart.name == strArray[strArray.Length - 1])
-                this.SetSubPart(subPart);
-            else
-                this.SetSubPart(Utilities.FindFirstGameObjectMyselfOrChildren("Base/RotateBase", this.gameObject)?.transform);
+            SetSubPart(IPartSubPartSetUp.FindSubPart(this, "Base/RotateBase"));
             if (_rotateBase != null)
             {
                 p2 = _rotateBase.Find("P2");
@@ -255,19 +245,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
 
 
-        private void SetSubPart(Transform subPart)
+        public void SetSubPart(Transform subPart)
         {
-            if ((UnityEngine.Object) this._offset != (UnityEngine.Object) null)
-            {
-                UnityEngine.Object.Destroy((UnityEngine.Object) this._offset.gameObject);
-                this._offset = (Transform) null;
-            }
-            this._rotateBase = subPart;
-            if (!((UnityEngine.Object) this._rotateBase != (UnityEngine.Object) null) || (double) this.Data.PositionOffset1.magnitude <= 0.0)
-                return;
-            this._offset = new GameObject("SubPartRotatorOffset").transform;
-            this._offset.SetParent(this._rotateBase.parent, false);
-            this._offset.position = this._rotateBase.TransformPoint(Data.PositionOffset1);
+            _rotateBase = subPart;
+            _offset = IPartSubPartSetUp.ApplySubPart(_offset, _rotateBase, Data.PositionOffset, out _);
         }
 
         #endregion

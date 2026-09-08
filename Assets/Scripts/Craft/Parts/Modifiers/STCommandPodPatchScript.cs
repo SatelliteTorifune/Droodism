@@ -1,17 +1,6 @@
-using System.Windows.Forms;
-using ModApi.GameLoop;
-using Assets.Scripts.Droodism.RadiationBelt;
-using ModApi.Flight.Sim;
-using ModApi.Ui.Inspector;
-
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using ModApi.Craft.Parts;
-    using ModApi.GameLoop.Interfaces;
     using UnityEngine;
 
     public class STCommandPodPatchScript : PartModifierScript<STCommandPodPatchData>

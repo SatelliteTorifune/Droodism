@@ -6,19 +6,18 @@ using ModApi.Ui.Inspector;
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using ModApi.Craft.Parts;
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
 
    
-    public class ChemicalReactorScript : ResourceProcessorPartScript<ChemicalReactorData>
+    public class ChemicalReactorScript : ResourceProcessorPartScript<ChemicalReactorData>, IPartSubPartSetUp
     {
         private IFuelSource LqdOxygenSource,HPco2Source,lH2Source,hydroloxSource,monoSource,methaneloxSource,HPNitrogenSource,waterSource;
         private Transform _particleSystemTransform;
         private ParticleSystem _particleSystem;
+
+        public Transform SubPart => _particleSystemTransform;
         
         public override void FlightUpdate(in FlightFrameData frame)
         {
@@ -132,7 +131,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 case "H2O+CO2=Methanelox":
                     HPco2Source = GetRegularCraftFuelSource("CO2");
-                    waterSource=this.PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>().WaterFuelSource;
+                    waterSource=GetCommandPodPatch().WaterFuelSource;
                     methaneloxSource = GetRegularCraftFuelSource("LOX/CH4");
                     break;
                 case "N2+LH2=N2H4":
@@ -147,22 +146,15 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     break;
                     
             }
-            monoSource = this.PartScript.CommandPod.MonoFuelSource;
         }
         protected override void UpdateComponents()
         {
-            string[]	strArray	= "Device/ParticleSystem".Split( '/', StringSplitOptions.None );
-            Transform	subPart		= this.transform;
-            foreach ( string n in strArray )
-                subPart = subPart.Find( n ) ?? subPart;
-            if ( subPart.name == strArray[strArray.Length - 1] )
-                this.SetSubPart(subPart);
-            else
-                this.SetSubPart( ModApi.Utilities.FindFirstGameObjectMyselfOrChildren( "Device/ParticleSystem/", this.gameObject ) ?.transform );
+            SetSubPart(IPartSubPartSetUp.FindSubPart(this, "Device/ParticleSystem"));
             _particleSystem = _particleSystemTransform.GetComponent<ParticleSystem>();
             
         }
-        private void SetSubPart( Transform subPart )
+
+        public void SetSubPart( Transform subPart )
         {
             this._particleSystemTransform = subPart;
         }

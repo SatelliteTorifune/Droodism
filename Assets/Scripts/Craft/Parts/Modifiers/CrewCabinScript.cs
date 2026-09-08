@@ -1,4 +1,3 @@
-using Assets.Scripts.Craft.Parts.Modifiers.Fuselage;
 using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
 using Assets.Scripts.Droodism.RadiationBelt;
 using ModApi;
@@ -13,8 +12,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using ModApi.Craft.Parts;
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
@@ -24,7 +21,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private RadiationBeltConfig RadiationBeltConfig;
         private string currentPlanetName;
 
-        private IFuelSource WaterSource,LiquidHydrogenSouce;
+        private IFuelSource WaterSource,LiquidHydrogenSource;
 
         private List<PartData> RTGParts = new List<PartData>();
         private List<PartData> NTRParts = new List<PartData>();
@@ -73,7 +70,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         protected override void UpdateFuelSources()
         {
-            var patchScript = this.PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+            var patchScript = GetCommandPodPatch();
             try
             {
                 if (patchScript==null)
@@ -86,7 +83,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 {
                     BatterySource = PartScript.BatteryFuelSource;
                     WaterSource = patchScript.WaterFuelSource;
-                    LiquidHydrogenSouce = this.GetRegularCraftFuelSource("LH2");
+                    LiquidHydrogenSource = this.GetRegularCraftFuelSource("LH2");
                 }
                 catch (Exception e)
                 {
@@ -320,7 +317,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     durabilityPerFuelUnit = 0.8d;
                     break;
                 case "Liquid Hydrogen":
-                    refillSource = this.LiquidHydrogenSouce;
+                    refillSource = this.LiquidHydrogenSource;
                     durabilityPerFuelUnit = 0.65d;
                     break;
                 default:
