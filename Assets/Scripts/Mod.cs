@@ -84,7 +84,7 @@ namespace Assets.Scripts
                 LogError("Exception occurred while initializing Droodism: {0}", exception);
             }
             Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
-            Game.Instance.SceneManager.SceneTransitionCompleted+=OnSceneTransitionCompleted;
+            Game.Instance.SceneManager.SceneTransitionCompleted+=(object sender, SceneTransitionEventArgs e)=>那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花();;
             
         }
 
@@ -162,8 +162,8 @@ namespace Assets.Scripts
 
             if (InDesignerScene)
             {
-                ModApi.Common.Game.Instance.Designer.CraftLoaded+=OnCraftLoaded;
-                ModApi.Common.Game.Instance.Designer.CraftStructureChanged+=OnCraftStructureChanged;
+                ModApi.Common.Game.Instance.Designer.CraftLoaded+=()=>PatchCraft(CurrentCraft());
+                ModApi.Common.Game.Instance.Designer.CraftStructureChanged+=()=>GetDroodCountInDesigner();
                 Created += OnPartAdded;
             }
 
@@ -171,7 +171,7 @@ namespace Assets.Scripts
             {
                 try
                 {
-                    ModApi.Common.Game.Instance.FlightScene.CraftChanged += OnCraftChanged;
+                    ModApi.Common.Game.Instance.FlightScene.CraftChanged += (ICraftNode craft)=>PatchCraft(CurrentCraft());
                     PatchCraft(ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript as CraftScript);
                     Log("OnSceneLoaded更新Drood数量");
                     那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花();
@@ -184,14 +184,6 @@ namespace Assets.Scripts
             }
 
         }
-
-        private void OnCraftLoaded()=>PatchCraft(CurrentCraft());
-
-        private void OnCraftStructureChanged()=> GetDroodCountInDesigner();
-        
-        private void OnCraftChanged(ICraftNode craft) => PatchCraft(CurrentCraft());
-        
-        private void OnSceneTransitionCompleted(object sender, SceneTransitionEventArgs e)=>那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花();
         
         public void 那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花()
         {
