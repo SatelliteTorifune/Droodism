@@ -7,9 +7,19 @@ using UnityEngine;
 
 namespace Assets.Scripts
 {
-    public partial class Mod : ModApi.Mods.GameMod
+    public static class DroodismFilesSetUp
     {
-         private void  CheckDefaultPlanetRadiationBeltConfig()
+        
+
+        /// <summary>执行全部默认文件配置。</summary>
+        public static void SetUp()
+        {
+            CheckDefaultPlanetRadiationBeltConfig();
+            CheckDefaultBreathablePlanetConfig();
+            CheckDefaultFlagImage();
+        }
+
+        private static void CheckDefaultPlanetRadiationBeltConfig()
         {
             var folderPath = GetRadiationBeltConfigFolderPath();
             if (!Directory.Exists(folderPath))
@@ -30,43 +40,43 @@ namespace Assets.Scripts
             SetUp("Vulco");
             void SetUp(string planet)
             {
-                var asset = Mod.ResourceLoader.LoadAsset<TextAsset>("Assets/Resources/DefaultRadiationBeltConfigs/"+planet+".xml");
+                var asset = Mod.Instance.ResourceLoader.LoadAsset<TextAsset>("Assets/Resources/DefaultRadiationBeltConfigs/" + planet + ".xml");
                 if (asset != null)
                 {
-                    var targetPath = Path.Combine(folderPath, planet+".xml");
+                    var targetPath = Path.Combine(folderPath, planet + ".xml");
                     if (!File.Exists(targetPath))
                     {
                         File.WriteAllText(targetPath, asset.text, Encoding.UTF8);
                     }
                 }
             }
-            
         }
 
-        private void CheckDefaultBreathablePlanetConfig()
+        private static void CheckDefaultBreathablePlanetConfig()
         {
             var folderPath = GetDefaultBreathablePlanetConfigFolderPath();
             if (!Directory.Exists(folderPath))
             {
                 Directory.CreateDirectory(folderPath);
             }
-            var asset = Mod.ResourceLoader.LoadAsset<TextAsset>("Assets/Resources/BreathablePlanets.xml");
-            
+            var asset = Mod.Instance.ResourceLoader.LoadAsset<TextAsset>("Assets/Resources/BreathablePlanets.xml");
+
             if (asset != null)
             {
                 var targetPath = Path.Combine(folderPath, "BreathablePlanets.xml");
                 if (!File.Exists(targetPath))
                 {
                     File.WriteAllText(targetPath, asset.text, Encoding.UTF8);
-                     Log($"Copied BreathablePlanets.xml to: {targetPath}");
+                    Mod.Log("Copied BreathablePlanets.xml to: {0}", targetPath);
                 }
             }
             else
             {
-                LogError("Failed to load BreathablePlanets.xml from Resources!");
+                Mod.Log("Failed to load BreathablePlanets.xml from Resources!");
             }
         }
-        private  static string GetRadiationBeltConfigFolderPath()
+
+        private static string GetRadiationBeltConfigFolderPath()
         {
             string folderPath = Application.persistentDataPath + RadiationBeltConfig.CONFIG_FOLDER;
             if (!Directory.Exists(folderPath))
@@ -74,9 +84,9 @@ namespace Assets.Scripts
                 Directory.CreateDirectory(folderPath);
             }
             return folderPath;
-            
         }
-        private  static string GetDefaultBreathablePlanetConfigFolderPath()
+
+        private static string GetDefaultBreathablePlanetConfigFolderPath()
         {
             string folderPath = Application.persistentDataPath + BreathablePlanets.CONFIG_FOLDER;
             if (!Directory.Exists(folderPath))
@@ -86,7 +96,7 @@ namespace Assets.Scripts
             return folderPath;
         }
 
-        private void CheckDefaultFlagImage()
+        private static void CheckDefaultFlagImage()
         {
             const string defaultImageResourcePath = "Assets/Resources/DefaultFlag1.bytes";
             const string defaultImageFileName = "CustomImage.jpg";
@@ -106,25 +116,22 @@ namespace Assets.Scripts
             TextAsset defaultImageAsset = null;
             try
             {
-                defaultImageAsset = Instance.ResourceLoader.LoadAsset<TextAsset>(defaultImageResourcePath);
+                defaultImageAsset = Mod.Instance.ResourceLoader.LoadAsset<TextAsset>(defaultImageResourcePath);
             }
             catch (Exception e)
             {
-                LogError($"Failed to load default flag image asset at '{defaultImageResourcePath}': {e}");
+                Mod.Log("Failed to load default flag image asset at '{0}': {1}", defaultImageResourcePath, e);
             }
-            
 
             try
             {
                 File.WriteAllBytes(targetPath, defaultImageAsset.bytes);
-                Log($"Wrote default flag image to: {targetPath}");
+                Mod.Log("Wrote default flag image to: {0}", targetPath);
             }
             catch (Exception e)
             {
-                LogError($"Failed to write default flag image to '{targetPath}': {e}");
+                Mod.Log("Failed to write default flag image to '{0}': {1}", targetPath, e);
             }
         }
-
-        
     }
 }

@@ -20,6 +20,10 @@ namespace Assets.Scripts // ===== 耦合点⑤:命名空间,移植到新 Mod 时
     ///      (下载更新 / 稍后再说 / 不再提醒);
     ///   4. "不再提醒"用 PlayerPrefs 记住跳过的版本,以后只有出现更新版本才再次提醒。
     ///
+    /// 【不阻塞主线程】所有网络等待都在协程里异步完成(UnityWebRequest +
+    /// 总看门狗超时),等待最新版本号期间游戏主线程完全空闲,绝不会卡死;
+    /// 断网/限流等异常情况最多等待 15s 即放弃,不会无限挂起。
+    ///
     /// 每次游戏会话只检查一次(static _startedThisSession 防抖)。
     ///
     /// ==================================================================
@@ -61,16 +65,19 @@ namespace Assets.Scripts // ===== 耦合点⑤:命名空间,移植到新 Mod 时
         // 通道1:GitHub Releases API——返回 JSON,取 "tag_name" 即最新版本号
         //        (如 "0.88" / "v0.88.1",前导 v 会被忽略)。
         // 发版方式:在 GitHub 上 Create a new release,打 tag 如 0.88 并上传 .sr2-mod 资产。
-        public const string LatestVersionUrl = "https://api.github.com/repos/SatelliteTorifune/Droodism/releases/latest";
+        public const string LatestVersionUrl =
+            "https://api.github.com/repos/SatelliteTorifune/Droodism/releases/latest";
 
         // 点"下载更新"时打开的页面:Release 列表页(或改成具体某个 release 的页面)。
-        public const string DownloadUrl = "https://github.com/SatelliteTorifune/Droodism/releases/latest";
+        public const string DownloadUrl =
+            "https://github.com/SatelliteTorifune/Droodism/releases/latest";
 
         // 通道2(兜底):GitHub raw 直链的 version.txt(仓库根目录,内容就是版本号,如 "0.88")。
         // 用途:通道1 失败(403 限流 / 网络异常 / 还没建过 release)时自动启用;无 API 限流。
         // 注意:指向 main 分支——发版时记得把 version.txt 同步到 main。
         // 移植:改成新仓库地址;留空("")则禁用兜底通道。
-        public const string VersionFileUrl = "https://raw.githubusercontent.com/SatelliteTorifune/Droodism/main/version.txt";
+        public const string VersionFileUrl =
+            "https://raw.githubusercontent.com/SatelliteTorifune/Droodism/main/version.txt";
 
         // ★⑦ 玩家"不再提醒"记住的版本存哪。移植时换带自己 Mod 名的 key,避免互相覆盖。
         private const string SkippedVersionPrefKey = "Droodism.UpdateReminder.SkippedVersion";
@@ -84,6 +91,11 @@ namespace Assets.Scripts // ===== 耦合点⑤:命名空间,移植到新 Mod 时
         /// <summary>
         /// 启动一次更新检查(每次游戏会话最多执行一次,重复调用会被忽略)。
         /// 在 Mod 的 OnModLoaded 末尾调用(★⑧)。
+        ///
+        /// 【不阻塞主线程的保证】本方法本身不发起也不等待任何网络请求——
+        /// 只注册协程宿主后立即返回。真正的 HTTP 请求在协程里异步执行
+        /// (UnityWebRequest + 逐帧轮询 + 总看门狗),等待最新版本号期间
+        /// 主线程完全空闲;即便网络异常/断网,最多等 15s 也会主动放弃。
         /// </summary>
         public void CheckForUpdate()
         {
@@ -129,22 +141,33 @@ namespace Assets.Scripts // ===== 耦合点⑤:命名空间,移植到新 Mod 时
         /// </summary>
         public IEnumerator FetchRoutine()
         {
+            // 总看门狗:无论网络多慢/多坏,整个"等最新版本号"的过程必须在
+            // deadline 前结束(Time.realtimeSinceStartup 不受暂停/卡顿影响)。
+            // UnityWebRequest.timeout 只管单个请求,这里管整体等待——双保险,
+            // 保证等待永远有上限,绝不无限挂起(也不存在任何同步阻塞主线程的调用)。
+            const float totalTimeoutSeconds = 15f;
+            var deadline = Time.realtimeSinceStartup + totalTimeoutSeconds;
+
             Version latest = null;
             var got = false;
 
             // 通道1:GitHub Releases API
-            yield return TryFetchVersion(LatestVersionUrl, v => { latest = v; got = true; }, () => { });
+            yield return TryFetchVersion(LatestVersionUrl, deadline, v => { latest = v; got = true; }, () => { });
 
-            // 通道2:API 失败(限流/断网/无 release)时回退到 version.txt
-            if (!got)
+            // 通道2:API 失败(限流/断网/无 release)时回退到 version.txt;
+            // 前提是还没到总看门狗期限(否则直接放弃,不再发起第二次请求)。
+            if (!got && Time.realtimeSinceStartup < deadline)
             {
                 Mod.Log("Droodism: 更新检查——API 通道不可用,回退到 version.txt"); // ★③
-                yield return TryFetchVersion(VersionFileUrl, v => { latest = v; got = true; }, () => { });
+                yield return TryFetchVersion(VersionFileUrl, deadline, v => { latest = v; got = true; }, () => { });
             }
 
             if (!got || latest == null)
             {
-                Mod.Log("Droodism: 更新检查——所有通道均失败,本次跳过提醒"); // ★③
+                if (Time.realtimeSinceStartup >= deadline)
+                    Mod.Log("Droodism: 更新检查——等待版本号超时(>{0}s),本次跳过提醒", totalTimeoutSeconds); // ★③
+                else
+                    Mod.Log("Droodism: 更新检查——所有通道均失败,本次跳过提醒"); // ★③
                 yield break;
             }
 
@@ -171,16 +194,33 @@ namespace Assets.Scripts // ===== 耦合点⑤:命名空间,移植到新 Mod 时
 
         /// <summary>
         /// 抓取指定 URL 并解析版本号。成功时回调 onSuccess(version),失败时回调 onFail。
+        /// deadline = 总看门狗期限(Time.realtimeSinceStartup),超过则主动 Abort 放弃。
         /// 两个通道共用的下载+解析原语。
         /// </summary>
-        private IEnumerator TryFetchVersion(string url, Action<Version> onSuccess, Action onFail)
+        private IEnumerator TryFetchVersion(string url, float deadline, Action<Version> onSuccess, Action onFail)
         {
             using (var request = UnityWebRequest.Get(url))
             {
                 request.timeout = 10;
                 // GitHub 的 URL(API 与 raw)都要求非空 User-Agent,否则返回 403
                 request.SetRequestHeader("User-Agent", "DroodismModUpdater/1.0");
-                yield return request.SendWebRequest();
+
+                // 关键点:这里是纯异步等待,主线程完全空闲,不会阻塞游戏。
+                // 逐帧轮询 isDone 而不是直接 `yield return request.SendWebRequest()`,
+                // 是为了每帧顺带检查总看门狗 deadline——超时就主动 Abort 中断,
+                // 把"等版本号"变成一个必然有上限、必然结束的过程。
+                var operation = request.SendWebRequest();
+                while (!operation.isDone)
+                {
+                    if (Time.realtimeSinceStartup >= deadline)
+                    {
+                        request.Abort(); // 主动中断并释放连接,随后随 using 一起释放
+                        Mod.Log("Droodism: 更新检查——总等待超时,已中断请求 {0}", url); // ★③
+                        onFail?.Invoke();
+                        yield break;
+                    }
+                    yield return null; // 每帧只做一次布尔比较,开销可忽略
+                }
 
                 if (request.result != UnityWebRequest.Result.Success)
                 {
@@ -292,6 +332,13 @@ namespace Assets.Scripts // ===== 耦合点⑤:命名空间,移植到新 Mod 时
                 {
                     StartCoroutine(Owner.FetchRoutine());
                 }
+            }
+
+            // 保险:万一宿主对象被销毁(异常场景切换/重载等),立刻停掉协程,
+            // 确保不会有悬挂的网络等待残留。
+            private void OnDestroy()
+            {
+                StopAllCoroutines();
             }
         }
     }

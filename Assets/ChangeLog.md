@@ -1,3 +1,9 @@
+## 2026 9 26
+> 将文件设置单独抽象为一个类
+> >可以,这很OOP
+> 
+> 清理了Mod.cs中函数的排序与事件订阅
+
 ## 2026 9 8
 > 加入通用更新检查 + 提醒弹窗(移植自 Volken2 的 ModUpdater.cs,按 Droodism 适配)
 > 
@@ -7,6 +13,7 @@
 > - 本地版本读 ModInfo.Version:Mod.cs 新增 ModVersion 属性,在 OnModLoaded 末尾先赋值再触发检查
 > - 弹窗文案本地化:EN-US.xml / ZH-CN.xml 新增 Droodism.UI.Update* 共 6 个 key
 > - 仓库根目录新增 version.txt(0.88),发版时需与 ModData.asset 版本号保持同步并推送到 main 分支
+> - 修复:同步 Volken2 更新器的看门狗修复——总超时 15s(Time.realtimeSinceStartup deadline),逐帧轮询 isDone 并在超时时主动 Abort,防止个别网络异常下 UnityWebRequest.timeout 失效导致协程无限挂起;宿主 ModUpdaterHost 销毁时停掉所有协程
 
 ## 2026 9 7
 > Debug 日志清理:

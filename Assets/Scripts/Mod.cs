@@ -69,7 +69,7 @@ namespace Assets.Scripts
        
         protected override void OnModInitialized()
         {
-          
+           
             base.OnModInitialized();
             try
             {
@@ -94,8 +94,24 @@ namespace Assets.Scripts
         /// </summary>
         public override void OnModLoaded()
         {
-          
-           
+            DroodismGOSetUp();
+            
+            Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.MapView, OnBuildMapViewInspectorPanel);
+            
+            RegisterCommands();
+
+            DroodismFilesSetUp.SetUp();
+
+            // 本地版本 = ModInfo.Version(System.Version,如 0.88)
+            this.ModVersion = this.ModInfo.Version;
+
+            // 更新检查(双通道:GitHub Releases API + version.txt 兜底,有新版时进主菜单弹提醒)
+            new ModUpdater().CheckForUpdate();
+
+        }
+
+        private void DroodismGOSetUp()
+        {
             GameObject DroodismGO=new GameObject("DroodismGameObject");
             DroodismGO.AddComponent<DroodismUIManager>();
             DroodismGO.AddComponent<RadiationBeltManager>();
@@ -106,61 +122,7 @@ namespace Assets.Scripts
             //DroodismGO.AddComponent<BackGroundCalulator>();
             GameObject.DontDestroyOnLoad(DroodismGO);
             DroodismGO.SetActive(true);
-            Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.MapView, OnBuildMapViewInspectorPanel);
-            RegisterCommands();
-            CheckDefaultPlanetRadiationBeltConfig();
-            CheckDefaultBreathablePlanetConfig();
-            CheckDefaultFlagImage();
-
-            // 本地版本 = ModInfo.Version(System.Version,如 0.88)
-            this.ModVersion = this.ModInfo.Version;
-
-            // 更新检查(双通道:GitHub Releases API + version.txt 兜底,有新版时进主菜单弹提醒)
-            new ModUpdater().CheckForUpdate();
-
         }
-        
-
-        private void OnSceneLoaded(object sender, SceneEventArgs e)
-        {
-
-            if (InDesignerScene)
-            {
-                ModApi.Common.Game.Instance.Designer.CraftLoaded+=OnCraftLoaded;
-                ModApi.Common.Game.Instance.Designer.CraftStructureChanged+=OnCraftStructureChanged;
-                Created += OnPartAdded;
-            }
-
-            if (InFlightScene)
-            {
-                try
-                {
-                    ModApi.Common.Game.Instance.FlightScene.CraftChanged += OnCraftChanged;
-                    PatchCraft(ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript as CraftScript);
-                    Log("OnSceneLoaded更新Drood数量");
-                    那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花();
-                    Log("OnSceneLoaded执行doShit");
-                }
-                catch (Exception e1)
-                {
-                    Log("你要干啥{0}", e1);
-                }
-            }
-
-        }
-
-        private void OnCraftLoaded()
-        {
-            PatchCraft(CurrentCraft());
-        }
-
-        private void OnCraftStructureChanged()
-        {
-            GetDroodCountInDesigner();
-        }
-
-        
-
         /// <summary>
         /// 注册Droodism的自定义指令
         /// </summary>
@@ -195,13 +157,42 @@ namespace Assets.Scripts
 
         }
 
+        private void OnSceneLoaded(object sender, SceneEventArgs e)
+        {
+
+            if (InDesignerScene)
+            {
+                ModApi.Common.Game.Instance.Designer.CraftLoaded+=OnCraftLoaded;
+                ModApi.Common.Game.Instance.Designer.CraftStructureChanged+=OnCraftStructureChanged;
+                Created += OnPartAdded;
+            }
+
+            if (InFlightScene)
+            {
+                try
+                {
+                    ModApi.Common.Game.Instance.FlightScene.CraftChanged += OnCraftChanged;
+                    PatchCraft(ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript as CraftScript);
+                    Log("OnSceneLoaded更新Drood数量");
+                    那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花();
+                    Log("OnSceneLoaded执行doShit");
+                }
+                catch (Exception e1)
+                {
+                    Log("你要干啥{0}", e1);
+                }
+            }
+
+        }
+
+        private void OnCraftLoaded()=>PatchCraft(CurrentCraft());
+
+        private void OnCraftStructureChanged()=> GetDroodCountInDesigner();
+        
         private void OnCraftChanged(ICraftNode craft) => PatchCraft(CurrentCraft());
         
-
-        private void OnSceneTransitionCompleted(object sender, SceneTransitionEventArgs e)
-        {
-            那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花();
-        }
+        private void OnSceneTransitionCompleted(object sender, SceneTransitionEventArgs e)=>那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花();
+        
         public void 那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花()
         {
             
