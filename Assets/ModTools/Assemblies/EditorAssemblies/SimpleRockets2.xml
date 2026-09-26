@@ -12858,6 +12858,58 @@
             A neutral dusty fallback color used when the terrain biome color can't be sampled.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Craft.BodyCollisionHandler._bodyPartBucket">
+            <summary>
+            Reused island-discovery buffer of the parts to re-bucket into new bodies in <see cref="M:Assets.Scripts.Craft.BodyCollisionHandler.DisconnectParts(System.Collections.Generic.List{Assets.Scripts.Craft.BodyCollisionHandler.DisconnectedPart})"/>.
+            Static because a body destroys itself when it splits: main-thread scratch shared by all handlers.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.BodyCollisionHandler._bodyPartLists">
+            <summary>
+            Reused per-new-body part lists built by <see cref="M:Assets.Scripts.Craft.BodyCollisionHandler.DisconnectParts(System.Collections.Generic.List{Assets.Scripts.Craft.BodyCollisionHandler.DisconnectedPart})"/>; inner lists are recycled too.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.BodyCollisionHandler._breakConnections">
+            <summary>
+            Reused buffer of the group-crossing connections destroyed by <see cref="M:Assets.Scripts.Craft.BodyCollisionHandler.DisconnectPartGroup(ModApi.Craft.Parts.IPartGroupScript,System.Boolean)"/>.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.BodyCollisionHandler._breakConnectionsSeen">
+            <summary>
+            Reused dedupe set for the connection scan in <see cref="M:Assets.Scripts.Craft.BodyCollisionHandler.DisconnectPartGroup(ModApi.Craft.Parts.IPartGroupScript,System.Boolean)"/>.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.BodyCollisionHandler._debugCheckPartLookup">
+            <summary>
+            The debug check part lookup. I'm keeping this in here while we are early in development to keep an eye out
+            for potential bugs with the part breakage code.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.BodyCollisionHandler._disconnectedPartGroups">
+            <summary>
+            Reused set of the part groups already disconnected while processing <see cref="M:Assets.Scripts.Craft.BodyCollisionHandler.DisconnectParts(System.Collections.Generic.List{Assets.Scripts.Craft.BodyCollisionHandler.DisconnectedPart})"/>.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.BodyCollisionHandler._islandGraph">
+            <summary>
+            Reused traversal scratch for the part-island discovery in <see cref="M:Assets.Scripts.Craft.BodyCollisionHandler.DisconnectParts(System.Collections.Generic.List{Assets.Scripts.Craft.BodyCollisionHandler.DisconnectedPart})"/>.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.BodyCollisionHandler._bodyJoints">
+            <summary>
+            Reused snapshot of the body's joints taken before they are destroyed and re-created.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.BodyCollisionHandler._newBodyPartGroups">
+            <summary>
+            Reused set of the part groups moving into a body created by <see cref="M:Assets.Scripts.Craft.BodyCollisionHandler.CreateBodyScript(System.Collections.Generic.List{ModApi.Craft.Parts.PartData},System.Single)"/>.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.BodyCollisionHandler._partLookup">
+            <summary>
+            Reused lookup of the body's parts still available for re-bucketing in <see cref="M:Assets.Scripts.Craft.BodyCollisionHandler.DisconnectParts(System.Collections.Generic.List{Assets.Scripts.Craft.BodyCollisionHandler.DisconnectedPart})"/>.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Craft.BodyCollisionHandler._flightSettings">
             <summary>
             The flight settings.
@@ -12901,12 +12953,6 @@
         <member name="F:Assets.Scripts.Craft.BodyCollisionHandler._craftScript">
             <summary>
             The craft script
-            </summary>
-        </member>
-        <member name="F:Assets.Scripts.Craft.BodyCollisionHandler._debugCheckPartLookup">
-            <summary>
-            The debug check part lookup. I'm keeping this in here while we are early in development to keep an eye out
-            for potential bugs with the part breakage code.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Craft.BodyCollisionHandler._disconnectParts">
@@ -13457,6 +13503,22 @@
             <seealso cref="T:ModApi.GameLoop.Interfaces.IFlightFixedUpdate" />
             <seealso cref="T:ModApi.GameLoop.Interfaces.IFlightUpdate" />
         </member>
+        <member name="F:Assets.Scripts.Craft.BodyScript.WaterReachableMargin">
+            <summary>
+            The slack added to the water-reachability gate: legacy wave amplitude plus room for
+            articulated parts (pistons, rotators) moving after the body radius was cached.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.BodyScript._partIslandGraph">
+            <summary>
+            Reused traversal scratch (main-thread only) for building part islands in the <see cref="P:Assets.Scripts.Craft.BodyScript.PartIsland"/> getter.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.BodyScript._recalculateMassSampler">
+            <summary>
+            The profiler sampler for <see cref="M:Assets.Scripts.Craft.BodyScript.RecalculateMass"/> (readable via Sampler.Get/Recorder).
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Craft.BodyScript._averageReEntryEffectStrength">
             <summary>
             The average Re-Entry effect strength of all our parts.
@@ -13472,6 +13534,21 @@
             The body collision handler.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Craft.BodyScript._cachedMassMoment">
+            <summary>
+            The mass weighted position sum of all parts in body-local space, cached in step with <see cref="F:Assets.Scripts.Craft.BodyScript._partMassContributions"/>.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.BodyScript._cachedTotalMass">
+            <summary>
+            The mass sum of all parts, cached in step with <see cref="F:Assets.Scripts.Craft.BodyScript._partMassContributions"/>.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.BodyScript._dirtyMassParts">
+            <summary>
+            The parts whose mass changed since the last mass recalculation.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Craft.BodyScript._dragPhysics">
             <summary>
             The drag physics
@@ -13480,6 +13557,11 @@
         <member name="F:Assets.Scripts.Craft.BodyScript._frameDrag">
             <summary>
             The frame drag
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.BodyScript._incrementalMassUpdates">
+            <summary>
+            The number of incremental mass updates since the last full recalculation (bounds float drift).
             </summary>
         </member>
         <member name="F:Assets.Scripts.Craft.BodyScript._lastInertiaTensorRecalculationMass">
@@ -13497,9 +13579,19 @@
             The part island
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Craft.BodyScript._partMassContributions">
+            <summary>
+            The cached per-part mass contributions in body-local space, or null before the first full recalculation.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Craft.BodyScript._recalculateMass">
             <summary>
             The recalculate mass flag.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.BodyScript._recalculateMassFull">
+            <summary>
+            Forces the next mass recalculation to do a full per-part pass instead of an incremental update.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Craft.BodyScript._recenteredThisFrame">
@@ -13551,6 +13643,16 @@
         <member name="F:Assets.Scripts.Craft.BodyScript._vaporTrailStrength">
             <summary>
             The vapor trail strength
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.BodyScript._waterGateRadius">
+            <summary>
+            The conservative part-bounding radius around the center of mass used by <see cref="M:Assets.Scripts.Craft.BodyScript.IsWaterReachable"/>.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.BodyScript._waterGateRadiusDirty">
+            <summary>
+            Whether <see cref="F:Assets.Scripts.Craft.BodyScript._waterGateRadius"/> must be recomputed before its next use.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Craft.BodyScript._waterPhysics">
@@ -13702,6 +13804,15 @@
             The Mach number.
             </value>
         </member>
+        <member name="P:Assets.Scripts.Craft.BodyScript.PartDragForceFactor">
+            <summary>
+            Gets the drag force per unit of drag-coefficient-times-area for the current tick, or zero
+            when this body cannot exert meaningful drag on its parts.
+            </summary>
+            <value>
+            The drag force per unit of drag coefficient times area, in scaled Newtons.
+            </value>
+        </member>
         <member name="P:Assets.Scripts.Craft.BodyScript.PartGroups">
             <summary>
             Gets the part groups.
@@ -13727,6 +13838,15 @@
             The part island.
             </value>
         </member>
+        <member name="P:Assets.Scripts.Craft.BodyScript.MaxReEntryGlowTemperature">
+            <summary>
+            Gets the hottest reentry glow temperature assigned to any part of this body (Kelvin).
+            Lets part groups skip their per-part glow scan while the whole body is cold.
+            </summary>
+            <value>
+            The hottest reentry glow temperature assigned to any part of this body (Kelvin).
+            </value>
+        </member>
         <member name="P:Assets.Scripts.Craft.BodyScript.ReEntryEffectStrength">
             <summary>
             Gets the average Re-Entry effect strength on this body.
@@ -13749,6 +13869,14 @@
             </summary>
             <value>
             The surface velocity.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Craft.BodyScript.VaporTrailStrength">
+            <summary>
+            Gets the body level vapor trail strength that part vapor values lerp toward.
+            </summary>
+            <value>
+            The body level vapor trail strength.
             </value>
         </member>
         <member name="P:Assets.Scripts.Craft.BodyScript.Transform">
@@ -13913,8 +14041,15 @@
         <member name="M:Assets.Scripts.Craft.BodyScript.OnPartMassChanged">
             <summary>
             Sets a flag on the body script notifying it that a part's mass has changed and the body needs to
-            recalculate its total mass.
+            recalculate its total mass with a full per-part pass.
             </summary>
+        </member>
+        <member name="M:Assets.Scripts.Craft.BodyScript.OnPartMassChanged(ModApi.Craft.Parts.PartData)">
+            <summary>
+            Notifies the body script that the specified part's mass (or center of mass) has changed so its
+            contribution to the body mass can be updated incrementally.
+            </summary>
+            <param name="part">The part whose mass changed.</param>
         </member>
         <member name="M:Assets.Scripts.Craft.BodyScript.OnRecentered">
             <summary>
@@ -13935,8 +14070,8 @@
         </member>
         <member name="M:Assets.Scripts.Craft.BodyScript.RecalculateMass">
             <summary>
-            Recalculates the mass and CoM of the body from its parts. This method should only be called
-            during flight.
+            Recalculates the mass and CoM of the body from all its parts, rebuilding the per-part cache
+            used by incremental updates. This method should only be called during flight.
             </summary>
         </member>
         <member name="M:Assets.Scripts.Craft.BodyScript.SetBody(UnityEngine.Rigidbody)">
@@ -13998,6 +14133,13 @@
             </summary>
             <returns>The coroutine enumerator.</returns>
         </member>
+        <member name="M:Assets.Scripts.Craft.BodyScript.IsWaterReachable">
+            <summary>
+            Determines whether any part of this body could plausibly touch the water surface this tick.
+            Conservative: only rules out bodies whose every part provably sits above sea level.
+            </summary>
+            <returns><c>true</c> if the body may interact with water; otherwise, <c>false</c>.</returns>
+        </member>
         <member name="M:Assets.Scripts.Craft.BodyScript.LerpAngularDrag(System.Single,System.Single)">
             <summary>
             Calculates and applies the drag to the body.
@@ -14013,6 +14155,21 @@
         <member name="M:Assets.Scripts.Craft.BodyScript.OnValidate">
             <summary>
             Called when a property changes in the inspector.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Craft.BodyScript.ApplyCachedMassTotals">
+            <summary>
+            Applies the cached mass totals to the body data and rigid body.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Craft.BodyScript.RecalculateMassIncremental">
+            <summary>
+            Updates the body mass and CoM by patching only the contributions of the parts whose mass changed.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Craft.BodyScript.RecalculateWaterGateRadius">
+            <summary>
+            Recomputes the conservative part-bounding radius around the body's center of mass.
             </summary>
         </member>
         <member name="M:Assets.Scripts.Craft.BodyScript.UpdatePartTemperatures(System.Single)">
@@ -14387,6 +14544,14 @@
             <param name="assembly">The assembly.</param>
             <returns>The body data, or null if not found.</returns>
         </member>
+        <member name="M:Assets.Scripts.Craft.CraftBuilder.PartitionPartsIntoGroups(System.Collections.Generic.List{ModApi.Craft.Parts.PartData},System.Int32)">
+            <summary>
+            Partitions the specified parts into connected render-group clusters without creating any scene objects.
+            </summary>
+            <param name="parts">The parts to partition.</param>
+            <param name="maxPartsPerGroup">The maximum parts per group.</param>
+            <returns>The list of part clusters.</returns>
+        </member>
         <member name="M:Assets.Scripts.Craft.CraftBuilder.SetJointTargetRotation(UnityEngine.ConfigurableJoint,UnityEngine.Quaternion)">
             <summary>
             Sets the target rotation of the joint using a target rotation defined local space relative to the body.
@@ -14419,21 +14584,32 @@
             <param name="bodyB">The body b.</param>
             <returns>True if the parts are jointed.</returns>
         </member>
-        <member name="M:Assets.Scripts.Craft.CraftBuilder.BuildPartGroup(ModApi.Craft.Parts.PartData,System.Collections.Generic.List{ModApi.Craft.Parts.PartData},Assets.Scripts.Craft.PartGroupScript,System.Int32)">
+        <member name="M:Assets.Scripts.Craft.CraftBuilder.CreatePartGroup(Assets.Scripts.Craft.BodyScript,System.Collections.Generic.List{ModApi.Craft.Parts.PartData},System.Int32@)">
             <summary>
-            Recursive method that builds up a part group.
+            Creates a part group from the specified parts.
             </summary>
-            <param name="part">The part to start with.</param>
-            <param name="remainingParts">The remaining parts.</param>
-            <param name="partGroup">The part group.</param>
-            <param name="maxPartsPerGroup">The maximum parts per group.</param>
+            <param name="body">The body.</param>
+            <param name="parts">The parts to place in the group.</param>
+            <param name="partGroupId">The current part group identifier.</param>
         </member>
-        <member name="M:Assets.Scripts.Craft.CraftBuilder.CreateBodyJointData(ModApi.Craft.Parts.PartConnection,ModApi.Craft.ICraftScript)">
+        <member name="M:Assets.Scripts.Craft.CraftBuilder.PartitionIslandIntoPartGroups(ModApi.Craft.Parts.PartData,System.Collections.Generic.HashSet{ModApi.Craft.Parts.PartData},System.Int32,System.Collections.Generic.List{System.Collections.Generic.List{ModApi.Craft.Parts.PartData}})">
+            <summary>
+            Partitions one connectivity island into part groups by bin-packing its spanning tree bottom-up (first-fit-decreasing),
+            so whole branches stay together and overflow clusters merge into shared bins instead of shattering into singletons.
+            </summary>
+            <param name="root">The island root part (already removed from <paramref name="remainingParts"/>).</param>
+            <param name="remainingParts">The parts not yet assigned to a group (doubles as the visited filter).</param>
+            <param name="maxPartsPerGroup">The maximum parts per group.</param>
+            <param name="groups">The list to which the island's part clusters are added.</param>
+        </member>
+        <member name="M:Assets.Scripts.Craft.CraftBuilder.CreateBodyJointData(ModApi.Craft.Parts.PartConnection,ModApi.Craft.ICraftScript,ModApi.Craft.BodyData,ModApi.Craft.BodyData)">
             <summary>
             Creates the body joint.
             </summary>
             <param name="partConnection">The part connection.</param>
             <param name="craftScript">The craft script.</param>
+            <param name="bodyA">The body containing part A of the connection.</param>
+            <param name="bodyB">The body containing part B of the connection.</param>
             <returns>
             The new body joint.
             </returns>
@@ -14488,13 +14664,14 @@
             </summary>
             <param name="craftScript">The craft script.</param>
         </member>
-        <member name="M:Assets.Scripts.Craft.CraftBuilder.CreatePartGroups(Assets.Scripts.Craft.BodyScript,System.Collections.Generic.List{ModApi.Craft.Parts.PartData},System.Int32@)">
+        <member name="M:Assets.Scripts.Craft.CraftBuilder.CreatePartGroups(Assets.Scripts.Craft.BodyScript,System.Collections.Generic.List{ModApi.Craft.Parts.PartData},System.Int32@,System.Int32)">
             <summary>
             Creates the part groups.
             </summary>
             <param name="body">The body.</param>
             <param name="parts">The parts.</param>
             <param name="partGroupId">The current part group identifier.</param>
+            <param name="craftBodyCount">The total number of bodies on the craft.</param>
         </member>
         <member name="M:Assets.Scripts.Craft.CraftBuilder.GetAttachPointPosition(UnityEngine.Vector3,ModApi.Craft.Parts.PartData)">
             <summary>
@@ -14536,6 +14713,13 @@
             <param name="bodyData">The rigid body group.</param>
             <param name="part">The part.</param>
             <returns>True if the part is in the rigid body.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Craft.CraftBuilder.LogCraftLoadSummary(Assets.Scripts.Craft.CraftScript)">
+            <summary>
+            Logs a one-line summary of the loaded craft's size so load/frame cost can be correlated with part counts.
+            Only emits when <see cref="P:ModApi.CraftPerformanceProfiler.LogCraftLoadTimings"/> is enabled.
+            </summary>
+            <param name="craftScript">The craft script that was built.</param>
         </member>
         <member name="M:Assets.Scripts.Craft.CraftBuilder.RemoveInvalidParts(Assets.Scripts.Craft.CraftScript,System.Boolean)">
             <summary>
@@ -14745,6 +14929,11 @@
             The squared distance that debris should be unloaded.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Craft.CraftScript._rebuildCraftStructureSampler">
+            <summary>
+            The profiler sampler for <see cref="M:Assets.Scripts.Craft.CraftScript.RebuildCraftStructure(System.Boolean)"/> (readable via Sampler.Get/Recorder).
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Craft.CraftScript._bodySeparated">
             <summary>
             The flag set when a body separation still owes listeners a structure changed event.
@@ -14864,6 +15053,11 @@
         <member name="F:Assets.Scripts.Craft.CraftScript._recenterFrameVelocityDelta">
             <summary>
             The craft's frame-velocity delta from the most recent frame-state recalculation, for trail migration on recenter.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.CraftScript._rootIslandGraph">
+            <summary>
+            Reused traversal scratch for the root-island walk in <see cref="M:Assets.Scripts.Craft.CraftScript.RebuildCraftStructure(System.Boolean)"/> when no body scripts exist.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Craft.CraftScript._reEntryEffectIntensity">
@@ -15451,6 +15645,13 @@
             The percentage that the supplied collider is submerged under water.
             </returns>
         </member>
+        <member name="M:Assets.Scripts.Craft.CraftScript.GetComponentsInCraft``1(System.Collections.Generic.List{``0})">
+            <summary>
+            Gets the components of the specified type on the craft and every body in it.
+            </summary>
+            <typeparam name="T">The type of component to collect.</typeparam>
+            <param name="results">The list to fill, which is cleared first.</param>
+        </member>
         <member name="M:Assets.Scripts.Craft.CraftScript.GetOrCreateFuelMonitor">
             <summary>
             Gets or creates a fuel monitor for the craft.
@@ -15466,6 +15667,16 @@
             <param name="payloadTrackingId">The payload tracking identifier.</param>
             <returns>
             The partload part.
+            </returns>
+        </member>
+        <member name="M:Assets.Scripts.Craft.CraftScript.GetSpanSubmergedPercent(UnityEngine.Vector3,System.Single)">
+            <summary>
+            Gets the percentage of a vertical span, centered at the given frame position, that is under water.
+            </summary>
+            <param name="frameCenter">The frame position of the span's center.</param>
+            <param name="halfSpan">Half the span's height along the local up axis.</param>
+            <returns>
+            The percentage of the span under water.
             </returns>
         </member>
         <member name="M:Assets.Scripts.Craft.CraftScript.GetVerticalVelocity">
@@ -15579,11 +15790,12 @@
             updated such as while warping.
             </remarks>
         </member>
-        <member name="M:Assets.Scripts.Craft.CraftScript.RecenterTransformOnCoM(System.Boolean)">
+        <member name="M:Assets.Scripts.Craft.CraftScript.RecenterTransformOnCoM(System.Boolean,System.Nullable{UnityEngine.Vector3})">
             <summary>
             Centers this parent transform on craft's center of mass frame position.
             </summary>
             <param name="updateRotation">if set to <c>true</c> update the rotation too.</param>
+            <param name="pendingRecenterDelta">The recenter shift written to the rigidbodies but not yet to their transforms, if any.</param>
         </member>
         <member name="M:Assets.Scripts.Craft.CraftScript.RestoreActiveCommandPod">
             <summary>
@@ -15600,6 +15812,17 @@
             <summary>
             Notifies the craft that its mass has changed and it should update its center of mass.
             </summary>
+        </member>
+        <member name="M:Assets.Scripts.Craft.CraftScript.SetPose(UnityEngine.Vector3,UnityEngine.Quaternion)">
+            <summary>
+            Moves the craft, and everything in it, to the specified pose.
+            </summary>
+            <remarks>
+            In flight the bodies are scene roots, so anything repositioning the craft as a whole must go
+            through here; the bodies rotate about the craft's origin and translate with it, as parenting did.
+            </remarks>
+            <param name="position">The position to move to.</param>
+            <param name="rotation">The rotation to move to.</param>
         </member>
         <member name="M:Assets.Scripts.Craft.CraftScript.SetPrimaryCommandPod(ModApi.Craft.Parts.ICommandPod,System.Boolean)">
             <summary>
@@ -15797,6 +16020,16 @@
             The texture size to use for rendering the parts for drag.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Craft.DragCalculatorScript._initializeSampler">
+            <summary>
+            The profiler sampler for <see cref="M:Assets.Scripts.Craft.DragCalculatorScript.InitializeDragCalculation(UnityEngine.Transform,System.Collections.Generic.IEnumerable{ModApi.Craft.BodyData},System.Collections.Generic.IEnumerable{ModApi.Craft.BodyData})"/> (readable via Sampler.Get/Recorder).
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.DragCalculatorScript._processResultsSampler">
+            <summary>
+            The profiler sampler for <see cref="M:Assets.Scripts.Craft.DragCalculatorScript.ProcessDragResults(Assets.Scripts.Craft.DragCalculatorScript.DragCalculation,Assets.Scripts.Craft.DragCalculatorScript.DragJob)"/> (readable via Sampler.Get/Recorder).
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Craft.DragCalculatorScript._asynchronousGpuReadback">
             <summary>
             The asynchronous gpu readback setting.
@@ -15836,6 +16069,22 @@
             <summary>
             The result texture
             </summary>
+        </member>
+        <member name="P:Assets.Scripts.Craft.DragCalculatorScript.CalculationsStarted">
+            <summary>
+            Gets the total number of drag calculations started; benchmarks read deltas over a capture window.
+            </summary>
+            <value>
+            The total number of drag calculations started.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Craft.DragCalculatorScript.JobsProcessed">
+            <summary>
+            Gets the total number of drag jobs processed; benchmarks read deltas over a capture window.
+            </summary>
+            <value>
+            The total number of drag jobs processed.
+            </value>
         </member>
         <member name="P:Assets.Scripts.Craft.DragCalculatorScript.Queue">
             <summary>
@@ -16319,15 +16568,12 @@
             <param name="rigidbody">The rigidbody.</param>
             <param name="fluidDensity">The fluid density.</param>
         </member>
-        <member name="M:Assets.Scripts.Craft.DragPhysics.EstimatePartDragForce(ModApi.Craft.Drag,System.Single)">
+        <member name="M:Assets.Scripts.Craft.DragPhysics.CalculateDragCoefficientTimesArea(ModApi.Craft.Drag)">
             <summary>
-            Estimates the drag force in scaled Newtons for a single part based on the most recent frame of drag data.
+            Calculates the drag coefficient times area for the given part drag against the current frame's drag table.
             </summary>
-            <param name="partDrag">The part drag to use for estimating.</param>
-            <param name="fluidDensity">The fluid density.</param>
-            <returns>
-            The magnitude of the drag force in scaled Newtons.
-            </returns>
+            <param name="partDrag">The part drag.</param>
+            <returns>The drag coefficient times area.</returns>
         </member>
         <member name="M:Assets.Scripts.Craft.DragPhysics.EstimatePartDragForceDelta(ModApi.Craft.Drag,System.Single,System.Single)">
             <summary>
@@ -18834,6 +19080,16 @@
             The maximum number of parts per part group.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Craft.PartGroupScript.CombineKindCount">
+            <summary>
+            The number of material kinds a combined mesh can use (default, before-depth-mask, transparent).
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.PartGroupScript.CombineVariantCount">
+            <summary>
+            The number of mesh combine variants (material kind x castShadows x includeInDrag).
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Craft.PartGroupScript.GlowTemperatureFloor">
             <summary>
             Glow temperatures (Kelvin) below this upload as 0; both shader consumers are dark under it.
@@ -18847,6 +19103,16 @@
         <member name="F:Assets.Scripts.Craft.PartGroupScript.MinVaporStrength">
             <summary>
             Vapor strengths below this upload as 0, cutting the asymptotic decay tail short.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.PartGroupScript._meshCombineCensus">
+            <summary>
+            The per-craft census of combined renderers (by variant) and combine exclusions (by reason).
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.PartGroupScript._updateMaterialPartDataSampler">
+            <summary>
+            The profiler sampler for <see cref="M:Assets.Scripts.Craft.PartGroupScript.UpdateMaterialPartData"/> (readable via Sampler.Get/Recorder).
             </summary>
         </member>
         <member name="F:Assets.Scripts.Craft.PartGroupScript._combineSource">
@@ -18864,9 +19130,29 @@
             The default array of part data that is used to initialize materials.
             </summary>
         </member>
-        <member name="F:Assets.Scripts.Craft.PartGroupScript._combinedMesh">
+        <member name="F:Assets.Scripts.Craft.PartGroupScript._meshCombineCensusReported">
             <summary>
-            The combined mesh used by the part group (if any).
+            Whether the current census data has been reported (the next fresh initialization starts a new census).
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.PartGroupScript._combinedMeshes">
+            <summary>
+            The combined meshes used by the part group (one per shadow/drag variant, if any).
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.PartGroupScript._designerCombinedRenderers">
+            <summary>
+            The source renderers hidden by a designer combine, kept so pooled groups can rehide them on reuse.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.PartGroupScript._designerPartRendererCounts">
+            <summary>
+            The per-part renderer counts at designer combine time, for reactivation validation.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.PartGroupScript._designerValidation">
+            <summary>
+            The per-combined-renderer mesh and pose snapshot at designer combine time, for reactivation validation.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Craft.PartGroupScript._initialized">
@@ -18876,12 +19162,12 @@
         </member>
         <member name="F:Assets.Scripts.Craft.PartGroupScript._material">
             <summary>
-            The default part material used by all parts in the part group.
+            The default part material used by all parts in the part group (shared between groups via the theme).
             </summary>
         </member>
         <member name="F:Assets.Scripts.Craft.PartGroupScript._materialBdm">
             <summary>
-            The default part material used for meshes that should be drawn before depth masks.
+            The part material used for meshes drawn before depth masks (shared between groups via the theme, requested on first use).
             </summary>
         </member>
         <member name="F:Assets.Scripts.Craft.PartGroupScript._materialPropertyBlock">
@@ -18896,7 +19182,7 @@
         </member>
         <member name="F:Assets.Scripts.Craft.PartGroupScript._materialTransparency">
             <summary>
-            The transparency part material used by all parts in the part group.
+            The transparency part material used by all parts in the part group (shared between groups via the theme, requested on first use).
             </summary>
         </member>
         <member name="F:Assets.Scripts.Craft.PartGroupScript._outlinedPartCount">
@@ -18916,7 +19202,17 @@
         </member>
         <member name="F:Assets.Scripts.Craft.PartGroupScript._partGroupRenderer">
             <summary>
-            The part group renderer.
+            The part group renderer for the primary (shadow casting, drag included) combined mesh.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.PartGroupScript._partGroupRenderers">
+            <summary>
+            The part group renderers for all combined mesh variants.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.PartGroupScript._variantMeshFilters">
+            <summary>
+            The combined mesh filters for renderers combined into a non-primary variant (null if none).
             </summary>
         </member>
         <member name="F:Assets.Scripts.Craft.PartGroupScript._partMaterialScripts">
@@ -18942,6 +19238,12 @@
         <member name="F:Assets.Scripts.Craft.PartGroupScript._selectedPartCount">
             <summary>
             The current number of selected parts in this part group.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.PartGroupScript._shaderDataHasReentryValues">
+            <summary>
+            Whether the shader part data currently holds nonzero reentry glow/vapor values.
+            While false and the body is cold, the per-part reentry scan is skipped.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Craft.PartGroupScript._shaderPartData">
@@ -18987,6 +19289,51 @@
             Occurs when the craft has been initialized.
             </summary>
         </member>
+        <member name="T:Assets.Scripts.Craft.PartGroupScript.CombineExclusionReason">
+            <summary>
+            The reasons a renderer can be excluded from mesh combining (census buckets).
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.PartGroupScript.CombineExclusionReason.TMPro">
+            <summary>
+            The renderer is a TextMeshPro renderer.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.PartGroupScript.CombineExclusionReason.Decal">
+            <summary>
+            The renderer has a decal.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.PartGroupScript.CombineExclusionReason.ExplicitExclude">
+            <summary>
+            The renderer explicitly opted out of mesh combining.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.PartGroupScript.CombineExclusionReason.Inactive">
+            <summary>
+            The renderer game object is inactive.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.PartGroupScript.CombineExclusionReason.SubMeshes">
+            <summary>
+            The mesh has multiple sub-meshes.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.PartGroupScript.CombineExclusionReason.Overrides">
+            <summary>
+            The renderer uses per-renderer emissive/alpha overrides a combined mesh cannot honor.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.PartGroupScript.CombineExclusionReason.VertexLimit">
+            <summary>
+            Combining would exceed the max vertices per mesh.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.PartGroupScript.CombineExclusionReason.Count">
+            <summary>
+            The number of exclusion reasons.
+            </summary>
+        </member>
         <member name="P:Assets.Scripts.Craft.PartGroupScript.BodyScript">
             <summary>
             Gets or sets the body.
@@ -19017,6 +19364,15 @@
             </summary>
             <value>
             The combined mesh renderer.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Craft.PartGroupScript.DesignerMode">
+            <summary>
+            Gets or sets a value indicating whether this group combines a live designer craft: source renderers are
+            disabled instead of destroyed, source meshes stay untouched, and no per-part shader state is driven.
+            </summary>
+            <value>
+              <c>true</c> if this is a designer combine group; otherwise, <c>false</c>.
             </value>
         </member>
         <member name="P:Assets.Scripts.Craft.PartGroupScript.Data">
@@ -19051,9 +19407,17 @@
             The (regular) material for this part group.
             </value>
         </member>
+        <member name="P:Assets.Scripts.Craft.PartGroupScript.MaterialBdm">
+            <summary>
+            Gets the before-depth-mask material for this part group (requested from the theme on first use).
+            </summary>
+            <value>
+            The before-depth-mask material for this part group.
+            </value>
+        </member>
         <member name="P:Assets.Scripts.Craft.PartGroupScript.MaterialTransparency">
             <summary>
-            Gets the transparent material for this part group.
+            Gets the transparent material for this part group (requested from the theme on first use).
             </summary>
             <value>
             The transparent material for this part group.
@@ -19077,11 +19441,31 @@
         </member>
         <member name="P:Assets.Scripts.Craft.PartGroupScript.PartGroupRenderer">
             <summary>
-            Gets the part group renderer for the part group's combined mesh (if any).
+            Gets the part group renderer for the part group's primary combined mesh (if any).
             </summary>
             <value>
-            The part group renderer for the part group's combined mesh (if any).
+            The part group renderer for the part group's primary combined mesh (if any).
             </value>
+        </member>
+        <member name="P:Assets.Scripts.Craft.PartGroupScript.PartGroupRenderers">
+            <summary>
+            Gets the part group renderers for all combined mesh shadow/drag variants (empty if none).
+            </summary>
+            <value>
+            The part group renderers for all combined mesh shadow/drag variants (empty if none).
+            </value>
+        </member>
+        <member name="M:Assets.Scripts.Craft.PartGroupScript.GetMeshCombineCensusReport">
+            <summary>
+            Gets a one line report of the mesh combine census collected since the last reset.
+            </summary>
+            <returns>The census report line.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Craft.PartGroupScript.MarkMeshCombineCensusReported">
+            <summary>
+            Marks the current mesh combine census as reported so the next fresh initialization starts a new one.
+            A lazy reset, so crafts that initialize nothing (debris reusing initialized groups) can't wipe the data.
+            </summary>
         </member>
         <member name="M:Assets.Scripts.Craft.PartGroupScript.ModApi#GameLoop#Interfaces#IFlightLateUpdate#FlightLateUpdate(ModApi.GameLoop.FlightFrameData@)">
             <summary>
@@ -19094,6 +19478,13 @@
             LateUpdate method that is only called in the flight scene when the game is paused.
             </summary>
             <param name="frame">The flight frame data.</param>
+        </member>
+        <member name="M:Assets.Scripts.Craft.PartGroupScript.GetCombinedMeshFilter(ModApi.Craft.Parts.IRendererMaterialMap)">
+            <summary>
+            Gets the combined mesh filter that contains the specified renderer's mesh (the primary if unknown).
+            </summary>
+            <param name="rendererMaterialMap">The renderer material map that was combined.</param>
+            <returns>The combined mesh filter containing the renderer's mesh.</returns>
         </member>
         <member name="M:Assets.Scripts.Craft.PartGroupScript.GetMaterialPropertyBlockForNonCombinedMesh(ModApi.Craft.Parts.IRendererMaterialMap)">
             <summary>
@@ -19109,10 +19500,16 @@
             </summary>
             <returns>The part outline mask material.</returns>
         </member>
+        <member name="M:Assets.Scripts.Craft.PartGroupScript.HideSourceRenderers">
+            <summary>
+            Rehides the source renderers of a pooled designer group that is being reactivated.
+            </summary>
+        </member>
         <member name="M:Assets.Scripts.Craft.PartGroupScript.Initialize">
             <summary>
             Initializes the part group.
             </summary>
+            <returns><c>true</c> if the part group was initialized; <c>false</c> if it already was.</returns>
         </member>
         <member name="M:Assets.Scripts.Craft.PartGroupScript.OnAlphaOverrideChanged">
             <summary>
@@ -19136,6 +19533,19 @@
             </summary>
             <param name="part">The part.</param>
         </member>
+        <member name="M:Assets.Scripts.Craft.PartGroupScript.RestoreSourceRenderers">
+            <summary>
+            Restores the source renderers hidden by a designer combine. Works from the stored renderer maps,
+            so a renderer stays reachable even after its part re-registered its renderer list.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Craft.PartGroupScript.ValidateForReactivation">
+            <summary>
+            Gets a value indicating whether a pooled designer group's combined meshes still match its parts:
+            every combined renderer must still exist with the same mesh and the same pose relative to the group.
+            </summary>
+            <returns><c>true</c> if the group can be reactivated as-is; <c>false</c> if it must recombine.</returns>
+        </member>
         <member name="M:Assets.Scripts.Craft.PartGroupScript.Awake">
             <summary>
             Awake is called when the script instance is being loaded.
@@ -19146,22 +19556,43 @@
             This function is called when the MonoBehaviour will be destroyed.
             </summary>
         </member>
+        <member name="M:Assets.Scripts.Craft.PartGroupScript.GetCombineVariant(System.Int32,System.Boolean,System.Boolean)">
+            <summary>
+            Gets the mesh combine variant index for the specified material kind and shadow/drag flags (variant 0 is the primary).
+            </summary>
+            <param name="kind">The material kind index (0 = default, 1 = before-depth-mask, 2 = transparent).</param>
+            <param name="castShadows">If set to <c>true</c>, the renderer casts shadows.</param>
+            <param name="includeInDrag">If set to <c>true</c>, the renderer is included in the drag model.</param>
+            <returns>The variant index.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Craft.PartGroupScript.CaptureDesignerValidationState">
+            <summary>
+            Snapshots the combined renderers' meshes and poses so a pooled group can prove it is still valid.
+            </summary>
+        </member>
         <member name="M:Assets.Scripts.Craft.PartGroupScript.CleanupCombinedRenderers(System.Collections.Generic.List{Assets.Scripts.Craft.PartGroupScript.RendererInfo})">
             <summary>
             Cleans up the renderers used to create the combined mesh.
             </summary>
             <param name="renderers">The renderers.</param>
         </member>
-        <member name="M:Assets.Scripts.Craft.PartGroupScript.CombineMeshes(System.Collections.Generic.List{Assets.Scripts.Craft.PartGroupScript.RendererInfo},System.Int32)">
+        <member name="M:Assets.Scripts.Craft.PartGroupScript.CombineMeshes(System.Collections.Generic.List{Assets.Scripts.Craft.PartGroupScript.RendererInfo},System.Int32,System.Int32)">
             <summary>
             Combines the meshes for the specified renderers.
             </summary>
             <param name="renderers">The renderers for which to combine meshes.</param>
             <param name="vertexCount">The vertex count of the final combined mesh.</param>
+            <param name="variant">The shadow/drag combine variant index.</param>
         </member>
         <member name="M:Assets.Scripts.Craft.PartGroupScript.CreateMaterial">
             <summary>
-            Creates the default part material for parts in this part group.
+            Sets up the theme shared part material for parts in this part group.
+            Per-part and per-group state rides in material property blocks, so groups share material instances.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Craft.PartGroupScript.FlushDesignerPartData">
+            <summary>
+            Applies the part data to the combined renderers only; designer parts own their per-renderer blocks.
             </summary>
         </member>
         <member name="M:Assets.Scripts.Craft.PartGroupScript.OnPartGroupInitialized">
@@ -19187,8 +19618,8 @@
         </member>
         <member name="M:Assets.Scripts.Craft.PartGroupScript.ProcessMeshes">
             <summary>
-            Processes the meshes, combining where possible.
-            This also updates the UV data on all meshes, even those excluded from the combine process.
+            Processes the meshes, combining where possible and updating the UV data on all of them.
+            Renderers combine per shadow/drag variant, so those flags do not force per-part draws.
             </summary>
         </member>
         <member name="M:Assets.Scripts.Craft.PartGroupScript.ProcessUncombinedMesh(Assets.Scripts.Craft.PartGroupScript.RendererInfo)">
@@ -19198,12 +19629,13 @@
             </summary>
             <param name="renderer">The renderer for the uncombined mesh.</param>
         </member>
-        <member name="M:Assets.Scripts.Craft.PartGroupScript.SwitchToCombinedMesh(UnityEngine.Mesh,System.Collections.Generic.List{Assets.Scripts.Craft.PartGroupScript.RendererInfo})">
+        <member name="M:Assets.Scripts.Craft.PartGroupScript.SwitchToCombinedMesh(UnityEngine.Mesh,System.Collections.Generic.List{Assets.Scripts.Craft.PartGroupScript.RendererInfo},System.Int32)">
             <summary>
-            Switches to the combined mesh.
+            Switches to the combined mesh for the specified shadow/drag variant.
             </summary>
             <param name="mesh">The combined mesh.</param>
             <param name="renderers">The renderers from which the combined mesh was created.</param>
+            <param name="variant">The shadow/drag combine variant index.</param>
         </member>
         <member name="M:Assets.Scripts.Craft.PartGroupScript.UpdateMaterialPartData">
             <summary>
@@ -19439,6 +19871,14 @@
             If positive, that value will be used for the alpha-ness of the renderer.
             </value>
         </member>
+        <member name="P:Assets.Scripts.Craft.PartGroupScript.PartGroupRendererMaterialMap.CastShadows">
+            <summary>
+            Gets or sets a value indicating whether the combined mesh casts shadows.
+            </summary>
+            <value>
+            <c>true</c> if the combined mesh casts shadows; otherwise, <c>false</c>.
+            </value>
+        </member>
         <member name="P:Assets.Scripts.Craft.PartGroupScript.PartGroupRendererMaterialMap.CombinedMeshVertexCount">
             <summary>
             Gets or sets the combined mesh vertex count.
@@ -19495,7 +19935,7 @@
         </member>
         <member name="P:Assets.Scripts.Craft.PartGroupScript.PartGroupRendererMaterialMap.ExcludeFromDragModel">
             <summary>
-            Gets a value indicating whether to exclude this renderer from the drag model.
+            Gets or sets a value indicating whether to exclude this renderer from the drag model.
             </summary>
             <value>
             <c>true</c> if the renderer should be excluded from the drag model; otherwise, <c>false</c>.
@@ -19525,7 +19965,7 @@
         </member>
         <member name="P:Assets.Scripts.Craft.PartGroupScript.PartGroupRendererMaterialMap.HasTransparency">
             <summary>
-            Gets a value indicating whether this renderer has transparency.
+            Gets or sets a value indicating whether this renderer has transparency.
             </summary>
             <value><c>true</c> if this renderer has transparency; otherwise, <c>false</c>.</value>
         </member>
@@ -19567,7 +20007,7 @@
         </member>
         <member name="P:Assets.Scripts.Craft.PartGroupScript.PartGroupRendererMaterialMap.RenderBeforeDepthMask">
             <summary>
-            Gets a value indicating whether to render before the depth mask.
+            Gets or sets a value indicating whether to render before the depth mask.
             </summary>
             <value>
               <c>true</c> if the mesh should render before the depth mask; otherwise, <c>false</c>.
@@ -19866,6 +20306,40 @@
             <summary>
             Unity Start method.
             </summary>
+        </member>
+        <member name="T:Assets.Scripts.Craft.Parts.FlatDecorationCulling">
+            <summary>
+            Shared visibility test for flat decoration renderers (labels, MFD screens) in the flight scene.
+            Culls by view angle and by on-screen pixel coverage.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.Parts.FlatDecorationCulling.MinPixelCoverage">
+            <summary>
+            Pixel coverage below which a flat decoration cannot meaningfully contribute to the image.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.Parts.FlatDecorationCulling.ViewAngleMarginDegrees">
+            <summary>
+            Extra view angle slack (degrees) so culling only kicks in clearly past edge-on.
+            </summary>
+        </member>
+        <member name="P:Assets.Scripts.Craft.Parts.FlatDecorationCulling.Enabled">
+            <summary>
+            Gets or sets a value indicating whether flat decoration culling is enabled.
+            </summary>
+            <value>
+            A value indicating whether flat decoration culling is enabled.
+            </value>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Parts.FlatDecorationCulling.IsVisible(UnityEngine.Vector3,UnityEngine.Vector3,System.Single,System.Single)">
+            <summary>
+            Determines whether a flat decoration is visible from the current flight camera.
+            </summary>
+            <param name="position">The world position of the decoration.</param>
+            <param name="visibleDirection">The world direction the visible face points toward (unit length).</param>
+            <param name="worldSize">The largest world space dimension of the decoration.</param>
+            <param name="visibleHalfAngle">Half the curvature angle (degrees), widening the visible fan for curved decorations.</param>
+            <returns><c>true</c> if the decoration can be visible; otherwise, <c>false</c>.</returns>
         </member>
         <member name="T:Assets.Scripts.Craft.Parts.Modifiers.CameraVantageData">
             <summary>
@@ -27704,6 +28178,22 @@
             The flight program.
             </value>
         </member>
+        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.FlightProgramScript.LastUpdateInstructions">
+            <summary>
+            Gets the number of instructions the program executed in its last update.
+            </summary>
+            <value>
+            The instruction count, letting profiling name the programs spending their frame budget.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.FlightProgramScript.ThreadCount">
+            <summary>
+            Gets the number of threads the program is currently running.
+            </summary>
+            <value>
+            The thread count, or zero when no process is running.
+            </value>
+        </member>
         <member name="M:Assets.Scripts.Craft.Parts.Modifiers.FlightProgramScript.BroadcastMessage(ModApi.Craft.Program.Craft.BroadcastScope,System.String,ModApi.Craft.Program.ExpressionResult)">
             <summary>
             Broadcasts the message.
@@ -28180,6 +28670,14 @@
             The utilization.
             </value>
         </member>
+        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.FuelTankData.DeferDesignerInitialization">
+            <summary>
+            Gets a value indicating whether the designer initialization runs lazily on first properties access.
+            </summary>
+            <value>
+            <c>true</c> if the designer initialization is deferred; otherwise, <c>false</c>.
+            </value>
+        </member>
         <member name="M:Assets.Scripts.Craft.Parts.Modifiers.FuelTankData.CalculateInitialFuel(System.Single,System.Single)">
             <summary>
             Calculates the initial fuel levels in the designer.
@@ -28497,6 +28995,11 @@
             The mesh data cache.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.AdaptiveMesh._template">
+            <summary>
+            The shared immutable source data for this mesh's style.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.AdaptiveMesh._tileable">
             <summary>
             A value indicating if the mesh should support textures tileable on the y-axis.
@@ -28553,7 +29056,7 @@
         </member>
         <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.AdaptiveMesh.Vertices">
             <summary>
-            Gets the vertices.
+            Gets the vertices (immutable, shared with all other instances of the same style).
             </summary>
             <value>
             The vertices.
@@ -28658,14 +29161,10 @@
             Initializes static members of the <see cref="T:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.AdaptiveMesh.MeshDataCache"/> class.
             </summary>
         </member>
-        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.AdaptiveMesh.MeshDataCache.#ctor(System.Int32[],UnityEngine.Vector2[],UnityEngine.Vector2[],UnityEngine.Vector3[],System.Int32)">
+        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.AdaptiveMesh.MeshDataCache.#ctor(System.Int32)">
             <summary>
             Initializes a new instance of the <see cref="T:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.AdaptiveMesh.MeshDataCache" /> class.
             </summary>
-            <param name="triangles">The triangles for the adaptive mesh.</param>
-            <param name="uvs">The original UVs for the adaptive mesh.</param>
-            <param name="uv2s">The original second set of UVs for the adaptive mesh.</param>
-            <param name="normals">The normals.</param>
             <param name="vertexCount">The vertex count for the adaptive mesh.</param>
         </member>
         <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.AdaptiveMesh.MeshDataCache.Normals">
@@ -28675,30 +29174,6 @@
             </summary>
             <value>
             The normals array for the mesh.
-            </value>
-        </member>
-        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.AdaptiveMesh.MeshDataCache.OriginalNormals">
-            <summary>
-            Gets the original normals.
-            </summary>
-            <value>
-            The original normals.
-            </value>
-        </member>
-        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.AdaptiveMesh.MeshDataCache.OriginalUV2s">
-            <summary>
-            Gets the original second set of UVs.
-            </summary>
-            <value>
-            The original second set of UVs.
-            </value>
-        </member>
-        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.AdaptiveMesh.MeshDataCache.OriginalUVs">
-            <summary>
-            Gets the original UVs for the adaptive mesh.
-            </summary>
-            <value>
-            The original UVs for the adaptive mesh.
             </value>
         </member>
         <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.AdaptiveMesh.MeshDataCache.Tangents">
@@ -28726,14 +29201,6 @@
             </summary>
             <value>
             The second temporary array for the mesh.
-            </value>
-        </member>
-        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.AdaptiveMesh.MeshDataCache.Triangles">
-            <summary>
-            Gets the triangles for the adaptive mesh.
-            </summary>
-            <value>
-            The triangles for the adaptive mesh.
             </value>
         </member>
         <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.AdaptiveMesh.MeshDataCache.UVs">
@@ -29448,6 +29915,14 @@
             The girth.
             </value>
         </member>
+        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.FuselageData.DeferDesignerInitialization">
+            <summary>
+            Gets a value indicating whether the designer initialization runs lazily on first properties access.
+            </summary>
+            <value>
+            <c>true</c> if the designer initialization is deferred; otherwise, <c>false</c>.
+            </value>
+        </member>
         <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.FuselageData.CalculateVolumeFromMesh(UnityEngine.Mesh)">
             <summary>
             Calculates the volume and offset for the Center of Mass of the fuselage.
@@ -29644,6 +30119,128 @@
             </summary>
             <param name="name">The name.</param>
             <returns>The mesh.</returns>
+        </member>
+        <member name="T:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.FuselageMeshTemplate">
+            <summary>
+            Immutable source data for an adaptive fuselage mesh, shared by every part instance built from the same source mesh.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.FuselageMeshTemplate._templates">
+            <summary>
+            The templates, keyed by their undeformed source mesh and construction flags.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.FuselageMeshTemplate.#ctor(UnityEngine.Mesh,System.Boolean,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.FuselageMeshTemplate"/> class.
+            </summary>
+            <param name="sourceMesh">The undeformed source mesh.</param>
+            <param name="anchorsEnabled">If set to <c>true</c>, edge loop anchors are enabled for the mesh.</param>
+            <param name="useSimpleRadialScaling">If set to <c>true</c>, vertices use simple radial scaling.</param>
+        </member>
+        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.FuselageMeshTemplate.OriginalNormals">
+            <summary>
+            Gets the original normals of the source mesh.
+            </summary>
+            <value>
+            The original normals of the source mesh.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.FuselageMeshTemplate.OriginalUVs">
+            <summary>
+            Gets the original first UV channel of the source mesh.
+            </summary>
+            <value>
+            The original first UV channel of the source mesh.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.FuselageMeshTemplate.OriginalUV2s">
+            <summary>
+            Gets the original second UV channel of the source mesh.
+            </summary>
+            <value>
+            The original second UV channel of the source mesh.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.FuselageMeshTemplate.OriginalVertices">
+            <summary>
+            Gets the original vertices of the source mesh.
+            </summary>
+            <value>
+            The original vertices of the source mesh.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.FuselageMeshTemplate.Triangles">
+            <summary>
+            Gets the triangles of the source mesh.
+            </summary>
+            <value>
+            The triangles of the source mesh.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.FuselageMeshTemplate.Vertices">
+            <summary>
+            Gets the classified adaptive vertices (immutable, shared by all instances of the style).
+            </summary>
+            <value>
+            The classified adaptive vertices.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.FuselageMeshTemplate.HardEdgeVertices">
+            <summary>
+            Gets the vertex indices that keep their original normals (hard edges), or null before
+            <see cref="M:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.FuselageMeshTemplate.EnsureSmoothingTopology"/> runs.
+            </summary>
+            <value>
+            The hard edge vertex indices.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.FuselageMeshTemplate.SmoothingEntryComputes">
+            <summary>
+            Gets, for each smoothing group entry, whether it is the last occurrence of its vertex within the group (earlier ones are skipped by the solver).
+            </summary>
+            <value>
+            The per-entry last-occurrence flags.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.FuselageMeshTemplate.SmoothingGroupStarts">
+            <summary>
+            Gets the start offsets (one extra trailing entry) of each co-located vertex group within
+            <see cref="P:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.FuselageMeshTemplate.SmoothingGroupVertexIndices"/>, or null before <see cref="M:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.FuselageMeshTemplate.EnsureSmoothingTopology"/> runs.
+            </summary>
+            <value>
+            The smoothing group start offsets.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.FuselageMeshTemplate.SmoothingGroupTriangleIndices">
+            <summary>
+            Gets the triangle index of each smoothing group entry.
+            </summary>
+            <value>
+            The triangle index of each smoothing group entry.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.FuselageMeshTemplate.SmoothingGroupVertexIndices">
+            <summary>
+            Gets the vertex index of each smoothing group entry.
+            </summary>
+            <value>
+            The vertex index of each smoothing group entry.
+            </value>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.FuselageMeshTemplate.GetOrCreate(UnityEngine.Mesh,System.Boolean,System.Boolean)">
+            <summary>
+            Gets (creating on first use) the template for the specified source mesh.
+            </summary>
+            <param name="sourceMesh">The undeformed source mesh.</param>
+            <param name="anchorsEnabled">If set to <c>true</c>, edge loop anchors are enabled for the mesh.</param>
+            <param name="useSimpleRadialScaling">If set to <c>true</c>, vertices use simple radial scaling.</param>
+            <returns>The template.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.FuselageMeshTemplate.EnsureSmoothingTopology">
+            <summary>
+            Builds (once) the normal smoothing topology: triangle corners grouped by co-located original vertex position, plus the hard edge vertex list.
+            </summary>
         </member>
         <member name="T:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.FuselageScript">
             <summary>
@@ -29895,11 +30492,12 @@
             Updates the fuel capacity.
             </summary>
         </member>
-        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.FuselageScript.UpdateMeshes(System.Boolean)">
+        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.FuselageScript.UpdateMeshes(System.Boolean,System.Boolean)">
             <summary>
             Updates the meshes.
             </summary>
             <param name="updateNormalSmoothing">Whether to update the normal smoothing. Should be true if you are in the designer, and not loading the craft but updating the part alone.</param>
+            <param name="trustSavedVolume">Whether a valid serialized volume/CoM may be used instead of rebuilding the volume reference mesh. Only safe at craft load, where the data cannot have changed since it was saved.</param>
         </member>
         <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Fuselage.FuselageScript.GetConnectedFuselage(System.String)">
             <summary>
@@ -32064,6 +32662,14 @@
               <c>true</c> if the input controller zeros out when deactivated; otherwise, <c>false</c>.
             </value>
         </member>
+        <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Input.InputControllerData.DeferDesignerInitialization">
+            <summary>
+            Gets a value indicating whether the designer initialization runs lazily on first properties access.
+            </summary>
+            <value>
+            <c>true</c> if the designer initialization is deferred; otherwise, <c>false</c>.
+            </value>
+        </member>
         <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Input.InputControllerData.GenerateStateXml(System.Boolean)">
             <summary>
             Generates the XElement to fully describe the state of this modifier for serialization purposes.
@@ -33811,6 +34417,16 @@
             <seealso cref="T:ModApi.GameLoop.Interfaces.IFlightUpdate" />
             <seealso cref="T:ModApi.GameLoop.Interfaces.IFlightFixedUpdate" />
         </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.JointRotatorScript._appliedJointAngle">
+            <summary>
+            The angle last driven into the joint, or NaN when the joint needs a fresh write.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.JointRotatorScript._appliedVisualAngle">
+            <summary>
+            The angle last applied to the visual mesh, or NaN when it needs a fresh write.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Craft.Parts.Modifiers.JointRotatorScript._attachPointPositions">
             <summary>
             The attach point positions
@@ -34420,6 +35036,16 @@
             The character whitelist restricted
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.LabelScript._bakedScaleY">
+            <summary>
+            The lossy y scale the mesh was baked at.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.LabelScript._bakePending">
+            <summary>
+            Whether the text object should be baked on the next flight update.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Craft.Parts.Modifiers.LabelScript._collider">
             <summary>
             The collider
@@ -34430,6 +35056,11 @@
             The craft controls changed migrator
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.LabelScript._cullingPhase">
+            <summary>
+            The frame phase (0-3) on which this label evaluates its visibility, spreading the cost over frames.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Craft.Parts.Modifiers.LabelScript._inputMatches">
             <summary>
             The inputs
@@ -34438,6 +35069,32 @@
         <member name="F:Assets.Scripts.Craft.Parts.Modifiers.LabelScript._label">
             <summary>
             The label
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.LabelScript._labelVisible">
+            <summary>
+            Whether the label is currently visible (not hidden by decoration culling).
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.LabelScript._meshBaked">
+            <summary>
+            Whether the text object has been switched off and left rendering its generated mesh.
+            Anything that writes to the text object must call <see cref="M:Assets.Scripts.Craft.Parts.Modifiers.LabelScript.UnbakeMesh"/> first.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.LabelScript._scrubbedSourceText">
+            <summary>
+            The source text <see cref="F:Assets.Scripts.Craft.Parts.Modifiers.LabelScript._scrubbedText"/> was produced from.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.LabelScript._scrubbedText">
+            <summary>
+            The scrubbed text cached for a label without inputs, or null when nothing is cached.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.LabelScript._scrubbedWhitelist">
+            <summary>
+            The whitelist <see cref="F:Assets.Scripts.Craft.Parts.Modifiers.LabelScript._scrubbedText"/> was scrubbed against.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Craft.Parts.Modifiers.LabelScript._whitelist">
@@ -34551,6 +35208,16 @@
             </summary>
             <param name="obj">The object.</param>
         </member>
+        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.LabelScript.ApplyVisibility">
+            <summary>
+            Applies the cached culling visibility to the label's renderers.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.LabelScript.BakeMesh">
+            <summary>
+            Switches the text object off and leaves its generated mesh rendering.
+            </summary>
+        </member>
         <member name="M:Assets.Scripts.Craft.Parts.Modifiers.LabelScript.MatchInputs(System.String)">
             <summary>
             Matches the inputs.
@@ -34583,6 +35250,11 @@
             <param name="text">The text.</param>
             <param name="refreshInputs">if set to <c>true</c> [generate new inputs for matches].</param>
         </member>
+        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.LabelScript.UnbakeMesh">
+            <summary>
+            Switches the text object back on so it regenerates its mesh.
+            </summary>
+        </member>
         <member name="M:Assets.Scripts.Craft.Parts.Modifiers.LabelScript.UpdateInput(ModApi.Craft.Parts.Input.IInputControllerInput)">
             <summary>
             Updates the input.
@@ -34597,6 +35269,11 @@
         <member name="M:Assets.Scripts.Craft.Parts.Modifiers.LabelScript.UpdateLabelText">
             <summary>
             Updates the label text.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.LabelScript.UpdateVisibility">
+            <summary>
+            Updates the label's decoration culling visibility (view angle and pixel coverage) and applies it to the renderers.
             </summary>
         </member>
         <member name="M:Assets.Scripts.Craft.Parts.Modifiers.LabelScript.UpdateTextCollider(System.Boolean)">
@@ -39004,6 +39681,11 @@
             Multiplier used to determine how quickly to lerp towards the target volume.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.LoopingAudioScript._parkedSilent">
+            <summary>
+            Whether the loop is silent and stopped, so idle updates can skip the audio source calls.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Craft.Parts.Modifiers.LoopingAudioScript._maxDistance">
             <summary>
             The maximum distance
@@ -39994,6 +40676,13 @@
             Gets the next stencil value.
             </summary>
             <returns>The next stencil value.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Mfd.MfdScript.IsScreenVisible">
+            <summary>
+            Determines whether the screen passes decoration culling (view angle and pixel coverage).
+            Hidden screens also stop updating their widgets, since deactivation unregisters them from the game loop.
+            </summary>
+            <returns><c>true</c> if the screen can be visible; otherwise, <c>false</c>.</returns>
         </member>
         <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Mfd.MfdScript.InitializeWidgetMaterial(Assets.Scripts.Craft.Parts.Modifiers.Mfd.WidgetScript)">
             <summary>
@@ -41637,6 +42326,11 @@
             <seealso cref="T:ModApi.GameLoop.Interfaces.IDesignerUpdate" />
             <seealso cref="T:ModApi.GameLoop.Interfaces.IFlightUpdate" />
             <seealso cref="T:ModApi.GameLoop.Interfaces.IFlightFixedUpdate" />
+        </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.PistonScript._appliedPosition">
+            <summary>
+            The position last applied to the shaft and joint, or NaN when they need a fresh write.
+            </summary>
         </member>
         <member name="F:Assets.Scripts.Craft.Parts.Modifiers.PistonScript._audio">
             <summary>
@@ -45484,6 +46178,11 @@
             <seealso cref="!:ModApi.Craft.Parts.PartModifierScript&lt;Assets.Scripts.Craft.Parts.Modifiers.Propulsion.InletData&gt;" />
             <seealso cref="T:ModApi.GameLoop.Interfaces.IFlightUpdate" />
         </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.InletScript._jetSearchVisited">
+            <summary>
+            Reused visited set (main-thread only) for the jet engine search, so structure rebuilds don't allocate per inlet.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.InletScript._inletAir">
             <summary>
             The inlet air to provide air to.
@@ -45502,6 +46201,11 @@
         <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.InletScript._occlusionSampler">
             <summary>
             The occlusion sampler
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.InletScript._occlusionSamplerMode">
+            <summary>
+            The configuration the current occlusion sampler was built for: 0 none, 1 normal, 2 reversed, -1 unset.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.InletScript._openDirection">
@@ -45564,7 +46268,7 @@
             Finds the inlet air to use.
             </summary>
         </member>
-        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.InletScript.FindJetEngine(ModApi.Craft.Parts.PartData,ModApi.Craft.PartLookup)">
+        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Propulsion.InletScript.FindJetEngine(ModApi.Craft.Parts.PartData,System.Collections.Generic.HashSet{ModApi.Craft.Parts.PartData})">
             <summary>
             Recursive method that finds the jet engine connected directly or indirectly (through
             multiple inlets) to this inlet.
@@ -52843,6 +53547,11 @@
             The hinge holder closed position
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Solar.SolarPanelArrayScript._hingesRotatedLastUpdate">
+            <summary>
+            Whether any hinge rotated during the previous update, so the settle frame still refreshes state.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Solar.SolarPanelArrayScript._ignoreHingeRenderers">
             <summary>
             Reused buffer for hinges whose renderers stay enabled during array updates.
@@ -53129,6 +53838,14 @@
             Opens solar panels to saved open percentage.
             </summary>
         </member>
+        <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Solar.SolarPanelArrayScript.RotateCoverTowards(UnityEngine.Transform,System.Single,System.Single)">
+            <summary>
+            Rotates a solar cover towards the target Z angle, skipping the transform write once it arrives.
+            </summary>
+            <param name="cover">The cover transform.</param>
+            <param name="targetZ">The target Z euler angle.</param>
+            <param name="deltaTime">The frame delta time.</param>
+        </member>
         <member name="M:Assets.Scripts.Craft.Parts.Modifiers.Solar.SolarPanelArrayScript.Setup">
             <summary>
             Sets up some things... (variables like this._meshes, hinge holder, and does resource loading)
@@ -53241,6 +53958,11 @@
         <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Solar.SolarPanelHinge._childrenOpened">
             <summary>
             The children opened
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.Parts.Modifiers.Solar.SolarPanelHinge._settledOpen">
+            <summary>
+            Whether the hinge is parked at its open rotation, so updates can skip the transform writes.
             </summary>
         </member>
         <member name="P:Assets.Scripts.Craft.Parts.Modifiers.Solar.SolarPanelHinge.ClosedRotation">
@@ -56446,6 +57168,13 @@
             <param name="partB">The part B.</param>
             <returns>The collision handling method to use between the two specified parts.</returns>
         </member>
+        <member name="M:Assets.Scripts.Craft.Parts.PartCollisionIgnoreUtility.ResolvePartCollisionHandling(ModApi.Craft.Parts.PartData)">
+            <summary>
+            Resolves the effective collision handling method for a single part.
+            </summary>
+            <param name="part">The part.</param>
+            <returns>The effective collision handling method.</returns>
+        </member>
         <member name="M:Assets.Scripts.Craft.Parts.PartCollisionIgnoreUtility.UpdatePartCollisions(ModApi.Craft.Assembly,ModApi.Craft.Parts.PartData,ModApi.Craft.Parts.PartData,System.Collections.Generic.Dictionary{System.Int32,Assets.Scripts.Craft.Parts.PartCollisionIgnoreUtility.ColliderInfo[]})">
             <summary>
             Updates the part collisions between the two specified parts.
@@ -56463,6 +57192,16 @@
         <member name="F:Assets.Scripts.Craft.Parts.PartCollisionIgnoreUtility.ColliderInfo.AttachPointType">
             <summary>
             The attach point type.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.Parts.PartCollisionIgnoreUtility.ColliderInfo.Bounds">
+            <summary>
+            The cached world bounds (only valid once <see cref="F:Assets.Scripts.Craft.Parts.PartCollisionIgnoreUtility.ColliderInfo.HasBounds"/> is set).
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.Parts.PartCollisionIgnoreUtility.ColliderInfo.HasBounds">
+            <summary>
+            Whether <see cref="F:Assets.Scripts.Craft.Parts.PartCollisionIgnoreUtility.ColliderInfo.Bounds"/> has been cached (bounds must be read while the collider is enabled).
             </summary>
         </member>
         <member name="F:Assets.Scripts.Craft.Parts.PartCollisionIgnoreUtility.ColliderInfo.Collider">
@@ -56890,6 +57629,18 @@
             The visible flag.
             </summary>
         </member>
+        <member name="E:Assets.Scripts.Craft.Parts.PartMaterialScript.DesignerGeometryChanged">
+            <summary>
+            Occurs when a designer part's mesh data is rewritten in place (paint, theme, renderer re-registration),
+            so the designer mesh combine can discard any combined copy of it.
+            </summary>
+        </member>
+        <member name="E:Assets.Scripts.Craft.Parts.PartMaterialScript.DesignerVisualsChanged">
+            <summary>
+            Occurs when a designer part's material visuals are updated or its visibility changes,
+            so the designer mesh combine can uncombine it before the change shows.
+            </summary>
+        </member>
         <member name="E:Assets.Scripts.Craft.Parts.PartMaterialScript.RendererAdded">
             <summary>
             Occurs when a renderer is added.
@@ -56911,6 +57662,15 @@
             </summary>
             <value>
               <c>true</c> if the part has found an attach point while dragging in the designer; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Craft.Parts.PartMaterialScript.HasVolatileDesignerState">
+            <summary>
+            Gets a value indicating whether the part shows designer state visuals (selection tints, drag
+            ghosts) a combined mesh cannot represent. Hover and hidden parts are excluded by design.
+            </summary>
+            <value>
+              <c>true</c> if the part shows designer state visuals; otherwise, <c>false</c>.
             </value>
         </member>
         <member name="P:Assets.Scripts.Craft.Parts.PartMaterialScript.IsCollidingInDesigner">
@@ -57023,6 +57783,12 @@
             <param name="level">The level for which to get the part material index.</param>
             <returns>The part material index for the specified level.</returns>
         </member>
+        <member name="M:Assets.Scripts.Craft.Parts.PartMaterialScript.HideRendererForDesignerCombine(ModApi.Craft.Parts.IRendererMaterialMap)">
+            <summary>
+            Hides the renderer while a designer combined mesh draws in its place.
+            </summary>
+            <param name="rendererMap">The renderer map to hide.</param>
+        </member>
         <member name="M:Assets.Scripts.Craft.Parts.PartMaterialScript.Initialize(ModApi.Craft.ICraftScript,ModApi.Craft.Parts.IPartScript)">
             <summary>
             Initializes the specified craft.
@@ -57064,6 +57830,12 @@
             <summary>
             Restores the original materials.
             </summary>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Parts.PartMaterialScript.RestoreRendererForDesignerCombine(ModApi.Craft.Parts.IRendererMaterialMap)">
+            <summary>
+            Restores a renderer hidden by a designer combined mesh.
+            </summary>
+            <param name="rendererMap">The renderer map to restore.</param>
         </member>
         <member name="M:Assets.Scripts.Craft.Parts.PartMaterialScript.SetMaterial(System.Int32,System.Int32)">
             <summary>
@@ -57199,6 +57971,11 @@
             The current materials of the renderer (assuming they were last set by this object).
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Craft.Parts.PartMaterialScript.RendererMaterialMap._designerCombineRestoreEnabled">
+            <summary>
+            The enabled state of the renderer before the designer mesh combine hid it.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Craft.Parts.PartMaterialScript.RendererMaterialMap._emissiveOverride">
             <summary>
             The emissive override value.
@@ -57276,6 +58053,14 @@
             If positive, that value will be used for the alpha-ness of the renderer.
             </value>
         </member>
+        <member name="P:Assets.Scripts.Craft.Parts.PartMaterialScript.RendererMaterialMap.CastShadows">
+            <summary>
+            Gets a value indicating whether this renderer casts shadows.
+            </summary>
+            <value>
+              <c>true</c> if the renderer casts shadows; otherwise, <c>false</c>.
+            </value>
+        </member>
         <member name="P:Assets.Scripts.Craft.Parts.PartMaterialScript.RendererMaterialMap.CombinedMeshVertexCount">
             <summary>
             Gets or sets the combined mesh vertex count.
@@ -57290,6 +58075,14 @@
             </summary>
             <value>
             The combined mesh vertex offset.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Craft.Parts.PartMaterialScript.RendererMaterialMap.DesignerCombineHidden">
+            <summary>
+            Gets a value indicating whether the renderer is hidden because a designer combined mesh draws in its place.
+            </summary>
+            <value>
+              <c>true</c> if the renderer is hidden by a designer combined mesh; otherwise, <c>false</c>.
             </value>
         </member>
         <member name="P:Assets.Scripts.Craft.Parts.PartMaterialScript.RendererMaterialMap.DecalTexture">
@@ -57487,6 +58280,13 @@
             </summary>
             <param name="material">The material for which to replace the original materials.</param>
             <param name="setAsCurrent">If set to <c>true</c>, the new material will be set as the current active material.</param>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Parts.PartMaterialScript.RendererMaterialMap.SetDesignerCombineHidden(System.Boolean)">
+            <summary>
+            Hides or restores the renderer for the designer mesh combine. Restoring returns the exact
+            pre-hide enabled state, so renderers disabled by design (e.g. collider helpers) stay disabled.
+            </summary>
+            <param name="hidden">If set to <c>true</c>, a designer combined mesh draws in the renderer's place.</param>
         </member>
         <member name="M:Assets.Scripts.Craft.Parts.PartMaterialScript.RendererMaterialMap.SetRendererMaterial(UnityEngine.Material)">
             <summary>
@@ -58586,6 +59386,26 @@
             </summary>
             <seealso cref="!:Assets.Scripts.Craft.WaterPhysics&lt;Assets.Scripts.Craft.Parts.PartWaterPhysics&gt;" />
         </member>
+        <member name="F:Assets.Scripts.Craft.Parts.PartWaterPhysics._boxCenter">
+            <summary>
+            The local center of the cached collider box.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.Parts.PartWaterPhysics._boxCollider">
+            <summary>
+            The collider the cached local box was built from.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.Parts.PartWaterPhysics._boxExtents">
+            <summary>
+            The local half-extents of the cached collider box.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.Parts.PartWaterPhysics._boxMesh">
+            <summary>
+            The shared mesh the cached box was built from, when the collider is a mesh collider.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Craft.Parts.PartWaterPhysics._partScript">
             <summary>
             The part script
@@ -58641,6 +59461,20 @@
             <summary>
             Updates the water physics for this object.
             </summary>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Parts.PartWaterPhysics.CacheColliderBox(UnityEngine.Collider)">
+            <summary>
+            Caches the collider's local bounding box so submersion needs no physics queries.
+            </summary>
+            <param name="collider">The collider to cache the box for.</param>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Parts.PartWaterPhysics.CalculateBoxSubmergedPercent(UnityEngine.Collider)">
+            <summary>
+            Calculates the submerged percent from the collider's cached box, replacing the old
+            per-step Collider.ClosestPoint physics queries with three axis projections.
+            </summary>
+            <param name="collider">The part's primary collider.</param>
+            <returns>The current under-water percent for this part.</returns>
         </member>
         <member name="M:Assets.Scripts.Craft.Parts.PartWaterPhysics.CalculateMaxDisplacementVolume">
             <summary>
@@ -59544,7 +60378,7 @@
         </member>
         <member name="F:Assets.Scripts.Craft.Theme._defaultPartMaterialInstances">
             <summary>
-            The list of default part material instances.
+            The default part material instances. A set so per-group releases stay O(1) on huge crafts.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Craft.Theme._defaultPartTMProMaterials">
@@ -59565,6 +60399,41 @@
         <member name="F:Assets.Scripts.Craft.Theme._materialColors">
             <summary>
             The material colors array.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.Theme._rimShadeRequests">
+            <summary>
+            The number of active rim shade requests on the shared part-group materials.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.Theme._sharedBdmPartMaterial">
+            <summary>
+            The shared before-depth-mask part-group material.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.Theme._sharedBdmPartMaterialRefCount">
+            <summary>
+            The reference count for <see cref="F:Assets.Scripts.Craft.Theme._sharedBdmPartMaterial"/>.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.Theme._sharedDefaultPartMaterial">
+            <summary>
+            The shared default part-group material.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.Theme._sharedDefaultPartMaterialRefCount">
+            <summary>
+            The reference count for <see cref="F:Assets.Scripts.Craft.Theme._sharedDefaultPartMaterial"/>.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.Theme._sharedTransparentPartMaterial">
+            <summary>
+            The shared transparent part-group material.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Craft.Theme._sharedTransparentPartMaterialRefCount">
+            <summary>
+            The reference count for <see cref="F:Assets.Scripts.Craft.Theme._sharedTransparentPartMaterial"/>.
             </summary>
         </member>
         <member name="F:Assets.Scripts.Craft.Theme._materialData">
@@ -59589,7 +60458,7 @@
         </member>
         <member name="F:Assets.Scripts.Craft.Theme._transparentPartMaterialInstances">
             <summary>
-            The list of transparent part material instances.
+            The transparent part material instances. A set so per-group releases stay O(1) on huge crafts.
             </summary>
         </member>
         <member name="M:Assets.Scripts.Craft.Theme.#ctor(ModApi.Craft.ThemeData)">
@@ -59688,6 +60557,11 @@
             The part state coloring information.
             </value>
         </member>
+        <member name="M:Assets.Scripts.Craft.Theme.AddRimShadeRequest">
+            <summary>
+            Adds a request for rim shading on the shared part-group materials (ref counted).
+            </summary>
+        </member>
         <member name="M:Assets.Scripts.Craft.Theme.Dispose">
             <summary>
             Releases unmanaged and - optionally - managed resources.
@@ -59730,11 +60604,31 @@
             <param name="materialKey">The material key.</param>
             <param name="material">The material instance to release.</param>
         </member>
+        <member name="M:Assets.Scripts.Craft.Theme.ReleaseSharedBdmPartMaterial">
+            <summary>
+            Releases a reference to the shared before-depth-mask part-group material.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Theme.ReleaseSharedDefaultPartMaterial">
+            <summary>
+            Releases a reference to the shared default part-group material.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Theme.ReleaseSharedTransparentPartMaterial">
+            <summary>
+            Releases a reference to the shared transparent part-group material.
+            </summary>
+        </member>
         <member name="M:Assets.Scripts.Craft.Theme.ReleaseTransparentPartMaterialInstance(UnityEngine.Material)">
             <summary>
             Releases an instance of the transparent part material.
             </summary>
             <param name="material">The material to release.</param>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Theme.RemoveRimShadeRequest">
+            <summary>
+            Removes a request for rim shading on the shared part-group materials (ref counted).
+            </summary>
         </member>
         <member name="M:Assets.Scripts.Craft.Theme.RequestDefaultPartMaterialInstance">
             <summary>
@@ -59750,6 +60644,24 @@
             </summary>
             <param name="materialKey">The material key.</param>
             <returns>The requested material.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Theme.RequestSharedBdmPartMaterial">
+            <summary>
+            Requests a reference to the shared before-depth-mask part-group material (ref counted, created on first use).
+            </summary>
+            <returns>The shared before-depth-mask part-group material.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Theme.RequestSharedDefaultPartMaterial">
+            <summary>
+            Requests a reference to the shared default part-group material (ref counted, created on first use).
+            </summary>
+            <returns>The shared default part-group material.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Theme.RequestSharedTransparentPartMaterial">
+            <summary>
+            Requests a reference to the shared transparent part-group material (ref counted, created on first use).
+            </summary>
+            <returns>The shared transparent part-group material.</returns>
         </member>
         <member name="M:Assets.Scripts.Craft.Theme.RequestTransparentPartMaterialInstance">
             <summary>
@@ -59797,6 +60709,13 @@
             <param name="createCopy">If set to <c>true</c>, a copy of the material will be created and returned.</param>
             <returns>The requested part material.</returns>
         </member>
+        <member name="M:Assets.Scripts.Craft.Theme.SetRimShadeKeyword(UnityEngine.Material,System.Boolean)">
+            <summary>
+            Enables or disables the rim shade keyword on the specified material.
+            </summary>
+            <param name="material">The material, which may be null.</param>
+            <param name="enabled">If set to <c>true</c>, the rim shade keyword is enabled.</param>
+        </member>
         <member name="M:Assets.Scripts.Craft.Theme.ApplyQualitySettings(ModApi.Settings.IGameQualitySettings)">
             <summary>
             Applies the quality settings to all materials.
@@ -59823,6 +60742,14 @@
             <summary>
             Creates the part materials or updates them based on the current quality settings.
             </summary>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Theme.CreateSharedPartGroupMaterial(UnityEngine.Material,System.String)">
+            <summary>
+            Applies the part-group specific state (name, selection color, rim shade) to a freshly requested shared material.
+            </summary>
+            <param name="material">The requested material instance.</param>
+            <param name="name">The material name.</param>
+            <returns>The configured material.</returns>
         </member>
         <member name="M:Assets.Scripts.Craft.Theme.DestroyMaterials(UnityEngine.Material[])">
             <summary>
@@ -59859,6 +60786,12 @@
             <summary>
             Refreshes all the part materials in the theme.
             </summary>
+        </member>
+        <member name="M:Assets.Scripts.Craft.Theme.SetRimShadeKeyword(System.Boolean)">
+            <summary>
+            Enables or disables the rim shade keyword on the shared part-group materials.
+            </summary>
+            <param name="enabled">If set to <c>true</c>, rim shading is enabled.</param>
         </member>
         <member name="M:Assets.Scripts.Craft.Theme.UpdateMaterialColors">
             <summary>
@@ -62290,6 +63223,11 @@
             </summary>
             <seealso cref="T:UnityEngine.MonoBehaviour" />
         </member>
+        <member name="F:Assets.Scripts.Design.DesignerLightScript.FillLightKeyword">
+            <summary>
+            The shader keyword that compiles the folded fill light into the part base pass.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Design.DesignerLightScript._mainLight">
             <summary>
             The main light.
@@ -62299,6 +63237,15 @@
             <summary>
             The secondary light.
             </summary>
+        </member>
+        <member name="P:Assets.Scripts.Design.DesignerLightScript.DriveCraftFillGlobals">
+            <summary>
+            Gets or sets a value indicating whether this instance drives the craft fill shader globals.
+            Only the designer scene's instance should; a part viewer copy would stomp and zero them.
+            </summary>
+            <value>
+              <c>true</c> if this instance drives the craft fill shader globals; otherwise, <c>false</c>.
+            </value>
         </member>
         <member name="M:Assets.Scripts.Design.DesignerLightScript.UpdateLights">
             <summary>
@@ -62337,9 +63284,274 @@
             The shader property IDs.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Design.DesignerLightScript.ShaderPropertyIds.DirectionalLightAdditiveColor">
+            <summary>
+            The shader property id for the additive directional light color.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Design.DesignerLightScript.ShaderPropertyIds.DirectionalLightAdditiveDirection">
             <summary>
             The shader property id for the additive directional light direction.
+            </summary>
+        </member>
+        <member name="T:Assets.Scripts.Design.DesignerMeshCombiner">
+            <summary>
+            Combines the designer craft's part meshes into part group renderers while the craft is idle,
+            exploding groups back to per-part renderers the moment editing touches them.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Design.DesignerMeshCombiner.CombinePartCountThreshold">
+            <summary>
+            The part count below which the designer never combines, being one group's worth of parts.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Design.DesignerMeshCombiner.ActiveValidationsPerFrame">
+            <summary>
+            The number of combined groups pose-validated per frame, so silent moves can't draw stale for long.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Design.DesignerMeshCombiner.CombineBudgetMs">
+            <summary>
+            The per-frame combine budget in milliseconds.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Design.DesignerMeshCombiner.GroupsPerValidation">
+            <summary>
+            The combined groups each pose validation covers, scaling the sweep with the craft.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Design.DesignerMeshCombiner.MaxValidationsPerFrame">
+            <summary>
+            The ceiling on combined groups pose-validated per frame.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Design.DesignerMeshCombiner.QuietSeconds">
+            <summary>
+            The seconds without edit signals before groups recombine.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Design.DesignerMeshCombiner._groupsByPart">
+            <summary>
+            The combined group record owning each part, for per-part explosion.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Design.DesignerMeshCombiner._partsBySymmetryId">
+            <summary>
+            The parts sharing each symmetry id, for invalidating mirror counterparts that edit together.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Design.DesignerMeshCombiner._recordsByPart">
+            <summary>
+            The partition record for every part (combined or not), for targeted cache invalidation.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Design.DesignerMeshCombiner._designer">
+            <summary>
+            The designer.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Design.DesignerMeshCombiner._groups">
+            <summary>
+            The partitioned part clusters and their combined groups (null while the partition is stale).
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Design.DesignerMeshCombiner._lastEditTime">
+            <summary>
+            The time of the last edit signal.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Design.DesignerMeshCombiner._nextGroupId">
+            <summary>
+            The next group id (only used for object naming; designer groups are transient).
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Design.DesignerMeshCombiner._validationCursor">
+            <summary>
+            The round-robin cursor of the per-frame pose validation sweep.
+            </summary>
+        </member>
+        <member name="P:Assets.Scripts.Design.DesignerMeshCombiner.CombineBudgetMsOverride">
+            <summary>
+            Gets or sets the per-frame combine budget override in milliseconds (0 = use the normal budget).
+            The benchmark raises it so waiting for a full combine costs work time, not amortization time.
+            </summary>
+            <value>The per-frame combine budget override in milliseconds.</value>
+        </member>
+        <member name="P:Assets.Scripts.Design.DesignerMeshCombiner.CombineCount">
+            <summary>
+            Gets the number of fresh group combines performed (benchmark counter).
+            </summary>
+            <value>The number of fresh group combines performed.</value>
+        </member>
+        <member name="P:Assets.Scripts.Design.DesignerMeshCombiner.CombineTicks">
+            <summary>
+            Gets the time spent combining and reactivating groups, in stopwatch ticks (benchmark counter).
+            </summary>
+            <value>The time spent combining and reactivating groups, in stopwatch ticks.</value>
+        </member>
+        <member name="P:Assets.Scripts.Design.DesignerMeshCombiner.ExplodeCount">
+            <summary>
+            Gets the number of group explosions performed (benchmark counter).
+            </summary>
+            <value>The number of group explosions performed.</value>
+        </member>
+        <member name="P:Assets.Scripts.Design.DesignerMeshCombiner.ExplodeTicks">
+            <summary>
+            Gets the time spent exploding groups, in stopwatch ticks (benchmark counter).
+            </summary>
+            <value>The time spent exploding groups, in stopwatch ticks.</value>
+        </member>
+        <member name="P:Assets.Scripts.Design.DesignerMeshCombiner.IsFullyCombined">
+            <summary>
+            Gets a value indicating whether every partitioned group currently draws combined.
+            </summary>
+            <value><c>true</c> if every partitioned group currently draws combined; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:Assets.Scripts.Design.DesignerMeshCombiner.QuietSecondsOverride">
+            <summary>
+            Gets or sets the quiet-period override in seconds (0 = use the normal quiet period).
+            </summary>
+            <value>The quiet-period override in seconds.</value>
+        </member>
+        <member name="P:Assets.Scripts.Design.DesignerMeshCombiner.ReactivateCount">
+            <summary>
+            Gets the number of pooled group reactivations performed (benchmark counter).
+            </summary>
+            <value>The number of pooled group reactivations performed.</value>
+        </member>
+        <member name="M:Assets.Scripts.Design.DesignerMeshCombiner.Initialize(Assets.Scripts.Design.DesignerScript)">
+            <summary>
+            Initializes the combiner for the specified designer.
+            </summary>
+            <param name="designer">The designer.</param>
+        </member>
+        <member name="M:Assets.Scripts.Design.DesignerMeshCombiner.OnCraftEdited">
+            <summary>
+            Called for every craft mutating action; invalidates the groups the edit can reshape.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Design.DesignerMeshCombiner.OnDestroy">
+            <summary>
+            This function is called when the MonoBehaviour will be destroyed.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Design.DesignerMeshCombiner.Update">
+            <summary>
+            Validates combined groups and recombines exploded ones once the craft has been quiet.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Design.DesignerMeshCombiner.BuildPartition(System.Collections.Generic.IReadOnlyList{ModApi.Craft.Parts.PartData})">
+            <summary>
+            Builds the part group partition for the current craft.
+            </summary>
+            <param name="parts">The craft parts.</param>
+            <returns>The group records, one per multi-part cluster.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Design.DesignerMeshCombiner.CanCombine(Assets.Scripts.Design.DesignerMeshCombiner.GroupRecord)">
+            <summary>
+            Gets a value indicating whether the record's parts are all quiet enough to combine.
+            </summary>
+            <param name="record">The group record.</param>
+            <returns><c>true</c> if the group can combine; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Design.DesignerMeshCombiner.CollectEditTargets(ModApi.Craft.Parts.PartData)">
+            <summary>
+            Collects the parts an edit of the specified part can reshape: the part itself, its mirror
+            counterparts, and the direct connections of each (adjacent fuselages deform to match).
+            </summary>
+            <param name="part">The edited part.</param>
+            <returns>The affected parts.</returns>
+        </member>
+        <member name="M:Assets.Scripts.Design.DesignerMeshCombiner.Combine(Assets.Scripts.Design.DesignerMeshCombiner.GroupRecord)">
+            <summary>
+            Combines the record's parts into a designer part group.
+            </summary>
+            <param name="record">The group record to combine.</param>
+        </member>
+        <member name="M:Assets.Scripts.Design.DesignerMeshCombiner.DestroyGroupOf(ModApi.Craft.Parts.PartData)">
+            <summary>
+            Destroys the group (combined or pooled) owning the specified part, forcing a fresh combine later.
+            </summary>
+            <param name="part">The part whose group must not survive.</param>
+        </member>
+        <member name="M:Assets.Scripts.Design.DesignerMeshCombiner.Explode(Assets.Scripts.Design.DesignerMeshCombiner.GroupRecord,System.Boolean)">
+            <summary>
+            Explodes the specified group back to per-part rendering.
+            </summary>
+            <param name="record">The group record to explode.</param>
+            <param name="destroy">If set to <c>true</c>, the group object is destroyed; otherwise it is pooled for reuse.</param>
+        </member>
+        <member name="M:Assets.Scripts.Design.DesignerMeshCombiner.ExplodeAll(System.Boolean)">
+            <summary>
+            Explodes all combined groups, keeping the partition for later recombining.
+            </summary>
+            <param name="destroy">If set to <c>true</c>, the group objects are destroyed; otherwise they are pooled.</param>
+        </member>
+        <member name="M:Assets.Scripts.Design.DesignerMeshCombiner.ExplodeGroupOf(ModApi.Craft.Parts.PartData)">
+            <summary>
+            Explodes the group owning the specified part (if combined), pooling it for reuse.
+            </summary>
+            <param name="part">The part.</param>
+        </member>
+        <member name="M:Assets.Scripts.Design.DesignerMeshCombiner.OnCraftLoaded">
+            <summary>
+            Called when a craft has finished loading into the designer; the old craft's objects are gone.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Design.DesignerMeshCombiner.OnCraftStructureChanged">
+            <summary>
+            Called when the craft structure changes; connectivity changed, so the partition is stale.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Design.DesignerMeshCombiner.OnPartGeometryChanged(ModApi.Craft.Parts.IPartScript)">
+            <summary>
+            Called when a designer part's mesh data is rewritten in place (paint, theme, renderer
+            re-registration); any combined or pooled copy of it is no longer valid.
+            </summary>
+            <param name="part">The part whose geometry changed.</param>
+        </member>
+        <member name="M:Assets.Scripts.Design.DesignerMeshCombiner.OnPartVisualsChanged(ModApi.Craft.Parts.IPartScript)">
+            <summary>
+            Called when a designer part's material visuals change; the part, its mirror counterparts and
+            the neighbors of each (which can deform with it, e.g. adjacent fuselages) render per part again.
+            </summary>
+            <param name="part">The part whose visuals changed.</param>
+        </member>
+        <member name="M:Assets.Scripts.Design.DesignerMeshCombiner.Reactivate(Assets.Scripts.Design.DesignerMeshCombiner.GroupRecord)">
+            <summary>
+            Reactivates a pooled group whose parts are unchanged since it was exploded.
+            </summary>
+            <param name="record">The group record to reactivate.</param>
+        </member>
+        <member name="M:Assets.Scripts.Design.DesignerMeshCombiner.Reset">
+            <summary>
+            Explodes everything and drops the partition.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Design.DesignerMeshCombiner.ValidateActiveGroups">
+            <summary>
+            Pose-validates a few combined groups per frame, exploding any whose parts moved without an
+            edit signal (e.g. a rotated subtree), so no stale bake survives more than a couple of seconds.
+            </summary>
+        </member>
+        <member name="T:Assets.Scripts.Design.DesignerMeshCombiner.GroupRecord">
+            <summary>
+            A part cluster from the partition and its combined group (while combined).
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Design.DesignerMeshCombiner.GroupRecord.Combined">
+            <summary>
+            A value indicating whether the cluster currently draws as a combined group.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Design.DesignerMeshCombiner.GroupRecord.Parts">
+            <summary>
+            The parts in the cluster.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.Design.DesignerMeshCombiner.GroupRecord.Script">
+            <summary>
+            The combined part group script, or null while the cluster renders per part.
             </summary>
         </member>
         <member name="T:Assets.Scripts.Design.DesignerPartList">
@@ -62790,6 +64002,11 @@
             The lights.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Design.DesignerScript._meshCombiner">
+            <summary>
+            The designer mesh combiner.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Design.DesignerScript._mirrorTool">
             <summary>
             The mirror tool.
@@ -63217,6 +64434,14 @@
             </summary>
             <value>
             The maximum fuselage radius.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Design.DesignerScript.MeshCombiner">
+            <summary>
+            Gets the designer mesh combiner.
+            </summary>
+            <value>
+            The designer mesh combiner.
             </value>
         </member>
         <member name="P:Assets.Scripts.Design.DesignerScript.MirrorTool">
@@ -79626,6 +80851,11 @@
             <param name="ignoreKey">The ignore key.</param>
             <returns><c>true</c> if the undo step can be pushed, <c>false</c> if it should be ignored.</returns>
         </member>
+        <member name="M:Assets.Scripts.Design.UndoHistory.Clear">
+            <summary>
+            Clears all undo steps and resets the undo position.
+            </summary>
+        </member>
         <member name="M:Assets.Scripts.Design.UndoHistory.PruneUndoHistoryAtCurrentPosition">
             <summary>
             Prunes the undo steps past the current position.
@@ -80238,6 +81468,12 @@
             Deletes the craft.
             </summary>
             <param name="craftId">The craft identifier.</param>
+        </member>
+        <member name="M:Assets.Scripts.CraftDesigns.ClearEditorCraftDesignCache">
+            <summary>
+            Drops the cached editor craft design (it reloads from disk on next access). The cache holds the
+            craft's whole XML tree, which is significant memory for huge craft.
+            </summary>
         </member>
         <member name="M:Assets.Scripts.CraftDesigns.GetCraftDesign(System.String)">
             <summary>
@@ -82008,6 +83244,253 @@
             The total segments shader property ID.
             </summary>
         </member>
+        <member name="T:Assets.Scripts.DebugScripts.AutoBenchDriver">
+            <summary>
+            Runtime side of the AutoBench tooling: runs the benchmark when play mode starts during a sweep,
+            and backs the AutoBench window's one-off runs.
+            </summary>
+            <remarks>
+            Editor-only and inert unless a sweep or one-off run asks for it, so it never affects normal play
+            sessions. It lives in the swept branch's first commit so every commit carries it; it must only use
+            APIs that exist on every commit of the swept branch.
+            </remarks>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.AutoBenchDriver.MenuNudgeSeconds">
+            <summary>
+            Seconds to wait for the main menu before nudging a stalled boot with a direct load request.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.AutoBenchDriver.MenuTimeoutSeconds">
+            <summary>
+            Seconds to wait for the main menu after nudging a stalled boot with a direct load request.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.AutoBenchDriver.DesignerTimeoutSeconds">
+            <summary>
+            Seconds to wait for the designer scene to load and initialize.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.AutoBenchDriver.RunnerStartTimeoutSeconds">
+            <summary>
+            Seconds to wait for the profiler runner object to appear after starting the benchmark.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.AutoBenchDriver.BenchmarkTimeoutSeconds">
+            <summary>
+            Seconds the benchmark itself may run; the editor-side sweep enforces a slightly longer timeout.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.AutoBenchDriver._timedOut">
+            <summary>
+            Whether the last <see cref="M:Assets.Scripts.DebugScripts.AutoBenchDriver.WaitFor(System.Func{System.Boolean},System.Single,System.String)"/> gave up before its condition became true.
+            </summary>
+        </member>
+        <member name="P:Assets.Scripts.DebugScripts.AutoBenchDriver.BenchDirectory">
+            <summary>
+            Gets the directory holding the sweep state and markers.
+            </summary>
+            <value>
+            The directory holding the sweep state and markers.
+            </value>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.AutoBenchDriver.Initialize">
+            <summary>
+            Spawns the driver at play mode start when a sweep is waiting on its Play phase.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.AutoBenchDriver.ProfileStockCrafts">
+            <summary>
+            Runs the stock craft benchmark, first navigating to the designer when not already there.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.AutoBenchDriver.ProfileCraft(System.String)">
+            <summary>
+            Profiles a single craft file, first navigating to the designer when not already there.
+            </summary>
+            <param name="craftPath">The absolute path to the craft file.</param>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.AutoBenchDriver.RunInDesigner(System.Action)">
+            <summary>
+            Runs an action in the designer scene, loading it first when needed.
+            </summary>
+            <param name="run">The action to run once the designer is ready.</param>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.AutoBenchDriver.IsMenuReady">
+            <summary>
+            Checks whether the game has reached the main menu.
+            </summary>
+            <returns>True when the main menu is ready.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.AutoBenchDriver.IsDesignerReady">
+            <summary>
+            Checks whether the designer scene is loaded with an initialized craft.
+            </summary>
+            <returns>True when the designer is ready.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.AutoBenchDriver.RunInDesignerCoroutine(System.Action)">
+            <summary>
+            The coroutine that loads the designer when needed, runs the given action and self-destructs.
+            </summary>
+            <param name="run">The action to run once the designer is ready.</param>
+            <returns>The enumerator for the coroutine.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.AutoBenchDriver.RunCoroutine">
+            <summary>
+            The sweep coroutine that boots to the designer, runs the benchmark and exits play mode.
+            </summary>
+            <returns>The enumerator for the coroutine.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.AutoBenchDriver.WaitFor(System.Func{System.Boolean},System.Single,System.String)">
+            <summary>
+            Waits for a condition, polling twice per second, setting <see cref="F:Assets.Scripts.DebugScripts.AutoBenchDriver._timedOut"/> on timeout.
+            </summary>
+            <param name="condition">The condition to wait for.</param>
+            <param name="timeoutSeconds">The timeout in realtime seconds.</param>
+            <param name="label">A label for the log.</param>
+            <returns>The enumerator for the coroutine.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.AutoBenchDriver.Finish(System.String)">
+            <summary>
+            Writes the done marker and exits play mode; the editor-side sweep collects the report.
+            </summary>
+            <param name="result">The result line written to the marker.</param>
+        </member>
+        <member name="T:Assets.Scripts.DebugScripts.AutoBenchDriver.SweepStateProbe">
+            <summary>
+            The subset of the sweep state the driver needs to read.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.AutoBenchDriver.SweepStateProbe.phase">
+            <summary>
+            The phase of the sweep state machine.
+            </summary>
+        </member>
+        <member name="T:Assets.Scripts.DebugScripts.BodyMotionProbe">
+            <summary>
+            Samples the craft's body sleep state and internal motion once per physics step during a capture.
+            </summary>
+            <remarks>
+            The scene-wide physics counters cannot tell a craft moving as one from bodies rattling against
+            each other, though the two need entirely different fixes. Speed relative to the root body
+            isolates the internal motion, the awake count says how much of the craft the solver still
+            simulates, and the per-body accumulation names the bodies doing the rattling.
+            </remarks>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.BodyMotionProbe.TopMoverCount">
+            <summary>
+            The number of top-moving bodies the report names.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.BodyMotionProbe._bodies">
+            <summary>
+            The craft bodies being sampled, paired with their per-body accumulated relative speed.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.BodyMotionProbe._bodySpeedSums">
+            <summary>
+            The accumulated relative speed per body, indexed like <see cref="F:Assets.Scripts.DebugScripts.BodyMotionProbe._bodies"/>.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.BodyMotionProbe._awakeSum">
+            <summary>
+            The awake body count summed over the sampled steps.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.BodyMotionProbe._root">
+            <summary>
+            The root body whose velocity anchors the relative speeds.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.BodyMotionProbe._speedMax">
+            <summary>
+            The largest single-body relative speed seen in any step.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.BodyMotionProbe._speedSum">
+            <summary>
+            The relative speed summed over every awake body of every sampled step.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.BodyMotionProbe._spinMax">
+            <summary>
+            The largest single-body spin rate seen in any step.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.BodyMotionProbe._spinSum">
+            <summary>
+            The spin rate summed over every awake body of every sampled step.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.BodyMotionProbe._steps">
+            <summary>
+            The number of physics steps sampled.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.BodyMotionProbe.BuildReport">
+            <summary>
+            Builds the report lines for the sampled window.
+            </summary>
+            <returns>The report lines, empty when nothing was sampled.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.BodyMotionProbe.Initialize(Assets.Scripts.Craft.CraftScript)">
+            <summary>
+            Caches the craft's bodies so each step's sample is a flat loop.
+            </summary>
+            <param name="craftScript">The craft whose bodies are sampled.</param>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.BodyMotionProbe.FixedUpdate">
+            <summary>
+            Samples every body's sleep state and motion relative to the root.
+            </summary>
+        </member>
+        <member name="T:Assets.Scripts.DebugScripts.CameraTimingSampler">
+            <summary>
+            Accumulates render time per camera over a capture window through the camera render callbacks.
+            </summary>
+            <remarks>
+            The Camera.Render sampler lumps every camera together and double-counts nested manual renders,
+            so which camera the frame is spent in cannot be read from it; this names each camera's share.
+            </remarks>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CameraTimingSampler._costs">
+            <summary>
+            The accumulated ticks and pass counts per camera name.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CameraTimingSampler._starts">
+            <summary>
+            The start timestamp per camera name for the pass in flight.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CameraTimingSampler.BuildReport(System.Int32)">
+            <summary>
+            Builds the per-camera report line for the sampled window.
+            </summary>
+            <param name="frames">The number of frames the capture ran, for the per-frame average.</param>
+            <returns>The report line.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CameraTimingSampler.Awake">
+            <summary>
+            Subscribes to the camera render callbacks.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CameraTimingSampler.OnDestroy">
+            <summary>
+            Unsubscribes from the camera render callbacks.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CameraTimingSampler.OnCameraPostRender(UnityEngine.Camera)">
+            <summary>
+            Closes the timing of one camera's pass.
+            </summary>
+            <param name="camera">The camera that finished rendering.</param>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CameraTimingSampler.OnCameraPreRender(UnityEngine.Camera)">
+            <summary>
+            Opens the timing of one camera's pass.
+            </summary>
+            <param name="camera">The camera about to render.</param>
+        </member>
         <member name="T:Assets.Scripts.DebugScripts.ChangeOrbitsScript">
             <summary>
             Debug script to change the craft's and one planet's orbit.
@@ -82127,6 +83610,592 @@
         <member name="M:Assets.Scripts.DebugScripts.ChangeOrbitsScript.Start">
             <summary>
             Starts this instance.
+            </summary>
+        </member>
+        <member name="T:Assets.Scripts.DebugScripts.CraftLoadProfilerScript">
+            <summary>
+            An automated craft performance test: loads a craft into the designer, launches it into flight and
+            captures load-phase timings and steady-state frames along the way.
+            </summary>
+            <seealso cref="T:ModApi.CraftPerformanceProfiler"/>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.WarmupFrames">
+            <summary>
+            The number of frames to wait after the flight load before capturing the steady-state frame.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.CaptureFrames">
+            <summary>
+            The number of frames a frame-driven capture averages over. Only the breakup uses one, since it
+            spreads its damage across the window and has to know how many frames it has.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.CaptureSteps">
+            <summary>
+            The number of physics steps a steady-state capture averages over.
+            </summary>
+            <remarks>
+            Counting steps rather than frames spends the benchmark's time where each craft's cost actually
+            is. A light craft runs well under a step per frame, so a frame-counted window is mostly frames
+            with no physics in them at all and its average rides on how many steps happened to land inside;
+            it now gets the frames it needs to settle. A heavy craft runs several steps per frame and
+            reaches the same confidence in a fraction of the time.
+            </remarks>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.CaptureFramesMax">
+            <summary>
+            The most frames a step-driven capture will run before giving up on reaching its step count.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.PresimRecenterMaxFrames">
+            <summary>
+            The most frames the origin shift probe waits for its requested pre-simulation recenter to run.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.SettleFrames">
+            <summary>
+            The number of frames to wait after each designer edit/undo/redo operation before the next, so the
+            async craft-load coroutine and the deferred structure rebuild it queues fully settle.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.EngineSpoolMaxFrames">
+            <summary>
+            The number of frames to wait for engines to spool up before the engines-on frame capture.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.EngineSpoolGameSeconds">
+            <summary>
+            The game-time seconds to wait for engines to spool up before the engines-on frame capture.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.BreakupSpreadFrames">
+            <summary>
+            The number of leading capture frames the forced breakup is spread over, mimicking a crash cascade.
+            The rest of the window captures the aftermath.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.TypeCostTableSize">
+            <summary>
+            The number of most expensive script types reported in the game-loop cost table.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.SurvivorTableSize">
+            <summary>
+            The number of grown asset names listed on each handover survivor line.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.MinHandoversForLeak">
+            <summary>
+            The handovers a run needs before a steadily growing asset is called a leak rather than churn.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.MaxSyncedRefreshMultiple">
+            <summary>
+            The highest refresh-interval multiple a display can plausibly be pacing a capture to.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.CalibrationIterations">
+            <summary>
+            The iteration count of the fixed workload that calibrates the host's speed between commits.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.CalibrationRuns">
+            <summary>
+            The number of calibration runs timed per craft pass; the fastest is reported.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.GpuCalibrationSize">
+            <summary>
+            The square size of the render textures ping-ponged by the GPU calibration workload.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.GpuCalibrationBlits">
+            <summary>
+            The number of blit round-trips in the GPU calibration workload.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.PartingCraftFileName">
+            <summary>
+            The light stock craft the run warms up on and leaves in the editor slot when it ends.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.SelectionChurnPartCountThreshold">
+            <summary>
+            The part count a craft needs before its selection churn is worth the cycles it costs to capture.
+            Small crafts combine too, but their explode and rebuild work is too small to regress visibly.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CraftLoadProfilerScript._customSampleNames">
+            <summary>
+            The CustomSampler names captured for the steady-state frame. These are created through
+            <see cref="M:ModApi.CraftPerformanceProfiler.GetSampler(System.String)"/>, so they always resolve (unhit ones read 0).
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CraftLoadProfilerScript._builtinSampleNames">
+            <summary>
+            The built-in engine sample names captured for the steady-state frame. Unresolvable ones are skipped.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CraftLoadProfilerScript._physicsCounterNames">
+            <summary>
+            The candidate physics profiler counter names. Counters this Unity version does not expose are
+            skipped, and ones that stay at zero across a sweep are dropped from the results.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CraftLoadProfilerScript._dangerousGroupNames">
+            <summary>
+            Substrings marking an activation group whose name says it destroys or sheds the craft. A flight
+            program can do that with no detacher to inspect, so the author's name is the only signal.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CraftLoadProfilerScript._survivorGrowthStreak">
+            <summary>
+            The number of handovers each asset name has grown across, keyed as the survivor census keys it.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CraftLoadProfilerScript._lastSurvivors">
+            <summary>
+            The survivor counts from the previous handover, or null before the first one.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CraftLoadProfilerScript._handoverCount">
+            <summary>
+            The number of handovers censused so far this run.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CraftLoadProfilerScript._craftPaths">
+            <summary>
+            The absolute paths of the craft files being profiled, in run order.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CraftLoadProfilerScript._report">
+            <summary>
+            The accumulated report lines written to the log and results file.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CraftLoadProfilerScript._resultsFilePath">
+            <summary>
+            The path of this run's results file, created on the first flush.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CraftLoadProfilerScript._warmupCraftPath">
+            <summary>
+            The craft run once before the measured passes to absorb the session's cold start, or null for none.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CraftLoadProfilerScript._seedPartingCraftOnFinish">
+            <summary>
+            Whether the run leaves a light craft in the editor slot when it ends. Only the stock craft
+            benchmark does; a one-off profile of a dev's own craft must not replace what they had open.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CraftLoadProfilerScript._passGcRecorder">
+            <summary>
+            The per-frame GC allocation counter accumulated over the running craft pass; invalid when idle.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CraftLoadProfilerScript._passGcAllocatedBytes">
+            <summary>
+            The total bytes allocated so far during the running craft pass.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.CraftLoadProfilerScript._lastCaptureWorstGcFrame">
+            <summary>
+            The frame index with the largest GC allocation in the last steady-frame capture, or -1.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.Run(System.String)">
+            <summary>
+            Starts a craft performance test for the craft at the specified file path.
+            </summary>
+            <param name="craftPath">The absolute path to the craft file.</param>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.RunStockCrafts">
+            <summary>
+            Starts a craft performance test covering every stock craft in the craft designs folder.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.RunFlightFrame">
+            <summary>
+            Captures just a steady-state frame in the current flight scene (no reload). Cheap re-measurement.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.BuildHandoverCensusLine">
+            <summary>
+            Builds the handover object-census report line, counting the engine objects most likely to leak.
+            The counts stay flat while nothing leaks, so a rise is the whole signal.
+            </summary>
+            <returns>The census line.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.BuildHandoverSurvivorLine">
+            <summary>
+            Builds the handover asset-survivor report, naming what the finished pass left behind.
+            </summary>
+            <remarks>
+            The census counts totals, which only reveals a leak once it has run for dozens of passes. Grouping
+            the survivors of the collect and unload by asset name turns the same data into an accusation: a
+            name whose count rises every handover is being recreated per craft and never released, and the
+            name is normally enough to find the code that made it.
+            </remarks>
+            <returns>The survivor line, or null when nothing grew.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.BuildLeakReport">
+            <summary>
+            Builds the end-of-run report of assets that survived every handover, i.e. the confirmed leaks.
+            </summary>
+            <returns>The report lines, empty when nothing leaked steadily.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.CountSurvivorsByName">
+            <summary>
+            Counts the loaded assets most likely to leak, grouped by type and name.
+            </summary>
+            <returns>The survivor count per name.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.ActivateActivationGroups(Assets.Scripts.Flight.Sim.CraftNode)">
+            <summary>
+            Turns on every activation group the craft uses, so the capture exercises the parts a player
+            would have running - bay doors, gear, lights, rcs, rotators - instead of only the engines.
+            </summary>
+            <remarks>
+            A group holding a part that separates on activation is skipped: a detacher or interstage firing
+            mid-capture sheds a stage, so the frames after it measure a different craft. The check is by
+            modifier rather than by a per-craft list, so crafts added to the benchmark later are covered
+            too. Detachers respect their DetachOnActivated flag and fairings their FairingBase flag, since
+            only those configurations separate; docking ports merely arm on activation, but are skipped
+            anyway rather than have the benchmark depend on that staying true.
+            </remarks>
+            <param name="craftNode">The craft node in flight.</param>
+            <returns>The report line naming what was activated and what was skipped.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.ActivateFirstStage(Assets.Scripts.Flight.Sim.CraftNode)">
+            <summary>
+            Activates the first stage's parts, withholding the ones that separate on activation.
+            </summary>
+            <remarks>
+            The same filter the activation groups get: a detacher, interstage or fairing firing at ignition
+            blows pieces off the craft, and even a decorative pop destabilizes a large craft enough that
+            the frames after it measure a rattled craft instead of the loaded one. Activating the rest of
+            the stage part by part keeps the engines burning, which is the point of the phase.
+            </remarks>
+            <param name="craftNode">The craft node in flight.</param>
+            <returns>The report line naming what was activated and what was withheld.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.DangerousGroupName(System.String)">
+            <summary>
+            Names the activation group as one whose own label says activating it wrecks the craft.
+            </summary>
+            <param name="name">The activation group's display name.</param>
+            <returns>The reason, or null when the name says nothing alarming.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.SeparationReason(ModApi.Craft.Parts.PartData)">
+            <summary>
+            Names the modifier that would separate the craft if the part were activated.
+            </summary>
+            <param name="part">The part to check.</param>
+            <returns>The reason, or null when activating the part is safe.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.BuildTextMeshCensusLine">
+            <summary>
+            Builds a census of the largest text mesh objects, which the canvas re-parses when marked dirty.
+            One oversized text can dominate a frame's allocation from inside the canvas update.
+            </summary>
+            <returns>The census line.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.GetHierarchyPath(UnityEngine.Transform)">
+            <summary>
+            Builds the slash separated scene path of a transform.
+            </summary>
+            <param name="transform">The transform.</param>
+            <returns>The hierarchy path.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.CountCensus">
+            <summary>
+            Counts the engine object populations shared by the handover census and the breakup delta.
+            </summary>
+            <returns>The census counts.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.CountSubtreeParts(ModApi.Craft.Parts.PartData,ModApi.Craft.Parts.PartData,System.Int32)">
+            <summary>
+            Counts the parts reachable from a part without crossing the ignored part, stopping at the limit.
+            </summary>
+            <param name="start">The part the branch starts at.</param>
+            <param name="ignore">The part the traversal must not cross (the root).</param>
+            <param name="limit">The count at which the branch is considered big enough and the walk stops.</param>
+            <returns>The number of parts found, at most the limit.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.GetResultsDirectory">
+            <summary>
+            Gets the directory where results files are written.
+            </summary>
+            <returns>The results directory path.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.Update">
+            <summary>
+            Accumulates the per-frame GC allocation counter while a craft pass is running.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.RunCoroutine">
+            <summary>
+            The coroutine that drives the whole test across the designer and flight scenes.
+            </summary>
+            <returns>The enumerator for the coroutine.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.RunCraftPass(System.String)">
+            <summary>
+            Runs the full test sequence for one craft: designer load, edit/undo/redo, save, flight load and
+            steady-frame captures with engines off and on. Failures abort the pass, not the whole run.
+            </summary>
+            <param name="craftPath">The absolute path to the craft file.</param>
+            <returns>The enumerator for the coroutine.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.RunBreakupPhase(Assets.Scripts.Flight.Sim.CraftNode)">
+            <summary>
+            Forces a deterministic structural failure of the current craft while capturing, reporting the
+            cascade's frame costs, allocation probes and worst-GC-frame target attribution.
+            </summary>
+            <param name="flightCraftNode">The craft node to break.</param>
+            <returns>The enumerator for the coroutine.</returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.RunFrameOnlyCoroutine" -->
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.CaptureOriginShift(System.String)">
+            <summary>
+            Forces a reference-frame recenter and reports the notify pass, the frame it lands in and the
+            garbage it churns. Run intact and again on the debris field, where far more objects rebase.
+            </summary>
+            <remarks>
+            A single recenter is enough: repeats agreed to within 2% on the craft that costs the most, so the
+            wide run-to-run spread the older reports showed came from the editor session, not from the shift.
+            Two probes bracket it. The backlog flush pushes whatever transform writes the preceding frames
+            left pending, so the shift is billed only its own work. The nudge then moves the craft a
+            millimetre and syncs that: it dirties exactly the same transforms the recenter does, so if the
+            cost is pushing poses into physics the two match, and if it is what moving kilometres does to
+            the broadphase, the nudge is cheap and the recenter is not.
+            </remarks>
+            <param name="label">The label identifying which origin shift this is.</param>
+            <returns>The enumerator for the coroutine.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.CollectSceneRigidbodies">
+            <summary>
+            Collects the rigidbodies of every craft in the flight scene, player craft and debris alike.
+            </summary>
+            <remarks>
+            A recenter rebases the whole scene, and a split moves bodies out from under the craft they were
+            loaded with, so anything scoped to the player craft's transform tree measures a shrinking
+            fraction of the work as a run goes on. Walking the craft nodes' assemblies instead is immune to
+            how the transforms happen to be parented.
+            </remarks>
+            <returns>The rigidbodies, empty when the scene has none.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.MeasureParentNudgeSync">
+            <summary>
+            Measures moving each craft's root transform one millimetre, which carries every body with it.
+            </summary>
+            <remarks>
+            This is the move an origin shift really wants: the whole craft translates and nothing changes
+            relative to anything else. Physics only needs each actor's pose updated, and the shapes beneath
+            them keep the local poses they already had. Whether Unity works that out or re-derives every
+            shape anyway is the difference between a recenter costing one write per craft and one per
+            collider, and it decides whether the parent move can stay on the transform path.
+            </remarks>
+            <returns>The milliseconds the move and sync took, or 0 when there were no crafts.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.CollectActiveColliders(UnityEngine.Rigidbody,System.Collections.Generic.List{UnityEngine.Collider})">
+            <summary>
+            Adds the colliders physics actually holds for a body; only those cost anything to re-pose.
+            </summary>
+            <param name="rigidbody">The body to collect from.</param>
+            <param name="into">The list to add to.</param>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.CountActiveColliders(UnityEngine.Rigidbody)">
+            <summary>
+            Counts the colliders physics holds for a body.
+            </summary>
+            <param name="rigidbody">The body to count.</param>
+            <returns>The collider count.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.MeasureNudgeSync(System.Collections.Generic.List{UnityEngine.Rigidbody},System.Boolean)">
+            <summary>
+            Measures moving every body in the scene one millimetre and getting that into physics.
+            </summary>
+            <remarks>
+            A millimetre cannot disturb anything spatially, so comparing this against the recenter's own sync
+            separates pushing poses into physics from whatever moving a long way does to the broadphase. The
+            two routes then separate the next question. Writing the body's transform invalidates every
+            descendant, so the sync has to re-derive each collider's pose relative to its actor; writing
+            Rigidbody.position sets the actor pose directly and never touches the hierarchy. If the transform
+            route is far more expensive, the descendant walk is the cost even though nothing in the craft
+            moved relative to its body. Positions are snapshotted and written back rather than offset twice,
+            so no float error accumulates, and nothing yields while the scene is displaced.
+            </remarks>
+            <param name="rigidbodies">The bodies to move.</param>
+            <param name="viaRigidbody">If <c>true</c>, move through Rigidbody.position instead of the transform.</param>
+            <returns>The milliseconds the move and sync took, or 0 when there were no bodies.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.BuildColliderCensusLines(System.String)">
+            <summary>
+            Builds the collider census for an origin shift, describing how the scene's colliders are
+            distributed over rigidbodies and over space.
+            </summary>
+            <remarks>
+            Two candidate drivers of a sync are measured here. Colliders per rigidbody covers the compound
+            case, where one actor owning thousands of shapes has to re-pose all of them whenever it moves.
+            Occupancy covers the packing case, where overlapping bounds create broadphase pairs - including
+            pairs the craft has told physics to ignore, since that filtering happens after the broadphase.
+            Occupancy is counted on a grid sized to the median collider rather than by testing pairs, so the
+            census stays linear on huge craft.
+            </remarks>
+            <param name="label">The label identifying which origin shift this is.</param>
+            <returns>The census lines.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.BuildGpuCalibrationLine">
+            <summary>
+            Counts the scene's active renderers by type, with material identity and property block use.
+            </summary>
+            <remarks>
+            Draw calls scale with renderers times lighting passes, and batching dies on material identity
+            and per-renderer state; the census turns those from suspicions into counts.
+            </remarks>
+            <returns>The census line.</returns>
+            <summary>
+            Times a fixed GPU blit workload so a sweep can tell a degraded GPU state from slower render
+            code. The blit shader ships with Unity, so nothing on the branch can change what this runs.
+            </summary>
+            <returns>The GPU calibration report line.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.BuildCalibrationLine">
+            <summary>
+            Times a fixed arithmetic workload so a sweep can tell a slower machine from slower code.
+            Nothing on the branch can change what this runs, so any movement across commits is the host.
+            </summary>
+            <returns>The calibration report line.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.BuildTriggerCensusLine(System.String,System.Collections.Generic.List{UnityEngine.Collider})">
+            <summary>
+            Names the part types owning trigger colliders.
+            </summary>
+            <remarks>
+            A trigger costs broadphase and narrowphase work and produces nothing the solver uses, so the
+            part types responsible are worth naming.
+            </remarks>
+            <param name="label">The label identifying which origin shift this is.</param>
+            <param name="colliders">The scene's colliders.</param>
+            <returns>The trigger census line.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.BuildVizzyCensusLine(Assets.Scripts.Craft.CraftScript)">
+            <summary>
+            Counts the craft's flight programs, their threads and the instructions they executed last frame.
+            </summary>
+            <remarks>
+            The type profiler bills FlightProgramScript as one number, but the cost scales with how many
+            programs run and how much of their per-frame instruction budget each burns; naming the hungry
+            programs turns a scene-wide cost into specific parts.
+            </remarks>
+            <param name="craftScript">The craft whose programs are counted.</param>
+            <returns>The census line.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.BuildPhysicsLoadLine(System.String)">
+            <summary>
+            Counts the scene's rigidbodies against the craft's own, and the part collisions being filtered.
+            </summary>
+            <remarks>
+            Every rigidbody is an actor in the contact graph, and the shuttle reports roughly twice as many
+            as its craft has bodies, so the remainder is worth naming. The filtered pair count says how much
+            of the craft's own adjacency physics has been told to ignore - the utility only ignores pairs
+            that overlap when the craft is built, so parts that merely end up touching are not in it.
+            </remarks>
+            <param name="label">The label identifying which origin shift this is.</param>
+            <returns>The physics load line.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.BuildColliderOutlierLine(System.String,System.Collections.Generic.List{UnityEngine.Collider})">
+            <summary>
+            Names the colliders sitting furthest from the rest of the scene.
+            </summary>
+            <remarks>
+            The census reported craft bounds spanning astronomical distances after a breakup, which means at
+            least one collider is nowhere near the others. Whether that is debris genuinely thrown that far
+            or a transform left holding garbage, the part has to be named before it can be judged, and a
+            broadphase stretched over that range would cost the whole scene dearly either way. The reference
+            point is the median of the centres so that the outliers cannot drag it towards themselves.
+            </remarks>
+            <param name="label">The label identifying which origin shift this is.</param>
+            <param name="colliders">The scene's colliders.</param>
+            <returns>The outlier line.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.BuildBiggestBodyLine(System.String,System.Collections.Generic.List{UnityEngine.Collider})">
+            <summary>
+            Names the part types owning the colliders on the scene's largest rigidbody.
+            </summary>
+            <remarks>
+            A part whose sub-assembly is actuated from code has to keep those colliders as their own
+            transforms under the body, so they cannot collapse into the compound at a fixed pose. If one
+            actor carries thousands of shapes, this says which parts put them there, which turns a physics
+            problem into a part-authoring one.
+            </remarks>
+            <param name="label">The label identifying which origin shift this is.</param>
+            <param name="biggestBody">The colliders on the largest rigidbody.</param>
+            <returns>The attribution line.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.CaptureSteadyFrame(System.Action{System.Int32},System.Boolean,System.Int32)">
+            <summary>
+            Captures profiler sample timings averaged over a window of steady-state frames.
+            </summary>
+            <param name="onFrame">An optional per-frame driver invoked with the frame index before each captured frame.</param>
+            <param name="reportCraftSize">If <c>false</c>, the craft part/body count line is omitted (it feeds the pass-wide parts/bodies metrics).</param>
+            <param name="frameCount">The number of frames to capture, or 0 to capture until the step count is reached.</param>
+            <returns>The enumerator for the coroutine.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.CurrentPartCount">
+            <summary>
+            Gets the current designer craft's part count, or -1 if unavailable.
+            </summary>
+            <returns>The current part count.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.ReportCraftState(System.String)">
+            <summary>
+            Adds a line reporting the current designer craft's part count, to verify edit/undo/redo state.
+            </summary>
+            <param name="when">A label describing the point in the sequence.</param>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.MeasureSelectionChurn(Assets.Scripts.Design.DesignerScript)">
+            <summary>
+            Measures the designer mesh combiner's editing churn: a deterministic set of parts is selected and
+            deselected, timing the group explosions, the recombines, and the garbage both generate.
+            </summary>
+            <param name="designer">The designer.</param>
+            <returns>The enumerator for the coroutine.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.MeasureSyncOp(System.String,System.Action)">
+            <summary>
+            Measures a synchronous designer operation, capturing its load phases and total wall-clock time.
+            </summary>
+            <param name="label">The report section label.</param>
+            <param name="op">The operation to run.</param>
+            <returns>The enumerator for the coroutine.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.MeasureReload(System.String,System.Action,System.Int32)">
+            <summary>
+            Measures an async designer undo/redo, repeating it until the craft reaches the target part count.
+            One undo after a delete lands a step short, so this drives it to the expected state.
+            </summary>
+            <param name="label">The report section label.</param>
+            <param name="op">The undo or redo operation to run.</param>
+            <param name="targetCount">The part count that indicates the operation reached the intended state.</param>
+            <returns>The enumerator for the coroutine.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.Finish">
+            <summary>
+            Writes the accumulated report to the log and a results file, then destroys the runner.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.SeedPartingCraft">
+            <summary>
+            Leaves a light craft in the editor slot so the next designer entry does not reload the heaviest
+            craft of the run, which each pass saves there.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.CraftLoadProfilerScript.FlushReport">
+            <summary>
+            Writes the report captured so far to the results file, so a later hang or crash loses nothing.
             </summary>
         </member>
         <member name="T:Assets.Scripts.DebugScripts.DebugGizmos">
@@ -82432,6 +84501,183 @@
             Debug script for drawing normals.
             </summary>
             <seealso cref="T:UnityEngine.MonoBehaviour" />
+        </member>
+        <member name="T:Assets.Scripts.DebugScripts.FramePhaseAllocationSampler">
+            <summary>
+            Splits each frame's managed allocation across the segments of the Unity player loop, so garbage
+            allocated outside the craft game loop can still be attributed to a phase.
+            </summary>
+            <remarks>
+            This component samples at the START of the update and late update phases (it sorts before every
+            ordinary script) and its tail companion samples at the END of each, so a phase total covers the
+            scripts between them rather than an arbitrary slice. Rendering is bracketed separately through
+            the camera render callbacks. Frames interrupted by a collection are dropped, since the heap
+            delta is meaningless across one. Unity's Mono stubs GC.GetAllocatedBytesForCurrentThread to
+            zero, so this reads heap size: it under-reports (allocation the heap already had room for is
+            invisible) and must not be compared against the frame's own exact garbage total.
+            </remarks>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.FramePhaseAllocationSampler._lastMonoUsed">
+            <summary>
+            The managed heap size at the previous sample point.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.FramePhaseAllocationSampler._lastCollections">
+            <summary>
+            The collection count at the previous sample point.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.DebugScripts.FramePhaseAllocationSampler._frameDropped">
+            <summary>
+            Whether a collection has invalidated the frame currently being sampled.
+            </summary>
+        </member>
+        <member name="P:Assets.Scripts.DebugScripts.FramePhaseAllocationSampler.FixedAndEngineBytes">
+            <summary>
+            Gets the bytes allocated between end of frame and the next update (fixed update, physics and engine work).
+            </summary>
+            <value>
+            The bytes allocated between end of frame and the next update.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.DebugScripts.FramePhaseAllocationSampler.UpdateBytes">
+            <summary>
+            Gets the bytes allocated by the update phase.
+            </summary>
+            <value>
+            The bytes allocated by the update phase.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.DebugScripts.FramePhaseAllocationSampler.BetweenUpdatesBytes">
+            <summary>
+            Gets the bytes allocated between the end of the update phase and the start of the late update phase (coroutines and animation).
+            </summary>
+            <value>
+            The bytes allocated between the update and late update phases.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.DebugScripts.FramePhaseAllocationSampler.LateUpdateBytes">
+            <summary>
+            Gets the bytes allocated by the late update phase.
+            </summary>
+            <value>
+            The bytes allocated by the late update phase.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.DebugScripts.FramePhaseAllocationSampler.RenderBytes">
+            <summary>
+            Gets the bytes allocated between the camera render callbacks.
+            </summary>
+            <value>
+            The bytes allocated between the camera render callbacks.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.DebugScripts.FramePhaseAllocationSampler.EndOfFrameBytes">
+            <summary>
+            Gets the bytes allocated after the late update phase that rendering did not account for.
+            </summary>
+            <value>
+            The bytes allocated after the late update phase that rendering did not account for.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.DebugScripts.FramePhaseAllocationSampler.SampledFrames">
+            <summary>
+            Gets the number of frames sampled without an intervening collection.
+            </summary>
+            <value>
+            The number of frames sampled without an intervening collection.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.DebugScripts.FramePhaseAllocationSampler.DroppedFrames">
+            <summary>
+            Gets the number of frames dropped because a collection ran during them.
+            </summary>
+            <value>
+            The number of frames dropped because a collection ran during them.
+            </value>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.FramePhaseAllocationSampler.CloseUpdatePhase">
+            <summary>
+            Closes the update phase segment. Called by the tail companion after every other script's update.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.FramePhaseAllocationSampler.CloseLateUpdatePhase">
+            <summary>
+            Closes the late update phase segment. Called by the tail companion after every other script's late update.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.FramePhaseAllocationSampler.Awake">
+            <summary>
+            Adds the tail companion and subscribes to the camera render callbacks.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.FramePhaseAllocationSampler.Start">
+            <summary>
+            Starts the end-of-frame sampling loop.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.FramePhaseAllocationSampler.OnDestroy">
+            <summary>
+            Unsubscribes from the camera render callbacks.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.FramePhaseAllocationSampler.Update">
+            <summary>
+            Closes the previous frame's trailing segment and opens the update phase.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.FramePhaseAllocationSampler.LateUpdate">
+            <summary>
+            Closes the gap between the update phases and opens the late update phase.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.FramePhaseAllocationSampler.OnCameraPreRender(UnityEngine.Camera)">
+            <summary>
+            Closes the segment preceding this camera's rendering.
+            </summary>
+            <param name="camera">The camera about to render.</param>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.FramePhaseAllocationSampler.OnCameraPostRender(UnityEngine.Camera)">
+            <summary>
+            Closes this camera's rendering segment.
+            </summary>
+            <param name="camera">The camera that finished rendering.</param>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.FramePhaseAllocationSampler.SampleEndOfFrame">
+            <summary>
+            Closes the frame once it has been presented.
+            </summary>
+            <returns>The enumerator for the coroutine.</returns>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.FramePhaseAllocationSampler.Sample">
+            <summary>
+            Returns the heap growth since the previous sample point, or zero when a collection ran.
+            </summary>
+            <returns>The bytes allocated since the previous sample point.</returns>
+        </member>
+        <member name="T:Assets.Scripts.DebugScripts.FramePhaseAllocationSamplerTail">
+            <summary>
+            Closes the update and late update segments opened by <see cref="T:Assets.Scripts.DebugScripts.FramePhaseAllocationSampler"/>,
+            sorting after every ordinary script so a phase total covers the whole phase.
+            </summary>
+        </member>
+        <member name="P:Assets.Scripts.DebugScripts.FramePhaseAllocationSamplerTail.Owner">
+            <summary>
+            Gets or sets the sampler this companion closes the segments for.
+            </summary>
+            <value>
+            The sampler this companion closes the segments for.
+            </value>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.FramePhaseAllocationSamplerTail.Update">
+            <summary>
+            Closes the update phase segment.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.DebugScripts.FramePhaseAllocationSamplerTail.LateUpdate">
+            <summary>
+            Closes the late update phase segment.
+            </summary>
         </member>
         <member name="T:Assets.Scripts.DebugScripts.LaunchLocationHelperScript">
             <summary>
@@ -84802,6 +87048,11 @@
             <param name="scrollDelta">The scroll delta.</param>
             <param name="mousePos">The mouse position.</param>
         </member>
+        <member name="M:Assets.Scripts.Ui.CurveEditor.CurveEditorScript.OnDestroy">
+            <summary>
+            Unity OnDestroy method.
+            </summary>
+        </member>
         <member name="T:Assets.Scripts.Ui.CurveEditor.EditorHandlesScript">
             <summary>
             Behaviour to control vector handles in curve editor script.
@@ -85043,6 +87294,11 @@
             <returns>
             The formatted number (3 significant figures)
             </returns>
+        </member>
+        <member name="M:Assets.Scripts.Ui.CurveEditor.GridScript.OnDestroy">
+            <summary>
+            Unity OnDestroy method.
+            </summary>
         </member>
         <member name="T:Assets.Scripts.Ui.CurveEditor.HandleScript">
             <summary>
@@ -86682,6 +88938,11 @@
         <member name="M:Assets.Scripts.Ui.InfoLineScript.Update">
             <summary>
             Updates this instance.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Ui.InfoLineScript.OnDestroy">
+            <summary>
+            Unity OnDestroy method.
             </summary>
         </member>
         <member name="T:Assets.Scripts.Ui.InputDialogScript">
@@ -99328,6 +101589,16 @@
             </summary>
             <param name="frame">The frame data.</param>
         </member>
+        <member name="M:Assets.Scripts.Flight.FlightSceneScript.OnPostFixedUpdate(ModApi.GameLoop.FlightFrameData@)">
+            <summary>
+            Called after all fixed updates each tick, with only the simulation step still to run.
+            </summary>
+            <remarks>
+            The recenter moves awake bodies through their rigidbody pose, so it must run after every
+            force reader this tick and before the step that writes the moved poses back to transforms.
+            </remarks>
+            <param name="frame">The frame data.</param>
+        </member>
         <member name="M:Assets.Scripts.Flight.FlightSceneScript.OnUpdate(ModApi.GameLoop.FlightFrameData@)">
             <summary>
             Called every frame during the game loop update cycle.
@@ -104588,6 +106859,11 @@
             The craft node.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Flight.GameView.GameViewScript._debugRecenterPending">
+            <summary>
+            A value indicating whether the debug recenter key was pressed since the last recenter check.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Flight.GameView.GameViewScript._drawPhysicsQuadGizmos">
             <summary>
             A value indicating whether physics quad gizmos should be drawn.
@@ -104643,6 +106919,11 @@
             The quad mesh ray caster
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Flight.GameView.GameViewScript._recenteredThisFrame">
+            <summary>
+            A value indicating whether a recenter already ran this frame, letting the end of the frame skip its terrain update.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Flight.GameView.GameViewScript._referenceFrame">
             <summary>
             The reference frame.
@@ -104687,6 +106968,79 @@
             <summary>
             Occurs when the selected part changes.
             </summary>
+        </member>
+        <member name="P:Assets.Scripts.Flight.GameView.GameViewScript.LastRecenterDistanceMeters">
+            <summary>
+            Gets the distance the last reference frame recenter moved the frame origin.
+            </summary>
+            <value>
+            The metres, which says whether a measured recenter was a real one or a near-zero no-op.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Flight.GameView.GameViewScript.LastRecenterGameViewObjectsMs">
+            <summary>
+            Gets the milliseconds the last reference frame recenter spent notifying the game view objects.
+            </summary>
+            <value>
+            The milliseconds spent rebasing craft nodes, structures and debris.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Flight.GameView.GameViewScript.LastRecenterPlanetMs">
+            <summary>
+            Gets the milliseconds the last reference frame recenter spent in the planet node.
+            </summary>
+            <value>
+            The milliseconds spent rebasing the planet.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Flight.GameView.GameViewScript.LastRecenterTerrainMs">
+            <summary>
+            Gets the milliseconds the last reference frame recenter spent updating terrain.
+            </summary>
+            <value>
+            The milliseconds spent in the synchronous terrain update.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Flight.GameView.GameViewScript.LastRecenterSubscribersMs">
+            <summary>
+            Gets the milliseconds the last reference frame recenter spent in its event subscribers.
+            </summary>
+            <value>
+            The milliseconds spent raising ReferenceFrameRecentered.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Flight.GameView.GameViewScript.LastRecenterPhysicsSyncMs">
+            <summary>
+            Gets the milliseconds the last reference frame recenter spent pushing transforms into physics.
+            </summary>
+            <value>
+            The milliseconds spent in Physics.SyncTransforms.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Flight.GameView.GameViewScript.LastRecenterTotalMs">
+            <summary>
+            Gets the milliseconds the last reference frame recenter took in full.
+            </summary>
+            <value>
+            The milliseconds across every stage, timed inside the call so the pre-simulation route is
+            measurable from outside the fixed phase.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Flight.GameView.GameViewScript.LastRecenterWasPreSimulation">
+            <summary>
+            Gets a value indicating whether the last recenter ran directly ahead of a simulation step.
+            </summary>
+            <value>
+            <c>true</c> when the last recenter took the pre-simulation rigidbody route.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Flight.GameView.GameViewScript.RecenterCount">
+            <summary>
+            Gets the number of reference frame recenters that have run.
+            </summary>
+            <value>
+            The count, letting a caller that requested a deferred recenter detect it having run.
+            </value>
         </member>
         <member name="P:Assets.Scripts.Flight.GameView.GameViewScript.CameraControllerManager">
             <summary>
@@ -104734,6 +107088,14 @@
             </summary>
             <value>
             The game view interface.
+            </value>
+        </member>
+        <member name="P:Assets.Scripts.Flight.GameView.GameViewScript.IsPreSimulationRecenter">
+            <summary>
+            Gets a value indicating whether the running recenter is followed directly by a simulation step.
+            </summary>
+            <value>
+            <c>true</c> while a recenter started just ahead of the simulation step is running.
             </value>
         </member>
         <member name="P:Assets.Scripts.Flight.GameView.GameViewScript.ModApi#Flight#GameView#IGameView#Planet">
@@ -104842,6 +107204,16 @@
             </summary>
             <param name="craftNode">The craft node.</param>
         </member>
+        <member name="M:Assets.Scripts.Flight.GameView.GameViewScript.RecenterIfRequired(System.Boolean)">
+            <summary>
+            Re-centers the reference frame if it has drifted far enough to need it.
+            </summary>
+            <remarks>
+            The pre-simulation call comes after every fixed update, so no force this tick can read the
+            moved bodies' still-stale transforms; the step that follows writes those back before rendering.
+            </remarks>
+            <param name="preSimulation">Whether a simulation step follows before anything else runs.</param>
+        </member>
         <member name="M:Assets.Scripts.Flight.GameView.GameViewScript.RecenterReferenceFrame">
             <summary>
             Re-centers the reference frame.
@@ -104853,6 +107225,15 @@
             </summary>
             <param name="gameViewObject">The game view object.</param>
             <param name="flightEnd">if set to <c>true</c> object is being unloaded due to the flight ending.</param>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.GameViewScript.RequestDebugRecenter">
+            <summary>
+            Requests a recenter through the debug latch, as the debug recenter key does.
+            </summary>
+            <remarks>
+            The next fixed phase runs it on the pre-simulation route, which a caller outside that phase
+            cannot reach directly; the craft profiler uses this to measure the route players actually hit.
+            </remarks>
         </member>
         <member name="M:Assets.Scripts.Flight.GameView.GameViewScript.UpdateReferenceFrame(System.Double,System.Boolean)">
             <summary>
@@ -104890,6 +107271,13 @@
             <summary>
             Update is called every frame, if the MonoBehaviour is enabled.
             </summary>
+        </member>
+        <member name="M:Assets.Scripts.Flight.GameView.GameViewScript.ElapsedMs(System.Int64@)">
+            <summary>
+            Returns the milliseconds elapsed since the specified timestamp and advances it to now.
+            </summary>
+            <param name="timestamp">The stopwatch timestamp the stage started at, advanced to now.</param>
+            <returns>The elapsed milliseconds.</returns>
         </member>
         <member name="M:Assets.Scripts.Flight.GameView.GameViewScript.ApplyShadowQualitySettings(ModApi.Settings.ShadowQualitySettings)">
             <summary>
@@ -112846,6 +115234,11 @@
         <member name="M:Assets.Scripts.Flight.MapView.MapDebug.ClosestPointScript.UpdatePointerPoint">
             <summary>
             Updates the pointer point.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.Flight.MapView.MapDebug.ClosestPointScript.OnDestroy">
+            <summary>
+            This function is called when the MonoBehaviour will be destroyed.
             </summary>
         </member>
         <member name="T:Assets.Scripts.Flight.MapView.MapDebug.DebugScript">
@@ -125755,6 +128148,11 @@
             Handles splitting and merging of craft nodes.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Flight.Sim.CraftSplitter._eligibilityColliders">
+            <summary>
+            Reused collider buffer for the eligibility bounds check, so breakup cascades don't allocate per part.
+            </summary>
+        </member>
         <member name="M:Assets.Scripts.Flight.Sim.CraftSplitter.MergeCraftNode(Assets.Scripts.Flight.Sim.CraftNode,Assets.Scripts.Flight.Sim.CraftNode)">
             <summary>
             Merges the source craft script with the target craft script. The bodies and parts in the source craft script
@@ -125779,6 +128177,13 @@
             <param name="craftNode">The craft node that the assembly contents currently belong to.</param>
             <param name="assembly">The assembly containing the bodies/parts that the new craft will have in it.</param>
         </member>
+        <member name="M:Assets.Scripts.Flight.Sim.CraftSplitter.CollectInitialCraftNodeIds(System.Collections.Generic.IReadOnlyList{ModApi.Craft.Parts.PartData})">
+            <summary>
+            Collects the distinct initial craft node ids across the specified parts, in first-seen order.
+            </summary>
+            <param name="parts">The parts to scan.</param>
+            <returns>The distinct initial craft node ids.</returns>
+        </member>
         <member name="M:Assets.Scripts.Flight.Sim.CraftSplitter.CreateCraftScriptFromDisconnectedBodies(ModApi.Craft.ICraftScript,ModApi.Craft.Assembly)">
             <summary>
             Creates the craft script from disconnected bodies contained in the assembly.
@@ -125798,12 +128203,13 @@
             True if it should be separated into a new craft node, otherwise false.
             </returns>
         </member>
-        <member name="M:Assets.Scripts.Flight.Sim.CraftSplitter.GetConnectedBodies(ModApi.Craft.IBodyScript,System.Collections.Generic.List{ModApi.Craft.IBodyScript})">
+        <member name="M:Assets.Scripts.Flight.Sim.CraftSplitter.GetConnectedBodies(ModApi.Craft.IBodyScript,System.Collections.Generic.List{ModApi.Craft.IBodyScript},System.Collections.Generic.HashSet{ModApi.Craft.IBodyScript})">
             <summary>
             Recursive method that gets all connected bodies.
             </summary>
             <param name="bodyScript">The body script.</param>
             <param name="connectedBodies">The connected bodies.</param>
+            <param name="visited">The set of bodies already visited.</param>
         </member>
         <member name="M:Assets.Scripts.Flight.Sim.CraftSplitter.MoveBodiesToAssembly(System.Collections.Generic.IEnumerable{ModApi.Craft.IBodyScript},ModApi.Craft.Assembly,ModApi.Craft.Assembly)">
             <summary>
@@ -138782,6 +141188,98 @@
             Destroys the generic game loop.
             </summary>
         </member>
+        <member name="T:Assets.Scripts.GameLoop.GameLoopTypeProfiler">
+            <summary>
+            Accumulates main-thread game-loop time per concrete item type, naming the scripts behind the
+            aggregate Scripts.* samplers. Costs a flag check per item when disabled.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.GameLoop.GameLoopTypeProfiler._entries">
+            <summary>
+            The accumulated cost per concrete item type since the last <see cref="M:Assets.Scripts.GameLoop.GameLoopTypeProfiler.Reset"/>.
+            </summary>
+        </member>
+        <member name="P:Assets.Scripts.GameLoop.GameLoopTypeProfiler.Enabled">
+            <summary>
+            Gets or sets a value indicating whether game-loop items are being timed.
+            </summary>
+            <value>
+            A value indicating whether game-loop items are being timed.
+            </value>
+        </member>
+        <member name="M:Assets.Scripts.GameLoop.GameLoopTypeProfiler.GetCosts(System.Collections.Generic.List{Assets.Scripts.GameLoop.GameLoopTypeProfiler.TypeCost})">
+            <summary>
+            Gets the accumulated per-type costs sorted most expensive first.
+            </summary>
+            <param name="results">The list the costs are written into (cleared first).</param>
+        </member>
+        <member name="M:Assets.Scripts.GameLoop.GameLoopTypeProfiler.Record(System.Object,System.Int64,System.Int64)">
+            <summary>
+            Records one item execution that started at the specified stopwatch timestamp.
+            </summary>
+            <param name="item">The game-loop item that was executed.</param>
+            <param name="startTimestamp">The stopwatch timestamp captured before the item ran.</param>
+            <param name="allocBytes">The managed bytes the execution allocated (0 when a GC interrupted the span).</param>
+        </member>
+        <member name="M:Assets.Scripts.GameLoop.GameLoopTypeProfiler.Reset">
+            <summary>
+            Clears the accumulated costs and disables timing.
+            </summary>
+        </member>
+        <member name="T:Assets.Scripts.GameLoop.GameLoopTypeProfiler.TypeCost">
+            <summary>
+            The total cost attributed to one item type.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.GameLoop.GameLoopTypeProfiler.TypeCost.TypeName">
+            <summary>
+            The item type's short name.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.GameLoop.GameLoopTypeProfiler.TypeCost.Milliseconds">
+            <summary>
+            The accumulated execution time in milliseconds.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.GameLoop.GameLoopTypeProfiler.TypeCost.Calls">
+            <summary>
+            The number of item executions recorded.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.GameLoop.GameLoopTypeProfiler.TypeCost.AllocBytes">
+            <summary>
+            The accumulated managed allocation in bytes.
+            </summary>
+        </member>
+        <member name="M:Assets.Scripts.GameLoop.GameLoopTypeProfiler.TypeCost.#ctor(System.String,System.Double,System.Int64,System.Int64)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Assets.Scripts.GameLoop.GameLoopTypeProfiler.TypeCost"/> struct.
+            </summary>
+            <param name="typeName">The item type's short name.</param>
+            <param name="milliseconds">The accumulated execution time in milliseconds.</param>
+            <param name="calls">The number of item executions recorded.</param>
+            <param name="allocBytes">The accumulated managed allocation in bytes.</param>
+        </member>
+        <member name="T:Assets.Scripts.GameLoop.GameLoopTypeProfiler.Entry">
+            <summary>
+            The mutable per-type accumulator.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.GameLoop.GameLoopTypeProfiler.Entry.Ticks">
+            <summary>
+            The accumulated stopwatch ticks.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.GameLoop.GameLoopTypeProfiler.Entry.Calls">
+            <summary>
+            The number of executions recorded.
+            </summary>
+        </member>
+        <member name="F:Assets.Scripts.GameLoop.GameLoopTypeProfiler.Entry.AllocBytes">
+            <summary>
+            The accumulated managed allocation in bytes.
+            </summary>
+        </member>
         <member name="T:Assets.Scripts.GameLoop.GenericGameLoop">
             <summary>
             A game loop for non-specific scenes.
@@ -139153,6 +141651,14 @@
             <param name="loop">The loop instance.</param>
             <param name="beforeSubsetCallback">The callback that fires before every subset is executed.</param>
             <param name="afterSubsetCallback">The callback that fires after every subset is executed.</param>
+        </member>
+        <member name="M:Assets.Scripts.GameLoop.UpdateGroup`1.ExecuteItem``1(System.Action{``0},``0)">
+            <summary>
+            Executes one item, timing it per concrete type when <see cref="T:Assets.Scripts.GameLoop.GameLoopTypeProfiler"/> is enabled.
+            </summary>
+            <typeparam name="TItem">The type of the item.</typeparam>
+            <param name="action">The action to execute.</param>
+            <param name="item">The item to execute the action on.</param>
         </member>
         <member name="T:Assets.Scripts.GameLoop.UpdateGroupBase`1">
             <summary>
@@ -179793,6 +182299,11 @@
             The last face normals array that was used by the normal solver.
             </summary>
         </member>
+        <member name="F:Assets.Scripts.Tools.NormalSolver._capFaces">
+            <summary>
+            The per-face cap flags (face points straight up/down), sized with <see cref="F:Assets.Scripts.Tools.NormalSolver._faceNormals"/>.
+            </summary>
+        </member>
         <member name="F:Assets.Scripts.Tools.NormalSolver._vertexEntryPool">
             <summary>
             The vertex entry pool for the normal solver.
@@ -179846,6 +182357,23 @@
             <param name="uvs">The original UVs for the mesh. The u coordinate (of > -0.5) can determine if a vertex should be
             excluded from the normal calculation and use the normal from its original normals.</param>
             <param name="originalNormals">The original normals, which are used when the original UVs are passed in.</param>
+            <param name="options">The normal calculation options.</param>
+        </member>
+        <member name="M:Assets.Scripts.Tools.NormalSolver.RecalculateNormals(System.Single,System.Int32[],UnityEngine.Vector3[],UnityEngine.Vector3[],UnityEngine.Vector3[],System.Int32[],System.Int32[],System.Int32[],System.Int32[],System.Boolean[],Assets.Scripts.Tools.NormalSolver.Options)">
+            <summary>
+            Recalculates the normals of a mesh from a precomputed smoothing topology, skipping the per-call
+            position hashing. The topology is shared by all deformations of the same source mesh.
+            </summary>
+            <param name="angle">The smoothing angle in degrees.</param>
+            <param name="triangles">The triangles.</param>
+            <param name="vertices">The (deformed) vertices.</param>
+            <param name="normals">The normals. This will be updated with the results.</param>
+            <param name="originalNormals">The original normals, used for hard edge vertices.</param>
+            <param name="hardEdgeVertices">The vertex indices that keep their original normals.</param>
+            <param name="groupStarts">The start offsets (one extra trailing entry) of each co-located vertex group.</param>
+            <param name="groupVertexIndices">The vertex index of each group entry.</param>
+            <param name="groupTriangleIndices">The triangle index of each group entry.</param>
+            <param name="entryComputes">The per-entry last-occurrence flags (earlier occurrences of a vertex are skipped since each occurrence overwrites the result).</param>
             <param name="options">The normal calculation options.</param>
         </member>
         <member name="M:Assets.Scripts.Tools.NormalSolver.ResetCacheData">

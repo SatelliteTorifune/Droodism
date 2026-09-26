@@ -8688,9 +8688,19 @@
             The part collisions.
             </summary>
         </member>
+        <member name="F:ModApi.Craft.Assembly._partCollisionSet">
+            <summary>
+            Membership mirror of <see cref="F:ModApi.Craft.Assembly._partCollisions"/> for O(1) duplicate checks on add.
+            </summary>
+        </member>
         <member name="F:ModApi.Craft.Assembly._partConnections">
             <summary>
             The part connections.
+            </summary>
+        </member>
+        <member name="F:ModApi.Craft.Assembly._partConnectionSet">
+            <summary>
+            Membership mirror of <see cref="F:ModApi.Craft.Assembly._partConnections"/> for O(1) duplicate checks on add.
             </summary>
         </member>
         <member name="F:ModApi.Craft.Assembly._partDictionary">
@@ -9842,6 +9852,12 @@
             </summary>
             <seealso cref="T:UnityEngine.MonoBehaviour" />
         </member>
+        <member name="F:ModApi.Craft.Parts.AttachPointScript._sharedMaterials">
+            <summary>
+            The shared tint materials, keyed by source material, color and render queue.
+            The tint palette is a handful of fixed colors, so attach points don't need unique material instances.
+            </summary>
+        </member>
         <member name="F:ModApi.Craft.Parts.AttachPointScript._color">
             <summary>
             The color
@@ -9852,14 +9868,14 @@
             The flip visuals flag.
             </summary>
         </member>
-        <member name="F:ModApi.Craft.Parts.AttachPointScript._material">
-            <summary>
-            The material
-            </summary>
-        </member>
         <member name="F:ModApi.Craft.Parts.AttachPointScript._meshRenderer">
             <summary>
             The mesh renderer
+            </summary>
+        </member>
+        <member name="F:ModApi.Craft.Parts.AttachPointScript._sourceMaterial">
+            <summary>
+            The original (prefab) material the shared tint materials derive from.
             </summary>
         </member>
         <member name="F:ModApi.Craft.Parts.AttachPointScript._visible">
@@ -9960,15 +9976,19 @@
             Updates the layer based on the attach point's normal.
             </summary>
         </member>
-        <member name="M:ModApi.Craft.Parts.AttachPointScript.OnDestroy">
-            <summary>
-            This function is called when the MonoBehaviour will be destroyed.
-            </summary>
-        </member>
         <member name="M:ModApi.Craft.Parts.AttachPointScript.Start">
             <summary>
             Unity Start method.
             </summary>
+        </member>
+        <member name="M:ModApi.Craft.Parts.AttachPointScript.GetSharedMaterial(UnityEngine.Material,UnityEngine.Color,System.Int32)">
+            <summary>
+            Gets (creating on first use) the shared material for the specified source material, tint color and render queue.
+            </summary>
+            <param name="source">The source material to derive from.</param>
+            <param name="color">The tint color.</param>
+            <param name="renderQueue">The render queue.</param>
+            <returns>The shared material.</returns>
         </member>
         <member name="M:ModApi.Craft.Parts.AttachPointScript.OnAttachPointEnabledChanged(ModApi.Craft.Parts.AttachPoint)">
             <summary>
@@ -13739,10 +13759,18 @@
         </member>
         <member name="P:ModApi.Craft.Parts.IPartGroupScript.PartGroupRenderer">
             <summary>
-            Gets the part group renderer for the part group's combined mesh (if any).
+            Gets the part group renderer for the part group's primary combined mesh (if any).
             </summary>
             <value>
-            The part group renderer for the part group's combined mesh (if any).
+            The part group renderer for the part group's primary combined mesh (if any).
+            </value>
+        </member>
+        <member name="P:ModApi.Craft.Parts.IPartGroupScript.PartGroupRenderers">
+            <summary>
+            Gets the part group renderers for all combined mesh shadow/drag variants (empty if none).
+            </summary>
+            <value>
+            The part group renderers for all combined mesh shadow/drag variants (empty if none).
             </value>
         </member>
         <member name="M:ModApi.Craft.Parts.IPartGroupScript.GetMaterialPropertyBlockForNonCombinedMesh(ModApi.Craft.Parts.IRendererMaterialMap)">
@@ -14485,6 +14513,14 @@
             The alpha override value.
             If negative, the renderer will use the part material's alpha value.
             If positive, that value will be used for the alpha-ness of the renderer.
+            </value>
+        </member>
+        <member name="P:ModApi.Craft.Parts.IRendererMaterialMap.CastShadows">
+            <summary>
+            Gets a value indicating whether this renderer casts shadows.
+            </summary>
+            <value>
+              <c>true</c> if the renderer casts shadows; otherwise, <c>false</c>.
             </value>
         </member>
         <member name="P:ModApi.Craft.Parts.IRendererMaterialMap.CombinedMeshVertexCount">
@@ -15417,6 +15453,14 @@
             The tutorial ID, which links this craft to a flight tutorial.
             </value>
         </member>
+        <member name="P:ModApi.Craft.Parts.Modifiers.ConfigData.DeferDesignerInitialization">
+            <summary>
+            Gets a value indicating whether the designer initialization runs lazily on first properties access.
+            </summary>
+            <value>
+            <c>true</c> if the designer initialization is deferred; otherwise, <c>false</c>.
+            </value>
+        </member>
         <member name="M:ModApi.Craft.Parts.Modifiers.ConfigData.OnDesignerCraftStructureChanged">
             <summary>
             Called when the craft structure has changed.
@@ -15436,6 +15480,12 @@
             Called when the part modifier data is initialized in the designer scene.
             </summary>
             <param name="d">The designer part properties.</param>
+        </member>
+        <member name="M:ModApi.Craft.Parts.Modifiers.ConfigData.GetTinkerPanelAvailable">
+            <summary>
+            Gets a value indicating whether the tinker panel is available (supported and unlocked).
+            </summary>
+            <returns><c>true</c> if the tinker panel is available; otherwise, <c>false</c>.</returns>
         </member>
         <member name="M:ModApi.Craft.Parts.Modifiers.ConfigData.ChangeCommandPod">
             <summary>
@@ -16988,9 +17038,20 @@
             If not set to null, then the parts considered to be in the part graph must be in this list as well.
             </summary>
         </member>
+        <member name="F:ModApi.Craft.Parts.PartGraph._traversalQueue">
+            <summary>
+            The reusable breadth-first traversal queue.
+            </summary>
+        </member>
         <member name="F:ModApi.Craft.Parts.PartGraph._visitedNodes">
             <summary>
             The visited nodes.
+            </summary>
+        </member>
+        <member name="M:ModApi.Craft.Parts.PartGraph.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:ModApi.Craft.Parts.PartGraph"/> class without traversing anything.
+            The instance can be (re)used repeatedly via <see cref="M:ModApi.Craft.Parts.PartGraph.Rebuild(ModApi.Craft.Parts.PartData)"/> without allocating.
             </summary>
         </member>
         <member name="M:ModApi.Craft.Parts.PartGraph.#ctor(ModApi.Craft.Parts.PartData,System.Collections.Generic.Dictionary{ModApi.Craft.Parts.PartData,System.Boolean})">
@@ -17061,6 +17122,24 @@
             </summary>
             <param name="part">The part to check.</param>
             <returns>The parts which lie on the other side of a rigid-body boundary.</returns>
+        </member>
+        <member name="M:ModApi.Craft.Parts.PartGraph.Clear">
+            <summary>
+            Clears the graph's results and internal state so a cached instance doesn't pin its last traversal.
+            </summary>
+        </member>
+        <member name="M:ModApi.Craft.Parts.PartGraph.Rebuild(ModApi.Craft.Parts.PartData)">
+            <summary>
+            Re-traverses the graph from the specified part, reusing this instance's collections.
+            </summary>
+            <param name="part">The part to start building the graph from.</param>
+        </member>
+        <member name="M:ModApi.Craft.Parts.PartGraph.Rebuild(ModApi.Craft.Parts.PartData,System.Collections.Generic.Dictionary{ModApi.Craft.Parts.PartData,System.Boolean})">
+            <summary>
+            Re-traverses the graph from the specified part, reusing this instance's collections.
+            </summary>
+            <param name="part">The part to start building the graph from.</param>
+            <param name="includedParts">The parts to consider for inclusion in the part graph, or null for all.</param>
         </member>
         <member name="M:ModApi.Craft.Parts.PartGraph.IsPartIncluded(ModApi.Craft.Parts.PartData)">
             <summary>
@@ -17375,6 +17454,11 @@
             Default XML is created for the type and cached here so state-created modifiers will have default XML.
             </summary>
         </member>
+        <member name="F:ModApi.Craft.Parts.PartModifierData._defaultAttributeValues">
+            <summary>
+            The reusable default attribute value index used when optimizing state XML (main thread only).
+            </summary>
+        </member>
         <member name="F:ModApi.Craft.Parts.PartModifierData._partModifierModMap">
             <summary>
             A dictionary of mods keyed by part modifier types. This is used to look up the mod responsible for a part modifier.
@@ -17404,6 +17488,11 @@
         <member name="F:ModApi.Craft.Parts.PartModifierData._typeIDLookup">
             <summary>
             The cached part modifier type id lookup table associating part modifier types with their type ids.
+            </summary>
+        </member>
+        <member name="F:ModApi.Craft.Parts.PartModifierData._designerInitializationPending">
+            <summary>
+            Whether <see cref="M:ModApi.Craft.Parts.PartModifierData.OnDesignerInitialization(ModApi.Design.PartProperties.IDesignerPartPropertiesModifierInterface)"/> is still pending (deferred until the properties are first accessed).
             </summary>
         </member>
         <member name="F:ModApi.Craft.Parts.PartModifierData._designerPartProperties">
@@ -17675,12 +17764,30 @@
             <c>true</c> if the part modifier was created directly from a state element; otherwise, <c>false</c>.
             </value>
         </member>
+        <member name="P:ModApi.Craft.Parts.PartModifierData.DeferDesignerInitialization">
+            <summary>
+            Gets a value indicating whether <see cref="M:ModApi.Craft.Parts.PartModifierData.OnDesignerInitialization(ModApi.Design.PartProperties.IDesignerPartPropertiesModifierInterface)"/> runs lazily on first properties access.
+            Only override to <c>true</c> when the method just registers callbacks, since it may never run for uninspected parts.
+            </summary>
+            <value>
+            <c>true</c> if the designer initialization is deferred; otherwise, <c>false</c>.
+            </value>
+        </member>
         <member name="P:ModApi.Craft.Parts.PartModifierData.DesignerPartProperties">
             <summary>
             Gets the designer part properties interface.
             </summary>
             <value>
             The designer part properties interface.
+            </value>
+        </member>
+        <member name="P:ModApi.Craft.Parts.PartModifierData.DesignerPartPropertiesIfInitialized">
+            <summary>
+            Gets the designer part properties interface, or null while a deferred initialization is still pending.
+            For UI refresh paths, where <see cref="P:ModApi.Craft.Parts.PartModifierData.DesignerPartProperties"/> would initialize every part on craft-wide events.
+            </summary>
+            <value>
+            The designer part properties interface, or null while a deferred initialization is still pending.
             </value>
         </member>
         <member name="M:ModApi.Craft.Parts.PartModifierData.CreateForEditor(System.Xml.Linq.XElement,System.Xml.Linq.XElement)">
@@ -17902,6 +18009,16 @@
             <param name="xmlVersion">The XML version of the craft being loaded.</param>
             <param name="xml">The XML of the modifier being loaded.</param>
         </member>
+        <member name="M:ModApi.Craft.Parts.PartModifierData.CancelDeferredDesignerInitialization">
+            <summary>
+            Cancels a pending deferred <see cref="M:ModApi.Craft.Parts.PartModifierData.OnDesignerInitialization(ModApi.Design.PartProperties.IDesignerPartPropertiesModifierInterface)"/> (when the script is destroyed).
+            </summary>
+        </member>
+        <member name="M:ModApi.Craft.Parts.PartModifierData.RunOrDeferDesignerInitialization">
+            <summary>
+            Runs <see cref="M:ModApi.Craft.Parts.PartModifierData.OnDesignerInitialization(ModApi.Design.PartProperties.IDesignerPartPropertiesModifierInterface)"/>, or marks it pending when the modifier defers it.
+            </summary>
+        </member>
         <member name="M:ModApi.Craft.Parts.PartModifierData.GetDefaultTypeId(System.Type)">
             <summary>
             Gets the default type ID for the specified part modifier type.
@@ -17932,6 +18049,11 @@
             <param name="type">The type for which to get the member name list.</param>
             <param name="stateMembersOnly">A value indicating if all part modifier properties should be returned or only those used for preserving state.</param>
             <returns>The list of members to serialize when saving and loading states.</returns>
+        </member>
+        <member name="M:ModApi.Craft.Parts.PartModifierData.EnsureDesignerInitialization">
+            <summary>
+            Runs a deferred <see cref="M:ModApi.Craft.Parts.PartModifierData.OnDesignerInitialization(ModApi.Design.PartProperties.IDesignerPartPropertiesModifierInterface)"/> if one is still pending.
+            </summary>
         </member>
         <member name="M:ModApi.Craft.Parts.PartModifierData.GetTypeId">
             <summary>
@@ -21110,6 +21232,15 @@
             The Mach number.
             </value>
         </member>
+        <member name="P:ModApi.Craft.IBodyScript.PartDragForceFactor">
+            <summary>
+            Gets the drag force per unit of drag-coefficient-times-area for the current tick, or zero
+            when this body cannot exert meaningful drag on its parts.
+            </summary>
+            <value>
+            The drag force per unit of drag coefficient times area, in scaled Newtons.
+            </value>
+        </member>
         <member name="P:ModApi.Craft.IBodyScript.PartGroups">
             <summary>
             Gets the part groups.
@@ -21255,6 +21386,13 @@
             Sets a flag on the body script notifying it that a part's mass has changed and the body needs to
             recalculate its total mass.
             </summary>
+        </member>
+        <member name="M:ModApi.Craft.IBodyScript.OnPartMassChanged(ModApi.Craft.Parts.PartData)">
+            <summary>
+            Notifies the body script that the specified part's mass (or center of mass) has changed so its
+            contribution to the body mass can be updated incrementally.
+            </summary>
+            <param name="part">The part whose mass changed.</param>
         </member>
         <member name="M:ModApi.Craft.IBodyScript.QueuePartGroupForDestruction(ModApi.Craft.Parts.IPartGroupScript)">
             <summary>
@@ -22774,6 +22912,16 @@
             <param name="collider">The collider to determine the submerged percent for.</param>
             <returns>The percentage that the supplied collider is submerged under water.</returns>
         </member>
+        <member name="M:ModApi.Craft.ICraftScript.GetComponentsInCraft``1(System.Collections.Generic.List{``0})">
+            <summary>
+            Gets the components of the specified type on the craft and every body in it.
+            </summary>
+            <remarks>
+            In flight the bodies are scene roots, so a hierarchy walk from the craft never reaches them.
+            </remarks>
+            <typeparam name="T">The type of component to collect.</typeparam>
+            <param name="results">The list to fill, which is cleared first.</param>
+        </member>
         <member name="M:ModApi.Craft.ICraftScript.GetOrCreateFuelMonitor">
             <summary>
             Gets or creates a fuel monitor for the craft.
@@ -22790,6 +22938,14 @@
             <returns>
             The partload part.
             </returns>
+        </member>
+        <member name="M:ModApi.Craft.ICraftScript.GetSpanSubmergedPercent(UnityEngine.Vector3,System.Single)">
+            <summary>
+            Gets the percentage of a vertical span, centered at the given frame position, that is under water.
+            </summary>
+            <param name="frameCenter">The frame position of the span's center.</param>
+            <param name="halfSpan">Half the span's height along the local up axis.</param>
+            <returns>The percentage of the span under water.</returns>
         </member>
         <member name="M:ModApi.Craft.ICraftScript.GetVerticalVelocity">
             <summary>
@@ -23001,6 +23157,11 @@
             The part state coloring information.
             </value>
         </member>
+        <member name="M:ModApi.Craft.ITheme.AddRimShadeRequest">
+            <summary>
+            Adds a request for rim shading on the shared part-group materials (ref counted).
+            </summary>
+        </member>
         <member name="M:ModApi.Craft.ITheme.GetDefaultPartTMProMaterial(System.String)">
             <summary>
             Gets the default TextMeshPro part material for the specified material key.
@@ -23038,11 +23199,31 @@
             <param name="materialKey">The material key.</param>
             <param name="material">The material instance to release.</param>
         </member>
+        <member name="M:ModApi.Craft.ITheme.ReleaseSharedBdmPartMaterial">
+            <summary>
+            Releases a reference to the shared before-depth-mask part-group material.
+            </summary>
+        </member>
+        <member name="M:ModApi.Craft.ITheme.ReleaseSharedDefaultPartMaterial">
+            <summary>
+            Releases a reference to the shared default part-group material.
+            </summary>
+        </member>
+        <member name="M:ModApi.Craft.ITheme.ReleaseSharedTransparentPartMaterial">
+            <summary>
+            Releases a reference to the shared transparent part-group material.
+            </summary>
+        </member>
         <member name="M:ModApi.Craft.ITheme.ReleaseTransparentPartMaterialInstance(UnityEngine.Material)">
             <summary>
             Releases an instance of the transparent part material.
             </summary>
             <param name="material">The material to release.</param>
+        </member>
+        <member name="M:ModApi.Craft.ITheme.RemoveRimShadeRequest">
+            <summary>
+            Removes a request for rim shading on the shared part-group materials (ref counted).
+            </summary>
         </member>
         <member name="M:ModApi.Craft.ITheme.RequestDefaultPartMaterialInstance">
             <summary>
@@ -23056,6 +23237,24 @@
             </summary>
             <param name="materialKey">The material key.</param>
             <returns>The requested material.</returns>
+        </member>
+        <member name="M:ModApi.Craft.ITheme.RequestSharedBdmPartMaterial">
+            <summary>
+            Requests a reference to the shared before-depth-mask part-group material (ref counted, created on first use).
+            </summary>
+            <returns>The shared before-depth-mask part-group material.</returns>
+        </member>
+        <member name="M:ModApi.Craft.ITheme.RequestSharedDefaultPartMaterial">
+            <summary>
+            Requests a reference to the shared default part-group material (ref counted, created on first use).
+            </summary>
+            <returns>The shared default part-group material.</returns>
+        </member>
+        <member name="M:ModApi.Craft.ITheme.RequestSharedTransparentPartMaterial">
+            <summary>
+            Requests a reference to the shared transparent part-group material (ref counted, created on first use).
+            </summary>
+            <returns>The shared transparent part-group material.</returns>
         </member>
         <member name="M:ModApi.Craft.ITheme.RequestTransparentPartMaterialInstance">
             <summary>
@@ -24863,6 +25062,16 @@
             The operator.
             </summary>
         </member>
+        <member name="F:ModApi.Craft.Program.Expressions.BinaryOperatorExpression._opCode">
+            <summary>
+            The operator code resolved from <see cref="F:ModApi.Craft.Program.Expressions.BinaryOperatorExpression._opCodeSource"/>, so evaluation skips the string switch.
+            </summary>
+        </member>
+        <member name="F:ModApi.Craft.Program.Expressions.BinaryOperatorExpression._opCodeSource">
+            <summary>
+            The operator string instance <see cref="F:ModApi.Craft.Program.Expressions.BinaryOperatorExpression._opCode"/> was resolved from.
+            </summary>
+        </member>
         <member name="F:ModApi.Craft.Program.Expressions.BinaryOperatorExpression._result">
             <summary>
             The result
@@ -24871,6 +25080,66 @@
         <member name="M:ModApi.Craft.Program.Expressions.BinaryOperatorExpression.#ctor">
             <summary>
             Initializes a new instance of the <see cref="T:ModApi.Craft.Program.Expressions.BinaryOperatorExpression"/> class.
+            </summary>
+        </member>
+        <member name="T:ModApi.Craft.Program.Expressions.BinaryOperatorExpression.OpCode">
+            <summary>
+            The operator codes; resolved once per operator string.
+            </summary>
+        </member>
+        <member name="F:ModApi.Craft.Program.Expressions.BinaryOperatorExpression.OpCode.Unknown">
+            <summary>
+            An unrecognized operator.
+            </summary>
+        </member>
+        <member name="F:ModApi.Craft.Program.Expressions.BinaryOperatorExpression.OpCode.Add">
+            <summary>
+            The addition operator.
+            </summary>
+        </member>
+        <member name="F:ModApi.Craft.Program.Expressions.BinaryOperatorExpression.OpCode.Subtract">
+            <summary>
+            The subtraction operator.
+            </summary>
+        </member>
+        <member name="F:ModApi.Craft.Program.Expressions.BinaryOperatorExpression.OpCode.Divide">
+            <summary>
+            The division operator.
+            </summary>
+        </member>
+        <member name="F:ModApi.Craft.Program.Expressions.BinaryOperatorExpression.OpCode.Multiply">
+            <summary>
+            The multiplication operator.
+            </summary>
+        </member>
+        <member name="F:ModApi.Craft.Program.Expressions.BinaryOperatorExpression.OpCode.Power">
+            <summary>
+            The exponentiation operator.
+            </summary>
+        </member>
+        <member name="F:ModApi.Craft.Program.Expressions.BinaryOperatorExpression.OpCode.Random">
+            <summary>
+            The random-range operator.
+            </summary>
+        </member>
+        <member name="F:ModApi.Craft.Program.Expressions.BinaryOperatorExpression.OpCode.Min">
+            <summary>
+            The minimum operator.
+            </summary>
+        </member>
+        <member name="F:ModApi.Craft.Program.Expressions.BinaryOperatorExpression.OpCode.Max">
+            <summary>
+            The maximum operator.
+            </summary>
+        </member>
+        <member name="F:ModApi.Craft.Program.Expressions.BinaryOperatorExpression.OpCode.Atan2">
+            <summary>
+            The atan2 operator.
+            </summary>
+        </member>
+        <member name="F:ModApi.Craft.Program.Expressions.BinaryOperatorExpression.OpCode.Modulo">
+            <summary>
+            The modulo operator.
             </summary>
         </member>
         <member name="P:ModApi.Craft.Program.Expressions.BinaryOperatorExpression.ExpressionA">
@@ -24905,6 +25174,14 @@
             The operator.
             </value>
         </member>
+        <member name="P:ModApi.Craft.Program.Expressions.BinaryOperatorExpression.ResolvedOp">
+            <summary>
+            Gets the operator code, re-resolving it only when the operator string changes.
+            </summary>
+            <value>
+            The operator code.
+            </value>
+        </member>
         <member name="M:ModApi.Craft.Program.Expressions.BinaryOperatorExpression.Evaluate(ModApi.Craft.Program.IThreadContext)">
             <summary>
             Evaluates the expression and returns the result.
@@ -24913,6 +25190,13 @@
             <returns>
             The value of the expression.
             </returns>
+        </member>
+        <member name="M:ModApi.Craft.Program.Expressions.BinaryOperatorExpression.ResolveOp(System.String)">
+            <summary>
+            Resolves an operator string to its code.
+            </summary>
+            <param name="op">The operator string.</param>
+            <returns>The operator code.</returns>
         </member>
         <member name="M:ModApi.Craft.Program.Expressions.BinaryOperatorExpression.EvaluateAsNumbers(ModApi.Craft.Program.IThreadContext,ModApi.Craft.Program.ExpressionResult,ModApi.Craft.Program.ExpressionResult)">
             <summary>
@@ -25044,6 +25328,16 @@
             The operator.
             </summary>
         </member>
+        <member name="F:ModApi.Craft.Program.Expressions.ComparisonExpression._opCode">
+            <summary>
+            The operator code resolved from <see cref="F:ModApi.Craft.Program.Expressions.ComparisonExpression._opCodeSource"/>, so evaluation skips the string switch.
+            </summary>
+        </member>
+        <member name="F:ModApi.Craft.Program.Expressions.ComparisonExpression._opCodeSource">
+            <summary>
+            The operator string instance <see cref="F:ModApi.Craft.Program.Expressions.ComparisonExpression._opCode"/> was resolved from.
+            </summary>
+        </member>
         <member name="F:ModApi.Craft.Program.Expressions.ComparisonExpression._result">
             <summary>
             The result
@@ -25052,6 +25346,41 @@
         <member name="M:ModApi.Craft.Program.Expressions.ComparisonExpression.#ctor">
             <summary>
             Initializes a new instance of the <see cref="T:ModApi.Craft.Program.Expressions.ComparisonExpression"/> class.
+            </summary>
+        </member>
+        <member name="T:ModApi.Craft.Program.Expressions.ComparisonExpression.OpCode">
+            <summary>
+            The operator codes; resolved once per operator string.
+            </summary>
+        </member>
+        <member name="F:ModApi.Craft.Program.Expressions.ComparisonExpression.OpCode.Unknown">
+            <summary>
+            An unrecognized operator.
+            </summary>
+        </member>
+        <member name="F:ModApi.Craft.Program.Expressions.ComparisonExpression.OpCode.Equal">
+            <summary>
+            The equality operator.
+            </summary>
+        </member>
+        <member name="F:ModApi.Craft.Program.Expressions.ComparisonExpression.OpCode.Less">
+            <summary>
+            The less-than operator.
+            </summary>
+        </member>
+        <member name="F:ModApi.Craft.Program.Expressions.ComparisonExpression.OpCode.Greater">
+            <summary>
+            The greater-than operator.
+            </summary>
+        </member>
+        <member name="F:ModApi.Craft.Program.Expressions.ComparisonExpression.OpCode.LessOrEqual">
+            <summary>
+            The less-than-or-equal operator.
+            </summary>
+        </member>
+        <member name="F:ModApi.Craft.Program.Expressions.ComparisonExpression.OpCode.GreaterOrEqual">
+            <summary>
+            The greater-than-or-equal operator.
             </summary>
         </member>
         <member name="P:ModApi.Craft.Program.Expressions.ComparisonExpression.ExpressionA">
@@ -25086,6 +25415,14 @@
             The operator.
             </value>
         </member>
+        <member name="P:ModApi.Craft.Program.Expressions.ComparisonExpression.ResolvedOp">
+            <summary>
+            Gets the operator code, re-resolving it only when the operator string changes.
+            </summary>
+            <value>
+            The operator code.
+            </value>
+        </member>
         <member name="M:ModApi.Craft.Program.Expressions.ComparisonExpression.Evaluate(ModApi.Craft.Program.IThreadContext)">
             <summary>
             Evaluates the expression and returns the result.
@@ -25094,6 +25431,13 @@
             <returns>
             The value of the expression.
             </returns>
+        </member>
+        <member name="M:ModApi.Craft.Program.Expressions.ComparisonExpression.ResolveOp(System.String)">
+            <summary>
+            Resolves an operator string to its code.
+            </summary>
+            <param name="op">The operator string.</param>
+            <returns>The operator code.</returns>
         </member>
         <member name="T:ModApi.Craft.Program.Expressions.ConditionalExpression">
             <summary>
@@ -26090,6 +26434,36 @@
             The text
             </summary>
         </member>
+        <member name="F:ModApi.Craft.Program.ExpressionResult._textNumber">
+            <summary>
+            The number parsed from <see cref="F:ModApi.Craft.Program.ExpressionResult._textNumberSource"/>; valid when <see cref="F:ModApi.Craft.Program.ExpressionResult._textNumberValid"/>.
+            </summary>
+        </member>
+        <member name="F:ModApi.Craft.Program.ExpressionResult._textNumberSource">
+            <summary>
+            The string instance the cached number parse was computed from.
+            </summary>
+        </member>
+        <member name="F:ModApi.Craft.Program.ExpressionResult._textNumberValid">
+            <summary>
+            Whether <see cref="F:ModApi.Craft.Program.ExpressionResult._textNumberSource"/> parsed as a number.
+            </summary>
+        </member>
+        <member name="F:ModApi.Craft.Program.ExpressionResult._textVector">
+            <summary>
+            The vector parsed from <see cref="F:ModApi.Craft.Program.ExpressionResult._textVectorSource"/>; valid when <see cref="F:ModApi.Craft.Program.ExpressionResult._textVectorValid"/>.
+            </summary>
+        </member>
+        <member name="F:ModApi.Craft.Program.ExpressionResult._textVectorSource">
+            <summary>
+            The string instance the cached vector parse was computed from.
+            </summary>
+        </member>
+        <member name="F:ModApi.Craft.Program.ExpressionResult._textVectorValid">
+            <summary>
+            Whether <see cref="F:ModApi.Craft.Program.ExpressionResult._textVectorSource"/> parsed as a vector.
+            </summary>
+        </member>
         <member name="F:ModApi.Craft.Program.ExpressionResult._vector">
             <summary>
             The vector value.
@@ -26254,6 +26628,24 @@
             <summary>
             Resets the casts.
             </summary>
+        </member>
+        <member name="M:ModApi.Craft.Program.ExpressionResult.TryGetNumberFromText(System.String,System.Double@)">
+            <summary>
+            Parses text as a number through a cache keyed on the string instance, so re-evaluating
+            the same value doesn't re-parse.
+            </summary>
+            <param name="text">The text to parse.</param>
+            <param name="result">The parsed number, or zero when parsing failed.</param>
+            <returns>True if the text parsed as a number, otherwise false.</returns>
+        </member>
+        <member name="M:ModApi.Craft.Program.ExpressionResult.TryGetVectorFromText(System.String,UnityEngine.Vector3d@)">
+            <summary>
+            Parses text as a vector through a cache keyed on the string instance, so re-evaluating
+            the same value doesn't re-parse.
+            </summary>
+            <param name="text">The text to parse.</param>
+            <param name="result">The parsed vector, or zero when parsing failed.</param>
+            <returns>True if the text parsed as a vector, otherwise false.</returns>
         </member>
         <member name="T:ModApi.Craft.Program.ProgramExpression">
             <summary>
@@ -30862,6 +31254,183 @@
             </summary>
             <param name="id">The material identifier.</param>
             <returns>A default material object.</returns>
+        </member>
+        <member name="T:ModApi.CraftPerformanceProfiler">
+            <summary>
+            Lightweight diagnostics for profiling the craft load pipeline and simulation hot paths.
+            </summary>
+        </member>
+        <member name="F:ModApi.CraftPerformanceProfiler._samplers">
+            <summary>
+            The custom samplers created via <see cref="M:ModApi.CraftPerformanceProfiler.GetSampler(System.String)"/>, keyed by name.
+            </summary>
+        </member>
+        <member name="F:ModApi.CraftPerformanceProfiler._accumulators">
+            <summary>
+            The aggregation buckets written by <see cref="M:ModApi.CraftPerformanceProfiler.Accumulate(System.String,System.Int64)"/>, keyed by name.
+            </summary>
+        </member>
+        <member name="F:ModApi.CraftPerformanceProfiler._allocationAccumulators">
+            <summary>
+            The allocation buckets written by <see cref="M:ModApi.CraftPerformanceProfiler.AccumulateAllocation(System.String,ModApi.CraftPerformanceProfiler.AllocationProbe@)"/>, keyed by name.
+            </summary>
+        </member>
+        <member name="F:ModApi.CraftPerformanceProfiler._capturedPhases">
+            <summary>
+            The active capture session's collected phase result lines, or null when no session is active.
+            </summary>
+        </member>
+        <member name="F:ModApi.CraftPerformanceProfiler._captureStartMonoUsed">
+            <summary>
+            The managed heap size when the active capture session began.
+            </summary>
+        </member>
+        <member name="F:ModApi.CraftPerformanceProfiler._captureStartCollections">
+            <summary>
+            The GC collection count when the active capture session began.
+            </summary>
+        </member>
+        <member name="P:ModApi.CraftPerformanceProfiler.LogCraftLoadTimings">
+            <summary>
+            Gets or sets a value indicating whether one-shot craft-load phase timings are written to the log.
+            </summary>
+            <value>
+            A value indicating whether one-shot craft-load phase timings are written to the log. Defaults to
+            <c>false</c> so ordinary craft loads stay quiet; the craft profiler enables it while a benchmark runs.
+            </value>
+        </member>
+        <member name="P:ModApi.CraftPerformanceProfiler.IsCapturing">
+            <summary>
+            Gets a value indicating whether a load-phase capture session is currently active.
+            </summary>
+            <value>
+            A value indicating whether a load-phase capture session is currently active.
+            </value>
+        </member>
+        <member name="M:ModApi.CraftPerformanceProfiler.BeginCapture">
+            <summary>
+            Begins a capture session. Every load phase completed while the session is active is recorded and
+            returned by <see cref="M:ModApi.CraftPerformanceProfiler.EndCapture"/>, independent of <see cref="P:ModApi.CraftPerformanceProfiler.LogCraftLoadTimings"/>.
+            </summary>
+        </member>
+        <member name="M:ModApi.CraftPerformanceProfiler.EndCapture">
+            <summary>
+            Ends the current capture session and returns the phase result lines collected during it,
+            annotated with the session's managed heap growth and GC collection count.
+            </summary>
+            <returns>The collected phase result lines (empty if no session was active).</returns>
+        </member>
+        <member name="M:ModApi.CraftPerformanceProfiler.Accumulate(System.String,System.Int64)">
+            <summary>
+            Adds elapsed time since <paramref name="startTimestamp"/> (a <c>Stopwatch.GetTimestamp()</c> value) to the named aggregation bucket. Main thread only.
+            </summary>
+            <param name="name">The bucket name.</param>
+            <param name="startTimestamp">The start timestamp of the measured work.</param>
+        </member>
+        <member name="M:ModApi.CraftPerformanceProfiler.StartAllocationProbe">
+            <summary>
+            Starts a managed-allocation probe, or an inactive one when no benchmark is listening.
+            </summary>
+            <returns>The probe to pass to <see cref="M:ModApi.CraftPerformanceProfiler.AccumulateAllocation(System.String,ModApi.CraftPerformanceProfiler.AllocationProbe@)"/>.</returns>
+        </member>
+        <member name="M:ModApi.CraftPerformanceProfiler.AccumulateAllocation(System.String,ModApi.CraftPerformanceProfiler.AllocationProbe@)">
+            <summary>
+            Adds the managed heap growth since <paramref name="probe"/> to the named allocation bucket.
+            Spans interrupted by a GC collection are counted as skipped (their delta is meaningless). Main thread only.
+            </summary>
+            <param name="name">The bucket name.</param>
+            <param name="probe">The probe from <see cref="M:ModApi.CraftPerformanceProfiler.StartAllocationProbe"/>.</param>
+        </member>
+        <member name="M:ModApi.CraftPerformanceProfiler.ReportAndClearAccumulators">
+            <summary>
+            Returns report lines for all aggregation buckets and clears them.
+            </summary>
+            <returns>One line per bucket, sorted by name.</returns>
+        </member>
+        <member name="M:ModApi.CraftPerformanceProfiler.RecordResult(System.String)">
+            <summary>
+            Records a one-shot result line, logging and/or capturing it like a load phase timing.
+            </summary>
+            <param name="line">The result line.</param>
+        </member>
+        <member name="M:ModApi.CraftPerformanceProfiler.GetSampler(System.String)">
+            <summary>
+            Gets (creating on first use) the named custom sampler, whose frame timings are readable in code via <c>Recorder</c>. Main thread only.
+            </summary>
+            <param name="name">The sampler name.</param>
+            <returns>The sampler.</returns>
+        </member>
+        <member name="M:ModApi.CraftPerformanceProfiler.BeginLoadPhase(System.String,System.Int32)">
+            <summary>
+            Begins timing a one-shot craft-load phase. Wrap the phase in a <c>using</c> statement.
+            </summary>
+            <param name="name">The profiler sample name, also used in the log line.</param>
+            <param name="itemCount">The number of items processed, or -1 to omit per-item stats.</param>
+            <returns>A scope that ends the sample and logs the elapsed time when disposed.</returns>
+        </member>
+        <member name="T:ModApi.CraftPerformanceProfiler.AllocationProbe">
+            <summary>
+            A snapshot of managed heap state taken by <see cref="M:ModApi.CraftPerformanceProfiler.StartAllocationProbe"/>.
+            </summary>
+        </member>
+        <member name="F:ModApi.CraftPerformanceProfiler.AllocationProbe.MonoUsed">
+            <summary>
+            The managed heap size when the probe started.
+            </summary>
+        </member>
+        <member name="F:ModApi.CraftPerformanceProfiler.AllocationProbe.Collections">
+            <summary>
+            The GC collection count when the probe started.
+            </summary>
+        </member>
+        <member name="F:ModApi.CraftPerformanceProfiler.AllocationProbe.Active">
+            <summary>
+            A value indicating whether the probe is measuring (false when no benchmark is listening).
+            </summary>
+        </member>
+        <member name="M:ModApi.CraftPerformanceProfiler.AllocationProbe.#ctor(System.Int64,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ModApi.CraftPerformanceProfiler.AllocationProbe"/> struct.
+            </summary>
+            <param name="monoUsed">The managed heap size when the probe started.</param>
+            <param name="collections">The GC collection count when the probe started.</param>
+        </member>
+        <member name="T:ModApi.CraftPerformanceProfiler.LoadPhaseScope">
+            <summary>
+            A disposable scope that times a single craft-load phase. Created by <see cref="M:ModApi.CraftPerformanceProfiler.BeginLoadPhase(System.String,System.Int32)"/>.
+            </summary>
+        </member>
+        <member name="F:ModApi.CraftPerformanceProfiler.LoadPhaseScope._name">
+            <summary>
+            The profiler sample name.
+            </summary>
+        </member>
+        <member name="F:ModApi.CraftPerformanceProfiler.LoadPhaseScope._itemCount">
+            <summary>
+            The number of items processed, or -1 to omit per-item stats.
+            </summary>
+        </member>
+        <member name="F:ModApi.CraftPerformanceProfiler.LoadPhaseScope._startTimestamp">
+            <summary>
+            The timestamp when the phase began, or 0 when inactive.
+            </summary>
+        </member>
+        <member name="F:ModApi.CraftPerformanceProfiler.LoadPhaseScope._active">
+            <summary>
+            A value indicating whether the elapsed time is logged and/or captured on dispose.
+            </summary>
+        </member>
+        <member name="M:ModApi.CraftPerformanceProfiler.LoadPhaseScope.#ctor(System.String,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ModApi.CraftPerformanceProfiler.LoadPhaseScope"/> struct and opens the profiler sample.
+            </summary>
+            <param name="name">The profiler sample name.</param>
+            <param name="itemCount">The number of items processed, or -1 to omit per-item stats.</param>
+        </member>
+        <member name="M:ModApi.CraftPerformanceProfiler.LoadPhaseScope.Dispose">
+            <summary>
+            Ends the profiler sample and, when active, logs and/or captures the elapsed time.
+            </summary>
         </member>
         <member name="T:ModApi.Culture">
             <summary>
@@ -76678,12 +77247,6 @@
             <value>
             The atmosphere quality setting.
             </value>
-        </member>
-        <member name="P:ModApi.Settings.VisualEffectsQualitySettings.DesignerLightingPartThreshold">
-            <summary>
-            Gets the designer light quality part threshold setting.
-            </summary>
-            <value>The designer light quality part threshold setting.</value>
         </member>
         <member name="P:ModApi.Settings.VisualEffectsQualitySettings.Explosions">
             <summary>

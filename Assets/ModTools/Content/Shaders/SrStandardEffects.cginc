@@ -280,7 +280,20 @@
         #if UNITY_PASS_FORWARDADD
             return ApplyUnityLightingAdd(fragData, light, lightAttenuation);
         #elif SRSTANDARD_PART || SRSTANDARD_PART_TMPRO
-            return ApplyUnityLightingBase_ScaledIndirectSpecular(fragData, light, INPUT.ambient, lightAttenuation, _minimumReflectivity, indirectSpecular);
+            half4 baseColor = ApplyUnityLightingBase_ScaledIndirectSpecular(fragData, light, INPUT.ambient, lightAttenuation, _minimumReflectivity, indirectSpecular);
+
+            // The designer fill light, folded here so it costs no ForwardAdd draw per renderer. Keyworded
+            // rather than branched on the color: a runtime branch still compiles the additive BRDF into
+            // the flight variant, and the registers it reserves cost real time on pixel-bound crafts.
+            #ifdef DESIGNER_FILL_LIGHT_ON
+                UnityLight fillLight;
+                fillLight.dir = _directionalLightAdditive_Direction;
+                fillLight.color = _directionalLightAdditive_Color;
+                fillLight.ndotl = 0;
+                baseColor.rgb += ApplyUnityLightingAdd(fragData, fillLight, 1).rgb;
+            #endif
+
+            return baseColor;
         #else
             return ApplyUnityLightingBase(fragData, light, INPUT.ambient, lightAttenuation, indirectSpecular);
         #endif
@@ -294,7 +307,18 @@
         #if UNITY_PASS_FORWARDADD
             return ApplyUnityLightingAdd(fragData, light, lightAttenuation);
         #elif SRSTANDARD_PART || SRSTANDARD_PART_TMPRO
-            return ApplyUnityLightingBase_ScaledIndirectSpecular(fragData, light, INPUT.ambient, lightAttenuation, _minimumReflectivity, 0);
+            half4 baseColor = ApplyUnityLightingBase_ScaledIndirectSpecular(fragData, light, INPUT.ambient, lightAttenuation, _minimumReflectivity, 0);
+
+            // The designer fill light, as in ApplyUnityPBRLightingMetallic above.
+            #ifdef DESIGNER_FILL_LIGHT_ON
+                UnityLight fillLight;
+                fillLight.dir = _directionalLightAdditive_Direction;
+                fillLight.color = _directionalLightAdditive_Color;
+                fillLight.ndotl = 0;
+                baseColor.rgb += ApplyUnityLightingAdd(fragData, fillLight, 1).rgb;
+            #endif
+
+            return baseColor;
         #else
             return ApplyUnityLightingBase(fragData, light, INPUT.ambient, lightAttenuation, 0);
         #endif

@@ -80,6 +80,7 @@
             #pragma vertex vert
             #pragma fragment frag
             #pragma multi_compile_fwdbase
+            #pragma multi_compile __ DESIGNER_FILL_LIGHT_ON
             #pragma multi_compile __ OBJECT_ATMOSPHERE
             #pragma multi_compile __ UNDERWATER
             #pragma multi_compile SR_LIGHTING_LOW SR_LIGHTING_MEDIUM SR_LIGHTING_HIGH

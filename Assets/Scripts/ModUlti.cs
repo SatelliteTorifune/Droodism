@@ -42,7 +42,7 @@ namespace Assets.Scripts
                     ConvertPlanetPositionToLatLongAgl(position).y),
                 true, 120f);
         }
-        public Vector3d ConvertPlanetPositionToLatLongAgl(Vector3d position)
+        private Vector3d ConvertPlanetPositionToLatLongAgl(Vector3d position)
         {
             if (double.IsNaN(position.x) || double.IsNaN(position.y) || double.IsNaN(position.z))
                 return Vector3d.zero;

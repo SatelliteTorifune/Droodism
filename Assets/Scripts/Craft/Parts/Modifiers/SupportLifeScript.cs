@@ -1536,7 +1536,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             
             CraftScript craftScript1 = this.PartScript.CraftScript as CraftScript;
-            craftScript1.RecenterTransformOnCoM(true);
+            craftScript1.RecenterTransformOnCoM(true, null);
             SpawnParachuteAndRide();
         }
 

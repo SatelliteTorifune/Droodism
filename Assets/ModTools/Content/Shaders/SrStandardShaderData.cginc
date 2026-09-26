@@ -61,6 +61,7 @@
     half _lightingFresnelBias;
     float _maxColorValue;
     float3 _directionalLightAdditive_Direction;
+    half3 _directionalLightAdditive_Color;
     float3 _ozoneCoefficient;
     float _chapmanEnabled;
 

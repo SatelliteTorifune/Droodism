@@ -101,11 +101,9 @@ namespace Assets.Scripts
             RegisterCommands();
 
             DroodismFilesSetUp.SetUp();
-
-            // 本地版本 = ModInfo.Version(System.Version,如 0.88)
+            
             this.ModVersion = this.ModInfo.Version;
-
-            // 更新检查(双通道:GitHub Releases API + version.txt 兜底,有新版时进主菜单弹提醒)
+            
             new ModUpdater().CheckForUpdate();
 
         }
@@ -184,7 +182,6 @@ namespace Assets.Scripts
             }
 
         }
-        
         public void 那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花()
         {
             
