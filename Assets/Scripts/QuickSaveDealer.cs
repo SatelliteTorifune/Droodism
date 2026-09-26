@@ -6,7 +6,6 @@ using System.Linq;
 using System.Xml.Linq;
 using Assets.Scripts.State;
 using Assets.Scripts.Droodism;
-using Debug = UnityEngine.Debug;
 using HarmonyLib;
 using ModApi.Flight;
 using ModApi.Scenes.Parameters;
@@ -102,21 +101,21 @@ namespace Assets.Scripts
                 string[] xmlFiles = Directory.GetFiles(quickSavePath, "*.xml");
                 if (xmlFiles.Length == 0)
                 {
-                    Console.WriteLine("No XML files found in the specified directory.");
+                    Log("No XML files found in the specified directory.");
                     return;
                 }
 
                 foreach (string filePath in xmlFiles)
                 {
-                    Console.WriteLine($"Processing file: {filePath}");
+                    Log($"Processing file: {filePath}");
                     ProcessXmlFile(filePath);
                 }
 
-                Console.WriteLine("All XML files processed successfully.");
+                Log("All XML files processed successfully.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error: {ex.Message}");
+                LogError($"Error: {ex.Message}");
             }
         }
         public void ManualRefreshInstance()

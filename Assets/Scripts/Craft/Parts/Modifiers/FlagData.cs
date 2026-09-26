@@ -15,7 +15,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     public class FlagData : PartModifierData<FlagScript>
     {
 
-        private Vector3 positionOffset1 = Vector3.zero;
+        private Vector3 positionOffset = Vector3.zero;
         private float currentExtentPercent = 0;
         private float currentExtentPercent2 = 0.001f;
         private float currentRotationPercent = 0f;
@@ -30,6 +30,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         [SerializeField] [PartModifierProperty]
         private bool stayDeployed;
+
+        [SerializeField] [PartModifierProperty]
+        private string flagContent;
        
         public float RotationSpeed = 0.75f;
         
@@ -60,15 +63,29 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             set => isDeployed = value;
         }
 
-        public Vector3 PositionOffset1
+        public Vector3 PositionOffset
         {
-            get => positionOffset1;
+            get => positionOffset;
         }
 
         public bool StayDeployed
         {
             get => stayDeployed;
             set => stayDeployed = value;
+        }
+        
+        public string FlagContent
+        {
+            get => flagContent;
+        }
+
+        public void SetFlagContent(string incomingFlagContent)
+        {
+            if (incomingFlagContent==null)
+            {
+                return;
+            }
+            this.flagContent = incomingFlagContent;
         }
     }
 }

@@ -12,11 +12,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     [PartModifierTypeId("CarbonDioxideFilter")]
     public class CarbonDeoxideFilterData : PartModifierData<CarbonDeoxideFilterScript>
     {
-        private Vector3 _positionOffset1 = Vector3.zero;
-        public Vector3 PositionOffset1
+        private Vector3 _positionOffset = Vector3.zero;
+        public Vector3 PositionOffset
         {
-            get => this._positionOffset1;
-            set => this._positionOffset1 = value;
+            get => this._positionOffset;
+            set => this._positionOffset = value;
         }
         [SerializeField][PartModifierProperty]
         private float co2ConsumptionRate = 1.0f;

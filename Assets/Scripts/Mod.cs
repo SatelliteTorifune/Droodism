@@ -56,6 +56,11 @@ namespace Assets.Scripts
 
         public static Mod Instance { get; } = GetModInstance<Mod>();
 
+        /// <summary>
+        /// Gets the mod version as reported by the mod manifest (ModInfo.Version), e.g. 0.88.
+        /// </summary>
+        public Version ModVersion { get; private set; }
+
         private CraftScript CurrentCraft()
         {
             return InFlightScene ?ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript as CraftScript:Game.Instance.Designer.CraftScript as CraftScript;
@@ -64,7 +69,7 @@ namespace Assets.Scripts
        
         protected override void OnModInitialized()
         {
-          
+           
             base.OnModInitialized();
             try
             {
@@ -76,10 +81,10 @@ namespace Assets.Scripts
             {
                 string s = $"Mod {Mod.ModInfo.Name} failed to Initialize. Verify all depencencies installed and enabled.<br><color=red><size=200%>你他妈加Juno Harmony了吗?";
                 Game.Instance.UserInterface.CreateMessageDialog(s);
-                Debug.LogErrorFormat($"Exception occurred while initializing Droodism: {{0}}", exception);
+                LogError("Exception occurred while initializing Droodism: {0}", exception);
             }
             Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
-            Game.Instance.SceneManager.SceneTransitionCompleted+=OnSceneTransitionCompleted;
+            Game.Instance.SceneManager.SceneTransitionCompleted+=(object sender, SceneTransitionEventArgs e)=>那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花();;
             
         }
 
@@ -89,8 +94,22 @@ namespace Assets.Scripts
         /// </summary>
         public override void OnModLoaded()
         {
-          
-           
+            DroodismGOSetUp();
+            
+            Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.MapView, OnBuildMapViewInspectorPanel);
+            
+            RegisterCommands();
+
+            DroodismFilesSetUp.SetUp();
+            
+            this.ModVersion = this.ModInfo.Version;
+            
+            new ModUpdater().CheckForUpdate();
+
+        }
+
+        private void DroodismGOSetUp()
+        {
             GameObject DroodismGO=new GameObject("DroodismGameObject");
             DroodismGO.AddComponent<DroodismUIManager>();
             DroodismGO.AddComponent<RadiationBeltManager>();
@@ -101,57 +120,7 @@ namespace Assets.Scripts
             //DroodismGO.AddComponent<BackGroundCalulator>();
             GameObject.DontDestroyOnLoad(DroodismGO);
             DroodismGO.SetActive(true);
-            Game.Instance.UserInterface.AddBuildInspectorPanelAction(InspectorIds.MapView, OnBuildMapViewInspectorPanel);
-            RegisterCommands();
-            CheckDefaultPlanetRadiationBeltConfig();
-            CheckDefaultBreathablePlanetConfig();
-            CheckDefaultFlagImage();
-            
-            
-
         }
-        
-
-        private void OnSceneLoaded(object sender, SceneEventArgs e)
-        {
-
-            if (InDesignerScene)
-            {
-                ModApi.Common.Game.Instance.Designer.CraftLoaded+=OnCraftLoaded;
-                ModApi.Common.Game.Instance.Designer.CraftStructureChanged+=OnCraftStructureChanged;
-                Created += OnPartAdded;
-            }
-
-            if (InFlightScene)
-            {
-                try
-                {
-                    ModApi.Common.Game.Instance.FlightScene.CraftChanged += OnCraftChanged;
-                    PatchCraft(ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript as CraftScript);
-                    Log("OnSceneLoaded更新Drood数量");
-                    那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花();
-                    Log("OnSceneLoaded执行doShit");
-                }
-                catch (Exception e1)
-                {
-                    Log("你要干啥{0}", e1);
-                }
-            }
-
-        }
-
-        private void OnCraftLoaded()
-        {
-            PatchCraft(CurrentCraft());
-        }
-
-        private void OnCraftStructureChanged()
-        {
-            GetDroodCountInDesigner();
-        }
-
-        
-
         /// <summary>
         /// 注册Droodism的自定义指令
         /// </summary>
@@ -176,22 +145,42 @@ namespace Assets.Scripts
                 RadiationBeltDebugUI.Instance.OnToggleInspectorPanelState();
             });
 
-
             
             DevConsoleApi.RegisterCommand("RebuildFuelSource",()=>
             {
                 var fs = ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript.FuelSources as CraftFuelSources;
                 fs.Rebuild(ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript);
             });
+            
 
         }
 
-        private void OnCraftChanged(ICraftNode craft) => PatchCraft(CurrentCraft());
-        
-
-        private void OnSceneTransitionCompleted(object sender, SceneTransitionEventArgs e)
+        private void OnSceneLoaded(object sender, SceneEventArgs e)
         {
-            那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花();
+
+            if (InDesignerScene)
+            {
+                ModApi.Common.Game.Instance.Designer.CraftLoaded+=()=>PatchCraft(CurrentCraft());
+                ModApi.Common.Game.Instance.Designer.CraftStructureChanged+=()=>GetDroodCountInDesigner();
+                Created += OnPartAdded;
+            }
+
+            if (InFlightScene)
+            {
+                try
+                {
+                    ModApi.Common.Game.Instance.FlightScene.CraftChanged += (ICraftNode craft)=>PatchCraft(CurrentCraft());
+                    PatchCraft(ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript as CraftScript);
+                    Log("OnSceneLoaded更新Drood数量");
+                    那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花();
+                    Log("OnSceneLoaded执行doShit");
+                }
+                catch (Exception e1)
+                {
+                    Log("你要干啥{0}", e1);
+                }
+            }
+
         }
         public void 那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花()
         {

@@ -16,7 +16,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     {
         [SerializeField] [DesignerPropertyToggleButton(Label = "Droodism.GravityRingData.ReverseRotation")]
         public bool IsReverse = false;
-        private Vector3 positionOffset1 = Vector3.zero;
+        private Vector3 positionOffset = Vector3.zero;
         private float currentExtentPercent = 0;
         public float CurrentRotation = 90f;
         [SerializeField]
@@ -50,9 +50,9 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             set => isDeployed = value;
         }
 
-        public Vector3 PositionOffset1
+        public Vector3 PositionOffset
         {
-            get => positionOffset1;
+            get => positionOffset;
         }
 
         public bool StayDeployed

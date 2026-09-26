@@ -5,6 +5,7 @@ using Assets.Scripts.Droodism.Crew;
 using ModApi.Craft.Propulsion;
 using ModApi.Design.PartProperties;
 using Assets.Scripts.State;
+using ModApi.Craft;
 using ModApi.Math;
 using UnityEngine.Serialization;
 

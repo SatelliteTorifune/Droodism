@@ -20,6 +20,9 @@
     float _scaleOverScaleDepth;
     sampler2D _ScaledSpaceTerrainTexture;
 
+    // 1 while a scene camera renders; 0 for cameras that bypass OnPreRender (e.g. reflection probes)
+    float _sceneCameraRendering;
+
     #if UNDERWATER
         float _underwaterLightFadeDepth;
         float _underwaterLightFadeDistance;
@@ -58,6 +61,7 @@
     half _lightingFresnelBias;
     float _maxColorValue;
     float3 _directionalLightAdditive_Direction;
+    half3 _directionalLightAdditive_Color;
     float3 _ozoneCoefficient;
     float _chapmanEnabled;
 

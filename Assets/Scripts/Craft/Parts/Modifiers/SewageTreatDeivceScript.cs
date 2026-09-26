@@ -16,7 +16,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             _battery = PartScript.BatteryFuelSource;
             try
             {
-                var patchScript = PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+                var patchScript = PartScriptUtilities.GetCommandPodPatch(PartScript);
                 if (patchScript == null)
                 {
                     waterSource = wastedWaterSource = null;
@@ -59,7 +59,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             waterSource.AddFuel(  Data.ConvertEffiency*0.3f*Data.WastedWaterComsumeRate * frame.DeltaTimeWorld*Data.Scale);
             _battery.RemoveFuel( Data.BatteryComsumeRate * Data.WastedWaterComsumeRate * frame.DeltaTimeWorld*Data.Scale);
         }
-        #region 路边一条
+        #region 生命周期
         public void DesignerStart(in DesignerFrameData frame)
         {
             this.UpdateScale();

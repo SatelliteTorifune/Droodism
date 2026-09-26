@@ -163,6 +163,9 @@
 
     <!-- FlagScript -->
     <s id="Droodism.FlagScript.LoadImage">加载图片</s>
+    <s id="Droodism.FlagScript.FlagMessage">旗帜信息</s>
+    <s id="Droodism.FlagScript.EditMessage">编辑信息</s>
+    <s id="Droodism.FlagScript.EditMessageToolTip">编辑旗帜留言</s>
 
     <!-- GasDealerScript -->
     <s id="Droodism.GasDealerScript.ActionIrreversible">此操作 &lt;color=red&gt;&lt;size=110%&gt;不可逆&lt;/size&gt;&lt;/color&gt;</s>
@@ -533,4 +536,12 @@
     <!--category-->
     <s id="Design.PartsList.Category.LifeSupport.Name">维生资源</s>
     <s id="Design.PartsList.Category.ISRU.Name">原位资源利用</s>
+
+    <!-- ModUpdater -->
+    <s id="Droodism.UI.UpdateAvailable">Droodism 有可用更新！</s>
+    <s id="Droodism.UI.UpdateNewVersion">新版本：{0}</s>
+    <s id="Droodism.UI.UpdateCurrentVersion">当前版本：{0}</s>
+    <s id="Droodism.UI.UpdateDownload">下载更新</s>
+    <s id="Droodism.UI.UpdateLater">稍后再说</s>
+    <s id="Droodism.UI.UpdateDismiss">不再提醒</s>
 </Strings>

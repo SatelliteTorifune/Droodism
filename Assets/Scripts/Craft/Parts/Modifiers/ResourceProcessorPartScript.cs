@@ -3,6 +3,7 @@ using ModApi.Craft.Parts;
 using ModApi.GameLoop;
 using ModApi.GameLoop.Interfaces;
 using RootMotion.FinalIK;
+using Assets.Scripts.Craft.Parts.Modifiers;
 using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
 using ModApi.Ui.Inspector;
 using UnityEngine;
@@ -74,14 +75,12 @@ public abstract class ResourceProcessorPartScript<T> : PartModifierScript<T>, IF
 
     protected IFuelSource GetRegularCraftFuelSource(string fuelType)
     {
-        foreach (var source in PartScript.CraftScript.FuelSources.FuelSources)
-        {
-            if (source.FuelType.Id == fuelType)
-            {
-                return source;
-            }
-        }
-        return null;
+        return PartScriptUtilities.FindCraftFuelSource(PartScript, fuelType);
+    }
+
+    protected STCommandPodPatchScript GetCommandPodPatch()
+    {
+        return PartScriptUtilities.GetCommandPodPatch(PartScript);
     }
 
     public virtual void OnGeneratePerformanceAnalysisModel(GroupModel groupModel)

@@ -1,14 +1,9 @@
 using Assets.Scripts.Design;
-using ModApi;
 using ModApi.Design;
-using Object = UnityEngine.Object;
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using ModApi.Craft.Parts;
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
@@ -101,12 +96,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
            
             if ( this._scalar !=  null)
             {
-                GameObject myselfOrChildren = Utilities.FindFirstGameObjectMyselfOrChildren("AttachPointPositions", this._scalar.gameObject);
-
-                if (myselfOrChildren != null)
-                {
-                    this._attachPointPositions = myselfOrChildren.transform;
-                }
+                this._attachPointPositions = IPartSubPartSetUp.FindSubPart(this._scalar, "AttachPointPositions");
             }
             this.UpdateScale();
         }

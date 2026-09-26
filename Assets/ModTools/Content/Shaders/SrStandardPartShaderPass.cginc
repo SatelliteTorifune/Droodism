@@ -62,7 +62,8 @@ v2f vert(vertInput v)
     InitializeVertexOutput(OUT);
 
     OUT.uv = float3((v.uv1.x * v.uv2.x) + frac(v.uv2.z), (v.uv1.y * v.uv2.y) + frac(v.uv2.w), v.uv1.z + 1);
-    OUT.ids = float4(frac(v.uv1.w) * 100, floor(v.uv2.z), floor(v.uv2.w), v.uv1.w);
+    // ids.w indexes per-part arrays; +0.25 guards against interpolation jitter and driver rounding.
+    OUT.ids = float4(frac(v.uv1.w) * 100, floor(v.uv2.z), floor(v.uv2.w), floor(v.uv1.w) + 0.25);
 
     #if NORMAL_MAPS_ON
         OUT.tangentDir.xyz = UnityObjectToWorldDir(v.tangent);
@@ -86,11 +87,12 @@ FragmentOutput frag(v2f INPUT)
 {
     FragmentOutput outColors;
 
-    // Lookup color and material data
-    half4 color = _MaterialColors[INPUT.ids.x];
+    // Explicit floor: ids.x's fraction is the Trim4 glow marker and some GLES drivers round float array indices.
+    int materialIndex = (int)floor(INPUT.ids.x);
+    half4 color = _MaterialColors[materialIndex];
     color.a = (_AlphaOverride < 0 ? color.a : _AlphaOverride);
 
-    half4 data = _MaterialData[INPUT.ids.x];
+    half4 data = _MaterialData[materialIndex];
     float4 partData = _PartData[INPUT.ids.w];
 
     #if DETAIL_TEXTURES_ON || NORMAL_MAPS_ON

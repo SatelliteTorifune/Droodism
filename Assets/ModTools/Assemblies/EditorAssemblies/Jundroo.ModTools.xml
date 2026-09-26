@@ -1903,9 +1903,9 @@
             The collection of element serializers for this serializer.
             </summary>
         </member>
-        <member name="F:Jundroo.ModTools.Serialization.Xml.UnityXmlSerializer._tempMemberNameList">
+        <member name="F:Jundroo.ModTools.Serialization.Xml.UnityXmlSerializer._tempMemberNameSet">
             <summary>
-            A temporary member name list reused on each deserialization call to avoid garbage collection.
+            A temporary member name hash set reused on each deserialization call to avoid garbage collection.
             </summary>
         </member>
         <member name="M:Jundroo.ModTools.Serialization.Xml.UnityXmlSerializer.#ctor">
@@ -1951,7 +1951,7 @@
             <param name="type">The type of the object being deserialized.</param>
             <param name="obj">The object in to which to deserialize.</param>
         </member>
-        <member name="M:Jundroo.ModTools.Serialization.Xml.UnityXmlSerializer.Deserialize(System.Xml.Linq.XElement,System.Type,System.Object,System.Boolean,System.String[])">
+        <member name="M:Jundroo.ModTools.Serialization.Xml.UnityXmlSerializer.Deserialize(System.Xml.Linq.XElement,System.Type,System.Object,System.Boolean,System.Collections.Generic.HashSet{System.String})">
             <summary>
             Deserializes the XML element in to the specified object.
             </summary>
@@ -1961,7 +1961,7 @@
             <param name="restoreMissingValuesAsNull">If <c>true</c> missing values will be restore as <c>null</c>. If <c>false</c>, missing values will be ignored.</param>
             <param name="membersToDeserialize">The list of members to deserialize. If this is <c>null</c>, it will attempt to deserialize all members.</param>
         </member>
-        <member name="M:Jundroo.ModTools.Serialization.Xml.UnityXmlSerializer.Serialize``1(``0,System.String[])">
+        <member name="M:Jundroo.ModTools.Serialization.Xml.UnityXmlSerializer.Serialize``1(``0,System.Collections.Generic.HashSet{System.String})">
             <summary>
             Serializes the specified object.
             </summary>
@@ -1970,7 +1970,7 @@
             <param name="membersToSerialize">The names of the fields to serialize. If omitted, all fields will be serialized.</param>
             <returns>The XML representing the serialized object.</returns>
         </member>
-        <member name="M:Jundroo.ModTools.Serialization.Xml.UnityXmlSerializer.Serialize``1(System.Xml.Linq.XElement,``0,System.String[])">
+        <member name="M:Jundroo.ModTools.Serialization.Xml.UnityXmlSerializer.Serialize``1(System.Xml.Linq.XElement,``0,System.Collections.Generic.HashSet{System.String})">
             <summary>
             Serializes the specified object in to the specified element.
             </summary>
@@ -1979,7 +1979,7 @@
             <param name="obj">The object to serialize.</param>
             <param name="membersToSerialize">The names of the fields to serialize. If omitted, all fields will be serialized.</param>
         </member>
-        <member name="M:Jundroo.ModTools.Serialization.Xml.UnityXmlSerializer.Serialize(System.Xml.Linq.XElement,System.Type,System.Object,System.String[])">
+        <member name="M:Jundroo.ModTools.Serialization.Xml.UnityXmlSerializer.Serialize(System.Xml.Linq.XElement,System.Type,System.Object,System.Collections.Generic.HashSet{System.String})">
             <summary>
             Serializes the specified object in to the specified element.
             </summary>
@@ -2038,6 +2038,14 @@
             <param name="name">The name of the member to retrieve.</param>
             <returns>The requested member info or <c>null</c> if it could not be found.</returns>
         </member>
+        <member name="M:Jundroo.ModTools.Serialization.Xml.UnityXmlSerializer.GetTempMemberNameSet(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Gets a temporary member name hash set based off the specified enumerable member name collection.
+            If the specified member name collection is null or empty, a value of <c>null</c> will be returned.
+            </summary>
+            <param name="memberNames">The member names for which to get a hash set representation.</param>
+            <returns>A hash set of the specified member names or <c>null</c> if the specified collection is <c>null</c> or empty.</returns>
+        </member>
         <member name="M:Jundroo.ModTools.Serialization.Xml.UnityXmlSerializer.GetTypeAttribute(System.Type)">
             <summary>
             Gets the type attribute for elements being serialized.
@@ -2045,7 +2053,7 @@
             <param name="type">The type for which to get the attribute.</param>
             <returns>The type attribute or <c>null</c> if type information should not be serialized.</returns>
         </member>
-        <member name="M:Jundroo.ModTools.Serialization.Xml.UnityXmlSerializer.Serialize(System.Xml.Linq.XElement,System.String,System.Type,Jundroo.ModTools.Serialization.Xml.XmlSerializationNullValueMode,Jundroo.ModTools.Serialization.Xml.XmlSerializationFlags,System.Object,System.String[])">
+        <member name="M:Jundroo.ModTools.Serialization.Xml.UnityXmlSerializer.Serialize(System.Xml.Linq.XElement,System.String,System.Type,Jundroo.ModTools.Serialization.Xml.XmlSerializationNullValueMode,Jundroo.ModTools.Serialization.Xml.XmlSerializationFlags,System.Object,System.Collections.Generic.HashSet{System.String})">
             <summary>
             Serializes the specified object in to the specified element.
             </summary>
@@ -2077,7 +2085,7 @@
             <param name="options">The serialization options.</param>
             <param name="collection">The collection to serialize.</param>
         </member>
-        <member name="M:Jundroo.ModTools.Serialization.Xml.UnityXmlSerializer.SerializeFields(System.Xml.Linq.XElement,System.Type,System.Object,System.String[])">
+        <member name="M:Jundroo.ModTools.Serialization.Xml.UnityXmlSerializer.SerializeFields(System.Xml.Linq.XElement,System.Type,System.Object,System.Collections.Generic.HashSet{System.String})">
             <summary>
             Serializes the fields of the specified object.
             </summary>

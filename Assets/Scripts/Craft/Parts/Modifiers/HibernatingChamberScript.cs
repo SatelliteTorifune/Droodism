@@ -1,15 +1,10 @@
 using RootMotion.FinalIK;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
-using ModApi;
 using ModApi.Craft;
 using ModApi.GameLoop;
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using ModApi.Craft.Parts;
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
@@ -29,7 +24,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private void UpdateComponents()
         {
-            BaseLKTransform = Utilities.FindFirstGameObjectMyselfOrChildren("BodyBase", this.gameObject).transform;
+            BaseLKTransform = IPartSubPartSetUp.FindSubPart(this, "BodyBase");
             if (BaseLKTransform == null)
             {
                 Mod.LogError("HibernatingChamberScript: Could not find BodyBase transform");

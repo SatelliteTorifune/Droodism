@@ -126,7 +126,7 @@ namespace Assets.Scripts.Droodism.RadiationBelt
 
                 catch (Exception e)
                 {
-                    Mod.LogError("fucked1111 " + e.StackTrace);
+                    Mod.LogError($"RadiationBeltManager: Failed to update radiation belt: {e.StackTrace}");
                 }
             }
             

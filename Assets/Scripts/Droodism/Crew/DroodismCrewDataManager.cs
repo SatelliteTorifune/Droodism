@@ -65,7 +65,7 @@ namespace Assets.Scripts.Droodism.Crew
             }
             catch (Exception ex)
             {
-                Mod.LogError($"[Droodism] Crew sync on scene load failed: {ex}");
+                Mod.LogError($" Crew sync on scene load failed: {ex}");
             }
         }
 
@@ -269,14 +269,14 @@ namespace Assets.Scripts.Droodism.Crew
             {
                 if (Instance == null)
                 {
-                    Mod.LogError("[Droodism] RecordCrewMemberRoleById called but Instance is null. Was Awake() called?");
+                    Mod.LogError("RecordCrewMemberRoleById called but Instance is null. Was Awake() called?");
                     return;
                 }
                 CreateCrewMember(crewName, role, 0, 0, crewId);
             }
             catch (Exception ex)
             {
-                Mod.LogError($"[Droodism] RecordCrewMemberRoleById failed for crewId={crewId}, name={crewName}: {ex}");
+                Mod.LogError($"RecordCrewMemberRoleById failed for crewId={crewId}, name={crewName}: {ex}");
             }
         }
 

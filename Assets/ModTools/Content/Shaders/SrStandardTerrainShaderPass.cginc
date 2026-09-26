@@ -171,8 +171,10 @@ float4 frag(v2f INPUT) : SV_Target
     //fragColor = half4((1 + INPUT.uv.x) / 2.0, (1 + INPUT.uv.y) / 2.0, 0, 1);
 
     #if BLEND_SCALED_SPACE
+        // Cameras the grab is not aligned with (e.g. reflection probes) keep the clamped quad color.
+        float unaligned = 1 - _sceneCameraRendering;
         half4 scaledSpace = tex2Dproj(_ScaledSpaceTerrainTexture, UNITY_PROJ_COORD(INPUT.screenGrabPos));
-        fragColor = lerp(scaledSpace, fragColor, _quadToScaledTransition);
+        fragColor = lerp(scaledSpace, lerp(fragColor, clamp(fragColor, 0, _maxColorValue), unaligned), max(_quadToScaledTransition, unaligned));
     #else
         fragColor = clamp(fragColor, 0, _maxColorValue);
     #endif

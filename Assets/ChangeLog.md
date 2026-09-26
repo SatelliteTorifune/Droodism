@@ -1,3 +1,77 @@
+## 2026 9 26
+> 将文件设置单独抽象为一个类
+> >可以,这很OOP
+> 
+> 清理了Mod.cs中函数的排序与事件订阅
+
+## 2026 9 8
+> 加入通用更新检查 + 提醒弹窗(移植自 Volken2 的 ModUpdater.cs,按 Droodism 适配)
+> 
+> - 双通道获取网站最新版本:通道1 GitHub Releases API(tag_name)为主;通道2 raw 直链 version.txt 兜底(API 限流/断网/还没建过 release 时自动启用)
+> - 网站最新 > 本地版本 且玩家没点过"不再提醒"时,等进主菜单弹三按钮弹窗:下载更新 / 稍后再说 / 不再提醒
+> - "不再提醒"用 PlayerPrefs 记住跳过的版本,出现更新版本前不再弹;每次游戏会话只检查一次
+> - 本地版本读 ModInfo.Version:Mod.cs 新增 ModVersion 属性,在 OnModLoaded 末尾先赋值再触发检查
+> - 弹窗文案本地化:EN-US.xml / ZH-CN.xml 新增 Droodism.UI.Update* 共 6 个 key
+> - 仓库根目录新增 version.txt(0.88),发版时需与 ModData.asset 版本号保持同步并推送到 main 分支
+> - 修复:同步 Volken2 更新器的看门狗修复——总超时 15s(Time.realtimeSinceStartup deadline),逐帧轮询 isDone 并在超时时主动 Abort,防止个别网络异常下 UnityWebRequest.timeout 失效导致协程无限挂起;宿主 ModUpdaterHost 销毁时停掉所有协程
+
+## 2026 9 7
+> Debug 日志清理:
+> 
+> - 所有裸 Debug.Log*/Console.WriteLine 统一改走 Mod.Log/LogWarning/LogError(新增 LogWarning,LogError 改为 LogType.Error 级别)
+> - 三个日志入口全部受 ModSettings.Instance.DebugMode 门控,关闭时零日志;IsDebugMode 空安全(早期初始化取不到设置时静默)
+> - 清理 QuickSaveDealer 的 Console.WriteLine、Mod 初始化异常、DroodismFilesSetUp、OnHireButtonClickedPatch、FlagScript 的裸日志
+> - 顺带改掉了 RadiationBeltManager 里的调试脏话日志"fucked1111"
+> 
+> 性能优化:
+> 
+> - DroodismUIManager.Update 的每帧燃料数据刷新(GetIFuelSourceByID+UpdateFuelTemplateItem,约6类型×每秒数十次字符串分配)改为只在 Droodism 面板可见时执行,面板关闭时零开销;打开面板时立即刷新一次避免显示旧数据
+> 
+> 适配游戏更新(设置本地化新模式):
+> 
+> - 背景:游戏更新后 ModSettings 本地化失效——原代码在 InitializeSettings 时用 Locale.GetString 把名称/描述烤进 Setting,加载时序变化后设置显示为键名/空白
+> - ModSettings.cs 全部10个设置改为游戏新版模式:CreateBool("{Droodism.ModSettings.Xxx}") + SetDescription("{...XxxDesc}") 键引用,由设置系统渲染时惰性解析(对齐游戏 CreateBool("{Settings.General.RunInBackground}"))
+> - 关键修复:显式固定每个设置的 xmlName(CreateBool/CreateNumeric 的 xmlName 参数,沿用旧派生键如 toggleDebugMode)——存储键不再从本地化显示名派生,修复切换语言时设置被重置的问题,且兼容玩家已保存的设置
+> - 本地化键(10名称+10描述)在 ZH-CN.xml / EN-US.xml 均已存在,无需新增
+> 
+> 修复 OnHireButtonClickedPatch 删掉原版资金确认提示的问题:恢复原版 "Crew.Assignment.HireConfirm" 的 OkayCancel 确认框(显示雇佣花费,可取消),确认后才弹出职业类型选择
+> > 后续清理:
+> >
+> > 1. 其余5处硬编码路径解析(strArray+Split+逐级Find)统一改用 IPartSubPartSetUp.FindSubPart(MiningMachine/Sacrifice/Glider/HibernatingChamber/ResourcePack)
+> > 2. 移除重构后残留的未使用 using(含 GliderScript 里一串 System.Windows.Forms 之类的垃圾引用)
+> > 3. 修正类内部命名(不动类名):_particalSystemTransform→_particleSystemTransform / floatingFocrce→floatingForce / groudFix→groundFix / drillStut→drillStrut / LiquidHydrogenSouce→LiquidHydrogenSource,粗俗的 region 名改中性
+> > 4. PositionOffset1 统一更名为 PositionOffset(5个Data + 5个Script + balloon.prefab 同步)
+> > 5. FirstAddKit 命名问题已加 TODO 注释,待手动修正
+> > 6. 冗余去重:新增 PartScriptUtilities(FindCraftFuelSource/GetCommandPodPatch),Modifiers 内12处 GetModifier<STCommandPodPatchScript> 长链改用 GetCommandPodPatch();GasDealer 的 GetCraftFuelSource 循环体改委托共享实现;Sacrifice 血粒子9字段改数组循环;ChemicalReactor 去掉重复的 monoSource 赋值
+> > 7. 死代码清理:PhotoBioReactor 空 UpdateScale、MiningMachine 空 Test()、balloon 死 UpdateScale+空 FlightFixedUpdate(连带移除 IFlightFixedUpdate 接口),balloon 补 _sphere 空判
+
+
+
+## 2026 9 5
+> 抽象出IPartSubPartSetUp接口,统一了9个零件脚本的SetSubPart逻辑
+> 
+> > 将路径解析(FindSubPart)和偏移枢轴重建(ApplySubPart)合并进接口作为静态成员
+> > 
+> > CarbonDeoxideFilter / balloon / ElectrolyticDevice / ChemicalReactor / GasDealer / Flag / GravityRing / PhotoBioReactor / MethaloxGenerator 全部实现该接口
+> > 
+> > 顺手修了粒子系统路径尾斜杠导致直接查找失败的隐患,以及CarbonDeoxideFilterScript中UpdateComponents隐藏基类虚方法的问题
+> > 
+> > 接口内不再声明UpdateComponents,避免与基类生命周期钩子重复,每个脚本只保留一个UpdateComponents
+
+
+## 2026 8 12
+> 移除了legacyPause的补丁
+
+
+## 2026 8 1
+> 修复了UI中Drood的职业未本地化的bug
+>
+
+## 2026 7 25
+> 增加旗帜留言功能
+> 
+> 修复flag 和 Gravity Ring的prefab的ID错误
+
 ## 2026 7 18
 > 增加了零件分类名称,零件显示名称和描述的本地化
 
