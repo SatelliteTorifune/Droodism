@@ -5,6 +5,7 @@
 
 # Ignore IDE files
 .idea/
+.vscode/
 .vsconfig
 
 # Ignore JNO mod files
