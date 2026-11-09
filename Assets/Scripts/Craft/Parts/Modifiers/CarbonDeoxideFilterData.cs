@@ -1,16 +1,15 @@
-
-
+﻿
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
     using System;
-    using ModApi.Craft.Parts;
+    using Assets.Scripts.Droodism.BackGround;
     using ModApi.Craft.Parts.Attributes;
     using UnityEngine;
 
     [Serializable]
     [DesignerPartModifier("CarbonDioxideFilter")]
     [PartModifierTypeId("CarbonDioxideFilter")]
-    public class CarbonDeoxideFilterData : PartModifierData<CarbonDeoxideFilterScript>
+    public class CarbonDeoxideFilterData : BackgroundPartModifierData<CarbonDeoxideFilterScript>
     {
         private Vector3 _positionOffset = Vector3.zero;
         public Vector3 PositionOffset
@@ -39,7 +38,5 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             get => this.eletricityPowerConsumptionRatePerCo2*400;
         }
-
-        
     }
 }

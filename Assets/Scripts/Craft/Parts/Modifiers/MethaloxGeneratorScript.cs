@@ -43,25 +43,64 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             if (BatterySource==null||HPco2Source==null||waterSource==null||methaneloxSource==null)
             {
-                _particleSystem.Stop();
+                _particleSystem?.Stop();
                 return;
             }
 
             if (BatterySource.IsEmpty||HPco2Source.IsEmpty||waterSource.IsEmpty||methaneloxSource.TotalCapacity-methaneloxSource.TotalFuel<0.00001f)
             {
-                _particleSystem.Stop();
+                _particleSystem?.Stop();
                 return;
             }
 
-            BatterySource.RemoveFuel(Data.BatteryConsumption*frame.DeltaTimeWorld);
-            HPco2Source.RemoveFuel(Data.Hpco2Consumption*frame.DeltaTimeWorld);
-            waterSource.RemoveFuel(Data.WaterConsumption*frame.DeltaTimeWorld);
-            methaneloxSource.AddFuel(Data.MethaneloxGeneration*frame.DeltaTimeWorld);
+            BackgroundLogic(frame.DeltaTimeWorld);
+
             if (_particleSystem!=null)
             {
                 PlayEffects();
             }
         }
+
+        #region 后台结算
+
+        /// <summary>
+        /// 激活时参与后台补算（离视图期间继续把高压 CO2 + 水 + 电转化为甲烷/液氧）。
+        /// </summary>
+        public override bool IsBackgroundUpdateEnabled => PartScript.Data.Activated;
+
+        /// <summary>
+        /// 按秒结算：电池 / 高压 CO2 / 水 → 甲烷液氧。先按各输入可用量与输出剩余容量限制本步秒数。
+        /// </summary>
+        protected override void BackgroundLogic(double elapsedSeconds)
+        {
+            if (BatterySource == null || HPco2Source == null || waterSource == null || methaneloxSource == null)
+            {
+                return;
+            }
+
+            double batteryPerSecond = Data.BatteryConsumption;
+            double co2PerSecond = Data.Hpco2Consumption;
+            double waterPerSecond = Data.WaterConsumption;
+            double methaloxPerSecond = Data.MethaneloxGeneration;
+
+            double seconds = elapsedSeconds;
+            seconds = LimitBackgroundSeconds(seconds, BatterySource.TotalFuel, batteryPerSecond);
+            seconds = LimitBackgroundSeconds(seconds, HPco2Source.TotalFuel, co2PerSecond);
+            seconds = LimitBackgroundSeconds(seconds, waterSource.TotalFuel, waterPerSecond);
+            seconds = LimitBackgroundSeconds(seconds, methaneloxSource.TotalCapacity - methaneloxSource.TotalFuel, methaloxPerSecond);
+
+            if (seconds <= 0.0)
+            {
+                return;
+            }
+
+            BatterySource.RemoveFuel(batteryPerSecond * seconds);
+            HPco2Source.RemoveFuel(co2PerSecond * seconds);
+            waterSource.RemoveFuel(waterPerSecond * seconds);
+            methaneloxSource.AddFuel(methaloxPerSecond * seconds);
+        }
+
+        #endregion
 
 
         private void PlayEffects()

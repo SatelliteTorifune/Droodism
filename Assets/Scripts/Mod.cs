@@ -117,7 +117,7 @@ namespace Assets.Scripts
             DroodismGO.AddComponent<RadiationBeltDebugUI>();
             DroodismGO.AddComponent<DroodismCrewDataManager>();
             DroodismGO.AddComponent<ResourceWarningScript>();
-            //DroodismGO.AddComponent<BackGroundCalulator>();
+            DroodismGO.AddComponent<BackGroundCalculator>();
             GameObject.DontDestroyOnLoad(DroodismGO);
             DroodismGO.SetActive(true);
         }
@@ -171,9 +171,7 @@ namespace Assets.Scripts
                 {
                     ModApi.Common.Game.Instance.FlightScene.CraftChanged += (ICraftNode craft)=>PatchCraft(CurrentCraft());
                     PatchCraft(ModApi.Common.Game.Instance.FlightScene.CraftNode.CraftScript as CraftScript);
-                    Log("OnSceneLoaded更新Drood数量");
                     那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花();
-                    Log("OnSceneLoaded执行doShit");
                 }
                 catch (Exception e1)
                 {
@@ -195,9 +193,9 @@ namespace Assets.Scripts
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-              
+              Log("那个傻逼操你妈你妈大b人人插左插插右插插插的你妈b开花:这他妈也能报错??"+e);
             }
             
         }

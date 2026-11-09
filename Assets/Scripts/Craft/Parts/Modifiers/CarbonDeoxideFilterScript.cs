@@ -7,14 +7,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 	using ModApi.GameLoop.Interfaces;
 	using UnityEngine;
 
-	public class CarbonDeoxideFilterScript : ResourceProcessorPartScript<CarbonDeoxideFilterData>,IPartSubPartSetUp,
-		IDesignerStart
+	public class CarbonDeoxideFilterScript : ResourceProcessorPartScript<CarbonDeoxideFilterData>,IPartSubPartSetUp
 	{
 		private IFuelSource co2Source;
 		private Transform	_offset, FanA, FanB;
 		private Vector3		_offsetPositionInverse;
 		
-
+		
 		public override void FlightStart( in FlightFrameData frame )
 		{
 			UpdateFuelSources();
@@ -43,12 +42,44 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
 		protected override void WorkingLogic( in FlightFrameData frame )
 		{
-			if ( PartScript.Data.Activated )
-			{
-				co2Source.RemoveFuel( Data.Co2ConsumptionRate * frame.DeltaTimeWorld );
-				BatterySource.RemoveFuel( Data.ElectricityPowerConsumptionRatePerCo2 * Data.Co2ConsumptionRate * frame.DeltaTimeWorld );
-			}
+			BackgroundLogic( frame.DeltaTimeWorld );
 		}
+
+
+		#region 后台结算
+
+		/// <summary>
+		/// 在飞船离开游戏视图期间也照样工作（CO2 过滤不依赖动画），只要零件是激活状态即可参与补算。
+		/// 燃料源是否可用由 <see cref="BackgroundLogic"/> 内部再判断。
+		/// </summary>
+		public override bool IsBackgroundUpdateEnabled => PartScript.Data.Activated;
+
+
+		/// <summary>
+		/// 按秒结算，与 <see cref="WorkingLogic"/> 共用同一套速率，保证前后台一致。
+		/// </summary>
+		protected override void BackgroundLogic( double elapsedSeconds )
+		{
+			if ( !PartScript.Data.Activated )
+			{
+				return;
+			}
+
+			if ( co2Source == null || BatterySource == null )
+			{
+				return;
+			}
+
+			if ( co2Source.IsEmpty || BatterySource.IsEmpty )
+			{
+				return;
+			}
+
+			co2Source.RemoveFuel( Data.Co2ConsumptionRate * elapsedSeconds );
+			BatterySource.RemoveFuel( Data.ElectricityPowerConsumptionRatePerCo2 * Data.Co2ConsumptionRate * elapsedSeconds );
+		}
+
+		#endregion
 
 
 		protected override void WorkingAnimation( bool active )

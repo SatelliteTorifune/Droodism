@@ -118,3 +118,8 @@ InitTestScene*.unity*
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
 *.meta
 /.idea
+/docs
+/tmp
+/output
+/Assets/_ModAssets_
+/ModAssetBundles

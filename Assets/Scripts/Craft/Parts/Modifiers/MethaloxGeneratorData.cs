@@ -7,14 +7,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using System.Linq;
     using System.Text;
     using System.Xml.Linq;
-    using ModApi.Craft.Parts;
+    using Assets.Scripts.Droodism.BackGround;
     using ModApi.Craft.Parts.Attributes;
     using UnityEngine;
 
     [Serializable]
     [DesignerPartModifier("MethaloxGenerator")]
     [PartModifierTypeId("MethaloxGenerator")]
-    public class MethaloxGeneratorData : PartModifierData<MethaloxGeneratorScript>
+    public class MethaloxGeneratorData : BackgroundPartModifierData<MethaloxGeneratorScript>
     {
         [FormerlySerializedAs("batteryComsumption")] [SerializeField] [PartModifierProperty(true, false)]
         private float batteryConsumption=1f;

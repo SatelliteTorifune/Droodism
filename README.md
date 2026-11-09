@@ -18,7 +18,7 @@ Droodism is a SimpleRockets mod that adds a **Life Support** system for Droods a
 - **Resource Monitoring**: A new **Inspect Panel** displays all resource amount on your craft. Monitor them before time-warping or leaving your crew unattended!
 - **Habitable Planets**: Droods do not consume oxygen in the atmospheres of habitable planets (**Droo**, **Earth**, **Kerbin**,, **Laythe**).
 - **Radiation Belt**: Planets now have procedural radiation belt which could cause life long radiation to your crew
-***For more detailed info please read [User Manual](https://drive.google.com/file/d/1zPcpjuDYL9fbhsv2g1zWnhUoeLa70Arx/view?usp=drive_link)***
+***For detailed instructions, read the [Chinese / English User Manual 4.0 for mod 0.89](DroodismManaul.pdf).***
 ---
 
 
@@ -36,5 +36,5 @@ Droodism is a SimpleRockets mod that adds a **Life Support** system for Droods a
 ---
 
 ## Resources
-**[User Manual](https://github.com/SatelliteTorifune/Droodism/blob/DevFeature/DroodismManaul.pdf)**
+**[User Manual / 用户手册 (4.0, mod 0.89)](DroodismManaul.pdf)**
  **[Demo Craft](https://www.simplerockets.com/c/vQ0M1s/Life-Support-Mod-Demo-Craft)**: Try a pre-built craft with the mod.

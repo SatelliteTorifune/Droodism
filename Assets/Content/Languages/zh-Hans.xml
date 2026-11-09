@@ -190,8 +190,10 @@
     <s id="Droodism.ModSettings.ActiveUpdateRadiationBeltConfigDesc">主动更新辐射带配置(会导致性能损失,但更适合调试)</s>
     <s id="Droodism.ModSettings.AltNavBallColor">备用导航球颜色</s>
     <s id="Droodism.ModSettings.AltNavBallColorDesc">使用备用导航球颜色</s>
-    <s id="Droodism.ModSettings.ConsumeResourceWhenUnloaded">不加载时时消耗资源</s>
-    <s id="Droodism.ModSettings.ConsumeResourceWhenUnloadedDesc">即使飞行器未被加载,Drood 仍会消耗资源&lt;br&gt;已知 bug：时间计算有&lt;size=125%&gt;&lt;color=red&gt;一点点&lt;/color&gt;&lt;/size&gt;问题</s>
+    <s id="Droodism.ModSettings.ConsumeResourceWhenUnloaded">后台资源计算</s>
+    <s id="Droodism.ModSettings.ConsumeResourceWhenUnloadedDesc">即使飞行器不在游戏视图内（未加载），小蓝人仍会消耗维生资源，重新加载时统一补算经过的时间。&lt;br&gt;包括氧气、食物、水、废物与辐射剂量。</s>
+    <s id="Droodism.ModSettings.BackGroundDamage">后台结算伤害</s>
+    <s id="Droodism.ModSettings.BackGroundDamageDesc">开启后，后台补算也会结算缺氧/缺水/缺粮与辐射造成的伤害（飞船未加载期间）。&lt;br&gt;&lt;color=red&gt;注意：&lt;/color&gt;重新加载飞船时乘员可能已经受伤甚至死亡。</s>
     <s id="Droodism.ModSettings.CriticalThreshold">临界阈值</s>
     <s id="Droodism.ModSettings.CriticalThresholdDesc">当资源低于此百分比时将触发临界警报在此级别将触发暂停</s>
     <s id="Droodism.ModSettings.DisableDockingPortCamera">禁用对接口相机</s>

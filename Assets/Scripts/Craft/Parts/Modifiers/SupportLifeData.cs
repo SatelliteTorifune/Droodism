@@ -1,11 +1,10 @@
 using System.Linq.Expressions;
+using System.Xml.Linq;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
-using Assets.Scripts;
+using Assets.Scripts.Droodism.BackGround.Interface;
 using Assets.Scripts.Droodism.Crew;
-using ModApi.Craft.Propulsion;
 using ModApi.Design.PartProperties;
-using Assets.Scripts.State;
-using ModApi.Craft;
+
 using ModApi.Math;
 using UnityEngine.Serialization;
 
@@ -16,6 +15,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 {
     using System;
     using System.Collections.Generic;
+    using Assets.Scripts.Droodism.BackGround;
     using ModApi;
     using ModApi.Craft.Parts;
     using ModApi.Craft.Parts.Attributes;
@@ -24,7 +24,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     [Serializable]
     [DesignerPartModifier("Droodism.SupportLifeData.Header", PanelOrder = 2000)]
     [PartModifierTypeId("SupportLife")]
-    public class SupportLifeData : PartModifierData<SupportLifeScript>
+    public class SupportLifeData : PartModifierData<SupportLifeScript>, IBackGroundData
     {
         private static bool isTourist;
         
@@ -73,13 +73,36 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         [SerializeField] 
         [DesignerPropertySlider(100f, 1000f, 60, Label = "Droodism.SupportLifeData.AutoDeployHeight", Order = 3, Tooltip = "Droodism.SupportLifeData.AutoDeployHeightTooltip")]
         private float autoDeployHeight = 500f;
+
+
+        [SerializeField] [PartModifierProperty]
+        private float pOverG = 7f;
         
+        [SerializeField] [PartModifierProperty]
+        private float nOverG = -3f;
         [SerializeField][PartModifierProperty]
         private double cumulativeRad=0f;
         [SerializeField][PartModifierProperty]
         public long MissionStartTime=0;
         [SerializeField][PartModifierProperty]
         public long LastLoadTime=0;
+
+        // 后台结算时间戳复用已有的 LastLoadTime（存档兼容），不新增字段。
+        double IBackGroundData.BackgroundLastUpdateTime
+        {
+            get => this.LastLoadTime;
+            set => this.LastLoadTime = (long)value;
+        }
+
+        /// <summary>
+        /// 数据被序列化（存档 / 卸载写盘）时把时间戳推进到当前时刻，
+        /// 避免"在视图内存档 → 读档"后把存档前已经实时消耗过的时间再补算一遍。
+        /// </summary>
+        public override XElement GenerateStateXml(bool optimizeXml = true)
+        {
+            BackgroundSettlement.Stamp(this);
+            return base.GenerateStateXml(optimizeXml);
+        }
         
         [SerializeField] [PartModifierProperty]
         public double _oxygenAmountBuffer=0f;
@@ -221,6 +244,19 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             get => autoDeployHeight;
             set => autoDeployHeight=value;
         }
+
+        public float NOverG
+        {
+            get => nOverG;
+            set => nOverG = value;
+        }
+
+        public float POverG
+        {
+            get => this.pOverG;
+            set => this.pOverG = value;
+        }
+
         public DroodismCrewData  DroodismCrewData{get;private set;}
         protected override void OnDesignerInitialization(IDesignerPartPropertiesModifierInterface d)
         {

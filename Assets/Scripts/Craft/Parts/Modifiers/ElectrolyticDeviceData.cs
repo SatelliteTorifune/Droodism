@@ -1,14 +1,14 @@
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
     using System;
-    using ModApi.Craft.Parts;
+    using Assets.Scripts.Droodism.BackGround;
     using ModApi.Craft.Parts.Attributes;
     using UnityEngine;
 
     [Serializable]
     [DesignerPartModifier("ElectrolyticDevice")]
     [PartModifierTypeId("ElectrolyticDevice")]
-    public class ElectrolyticDeviceData : PartModifierData<ElectrolyticDeviceScript>
+    public class ElectrolyticDeviceData : BackgroundPartModifierData<ElectrolyticDeviceScript>
     {
         
         [SerializeField]

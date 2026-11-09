@@ -9,6 +9,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using System.Linq;
     using System.Text;
     using System.Xml.Linq;
+    using Assets.Scripts.Droodism.BackGround;
     using ModApi.Craft.Parts;
     using ModApi.Design.PartProperties;
     using ModApi.Craft.Parts.Attributes;
@@ -17,7 +18,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     [Serializable]
     [DesignerPartModifier("Droodism.SewageTreatDeivceData.Header")]
     [PartModifierTypeId("SewageTreatDevice")]
-    public class SewageTreatDeivceData : PartModifierData<SewageTreatDeivceScript>
+    public class SewageTreatDeivceData : BackgroundPartModifierData<SewageTreatDeivceScript>
     {
         [SerializeField]
         [PartModifierProperty(true, false)]
