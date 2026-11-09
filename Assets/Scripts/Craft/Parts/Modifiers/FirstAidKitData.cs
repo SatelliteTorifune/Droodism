@@ -9,10 +9,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using ModApi.Craft.Parts.Attributes;
     using UnityEngine;
 
+    // TODO: 命名待修（用户手动处理）——文件名 FirstAddKitData.cs 与类名 FirstAidKitData 不一致；
+    // 且 Add/Aid 拼写不统一：FirstAddKitScript 用 "Add"，FirstAidKitData 用 "Aid"，应统一为 FirstAidKit。
     [Serializable]
     [DesignerPartModifier("FirstAidKit")]
     [PartModifierTypeId("FirstAidKit")]
-    public class FirstAidKitData : PartModifierData<FirstAddKitScript>
+    public class FirstAidKitData : PartModifierData<FirstAidKitScript>
     {
         [SerializeField] [PartModifierProperty]
         private float healHp=300f;

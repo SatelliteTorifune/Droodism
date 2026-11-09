@@ -1,5 +1,10 @@
 # 飞船状态机——用最简单的话说明白
 
+> **2026-11-02 代码核对更正**：本文档"状态 2 / 状态 4（视觉加载但无物理）小蓝人不呼吸"的说法**不准确**。
+> 反编译确认：物理开关只切 Rigidbody 运动学与回调，不会注销零件脚本；只要飞船还在游戏视图内，
+> `IFlightUpdate.FlightUpdate` 仍然每帧执行，生命维持照常消耗。真正停摆的只有**离开游戏视图**（`CraftScript == null`、远程未加载）的状态 1。
+> 实现细节见 [`background-settlement-implementation.md`](background-settlement-implementation.md)。
+
 ## 先说一个生活中的例子
 
 想象你站在操场上，操场上有很多人：

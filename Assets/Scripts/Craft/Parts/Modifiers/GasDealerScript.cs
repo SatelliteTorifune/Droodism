@@ -7,25 +7,24 @@ using ModApi.Ui.Inspector;
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using ModApi.Craft.Parts;
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
 
     public class GasDealerScript : PartModifierScript<GasDealerData>,
+        IPartSubPartSetUp,
         IDesignerStart,
         IFlightStart,
         IFlightUpdate
 
     {
         private ParticleSystem _particleSystem;
-        private ParticleSystem.EmissionModule _particleSystemEmission;
         private ParticleSystem.MainModule _particleSystemMain;
        
         
         private Transform _particleSystemTransform;
+
+        public Transform SubPart => _particleSystemTransform;
         
         private IFuelSource highPressureGasSource;
         private IFuelSource lowPressureGasSource;
@@ -96,14 +95,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         }
         private IFuelSource GetCraftFuelSource(string fuelType)
         {
-            foreach (var source in PartScript.CraftScript.FuelSources.FuelSources)
-            {
-                if (source.FuelType.Id== fuelType)
-                {
-                    return source;
-                }
-            }
-            return null;
+            return PartScriptUtilities.FindCraftFuelSource(PartScript, fuelType);
         }
 
         private void EmergencyDepressurization(in FlightFrameData frame)
@@ -141,7 +133,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         }
         
-        #region 路边一条
+        #region 工具方法
 
 
         private void UpdatePartType()
@@ -160,7 +152,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         public void RefreshFuelSources()
         {
             batterySource = PartScript.BatteryFuelSource;
-            var patchScript = PartScript.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+            var patchScript = PartScriptUtilities.GetCommandPodPatch(PartScript);
             try
             {
                 switch (this.Data.GasType)
@@ -195,16 +187,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         #endregion
         private void UpdateComponents()
         {
-            string[]	strArray	= "Device/ParticleSystem".Split( '/', StringSplitOptions.None );
-            Transform	subPart		= this.transform;
-            foreach ( string n in strArray )
-                subPart = subPart.Find( n ) ?? subPart;
-            if ( subPart.name == strArray[strArray.Length - 1] )
-                this.SetSubPart( subPart );
-            else
-                this.SetSubPart( Utilities.FindFirstGameObjectMyselfOrChildren( "Device/ParticleSystem/", this.gameObject ) ?.transform );
+            SetSubPart(IPartSubPartSetUp.FindSubPart(this, "Device/ParticleSystem"));
             _particleSystem = _particleSystemTransform.GetComponent<ParticleSystem>();
-            this._particleSystemEmission = this._particleSystem.emission;
             this._particleSystemMain = this._particleSystem.main;
         }
         public void SetSubPart( Transform subPart )

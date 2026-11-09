@@ -185,8 +185,10 @@
     <s id="Droodism.ModSettings.ActiveUpdateRadiationBeltConfigDesc">Active Update Radiation Belt Config(Cause Performance loss,but better for debugging)</s>
     <s id="Droodism.ModSettings.AltNavBallColor">Alt Nav Ball Color</s>
     <s id="Droodism.ModSettings.AltNavBallColorDesc">Use Alt Nav Ball Color</s>
-    <s id="Droodism.ModSettings.ConsumeResourceWhenUnloaded">Drood Consume Resource When Unloaded</s>
-    <s id="Droodism.ModSettings.ConsumeResourceWhenUnloadedDesc">Drood will still Consume Resource Even the Craft is Unloaded.&lt;br&gt;known bug the time calculate went a &lt;size=125%&gt;&lt;color=red&gt;LITTLE BIT&lt;/color&gt;&lt;/size&gt; wrong way</s>
+    <s id="Droodism.ModSettings.ConsumeResourceWhenUnloaded">Background Resource Calculation</s>
+    <s id="Droodism.ModSettings.ConsumeResourceWhenUnloadedDesc">Life-support resources will be calculated while the craft is outside the game view (unloaded), and the elapsed time is settled when the craft is loaded again.&lt;br&gt;Includes oxygen, food, water, waste and radiation dose.</s>
+    <s id="Droodism.ModSettings.BackGroundDamage">Background Settlement Damage</s>
+    <s id="Droodism.ModSettings.BackGroundDamageDesc">When enabled, background settlement also applies starvation and radiation damage for the time spent unloaded.&lt;br&gt;&lt;color=red&gt;Warning:&lt;/color&gt; crew may already be injured or dead when you load the craft back.</s>
     <s id="Droodism.ModSettings.CriticalThreshold">Critical Threshold</s>
     <s id="Droodism.ModSettings.CriticalThresholdDesc">Critical alert will trigger when resources fall below this percentage. Auto-slowdown is triggered at this level.</s>
     <s id="Droodism.ModSettings.DisableDockingPortCamera">Disable Docking Port Camera</s>
@@ -424,6 +426,9 @@
 
     <!-- FlagScript -->
     <s id="Droodism.FlagScript.LoadImage">Load Image</s>
+    <s id="Droodism.FlagScript.FlagMessage">Flag Message</s>
+    <s id="Droodism.FlagScript.EditMessage">Edit Message</s>
+    <s id="Droodism.FlagScript.EditMessageToolTip">Edit what You want to leave</s>
     <s id="Droodism.Glider.HasLanded">has landed</s>
 
     <!-- GasDealerScript -->
@@ -538,4 +543,12 @@
     <!--category-->
     <s id="Design.PartsList.Category.LifeSupport.Name">Life Support</s>
     <s id="Design.PartsList.Category.ISRU.Name">In-Situ Resource Utilization</s>
+
+    <!-- ModUpdater -->
+    <s id="Droodism.UI.UpdateAvailable">A new version of Droodism is available!</s>
+    <s id="Droodism.UI.UpdateNewVersion">New version: {0}</s>
+    <s id="Droodism.UI.UpdateCurrentVersion">Current version: {0}</s>
+    <s id="Droodism.UI.UpdateDownload">Download Update</s>
+    <s id="Droodism.UI.UpdateLater">Later</s>
+    <s id="Droodism.UI.UpdateDismiss">Don't remind me</s>
 </Strings>

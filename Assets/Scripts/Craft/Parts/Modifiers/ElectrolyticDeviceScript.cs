@@ -1,6 +1,4 @@
 using ModApi;
-using ModApi.Craft;
-using ModApi.Design;
 using ModApi.GameLoop;
 using ModApi.Math;
 using ModApi.Ui.Inspector;
@@ -8,21 +6,20 @@ using ModApi.Ui.Inspector;
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using ModApi.Craft.Parts;
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
 
     
-    public class ElectrolyticDeviceScript : ResourceProcessorPartScript<ElectrolyticDeviceData>
+    public class ElectrolyticDeviceScript : ResourceProcessorPartScript<ElectrolyticDeviceData>, IPartSubPartSetUp
 {
     private IFuelSource _waterSource, _oxygenSource, _hydrogenSource;
     private Transform _fanTransformBase, _fan1, _fan2;
     private float _fanSpeed;
     protected Transform Offset { get; set; }
     protected Vector3 OffsetPositionInverse { get; set; }
+
+    public Transform SubPart => _fanTransformBase;
 
     
     protected override void UpdateFuelSources()
@@ -31,7 +28,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         base.UpdateFuelSources();
         try
         {
-            var patchScript = PartScript?.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+            var patchScript = GetCommandPodPatch();
             if (patchScript == null)
             {
                 _waterSource = _oxygenSource = _hydrogenSource = null;
@@ -49,20 +46,59 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
     protected override void WorkingLogic(in FlightFrameData frame)
     {
-        if (_waterSource == null || _oxygenSource == null || BatterySource == null)
-            return;
+        BackgroundLogic(frame.DeltaTimeWorld);
+    }
 
-        if (!BatterySource.IsEmpty && !_waterSource.IsEmpty && _oxygenSource.TotalCapacity - _oxygenSource.TotalFuel > 0.000001f)
+    #region 后台结算
+
+    /// <summary>
+    /// 通电且激活时参与后台补算（离视图期间继续电解水）。
+    /// </summary>
+    public override bool IsBackgroundUpdateEnabled => PartScript.Data.Activated;
+
+    /// <summary>
+    /// 按秒结算电解：水 + 电 → 氧气 + 氢气。
+    /// 先用 <see cref="LimitBackgroundSeconds"/> 按可用水量/电量/氧气容量限制本步秒数，
+    /// 避免大时间步长下"水空了还在产氧"。
+    /// </summary>
+    protected override void BackgroundLogic(double elapsedSeconds)
+    {
+        if (_waterSource == null || _oxygenSource == null || BatterySource == null)
         {
-            _waterSource.RemoveFuel(Data.WaterComsuptionRate * frame.DeltaTimeWorld);
-            BatterySource.RemoveFuel(Data.PowerConsumptionRate * frame.DeltaTimeWorld);
-            _oxygenSource.AddFuel(Data.OxygenGenerationRate * frame.DeltaTimeWorld);
-            if (_hydrogenSource != null && _hydrogenSource.TotalCapacity - _hydrogenSource.TotalFuel > 0.000001f)
+            return;
+        }
+
+        double waterPerSecond = Data.WaterComsuptionRate;
+        double powerPerSecond = Data.PowerConsumptionRate;
+        double oxygenPerSecond = Data.OxygenGenerationRate;
+        double hydrogenPerSecond = Data.HydrogenGenerationRate;
+
+        double seconds = elapsedSeconds;
+        seconds = LimitBackgroundSeconds(seconds, _waterSource.TotalFuel, waterPerSecond);
+        seconds = LimitBackgroundSeconds(seconds, BatterySource.TotalFuel, powerPerSecond);
+        seconds = LimitBackgroundSeconds(seconds, _oxygenSource.TotalCapacity - _oxygenSource.TotalFuel, oxygenPerSecond);
+
+        if (seconds <= 0.0)
+        {
+            return;
+        }
+
+        _waterSource.RemoveFuel(waterPerSecond * seconds);
+        BatterySource.RemoveFuel(powerPerSecond * seconds);
+        _oxygenSource.AddFuel(oxygenPerSecond * seconds);
+
+        // 氢气只是副产物：储罐满了就排掉，不阻塞电解（与实时逻辑一致）
+        if (_hydrogenSource != null)
+        {
+            double hydrogenSpace = _hydrogenSource.TotalCapacity - _hydrogenSource.TotalFuel;
+            if (hydrogenSpace > 0.0)
             {
-                _hydrogenSource.AddFuel(Data.HydrogenGenerationRate * frame.DeltaTimeWorld);
+                _hydrogenSource.AddFuel(Math.Min(hydrogenPerSecond * seconds, hydrogenSpace));
             }
         }
     }
+
+    #endregion
     public override void OnGenerateInspectorModel(PartInspectorModel model)
     {
         base.OnGenerateInspectorModel(model);
@@ -90,33 +126,19 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         UpdateComponents();
     }
 
-    private void UpdateComponents()
+    protected override void UpdateComponents()
     {
-        string[] strArray = "Device/DeviceFan".Split('/', StringSplitOptions.None);
-        Transform subPart = transform;
-        foreach (string n in strArray)
-            subPart = subPart.Find(n) ?? subPart;
-        if (subPart.name != strArray[strArray.Length - 1])
-            subPart = Utilities.FindFirstGameObjectMyselfOrChildren("Device/DeviceFan", gameObject)?.transform;
-        SetSubPartWithOffset(subPart, Data.PositionOffset, ref _fanTransformBase);
+        SetSubPart(IPartSubPartSetUp.FindSubPart(this, "Device/DeviceFan"));
         _fan1 = _fanTransformBase?.Find("fan1");
         _fan2 = _fanTransformBase?.Find("fan2");
     }
-    private void SetSubPartWithOffset(Transform subPart, Vector3 positionOffset, ref Transform targetTransform)
-    {
-        if (Offset != null)
-        {
-            UnityEngine.Object.Destroy(Offset.gameObject);
-            Offset = null;
-        }
-        targetTransform = subPart;
-        if (targetTransform == null || positionOffset.magnitude <= 0.0f)
-            return;
 
-        Offset = new GameObject("SubPartRotatorOffset").transform;
-        Offset.SetParent(targetTransform.parent, false);
-        Offset.position = targetTransform.TransformPoint(positionOffset);
-        OffsetPositionInverse = Offset.InverseTransformPoint(targetTransform.position);
+    public void SetSubPart(Transform subPart)
+    {
+        _fanTransformBase = subPart;
+        Vector3 offsetPositionInverse;
+        Offset = IPartSubPartSetUp.ApplySubPart(Offset, _fanTransformBase, Data.PositionOffset, out offsetPositionInverse);
+        OffsetPositionInverse = offsetPositionInverse;
     }
 
     

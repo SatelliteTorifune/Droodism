@@ -14,7 +14,8 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
     
-    public class FirstAddKitScript : PartModifierScript<FirstAidKitData>,IFlightUpdate
+    // TODO: 命名待修（用户手动处理）——类名 FirstAddKitScript 应为 FirstAidKitScript，与 FirstAidKitData 统一。
+    public class FirstAidKitScript : PartModifierScript<FirstAidKitData>,IFlightUpdate
     {
         private bool isHealing;
         public void FlightUpdate(in FlightFrameData frame)

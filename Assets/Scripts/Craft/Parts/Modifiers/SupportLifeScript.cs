@@ -12,20 +12,19 @@ using Assets.Scripts.Craft.Parts.Modifiers.Eva;
 using Assets.Scripts.Craft.Parts.Modifiers.Input;
 using Assets.Scripts.Craft.Parts.Modifiers.Propulsion;
 using Assets.Scripts.Droodism;
+using Assets.Scripts.Droodism.BackGround;
+using Assets.Scripts.Droodism.BackGround.Interface;
 using Assets.Scripts.Droodism.Crew;
 using Assets.Scripts.Droodism.ResourceWarning;
 using Assets.Scripts.Droodism.RadiationBelt;
 using ModApi;
 using ModApi.Flight.Events;
-using ModApi.Planet;
-using ModApi.Flight.GameView;
 using UnityEngine;
 using ModApi.Flight.Sim;
 using ModApi.Flight.UI;
 using ModApi.Math;
 using ModApi.Settings.Core;
 using ModApi.Ui.Inspector;
-using Assembly = ModApi.Craft.Assembly;
 
 //鸡巴的我自己都看不懂我写的是什么鸡巴玩意了你还指望我给你写注释吗?
 //顺便一提如果真有除了我以外的人在github上或者逆向出来了看到了这行字,那么我只能说一句牛逼,你简直是找屎大王,能闻着味道找到我编程以来拉的最大的一坨
@@ -41,11 +40,13 @@ using Assembly = ModApi.Craft.Assembly;
 //2026 4 26 这个破fuelSource刷新的还在追我
 //2026 5 6 我讨厌你
 //2026 7 5 欲辩已忘言
+//2026 11 2 啊哈哈哈哈哈哈,这OOP吗
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
     public class SupportLifeScript : 
         PartModifierScript<SupportLifeData>,
+        IBackGroudCalculate,
         IFlightStart,
         IFlightUpdate,
         IFlightFixedUpdate
@@ -199,8 +200,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             Game.Instance.FlightScene.FlightEnded+=OnFlightEnded;
             Game.Instance.FlightScene.PlayerChangedSoi += OnPlayerChangedSoi;
-            Game.Instance.FlightScene.CraftNode.PhysicsDisabled += OnPhysicsDisabled;
-            Game.Instance.FlightScene.CraftNode.PhysicsEnabled += OnPhysicsEnabled;
         
             this.Data.InspectorEnabled = true;
             if (this.PartScript.Data.PartType.Name == "Eva-Tourist")
@@ -223,18 +222,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return;
 
             UpdateRunningStatus();
-            CheckRadiationState(frame);
-            DamageRadiation(frame);
+            CheckRadiationState(frame.DeltaTimeWorld);
+            DamageRadiation(frame.DeltaTimeWorld);
             UpdateHealingStatus();
             
             if (!IsHibernating)
             {
-                if (!UsingInternalOxygen())   
-                {
-                    AutoRefillLogic(frame);
-                }
-                ConsumptionLogic(frame);
-                PilotDamageReduction(frame);
+                UpdateLifeSupport(frame.DeltaTimeWorld, false);
+                OverLoadHandling(frame);
             }
             if (ModSettings.Instance.ActiveUpdateRadiationBeltConfig)
             {
@@ -298,43 +293,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         {
             Game.Instance.FlightScene.FlightEnded -= OnFlightEnded;
             Game.Instance.FlightScene.PlayerChangedSoi -= OnPlayerChangedSoi;
-            if (Game.Instance.FlightScene.CraftNode != null)
-            {
-                Game.Instance.FlightScene.CraftNode.PhysicsDisabled -= OnPhysicsDisabled;
-                Game.Instance.FlightScene.CraftNode.PhysicsEnabled -= OnPhysicsEnabled;
-            }
             OnCraftUnloaded();
         }
 
         private void OnFlightEnded(object sender, FlightEndedEventArgs e)
         {
             FlightEnd();
-        }
-
-        public void OnPhysicsEnabled(ICraftNode craftNode, PhysicsChangeReason reason)
-        {
-            if (reason == PhysicsChangeReason.Warp||reason == PhysicsChangeReason.LoadedIntoGameView)
-            {
-                return;
-            }
-            if (ModSettings.Instance.ConsumeResourceWhenUnloaded==true&&!IsHibernating)
-            {
-                // 先刷新燃料源引用，确保 RemoveFuelAmountInstantly / AddWastedAmountInstantly
-                // 能正确访问到 craft 油箱，否则只会消耗本地 buffer（仅 ~5小时容量）
-                Refresh();
-                RemoveFuelAmountInstantly();
-                AddWastedAmountInstantly();
-            }
-        }
-
-        private void OnPhysicsDisabled(ICraftNode craftNode, PhysicsChangeReason reason)
-        {
-            if (reason == PhysicsChangeReason.Warp||reason== PhysicsChangeReason.UnloadedFromGameView)
-            {
-                return;
-            }
-
-            OnCraftUnloaded();
         }
 
         /// <summary>
@@ -587,231 +551,253 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         #region 资源消耗与废物处理
 
         /// <summary>
-        /// 处理氧气、食物和水的消耗逻辑。
-        /// Handles the consumption logic for oxygen, food, and water.
+        /// 生命维持统一结算入口（按秒）。
+        /// 实时 <see cref="IFlightUpdate.FlightUpdate"/> 与后台 <see cref="IBackGroudCalculate.BackgroundUpdate"/>
+        /// 共用这一套公式，避免前后台数值不一致。
+        /// </summary>
+        /// <param name="deltaSeconds">经过的世界时间（秒）。</param>
+        /// <param name="isBackground">是否后台补算。后台不算跑步倍率、不触发伤害（避免读档瞬间一次性把人打死）。</param>
+        private void UpdateLifeSupport(double deltaSeconds, bool isBackground)
+        {
+            if (deltaSeconds <= 0.0)
+            {
+                return;
+            }
+
+            // 可呼吸大气里不消耗自带氧气，反而会缓慢补充（离视图期间同样适用）
+            if (!UsingInternalOxygen())
+            {
+                AutoRefillLogic(deltaSeconds);
+            }
+
+            // 实时逻辑始终结算伤害；后台补算是否结算伤害由设置决定
+            bool allowDamage = !isBackground || BackgroundSettlement.IsBackgroundDamageEnabled;
+            ConsumptionLogic(deltaSeconds, allowDamage, !isBackground && IsRunning);
+        }
+
+        /// <summary>
+        /// 处理氧气、食物和水的消耗逻辑（按秒）。
         /// 你可能觉得这个函数也太不优雅了,对,因为氧气这个b玩意比较特殊我要单独处理
         /// </summary>
-        /// <param name="frame">飞行帧数据。Flight frame data.</param>
-        private void ConsumptionLogic(in FlightFrameData frame)
+        private void ConsumptionLogic(double deltaSeconds, bool allowDamage, bool isRunning)
         {
-            bool usingInternalOxygen = UsingInternalOxygen();
-            double baseRate = frame.DeltaTimeWorld * (IsRunning ? 1.75 : 1) * (IsTourist ? 1.05 : 1);
+            double activityRate = deltaSeconds * (isRunning ? 1.75 : 1.0) * (IsTourist ? 1.05 : 1.0);
 
-            if (usingInternalOxygen)
+            if (UsingInternalOxygen())
             {
-                double oxygenConsumeAmount = (double)Data.OxygenConsumeRate * baseRate;
-                bool oxygenConsumed = ConsumeInputResource(OxygenSource,ref Data._oxygenAmountBuffer, oxygenConsumeAmount, frame, Data.OxygenDamageScale,"Oxygen");
-                if (oxygenConsumed)
+                double oxygenToConsume = Data.OxygenConsumeRate * activityRate;
+                double oxygenConsumed = ConsumeInputResource(OxygenSource, Data._oxygenAmountBuffer, oxygenToConsume, deltaSeconds, Data.OxygenDamageScale, "Oxygen", allowDamage);
+                if (oxygenConsumed > 0.0)
                 {
-                    double co2Amount = oxygenConsumeAmount * 1.375 * Data.evaConsumeEfficiency;
-                    ProduceWasteResource(Co2Source, ref Data._co2AmountBuffer,Data.DesireCO2Capacity, co2Amount, frame, Data.OxygenDamageScale,"LPCO2");
+                    double co2Amount = oxygenConsumed * 1.375 * Data.evaConsumeEfficiency;
+                    ProduceWasteResource(Co2Source, Data._co2AmountBuffer, Data.DesireCO2Capacity, co2Amount, deltaSeconds, Data.OxygenDamageScale, "LPCO2", allowDamage);
                 }
             }
 
-            double foodConsumeAmount = (double)Data.FoodConsumeRate * baseRate;
-            bool foodConsumed = ConsumeInputResource(FoodSource,ref Data._foodAmountBuffer, foodConsumeAmount, frame, Data.FoodDamageScale,"Food");
-            if (foodConsumed)
+            double foodToConsume = Data.FoodConsumeRate * activityRate;
+            double foodConsumed = ConsumeInputResource(FoodSource, Data._foodAmountBuffer, foodToConsume, deltaSeconds, Data.FoodDamageScale, "Food", allowDamage);
+            if (foodConsumed > 0.0)
             {
-                double solidWasteAmount = foodConsumeAmount * 1.1 * Data.evaConsumeEfficiency * 0.04;
-                ProduceWasteResource(SolidWasteSource,ref Data._solidWasteAmountBuffer,Data.DesireSolidWasteCapacity, solidWasteAmount, frame, Data.FoodDamageScale,"Solid Waste");
+                double solidWasteAmount = foodConsumed * 1.1 * Data.evaConsumeEfficiency * 0.04;
+                ProduceWasteResource(SolidWasteSource, Data._solidWasteAmountBuffer, Data.DesireSolidWasteCapacity, solidWasteAmount, deltaSeconds, Data.FoodDamageScale, "Solid Waste", allowDamage);
             }
 
-            double waterConsumeAmount = (double)Data.WaterConsumeRate * baseRate;
-            bool waterConsumed = ConsumeInputResource(WaterSource,ref Data._waterAmountBuffer, waterConsumeAmount, frame, Data.WaterDamageScale,"H2O");
-            if (waterConsumed)
+            double waterToConsume = Data.WaterConsumeRate * activityRate;
+            double waterConsumed = ConsumeInputResource(WaterSource, Data._waterAmountBuffer, waterToConsume, deltaSeconds, Data.WaterDamageScale, "H2O", allowDamage);
+            if (waterConsumed > 0.0)
             {
-                double wastedWaterAmount = waterConsumeAmount * 1.1 * Data.evaConsumeEfficiency;
-                ProduceWasteResource(WastedWaterSource, ref Data._wastedWaterAmountBuffer,Data.DesireWastedWaterCapacity, wastedWaterAmount, frame, Data.WaterDamageScale,"Wasted Water");
+                double wastedWaterAmount = waterConsumed * 1.1 * Data.evaConsumeEfficiency;
+                ProduceWasteResource(WastedWaterSource, Data._wastedWaterAmountBuffer, Data.DesireWastedWaterCapacity, wastedWaterAmount, deltaSeconds, Data.WaterDamageScale, "Wasted Water", allowDamage);
             }
         }
-        
+
         /// <summary>
-        /// 具体维生资源消耗函数
+        /// 具体维生资源消耗：先扣 craft 油箱，不够再扣本地 buffer，返回实际消耗量。
         /// </summary>
-        private bool ConsumeInputResource(IFuelSource craftSource,ref double localSourceAmount, double amount, in FlightFrameData frame, float damageScale,string fuelTypeName)
+        private double ConsumeInputResource(IFuelSource craftSource, double localSourceAmount, double amount, double deltaSeconds, float damageScale, string fuelTypeName, bool allowDamage)
         {
-            if (amount <= 0)
+            if (amount <= 0.0)
             {
-                return false;
+                return 0.0;
             }
 
-            if (craftSource==null||craftSource.IsEmpty)
+            double remaining = amount;
+
+            if (craftSource != null && !craftSource.IsEmpty)
             {
-                if (localSourceAmount>0)
-                {
-                    Data.AddLifeSupportFuel(fuelTypeName,-amount);
-                    return true;
-                }
-                DamageDrood(fuelTypeName, frame, damageScale);
-                return false;
+                remaining -= craftSource.RemoveFuel(remaining);
             }
 
-            if (craftSource!=null&&!craftSource.IsEmpty)
+            if (remaining > 0.0 && localSourceAmount > 0.0)
             {
-                craftSource.RemoveFuel(amount);
-                return true;
+                double fromBuffer = Math.Min(remaining, localSourceAmount);
+                Data.AddLifeSupportFuel(fuelTypeName, -fromBuffer);
+                remaining -= fromBuffer;
             }
 
-            return false;
+            // 资源耗尽：按"实际缺乏的时间"触发伤害（而不是整段时间）
+            // 例：本步需要 amount，实际缺 remaining，则真正挨饿的时长 = remaining / (amount / deltaSeconds)
+            if (remaining > 0.0 && allowDamage)
+            {
+                double starvedSeconds = amount > 0.0 ? remaining * deltaSeconds / amount : deltaSeconds;
+                DamageDrood(fuelTypeName, starvedSeconds, damageScale);
+            }
+
+            return amount - remaining;
         }
-        
+
         /// <summary>
-        /// 具体维生废物生成函数
+        /// 具体维生废物生成：先填 craft 油箱，再填本地 buffer，溢出的部分按需触发伤害。
         /// </summary>
-        private void ProduceWasteResource(IFuelSource craftSource,ref double localSourceAmount,float localCapacity, double amount, in FlightFrameData frame, float damageScale,string fuelTypeName)
+        private void ProduceWasteResource(IFuelSource craftSource, double localSourceAmount, float localCapacity, double amount, double deltaSeconds, float damageScale, string fuelTypeName, bool allowDamage)
         {
-            if (amount <= 0)
+            if (amount <= 0.0)
             {
                 return;
             }
-            
-            if (craftSource==null||craftSource.TotalCapacity - craftSource.TotalFuel <= 0.00001)
+
+            double remaining = amount;
+
+            if (craftSource != null)
             {
-                if (localCapacity-localSourceAmount>0.00001)
+                double availableSpace = craftSource.TotalCapacity - craftSource.TotalFuel;
+                if (availableSpace > 0.0)
                 {
-                    Data.AddLifeSupportFuel(fuelTypeName,amount);
-                    return;
+                    remaining -= craftSource.AddFuel(Math.Min(remaining, availableSpace));
                 }
-                DamageWaste(fuelTypeName, frame, damageScale);
-                return;
             }
 
-            if (craftSource!=null&&craftSource.TotalCapacity - craftSource.TotalFuel > 0.00001)
+            double bufferSpace = localCapacity - localSourceAmount;
+            if (remaining > 0.0 && bufferSpace > 0.0)
             {
-                craftSource.AddFuel(amount);
+                double intoBuffer = Math.Min(remaining, bufferSpace);
+                Data.AddLifeSupportFuel(fuelTypeName, intoBuffer);
+                remaining -= intoBuffer;
+            }
+
+            if (remaining > 0.0 && allowDamage)
+            {
+                double overflowSeconds = amount > 0.0 ? remaining * deltaSeconds / amount : deltaSeconds;
+                DamageWaste(fuelTypeName, overflowSeconds, damageScale);
             }
         }
 
         /// <summary>
-        /// 处理不使用自带氧气时的氧气自动补充逻辑。
-        /// Handles the auto-refill logic for oxygen when not using internal oxygen.
+        /// 处理不使用自带氧气时的氧气自动补充逻辑（按秒，实时/后台共用）。
+        /// 只补充自带的,不补充craft上的
         /// </summary>
-        private void AutoRefillLogic(in FlightFrameData frame)
+        private void AutoRefillLogic(double deltaSeconds)
         {
-            if (Data.DesireOxygenCapacity-Data._oxygenAmountBuffer >= 0.00001)
+            if (Data.DesireOxygenCapacity - Data._oxygenAmountBuffer >= 0.00001)
             {
-                Data._oxygenAmountBuffer +=Data.DesireOxygenCapacity * frame.DeltaTimeWorld * 0.01f;
+                Data._oxygenAmountBuffer = Math.Min(Data.DesireOxygenCapacity,
+                    Data._oxygenAmountBuffer + Data.DesireOxygenCapacity * deltaSeconds * 0.01f);
             }
         }
 
         #endregion
 
-        #region 非加载时资源处理
+        #region 非加载时资源处理（后台结算）
 
+        /// <summary>
+        /// 是否参与后台补算：由 Mod 设置开关决定。
+        /// 休眠状态不在这里排除：休眠中的乘员也要结算（耗电、辐射），
+        /// </summary>
+        public bool IsBackgroundUpdateEnabled => ModSettings.Instance.BackGroundCalculation.Value;
+
+        /// <summary>
+        /// 后台补算入口（由 BackGroundCalculator 在飞船重新进入游戏视图时调用）。
+        /// 先算休眠时长（受休眠舱电量限制），再用剩余时间结算资源，最后结算辐射与伤害。
+        /// </summary>
+        public void BackgroundUpdate(double elapsedSeconds)
+        {
+            if (elapsedSeconds <= 0.0)
+            {
+                return;
+            }
+
+            //in case flight scene or other component not ready when call this 
+            if (evaScript == null)
+            {
+                evaScript = this.PartScript.GetModifier<EvaScript>();
+            }
+
+            if (string.IsNullOrEmpty(currentPlanetName))
+            {
+                UpdateCurrentPlanet();
+            }
+
+            if (this.RadiationBeltConfig == null && !string.IsNullOrEmpty(currentPlanetName))
+            {
+                this.RadiationBeltConfig = RadiationBeltConfig.LoadFromFile(currentPlanetName);
+            }
+            
+            Refresh();
+            
+            double hibernationSeconds = SettleHibernation(elapsedSeconds);
+            
+            double awakeSeconds = elapsedSeconds - hibernationSeconds;
+            if (awakeSeconds > 0.0)
+            {
+                UpdateLifeSupport(awakeSeconds, true);
+            }
+            
+            CheckRadiationState(elapsedSeconds);
+            if (BackgroundSettlement.IsBackgroundDamageEnabled)
+            {
+                DamageRadiation(elapsedSeconds);
+            }
+
+            UpdateHealingStatus();
+        }
+
+        /// <summary>
+        /// 休眠结算：计算这段时间最多能休眠多久（受休眠舱电量限制），并扣掉对应电量。
+        /// 返回休眠秒数；未休眠/找不到休眠舱返回 0（剩余时间由调用方按清醒结算）。
+        /// </summary>
+        private double SettleHibernation(double elapsedSeconds)
+        {
+            if (!IsHibernating || elapsedSeconds <= 0.0)
+            {
+                return 0.0;
+            }
+
+            HibernatingChamberScript chamber = GetHibernationChamber();
+            if (chamber == null || chamber.CrewCount <= 0)
+            {
+                return 0.0;
+            }
+
+            // 同一休眠舱的多个乘员共享电量：静态方法保证每帧只计算并扣电一次
+            return HibernatingChamberScript.GetBackgroundHibernationSeconds(chamber, elapsedSeconds);
+        }
+
+        private HibernatingChamberScript GetHibernationChamber()
+        {
+            CrewCompartmentScript compartment = evaScript?.CrewCompartment;
+            if (compartment == null)
+            {
+                return null;
+            }
+
+            return compartment.PartScript?.GetModifier<HibernatingChamberScript>();
+        }
+
+
+
+        /// <summary>
+        /// 飞船卸载出游戏视图时调用：把存档里的维生燃料箱数据剥掉（保留原有行为）。
+        /// 结算时间戳由 BackGroundCalculator 通过 IBackGroundData 统一维护，这里不再写 LastLoadTime。
+        /// </summary>
         private void OnCraftUnloaded()
         {
             try
             {
-                Data.LastLoadTime = (long)FlightSceneScript.Instance.FlightState.Time;
                 PartScript.Data.LoadXML(RemoveFuelTankXML(this.PartScript.Data.GenerateXml(this.PartScript.CraftScript.Transform,false)),15);
             }
             catch (Exception e)
             {
                 Mod.Log("RemoveExtraTanks调用RemoveFuelTankXML出问题了{0}", e);
-            }
-        }
-        
-        private void RemoveFuelAmountInstantly()
-        {
-            double elapsedSeconds = Game.Instance.FlightScene.FlightState.Time - Data.LastLoadTime;
-            double activityMultiplier = (IsTourist ? 1.05 : 1.0);
-
-            // --- 氧气消耗（仅在使用内部氧气时）---
-            if (UsingInternalOxygen())
-            {
-                double oxygenToConsume = Data.OxygenConsumeRate * activityMultiplier * elapsedSeconds;
-                double fromSource = 0;
-                if (OxygenSource != null && !OxygenSource.IsEmpty)
-                {
-                    fromSource = Math.Min(oxygenToConsume, OxygenSource.TotalFuel);
-                    OxygenSource.RemoveFuel(fromSource);
-                }
-
-                double remainingOxygen = oxygenToConsume - fromSource;
-                if (remainingOxygen > 0)
-                {
-                    double fromBuffer = Math.Min(remainingOxygen, Data._oxygenAmountBuffer);
-                    Data.AddLifeSupportFuel("Oxygen", -fromBuffer);
-                }
-            }
-
-            // --- 水消耗 ---
-            double waterToConsume = Data.WaterConsumeRate * activityMultiplier * elapsedSeconds;
-            double fromWaterSource = 0;
-            if (WaterSource != null && !WaterSource.IsEmpty)
-            {
-                fromWaterSource = Math.Min(waterToConsume, WaterSource.TotalFuel);
-                WaterSource.RemoveFuel(fromWaterSource);
-            }
-
-            double remainingWater = waterToConsume - fromWaterSource;
-            if (remainingWater > 0)
-            {
-                double fromBuffer = Math.Min(remainingWater, Data._waterAmountBuffer);
-                Data.AddLifeSupportFuel("H2O", -fromBuffer);
-            }
-
-            // --- 食物消耗 ---
-            double foodToConsume = Data.FoodConsumeRate * activityMultiplier * elapsedSeconds;
-            double fromFoodSource = 0;
-            if (FoodSource != null && !FoodSource.IsEmpty)
-            {
-                fromFoodSource = Math.Min(foodToConsume, FoodSource.TotalFuel);
-                FoodSource.RemoveFuel(fromFoodSource);
-            }
-
-            double remainingFood = foodToConsume - fromFoodSource;
-            if (remainingFood > 0)
-            {
-                double fromBuffer = Math.Min(remainingFood, Data._foodAmountBuffer);
-                Data.AddLifeSupportFuel("Food", -fromBuffer);
-            }
-        }
-        
-        private void AddWastedAmountInstantly()
-        {
-            double elapsedSeconds = Game.Instance.FlightScene.FlightState.Time - Data.LastLoadTime;
-            double activityMultiplier = (IsTourist ? 1.05 : 1.0);
-
-            // --- CO2 产生（仅在使用内部氧气时）---
-            if (UsingInternalOxygen())
-            {
-                double co2ToAdd = Data.OxygenConsumeRate * activityMultiplier * elapsedSeconds * 1.375 * Data.evaConsumeEfficiency;
-                AddWasteToSource(Co2Source, ref Data._co2AmountBuffer, Data.DesireCO2Capacity, co2ToAdd);
-            }
-
-            // --- 废水产生 ---
-            double wastedWaterToAdd = 1.1 * Data.WaterConsumeRate * Data.evaConsumeEfficiency * activityMultiplier * elapsedSeconds;
-            AddWasteToSource(WastedWaterSource, ref Data._wastedWaterAmountBuffer, Data.DesireWastedWaterCapacity, wastedWaterToAdd);
-
-            // --- 固体废物产生（注意 0.04 系数，与 ConsumptionLogic 对齐）---
-            double solidWasteToAdd = Data.FoodConsumeRate * Data.evaConsumeEfficiency * 1.1 * 0.04 * activityMultiplier * elapsedSeconds;
-            AddWasteToSource(SolidWasteSource, ref Data._solidWasteAmountBuffer, Data.DesireSolidWasteCapacity, solidWasteToAdd);
-        }
-
-        /// <summary>
-        /// 将废物先填入 craft fuel source，满了再填入本地 buffer
-        /// </summary>
-        private void AddWasteToSource(IFuelSource craftSource, ref double buffer, float bufferCapacity, double amountToAdd)
-        {
-            if (amountToAdd <= 0) return;
-
-            if (craftSource != null)
-            {
-                double availableSpace = craftSource.TotalCapacity - craftSource.TotalFuel;
-                double intoCraft = Math.Min(amountToAdd, availableSpace);
-                craftSource.AddFuel(intoCraft);
-                double overflow = amountToAdd - intoCraft;
-                if (overflow > 0)
-                {
-                    double intoBuffer = Math.Min(overflow, bufferCapacity - buffer);
-                    buffer += intoBuffer;
-                }
-            }
-            else
-            {
-                double intoBuffer = Math.Min(amountToAdd, bufferCapacity - buffer);
-                buffer += intoBuffer;
             }
         }
 
@@ -940,7 +926,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         #region 伤害处理
 
-        private void DamageDrood(string fuelType, FlightFrameData frame, float DamageScale)
+        private void DamageDrood(string fuelType, double deltaSeconds, float DamageScale)
         {
             if (evaScript == null || PartScript == null || 
                 Game.Instance == null || Game.Instance.Settings?.Game?.Flight == null)
@@ -951,12 +937,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return;
             }
 
-            if (frame.DeltaTimeWorld <= 0)
+            if (deltaSeconds <= 0.0)
             {
                 return;
             }   
             
-            float num2 = (IsRunning ? 1.75f : 1f) * (IsTourist ? 1.05f : 1f) * DamageScale * (float)frame.DeltaTimeWorld;
+            float num2 = (IsRunning ? 1.75f : 1f) * (IsTourist ? 1.05f : 1f) * DamageScale * (float)deltaSeconds;
             if ( 
                  (float)(Setting<float>)Game.Instance.Settings.Game.Flight.ImpactDamageScale > 0.0)
             {
@@ -969,7 +955,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
         }
         
-        private void DamageWaste(string resourceName, FlightFrameData frame, float DamageScale)
+        private void DamageWaste(string resourceName, double deltaSeconds, float DamageScale)
         {
             if (evaScript == null || PartScript == null || 
                 Game.Instance == null || Game.Instance.Settings?.Game?.Flight == null)
@@ -977,12 +963,12 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return;
             }
 
-            if (frame.DeltaTimeWorld <= 0)
+            if (deltaSeconds <= 0.0)
             {
                 return;
             }   
             
-            float num2 = (IsRunning ? 1.75f : 1f) * (IsTourist ? 1.05f : 1f) * DamageScale * (float)frame.DeltaTimeWorld;
+            float num2 = (IsRunning ? 1.75f : 1f) * (IsTourist ? 1.05f : 1f) * DamageScale * (float)deltaSeconds;
             
             if (
                  (float)(Setting<float>)Game.Instance.Settings.Game.Flight.ImpactDamageScale > 0.0)
@@ -996,14 +982,14 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
         }
         
-        private void DamageRadiation(in FlightFrameData  frame)
+        private void DamageRadiation(double deltaSeconds)
         {
             if (evaScript == null || PartScript == null)
             {
                 return;
             } 
 
-            float dtWorld = (float)frame.DeltaTimeWorld;
+            float dtWorld = (float)deltaSeconds;
             if (dtWorld <= 0f)
             {
                 return;
@@ -1064,12 +1050,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
         }
         
-        private void PilotDamageReduction(in FlightFrameData frame)
+        private void OverLoadHandling(in FlightFrameData frame)
         {
             if (this.Data.DroodismCrewData == null)
             {
                 return;
             }
+            //TODO 完善黑视逻辑
             if (this.Data.DroodismCrewData.CrewRole != DroodType.Pilot)
             {
                 return;
@@ -1208,15 +1195,20 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         /// <summary>
         /// 对辐射剂量计算
         /// </summary>
-        private void CheckRadiationState(in FlightFrameData data)
+        private void CheckRadiationState(double deltaSeconds)
         {
+            if (RadiationBeltManager.Instance == null)
+            {
+                return;
+            }
+
             RadiationBeltManager.Instance.TryGetDoseRateRadPerHour(this.RadiationBeltConfig,
                 currentPlanetName,
                 PartScript.CraftScript.FlightData.Position.ToVector3(),
                 out var totalRadiationDoseRateRadPerHour,
                 out var innerDoseRateRadPerHour,
                 out var outerDoseRateRadPerHour);
-            float deltaHours = Mathf.Max(0f, (float)data.DeltaTimeWorld) / 3600f;
+            float deltaHours = Mathf.Max(0f, (float)deltaSeconds) / 3600f;
             if (deltaHours <= 1e-9f)
             {
                 deltaHours = Mod.GetDeltaTimeHours();
@@ -1536,7 +1528,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             }
             
             CraftScript craftScript1 = this.PartScript.CraftScript as CraftScript;
-            craftScript1.RecenterTransformOnCoM(true);
+            craftScript1.RecenterTransformOnCoM(true, null);
             SpawnParachuteAndRide();
         }
 

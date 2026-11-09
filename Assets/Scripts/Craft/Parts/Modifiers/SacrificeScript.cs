@@ -8,10 +8,6 @@ using RootMotion.FinalIK;
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using ModApi.Craft.Parts;
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
@@ -20,10 +16,11 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
     {
 
         private CrewCompartmentScript _compartment;
-        private ParticleSystem chunkParticleSystem,bloodParticleSystemA,bloodParticleSystemB,bloodParticleSystemC,bloodParticleSystemD,bloodParticleSystemE,bloodParticleSystemF,bloodParticleSystemG,bloodParticleSystemH,bloodParticleSystemI;
+        private ParticleSystem chunkParticleSystem;
+        private ParticleSystem[] bloodParticleSystems;
         private ISingleSound _sound;
         
-        private Transform _particalSystemTransform,_bloodEffectTransform;
+        private Transform _particleSystemTransform,_bloodEffectTransform;
         private Transform LKBaseTransform,leftHandTransform,leftElbowTransform,rightHandTransform,rightElbowTransform,bodyTransform;
         private FullBodyBipedIK _pilotIK;
         private EvaScript _pilot = (EvaScript) null;
@@ -54,7 +51,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         private void RefreshFuelSource()
         {
-            var patchScript = PartScript?.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+            var patchScript = PartScriptUtilities.GetCommandPodPatch(PartScript);
             if (patchScript == null)
             {
                 _co2Source=_oxygenSource=_foodSource=_waterSource=_solidWasteSource=_wastedWaterSource=null;
@@ -88,29 +85,19 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 if (_compartment.Crew.Count==1)
                 {
                     PlayParticle(chunkParticleSystem);
-                    PlayParticle(bloodParticleSystemA);
-                    PlayParticle(bloodParticleSystemB);
-                    PlayParticle(bloodParticleSystemC);
-                    PlayParticle(bloodParticleSystemD);
-                    PlayParticle(bloodParticleSystemE);
-                    PlayParticle(bloodParticleSystemF);
-                    PlayParticle(bloodParticleSystemG);
-                    PlayParticle(bloodParticleSystemH);
-                    PlayParticle(bloodParticleSystemI);
+                    foreach (var blood in bloodParticleSystems)
+                    {
+                        PlayParticle(blood);
+                    }
                     DrainingLogic(frameData);
                 }
                 else
                 {
                     chunkParticleSystem.Stop();
-                    bloodParticleSystemA.Stop();
-                    bloodParticleSystemB.Stop();
-                    bloodParticleSystemC.Stop();
-                    bloodParticleSystemD.Stop();
-                    bloodParticleSystemE.Stop();
-                    bloodParticleSystemF.Stop();
-                    bloodParticleSystemG.Stop();
-                    bloodParticleSystemH.Stop();
-                    bloodParticleSystemI.Stop();
+                    foreach (var blood in bloodParticleSystems)
+                    {
+                        blood.Stop();
+                    }
                 }
                
                 
@@ -118,15 +105,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             else
             {
                 chunkParticleSystem.Stop();
-                bloodParticleSystemA.Stop();
-                bloodParticleSystemB.Stop();
-                bloodParticleSystemC.Stop();
-                bloodParticleSystemD.Stop();
-                bloodParticleSystemE.Stop();
-                bloodParticleSystemF.Stop();
-                bloodParticleSystemG.Stop();
-                bloodParticleSystemH.Stop();
-                bloodParticleSystemI.Stop();
+                foreach (var blood in bloodParticleSystems)
+                {
+                    blood.Stop();
+                }
                     
             }
 
@@ -194,28 +176,24 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private void UpdateComponents()
         {
             _compartment = this.PartScript.GetModifier<CrewCompartmentScript>();
-            string[]	strArray	= "Device/ParticleEffect".Split( '/', StringSplitOptions.None );
-            Transform	subPart		= this.transform;
-            foreach ( string n in strArray )
-                subPart = subPart.Find( n ) ?? subPart;
-            if ( subPart.name == strArray[strArray.Length - 1] )
-                _particalSystemTransform =subPart;
-            else
-                _particalSystemTransform=( Utilities.FindFirstGameObjectMyselfOrChildren( "Device/ParticleEffect", this.gameObject ) ?.transform );
-            if(_particalSystemTransform != null)
+            _particleSystemTransform = IPartSubPartSetUp.FindSubPart(this, "Device/ParticleEffect");
+            if(_particleSystemTransform != null)
             {
-                chunkParticleSystem = _particalSystemTransform.Find("ChunkParticleSystem").GetComponent<ParticleSystem>();
-                bloodParticleSystemA = _particalSystemTransform.Find("BloodEffect").Find("Particle SystemA").GetComponent<ParticleSystem>();
-                bloodParticleSystemB = _particalSystemTransform.Find("BloodEffect").Find("Particle SystemB").GetComponent<ParticleSystem>();
-                bloodParticleSystemC = _particalSystemTransform.Find("BloodEffect").Find("Particle SystemC").GetComponent<ParticleSystem>();
-                bloodParticleSystemD = _particalSystemTransform.Find("BloodEffect").Find("Particle SystemD").GetComponent<ParticleSystem>();
-                bloodParticleSystemE = _particalSystemTransform.Find("BloodEffect").Find("Particle SystemE").GetComponent<ParticleSystem>();
-                bloodParticleSystemF = _particalSystemTransform.Find("BloodEffect").Find("Particle SystemF").GetComponent<ParticleSystem>();
-                bloodParticleSystemG = _particalSystemTransform.Find("BloodEffect").Find("Particle SystemG").GetComponent<ParticleSystem>();
-                bloodParticleSystemH = _particalSystemTransform.Find("BloodEffect").Find("Particle SystemH").GetComponent<ParticleSystem>();
-                bloodParticleSystemI = _particalSystemTransform.Find("BloodEffect").Find("Particle SystemI").GetComponent<ParticleSystem>();
+                chunkParticleSystem = _particleSystemTransform.Find("ChunkParticleSystem").GetComponent<ParticleSystem>();
+                bloodParticleSystems = new[]
+                {
+                    _particleSystemTransform.Find("BloodEffect").Find("Particle SystemA").GetComponent<ParticleSystem>(),
+                    _particleSystemTransform.Find("BloodEffect").Find("Particle SystemB").GetComponent<ParticleSystem>(),
+                    _particleSystemTransform.Find("BloodEffect").Find("Particle SystemC").GetComponent<ParticleSystem>(),
+                    _particleSystemTransform.Find("BloodEffect").Find("Particle SystemD").GetComponent<ParticleSystem>(),
+                    _particleSystemTransform.Find("BloodEffect").Find("Particle SystemE").GetComponent<ParticleSystem>(),
+                    _particleSystemTransform.Find("BloodEffect").Find("Particle SystemF").GetComponent<ParticleSystem>(),
+                    _particleSystemTransform.Find("BloodEffect").Find("Particle SystemG").GetComponent<ParticleSystem>(),
+                    _particleSystemTransform.Find("BloodEffect").Find("Particle SystemH").GetComponent<ParticleSystem>(),
+                    _particleSystemTransform.Find("BloodEffect").Find("Particle SystemI").GetComponent<ParticleSystem>()
+                };
                 
-                LKBaseTransform=_particalSystemTransform.parent.Find("LKBase");
+                LKBaseTransform=_particleSystemTransform.parent.Find("LKBase");
                 bodyTransform=LKBaseTransform.Find("Body");
                 leftElbowTransform=LKBaseTransform.Find("LeftElbow");
                 leftHandTransform=leftElbowTransform.Find("LeftHand");

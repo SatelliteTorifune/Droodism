@@ -1,3 +1,115 @@
+## 2026 11 10
+> 后台结算修正：结算时序、休眠结算与伤害设置
+>
+> - 修复后台补算发生在零件脚本生命周期之前的时序问题：`LoadedIntoGameView` 触发时 `FlightStart`/首帧 `FlightUpdate` 还没跑，导致休眠状态（`IsHibernating`）、游客倍率（`IsTourist`）、大气采样（`AtmosphereSample`）都还是默认值——休眠中的乘员被当成清醒补算、停在可呼吸大气里的飞船被当成真空扣氧。现在调度器延后一帧再结算（`DeferSettlement` 协程），等运行态就绪后一次性补算
+> - 移除运行时脚本里误加的 `using UnityEditor;`（编辑器能编过，但打包播放器会失败）
+> - 后台调度器不再被设置开关门控启动：始终挂钩飞船事件；关闭时仍推进时间戳，开启后不会把关闭期间一次性补算进来
+> - 新增设置项 `BackGroundDamage`（默认关闭）：后台补算是否结算伤害。关闭时离视图期间资源耗尽/辐射超标不掉血；开启后按"实际缺乏时间"结算饥饿伤害并补算辐射伤害（可能导致读档时乘员已受伤或死亡）
+> - 饥饿/废物伤害改为按"实际缺乏/溢出的时间"计算（`remaining * deltaSeconds / amount`），不再按整段时间计算
+> - 休眠结算重做：先按休眠舱电量计算最多能休眠多久（`HibernatingChamberScript.GetBackgroundHibernationSeconds`），休眠期间不消耗氧气/食物/水，但扣除休眠耗电并照常累积辐射；电量耗尽后剩余时间按清醒结算；同一休眠舱的多个乘员共享电量，静态缓存保证每帧只计算/扣电一次
+
+## 2026 11 02
+> 后台结算系统（飞船离开游戏视图期间的资源补算）重构
+>
+> - 新增 `IBackGroudCalculate`（脚本侧行为契约，带 `elapsedSeconds`）与 `IBackGroundData`（数据侧持久化时间戳契约）：结算逻辑放脚本、时间戳放零件数据
+> - 新增 `BackGroundCalculator` 调度器：以"离开/进入游戏视图"为边界统一补算；不再使用 `PhysicsEnabled/PhysicsDisabled`（物理关闭期间脚本仍在跑，旧写法会重复扣资源）
+> - 新增 `BackgroundPartModifierData<T>`：参与后台结算的零件数据基类，自带序列化时间戳
+> - `ResourceProcessorPartScript<T>` 统一实现接口：子类只需提供按秒的 `BackgroundLogic(double)`，前后台共用同一套速率公式
+> - 生命维持（`SupportLifeScript`）与 CO₂ 过滤器接入后台结算；小蓝人休眠时跳过补算
+> - `SupportLifeScript` 实时/后台逻辑合一：`ConsumptionLogic(帧)` 改为按秒的 `ConsumptionLogic(deltaSeconds, allowDamage, isRunning)`，删除重复的 `RemoveFuelAmountInstantly`/`AddWastedAmountInstantly`；覆盖范围修正为"实际消耗量"（废物按实际消耗生成、按剩余容量溢入本地 buffer）
+> - 数据侧契约 `IBackGroundData` 与其基类实现 `BackgroundPartModifierData<T>` 合并到同一文件（脚本侧契约仍在 `Interface/IBackGroudCalculate.cs`）
+> - 新增 `BackgroundSettlement.LimitSeconds`（`ResourceProcessorPartScript` 暴露为 `LimitBackgroundSeconds`）：大时间步长下按可用输入/输出容量限制本步秒数，避免"输入耗尽、输出照满整段时间"的账目不平
+> - 电解装置、甲烷发生器、污水处理三个零件接入后台结算（按秒公式与实时逻辑共用）
+> - 后台补算也会累计辐射剂量（按当前轨道位置近似），但不会在补算中触发伤害/弹提示
+> - **后台不做持续计算**：删除"每 5 秒/逐帧扫描"，改为纯时间戳模型——时间戳只在存档序列化（`GenerateStateXml`）与飞船卸载出视图时写入；补算只在飞船重新进入视图时瞬时做一次。事件挂钩也改为 `FlightScene.Initialized` + `FlightState.CraftNodeAdded/Removed`，没有 Update 轮询
+> - 分裂/对接产生的新飞船不补算（零件来自实时飞船，时间戳已是最新），只推进时间戳
+> - 调度器 DebugMode 下打印一次性补算摘要日志（飞船、零件数、间隔），便于排查
+> - 设置项 `ConsumeResourceWhenUnloaded` 更名为 `BackGroundCalculation`（存储键 `consumeResourceWhenUnloaded` 不变，玩家已有设置保留）
+
+## 2026 10 31
+> 继续同步 Volken2 更新器最新改动(三通道版)
+> 
+> - 新增通道3:官方 mod 页兜底(simplerockets.com/Mods/View/308057)——GitHub 不可达(如国内网络)时读页面 GENERAL INFO 的 "Mod Version:";页面手工维护,发版时必须同步更新,否则该通道会滞后
+> - 版本比较改为十进制语义(CompareVersions/TryParseDecimalVersion):修复 System.Version 按"段"比整数导致的误判(如 0.797 被当成 797 > 82 而误判大于 0.82,把旧版本当新版本);三段以上(如 1.2.3)自动回退到 System.Version 语义
+> - 总看门狗 15s → 20s(3 通道 × 5s 单请求 + 余量),单请求超时 10s → 5s(RequestTimeoutSeconds 常量)
+> - 等主菜单从逐帧 yield null 改为 0.5s 轮询(WaitForSecondsRealtime),避免常驻协程在所有场景每帧空转
+> - 从官方 mod 页发现更新时,"下载更新"改打开 mod 页下载链接(GitHub 不可达时原链接无意义)
+> - 日志去掉冗余的 "Droodism: " 前缀(Mod.Log 已带 [DroodismDebug] 标签),并打印更新来源(来源:GitHub / 官方 mod 页)
+
+## 2026 9 26
+> 将文件设置单独抽象为一个类
+> >可以,这很OOP
+> 
+> 清理了Mod.cs中函数的排序与事件订阅
+
+## 2026 9 8
+> 加入通用更新检查 + 提醒弹窗(移植自 Volken2 的 ModUpdater.cs,按 Droodism 适配)
+> 
+> - 双通道获取网站最新版本:通道1 GitHub Releases API(tag_name)为主;通道2 raw 直链 version.txt 兜底(API 限流/断网/还没建过 release 时自动启用)
+> - 网站最新 > 本地版本 且玩家没点过"不再提醒"时,等进主菜单弹三按钮弹窗:下载更新 / 稍后再说 / 不再提醒
+> - "不再提醒"用 PlayerPrefs 记住跳过的版本,出现更新版本前不再弹;每次游戏会话只检查一次
+> - 本地版本读 ModInfo.Version:Mod.cs 新增 ModVersion 属性,在 OnModLoaded 末尾先赋值再触发检查
+> - 弹窗文案本地化:EN-US.xml / ZH-CN.xml 新增 Droodism.UI.Update* 共 6 个 key
+> - 仓库根目录新增 version.txt(0.88),发版时需与 ModData.asset 版本号保持同步并推送到 main 分支
+> - 修复:同步 Volken2 更新器的看门狗修复——总超时 15s(Time.realtimeSinceStartup deadline),逐帧轮询 isDone 并在超时时主动 Abort,防止个别网络异常下 UnityWebRequest.timeout 失效导致协程无限挂起;宿主 ModUpdaterHost 销毁时停掉所有协程
+
+## 2026 9 7
+> Debug 日志清理:
+> 
+> - 所有裸 Debug.Log*/Console.WriteLine 统一改走 Mod.Log/LogWarning/LogError(新增 LogWarning,LogError 改为 LogType.Error 级别)
+> - 三个日志入口全部受 ModSettings.Instance.DebugMode 门控,关闭时零日志;IsDebugMode 空安全(早期初始化取不到设置时静默)
+> - 清理 QuickSaveDealer 的 Console.WriteLine、Mod 初始化异常、DroodismFilesSetUp、OnHireButtonClickedPatch、FlagScript 的裸日志
+> - 顺带改掉了 RadiationBeltManager 里的调试脏话日志"fucked1111"
+> 
+> 性能优化:
+> 
+> - DroodismUIManager.Update 的每帧燃料数据刷新(GetIFuelSourceByID+UpdateFuelTemplateItem,约6类型×每秒数十次字符串分配)改为只在 Droodism 面板可见时执行,面板关闭时零开销;打开面板时立即刷新一次避免显示旧数据
+> 
+> 适配游戏更新(设置本地化新模式):
+> 
+> - 背景:游戏更新后 ModSettings 本地化失效——原代码在 InitializeSettings 时用 Locale.GetString 把名称/描述烤进 Setting,加载时序变化后设置显示为键名/空白
+> - ModSettings.cs 全部10个设置改为游戏新版模式:CreateBool("{Droodism.ModSettings.Xxx}") + SetDescription("{...XxxDesc}") 键引用,由设置系统渲染时惰性解析(对齐游戏 CreateBool("{Settings.General.RunInBackground}"))
+> - 关键修复:显式固定每个设置的 xmlName(CreateBool/CreateNumeric 的 xmlName 参数,沿用旧派生键如 toggleDebugMode)——存储键不再从本地化显示名派生,修复切换语言时设置被重置的问题,且兼容玩家已保存的设置
+> - 本地化键(10名称+10描述)在 ZH-CN.xml / EN-US.xml 均已存在,无需新增
+> 
+> 修复 OnHireButtonClickedPatch 删掉原版资金确认提示的问题:恢复原版 "Crew.Assignment.HireConfirm" 的 OkayCancel 确认框(显示雇佣花费,可取消),确认后才弹出职业类型选择
+> > 后续清理:
+> >
+> > 1. 其余5处硬编码路径解析(strArray+Split+逐级Find)统一改用 IPartSubPartSetUp.FindSubPart(MiningMachine/Sacrifice/Glider/HibernatingChamber/ResourcePack)
+> > 2. 移除重构后残留的未使用 using(含 GliderScript 里一串 System.Windows.Forms 之类的垃圾引用)
+> > 3. 修正类内部命名(不动类名):_particalSystemTransform→_particleSystemTransform / floatingFocrce→floatingForce / groudFix→groundFix / drillStut→drillStrut / LiquidHydrogenSouce→LiquidHydrogenSource,粗俗的 region 名改中性
+> > 4. PositionOffset1 统一更名为 PositionOffset(5个Data + 5个Script + balloon.prefab 同步)
+> > 5. FirstAddKit 命名问题已加 TODO 注释,待手动修正
+> > 6. 冗余去重:新增 PartScriptUtilities(FindCraftFuelSource/GetCommandPodPatch),Modifiers 内12处 GetModifier<STCommandPodPatchScript> 长链改用 GetCommandPodPatch();GasDealer 的 GetCraftFuelSource 循环体改委托共享实现;Sacrifice 血粒子9字段改数组循环;ChemicalReactor 去掉重复的 monoSource 赋值
+> > 7. 死代码清理:PhotoBioReactor 空 UpdateScale、MiningMachine 空 Test()、balloon 死 UpdateScale+空 FlightFixedUpdate(连带移除 IFlightFixedUpdate 接口),balloon 补 _sphere 空判
+
+
+
+## 2026 9 5
+> 抽象出IPartSubPartSetUp接口,统一了9个零件脚本的SetSubPart逻辑
+> 
+> > 将路径解析(FindSubPart)和偏移枢轴重建(ApplySubPart)合并进接口作为静态成员
+> > 
+> > CarbonDeoxideFilter / balloon / ElectrolyticDevice / ChemicalReactor / GasDealer / Flag / GravityRing / PhotoBioReactor / MethaloxGenerator 全部实现该接口
+> > 
+> > 顺手修了粒子系统路径尾斜杠导致直接查找失败的隐患,以及CarbonDeoxideFilterScript中UpdateComponents隐藏基类虚方法的问题
+> > 
+> > 接口内不再声明UpdateComponents,避免与基类生命周期钩子重复,每个脚本只保留一个UpdateComponents
+
+
+## 2026 8 12
+> 移除了legacyPause的补丁
+
+
+## 2026 8 1
+> 修复了UI中Drood的职业未本地化的bug
+>
+
+## 2026 7 25
+> 增加旗帜留言功能
+> 
+> 修复flag 和 Gravity Ring的prefab的ID错误
+
 ## 2026 7 18
 > 增加了零件分类名称,零件显示名称和描述的本地化
 

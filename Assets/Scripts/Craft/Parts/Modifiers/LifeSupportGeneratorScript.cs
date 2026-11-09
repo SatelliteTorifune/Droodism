@@ -143,7 +143,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
 
 
-        #region 路边一条,无人在意
+        #region 燃料刷新
 
         public override void OnModifiersCreated()
         {
@@ -160,7 +160,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 return;
             }
             base.UpdateFuelSources();
-            var patchScript = PartScript?.CommandPod?.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+            var patchScript = GetCommandPodPatch();
 
             waterSource = patchScript?.WaterFuelSource;
             oxygenSource = patchScript?.OxygenFuelSource;

@@ -1,6 +1,6 @@
 using RootMotion.FinalIK;
 using Assets.Scripts.Craft.Parts.Modifiers.Eva;
-using ModApi;
+using Assets.Scripts.Droodism.BackGround;
 using ModApi.Craft;
 using ModApi.GameLoop;
 
@@ -8,8 +8,6 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using ModApi.Craft.Parts;
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
@@ -27,9 +25,64 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
         private AttachPoint _seatAttachPoint;
         private IFuelSource _batterySource;
 
+        // 后台补算用：同一次结算里，同一个休眠舱只计算并扣电一次（多个乘员共享同一块电池）
+        private static readonly Dictionary<HibernatingChamberScript, double> backgroundHibernationCache =
+            new Dictionary<HibernatingChamberScript, double>();
+        private static double backgroundHibernationCacheTime = double.NaN;
+
+        /// <summary>舱内乘员数量。</summary>
+        public int CrewCount => _crewCompartment?.Crew?.Count ?? 0;
+
+        /// <summary>休眠每秒耗电量。</summary>
+        public double HibernationPowerPerSecond => Data.HibernationPowerConsumption;
+
+        /// <summary>休眠可用电量（当前电池剩余）。</summary>
+        public double HibernationBatteryFuel => _batterySource == null ? 0.0 : _batterySource.TotalFuel;
+
+        /// <summary>
+        /// 计算"这段时间最多能休眠多久"并扣掉对应电量的静态入口。
+        /// 同一帧内同一休眠舱只计算一次，其余乘员复用结果，避免多乘员重复扣电。
+        /// </summary>
+        public static double GetBackgroundHibernationSeconds(HibernatingChamberScript chamber, double elapsedSeconds)
+        {
+            if (chamber == null || elapsedSeconds <= 0.0)
+            {
+                return 0.0;
+            }
+
+            double now = BackgroundSettlement.CurrentGameFlightTime;
+            if (double.IsNaN(backgroundHibernationCacheTime) || Math.Abs(now - backgroundHibernationCacheTime) > 1e-6)
+            {
+                backgroundHibernationCache.Clear();
+                backgroundHibernationCacheTime = now;
+            }
+
+            double cachedSeconds;
+            if (backgroundHibernationCache.TryGetValue(chamber, out cachedSeconds))
+            {
+                return cachedSeconds;
+            }
+
+            double powerPerSecond = chamber.HibernationPowerPerSecond;
+            double availableSeconds = elapsedSeconds;
+            if (powerPerSecond > 0.0)
+            {
+                availableSeconds = Math.Min(elapsedSeconds,
+                    Math.Max(0.0, chamber.HibernationBatteryFuel / powerPerSecond));
+            }
+
+            if (availableSeconds > 0.0 && chamber._batterySource != null)
+            {
+                chamber._batterySource.RemoveFuel(powerPerSecond * availableSeconds);
+            }
+
+            backgroundHibernationCache[chamber] = availableSeconds;
+            return availableSeconds;
+        }
+
         private void UpdateComponents()
         {
-            BaseLKTransform = Utilities.FindFirstGameObjectMyselfOrChildren("BodyBase", this.gameObject).transform;
+            BaseLKTransform = IPartSubPartSetUp.FindSubPart(this, "BodyBase");
             if (BaseLKTransform == null)
             {
                 Mod.LogError("HibernatingChamberScript: Could not find BodyBase transform");

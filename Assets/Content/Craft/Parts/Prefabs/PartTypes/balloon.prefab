@@ -182,4 +182,4 @@ MonoBehaviour:
     _versionLast: 1
     _versionsAllowed: 
     floatingForceMultiplier: 100
-    PositionOffset1: {x: 0, y: 0, z: 0}
+    PositionOffset: {x: 0, y: 0, z: 0}

@@ -5,6 +5,7 @@
 
 # Ignore IDE files
 .idea/
+.vscode/
 .vsconfig
 
 # Ignore JNO mod files
@@ -116,3 +117,9 @@ InitTestScene*.unity*
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
 *.meta
+/.idea
+/docs
+/tmp
+/output
+/Assets/_ModAssets_
+/ModAssetBundles

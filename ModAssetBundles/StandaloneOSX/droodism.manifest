@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 3677572865
+CRC: 3867114223
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: dbb0ea24e0403a1f12d1d2b03637f01a
+    Hash: 44f5f2f0b82e59640a5f67c4eb7aec02
   TypeTreeHash:
     serializedVersion: 2
-    Hash: a58ce5eca3b8004653945f316c923753
+    Hash: 267d6d4ac618512c2ea1b371381ff4dd
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: dbb0ea24e0403a1f12d1d2b03637f01a
+    Hash: 44f5f2f0b82e59640a5f67c4eb7aec02
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -62,21 +62,22 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 199
   Script: {instanceID: 0}
+- Class: 212
+  Script: {instanceID: 0}
 - Class: 213
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers:
 - AssemblyName: XmlLayout
   ClassName: UI.Xml.XmlLayoutResourceEntry
 Assets:
+- Assets/Resources/Craft/Parts/Definitions/DOCRDevice.xml
 - Assets/Resources/DefaultRadiationBeltConfigs/Cylero.xml
-- Assets/_ModAssets_/ModManifest.xml.bytes
-- Assets/Resources/DefaultRadiationBeltConfigs/Tydos.xml
 - Assets/Resources/Craft/Parts/Prefabs/GravityRing.prefab
 - Assets/Content/Craft/Parts/Textures/cloud_4_variants.psd
-- Assets/Resources/Craft/Parts/Prefabs/Flag.prefab
+- Assets/Resources/DefaultRadiationBeltConfigs/Tydos.xml
 - Assets/Resources/DefaultRadiationBeltConfigs/Earth.xml
-- Assets/Content/Languages/ZH-CN.xml
-- Assets/Resources/Craft/Parts/Prefabs/PhotoBioReactor.prefab
+- Assets/Content/Languages/zh-Hans.xml
+- Assets/Resources/Craft/Parts/Prefabs/Flag.prefab
 - Assets/Resources/DefaultRadiationBeltConfigs/Taurus.xml
 - Assets/Content/Craft/Parts/ToolBox.png
 - Assets/Resources/Craft/Parts/Prefabs/balloon.prefab
@@ -94,7 +95,7 @@ Assets:
 - Assets/Content/Craft/Parts/RocketEngines/Propulsion.xml
 - Assets/Resources/Craft/Parts/Definitions/Glider.xml
 - Assets/Resources/DefaultRadiationBeltConfigs/Sergeaa.xml
-- Assets/Content/Craft/Parts/Categories/LifeSupport.asset
+- Assets/Resources/Craft/Parts/Prefabs/PhotoBioReactor.prefab
 - Assets/Resources/BreathablePlanets.xml
 - Assets/Resources/Craft/Parts/Definitions/ElectrolyticDevice.xml
 - Assets/Resources/Craft/Parts/Definitions/GravityRing.xml
@@ -102,6 +103,7 @@ Assets:
 - Assets/Resources/Craft/Parts/Definitions/MiningMachine.xml
 - Assets/Resources/DefaultFlag1.bytes
 - Assets/Resources/Craft/Parts/Prefabs/HibernatingChamber.prefab
+- Assets/Content/Craft/Parts/Categories/LifeSupport.asset
 - Assets/Resources/DefaultRadiationBeltConfigs/Miros.xml
 - Assets/Content/Craft/Parts/Categories/In-Situ Resource Utilization.asset
 - Assets/Resources/Craft/Parts/Prefabs/MethaloxGenerator.prefab
@@ -128,6 +130,7 @@ Assets:
 - Assets/Resources/Craft/Parts/Prefabs/FirstAidKit.prefab
 - Assets/Resources/DefaultRadiationBeltConfigs/Droo.xml
 - Assets/Content/Craft/Parts/PartManager.asset
+- Assets/_ModAssets_/ModManifest.xml.bytes
 - Assets/Resources/Craft/Parts/Definitions/Sodium Peroxide Container.xml
 - Assets/Content/Languages/EN-US.xml
 - Assets/Resources/Craft/Parts/Definitions/ChemicalReactor.xml
@@ -136,7 +139,6 @@ Assets:
 - Assets/Content/Craft/Parts/FirstAidKit.png
 - Assets/Content/XML UI/Sprites/DroodsimUIIcon.png
 - Assets/Resources/Craft/Parts/Prefabs/SewageTreatDevice.prefab
-- Assets/_ModAssets_/Droodism.dll.bytes
 - Assets/Resources/Craft/Parts/Definitions/FirstAidKit.xml
 - Assets/Resources/Craft/Parts/Prefabs/Sodium Peroxide Container.prefab
 - Assets/Resources/Craft/Parts/Prefabs/MiningMachine.prefab
@@ -149,7 +151,7 @@ Assets:
 - Assets/Resources/Craft/Parts/Definitions/WaterPump.xml
 - Assets/Resources/DefaultRadiationBeltConfigs/Orcus.xml
 - Assets/Resources/Craft/Parts/Prefabs/WaterPump.prefab
-- Assets/Resources/Craft/Parts/Definitions/DOCRDevice.xml
+- Assets/_ModAssets_/Droodism.dll.bytes
 - Assets/Resources/Craft/Parts/Definitions/DroodParachute.xml
 - Assets/Resources/Craft/Parts/Definitions/WaterTank.xml
 Dependencies: []

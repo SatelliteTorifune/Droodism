@@ -715,9 +715,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6861317580931925426, guid: d58334be9f3fa7c44996122405dc05ab, type: 3}
       propertyPath: Data._description
-      value: A quicker choice if you don't want to spend time set and place the life
-        support resources tanks one by one,this part integrated necessary resources
-        for <color=green>a single Drood</color>to consume in 24 hours.
+      value: DesignerParts.ResourcesPack.ResourcesPack.Description
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

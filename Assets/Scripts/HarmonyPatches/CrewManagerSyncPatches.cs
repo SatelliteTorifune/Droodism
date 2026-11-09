@@ -16,14 +16,14 @@ namespace Assets.Scripts.HarmonyPatches
                 var crewManagerType = AccessTools.TypeByName("Assets.Scripts.State.CrewManager");
                 if (crewManagerType == null)
                 {
-                    Mod.Log("[Droodism] CrewManager type not found, skip crew sync patch.");
+                    Mod.Log(" CrewManager type not found, skip crew sync patch.");
                     return;
                 }
 
                 var createMethod = crewManagerType.GetMethod("CreateCrewMember", BindingFlags.Instance | BindingFlags.Public);
                 if (createMethod == null)
                 {
-                    Mod.Log("[Droodism] CrewManager.CreateCrewMember() not found, skip crew sync patch.");
+                    Mod.Log(" CrewManager.CreateCrewMember() not found, skip crew sync patch.");
                     return;
                 }
 
@@ -32,7 +32,7 @@ namespace Assets.Scripts.HarmonyPatches
                     BindingFlags.Static | BindingFlags.NonPublic);
                 if (postfix == null)
                 {
-                    Mod.Log("[Droodism] CreateCrewMember_Postfix method not found.");
+                    Mod.Log(" CreateCrewMember_Postfix method not found.");
                     return;
                 }
 
@@ -41,7 +41,7 @@ namespace Assets.Scripts.HarmonyPatches
             }
             catch (Exception e)
             {
-                Mod.LogError($"[Droodism] Failed to apply CrewManager sync patch: {e}");
+                Mod.LogError($" Failed to apply CrewManager sync patch: {e}");
             }
         }
 
@@ -55,7 +55,7 @@ namespace Assets.Scripts.HarmonyPatches
             }
             catch (Exception e)
             {
-                Mod.LogError($"[Droodism] CreateCrewMember_Postfix failed: {e}");
+                Mod.LogError($" CreateCrewMember_Postfix failed: {e}");
             }
         }
     }

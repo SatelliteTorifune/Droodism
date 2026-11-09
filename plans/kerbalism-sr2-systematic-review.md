@@ -1,5 +1,9 @@
 # Kerbalism 后台系统移植到 SR2 的系统性审查报告
 
+> **2026-11-02 状态更正**：本文档第 3.2 节声称的 "Phase 1 已完成"（`BackGroundCalulator.SimulateCrewBackground()`、`SupportLifeScript.BackgroundUpdate(elapsed_s)`、`CraftNodeAdded/Removed` 订阅等）是当时的**设计设想**，仓库中从未存在过对应实现（全分支 `git log -S` 搜不到这些符号）。
+> 实际落地的接口、调度器与触发边界见 [`background-settlement-implementation.md`](background-settlement-implementation.md)。
+> 另外本文档第 3.4 节"`IFlightFixedUpdateWarp` 天然适配"的结论不必要：`FlightGameLoop.Update()` 在 warp 期间照常派发 `IFlightUpdate`，`TimeManager.DeltaTime` 已含 warp 倍率，已加载飞船的实时消耗本来就是对的。
+
 > 参考来源：
 > - Kerbalism: [`BackGround.cs`](C:/renko/unityProjects/Kerbalism/src/Kerbalism/BackGround.cs)
 > - KSP 源码: [`FlightGlobals.cs`](C:/renko/unityProjects/kspre2/Assets/Scripts/Assembly-CSharp/FlightGlobals.cs)

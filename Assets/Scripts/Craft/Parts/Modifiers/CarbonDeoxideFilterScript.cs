@@ -1,7 +1,4 @@
-using ModApi;
-using ModApi.Craft;
 using ModApi.GameLoop;
-using RootMotion.FinalIK;
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
@@ -10,14 +7,13 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 	using ModApi.GameLoop.Interfaces;
 	using UnityEngine;
 
-	public class CarbonDeoxideFilterScript : ResourceProcessorPartScript<CarbonDeoxideFilterData>,
-		IDesignerStart
+	public class CarbonDeoxideFilterScript : ResourceProcessorPartScript<CarbonDeoxideFilterData>,IPartSubPartSetUp
 	{
 		private IFuelSource co2Source;
 		private Transform	_offset, FanA, FanB;
 		private Vector3		_offsetPositionInverse;
 		
-
+		
 		public override void FlightStart( in FlightFrameData frame )
 		{
 			UpdateFuelSources();
@@ -46,12 +42,44 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
 		protected override void WorkingLogic( in FlightFrameData frame )
 		{
-			if ( PartScript.Data.Activated )
-			{
-				co2Source.RemoveFuel( Data.Co2ConsumptionRate * frame.DeltaTimeWorld );
-				BatterySource.RemoveFuel( Data.ElectricityPowerConsumptionRatePerCo2 * Data.Co2ConsumptionRate * frame.DeltaTimeWorld );
-			}
+			BackgroundLogic( frame.DeltaTimeWorld );
 		}
+
+
+		#region 后台结算
+
+		/// <summary>
+		/// 在飞船离开游戏视图期间也照样工作（CO2 过滤不依赖动画），只要零件是激活状态即可参与补算。
+		/// 燃料源是否可用由 <see cref="BackgroundLogic"/> 内部再判断。
+		/// </summary>
+		public override bool IsBackgroundUpdateEnabled => PartScript.Data.Activated;
+
+
+		/// <summary>
+		/// 按秒结算，与 <see cref="WorkingLogic"/> 共用同一套速率，保证前后台一致。
+		/// </summary>
+		protected override void BackgroundLogic( double elapsedSeconds )
+		{
+			if ( !PartScript.Data.Activated )
+			{
+				return;
+			}
+
+			if ( co2Source == null || BatterySource == null )
+			{
+				return;
+			}
+
+			if ( co2Source.IsEmpty || BatterySource.IsEmpty )
+			{
+				return;
+			}
+
+			co2Source.RemoveFuel( Data.Co2ConsumptionRate * elapsedSeconds );
+			BatterySource.RemoveFuel( Data.ElectricityPowerConsumptionRatePerCo2 * Data.Co2ConsumptionRate * elapsedSeconds );
+		}
+
+		#endregion
 
 
 		protected override void WorkingAnimation( bool active )
@@ -78,37 +106,21 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 		}
 
 
-		private void UpdateComponents()
+		public Transform SubPart => FanA;
+
+		protected override void UpdateComponents()
 		{
-			string[]	strArray	= "DeviceBase/DeviceFanA".Split( '/', StringSplitOptions.None );
-			Transform	subPart		= this.transform;
-			foreach ( string n in strArray )
-				subPart = subPart.Find( n ) ?? subPart;
-			if ( subPart.name == strArray[strArray.Length - 1] )
-				this.SetSubPart( subPart );
-			else
-				this.SetSubPart( Utilities.FindFirstGameObjectMyselfOrChildren( "DeviceBase/DeviceFanA", this.gameObject ) ?.transform );
+			SetSubPart( IPartSubPartSetUp.FindSubPart( this, "DeviceBase/DeviceFanA" ) );
 			if ( this.FanA != null )
 			{
 				FanB = FanA.Find( "DeviceFanB" );
 			}
 		}
 
-
 		public void SetSubPart( Transform subPart )
 		{
-			if ( (UnityEngine.Object) this._offset != (UnityEngine.Object) null )
-			{
-				UnityEngine.Object.Destroy( (UnityEngine.Object) this._offset.gameObject );
-				this._offset = (Transform) null;
-			}
 			this.FanA = subPart;
-			if ( !( (UnityEngine.Object) this.FanA != (UnityEngine.Object) null) || (double) this.Data.PositionOffset1.magnitude <= 0.0 )
-				return;
-			this._offset = new GameObject( "SubPartRotatorOffset" ).transform;
-			this._offset.SetParent( this.FanA.parent, false );
-			this._offset.position		= this.FanA.TransformPoint( Data.PositionOffset1 );
-			this._offsetPositionInverse	= this._offset.InverseTransformPoint( this.FanA.position );
+			this._offset = IPartSubPartSetUp.ApplySubPart( this._offset, this.FanA, Data.PositionOffset, out this._offsetPositionInverse );
 		}
 
 
@@ -118,7 +130,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 			base.UpdateFuelSources();
 			try
 			{
-				var patchScript = PartScript?.CommandPod.Part.PartScript.GetModifier<STCommandPodPatchScript>();
+				var patchScript = GetCommandPodPatch();
 				if (patchScript == null)
 				{
 					co2Source = null;

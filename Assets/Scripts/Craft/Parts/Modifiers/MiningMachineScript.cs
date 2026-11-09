@@ -1,19 +1,14 @@
-using ModApi;
 using ModApi.GameLoop;
 
 namespace Assets.Scripts.Craft.Parts.Modifiers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using ModApi.Craft.Parts;
     using ModApi.GameLoop.Interfaces;
     using UnityEngine;
 
     public class MiningMachineScript : ResourceProcessorPartScript<MiningMachineData>
     {
-        private Transform mainBase, groudFix1, groudFix2, nail, nail2, drillBody, drillHead, driller, drillStut,drillPiston,drillBodyPT;
+        private Transform mainBase, groundFix1, groundFix2, nail, nail2, drillBody, drillHead, driller, drillStrut,drillPiston,drillBodyPT;
 
 
         private ParticleSystem drillBodyPS;
@@ -65,7 +60,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             this.Data.CurrentEnabledPercent1 = Mathf.MoveTowards(this.Data.CurrentEnabledPercent1, 1, frame.DeltaTime * this.Data.DeploySpeed);
             mainBase.localRotation = Quaternion.Euler(Vector3.Lerp(new Vector3(0, 0, 0),
                 new Vector3(120, 0, 0), Data.CurrentEnabledPercent1));
-            groudFix1.localRotation = Quaternion.Euler(Vector3.Lerp(new Vector3(180, 0, 0),
+            groundFix1.localRotation = Quaternion.Euler(Vector3.Lerp(new Vector3(180, 0, 0),
                 new Vector3(-30, 0,0), Data.CurrentEnabledPercent1));
             
             if (Data.CurrentEnabledPercent1 >= 1)
@@ -73,7 +68,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 this.Data.CurrentEnabledPercent2 = Mathf.MoveTowards(this.Data.CurrentEnabledPercent2, 1, frame.DeltaTime * this.Data.DeploySpeed);
                 drillBody.localRotation = Quaternion.Euler(Vector3.Lerp(new Vector3(0, 0, 0),
                     new Vector3(0, 90, 0), Data.CurrentEnabledPercent2));
-                groudFix2.localRotation = Quaternion.Euler(Vector3.Lerp(new Vector3(0, 0, 0),
+                groundFix2.localRotation = Quaternion.Euler(Vector3.Lerp(new Vector3(0, 0, 0),
                     new Vector3(0, 90, 0), Data.CurrentEnabledPercent2));
                 this.isDeploying = true;
                 this.isDeployed = false;
@@ -82,7 +77,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             if (Data.CurrentEnabledPercent2 >= 1)
             {
                 this.Data.CurrentEnabledPercent3 = Mathf.MoveTowards(this.Data.CurrentEnabledPercent3, 1, frame.DeltaTime * this.Data.DeploySpeed);
-                drillStut.localRotation = Quaternion.Euler(Vector3.Lerp(new Vector3(0, 0, 0),
+                drillStrut.localRotation = Quaternion.Euler(Vector3.Lerp(new Vector3(0, 0, 0),
                     new Vector3(0, 0, 45), Data.CurrentEnabledPercent3));
                
                 nail.transform.localPosition=Vector3.Lerp(new Vector3(0, 0, 0),
@@ -103,7 +98,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
             {
                 this.Data.CurrentEnabledPercent3 = Mathf.MoveTowards(this.Data.CurrentEnabledPercent3, 0,
                     frame.DeltaTime * this.Data.DeploySpeed);
-                drillStut.localRotation = Quaternion.Euler(Vector3.Lerp(new Vector3(0, 0, 0),
+                drillStrut.localRotation = Quaternion.Euler(Vector3.Lerp(new Vector3(0, 0, 0),
                     new Vector3(0, 0, 45), Data.CurrentEnabledPercent3));
 
                 nail.transform.localPosition = Vector3.Lerp(new Vector3(0, 0, 0),
@@ -121,7 +116,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     frame.DeltaTime * this.Data.DeploySpeed);
                 drillBody.localRotation = Quaternion.Euler(Vector3.Lerp(new Vector3(0, 0, 0),
                     new Vector3(0, 90, 0), Data.CurrentEnabledPercent2));
-                groudFix2.localRotation = Quaternion.Euler(Vector3.Lerp(new Vector3(0, 0, 0),
+                groundFix2.localRotation = Quaternion.Euler(Vector3.Lerp(new Vector3(0, 0, 0),
                     new Vector3(0, 90, 0), Data.CurrentEnabledPercent2));
             }
 
@@ -131,7 +126,7 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                     frame.DeltaTime * this.Data.DeploySpeed);
                 mainBase.localRotation = Quaternion.Euler(Vector3.Lerp(new Vector3(0, 0, 0),
                     new Vector3(120, 0, 0), Data.CurrentEnabledPercent1));
-                groudFix1.localRotation = Quaternion.Euler(Vector3.Lerp(new Vector3(180, 0, 0),
+                groundFix1.localRotation = Quaternion.Euler(Vector3.Lerp(new Vector3(180, 0, 0),
                     new Vector3(-30, 0, 0), Data.CurrentEnabledPercent1));
             }
 
@@ -147,10 +142,10 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
                 this.isDeploying = false;
 
                 mainBase.localRotation = Quaternion.Euler(0, 0, 0);
-                groudFix1.localRotation = Quaternion.Euler(180, 0, 0);
+                groundFix1.localRotation = Quaternion.Euler(180, 0, 0);
                 drillBody.localRotation = Quaternion.Euler(0, 0, 0);
-                groudFix2.localRotation = Quaternion.Euler(0, 0, 0);
-                drillStut.localRotation = Quaternion.Euler(0, 0, 0);
+                groundFix2.localRotation = Quaternion.Euler(0, 0, 0);
+                drillStrut.localRotation = Quaternion.Euler(0, 0, 0);
             }
         }
 
@@ -207,34 +202,23 @@ namespace Assets.Scripts.Craft.Parts.Modifiers
 
         protected override void UpdateComponents()
         {
-            string[] strArray = "MeshBase/MainBase".Split('/', StringSplitOptions.None);
-            Transform subPart = this.transform;
-            foreach (string n in strArray)
-                subPart = subPart.Find(n) ?? subPart;
-            if (subPart.name == strArray[strArray.Length - 1])
-                mainBase=(subPart);
-            else
-                mainBase=(Utilities.FindFirstGameObjectMyselfOrChildren("MeshBase/MainBase", this.gameObject)?.transform);
+            mainBase = IPartSubPartSetUp.FindSubPart(this, "MeshBase/MainBase");
 
             if (mainBase!=null)
             {
-                groudFix1 = mainBase.Find("groudFix1");
-                nail = groudFix1.Find("nail");
-                drillBody=groudFix1.Find("drillBody");
-                groudFix2=drillBody.Find("groudFix2");
-                nail2=groudFix2.Find("nail2");
+                groundFix1 = mainBase.Find("groudFix1");
+                nail = groundFix1.Find("nail");
+                drillBody=groundFix1.Find("drillBody");
+                groundFix2=drillBody.Find("groudFix2");
+                nail2=groundFix2.Find("nail2");
                 drillHead=drillBody.Find("drillHead");
                 drillPiston=drillHead.Find("drillPiston");
-                drillStut=drillBody.Find("drillStut");
-                driller=drillStut.Find("driller");
+                drillStrut=drillBody.Find("drillStut");
+                driller=drillStrut.Find("driller");
                 drillBodyPT = drillBody.Find("drillBodyPT");
                 //PS
                 drillBodyPS = drillBodyPT.GetComponent<ParticleSystem>();
             }
-        }
-
-        private void Test()
-        {
         }
 
     }
